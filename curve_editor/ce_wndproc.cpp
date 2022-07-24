@@ -603,7 +603,7 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			address = g_cv_id[g_cfg.id_current].PtInCtpts(cl_pt);
 			//カーソルが制御点上にあるとき，ハンドルの座標を記憶
 			if (address.CLR != 0) {
-				g_cv_id[g_cfg.id_current].movePoint(address, gr_pt, TRUE);
+				g_cv_id[g_cfg.id_current].MovePoint(address, gr_pt, TRUE);
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 				SetCapture(hwnd);
 			}
@@ -653,7 +653,7 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		address = g_cv_id[g_cfg.id_current].PtInCtpts(cl_pt);
 
 		if (address.CLR == 1)
-			g_cv_id[g_cfg.id_current].deletePoint(cl_pt);
+			g_cv_id[g_cfg.id_current].DeletePoint(cl_pt);
 		else
 			g_cv_id[g_cfg.id_current].addPoint(gr_pt);
 
@@ -707,7 +707,7 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//IDモード
 		if (g_cfg.mode) {
 			if (address.CLR) {
-				g_cv_id[g_cfg.id_current].movePoint(address, gr_pt, FALSE);
+				g_cv_id[g_cfg.id_current].MovePoint(address, gr_pt, FALSE);
 				InvalidateRect(hwnd, NULL, FALSE);
 			}
 		}
@@ -780,6 +780,11 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		case CE_CT_ALIGN:
 			g_cfg.align_mode = g_cfg.align_mode ? 0 : 1;
+			return 0;
+
+		case CE_WM_REVERSE:
+			g_cv_id[g_cfg.id_current].ReversePoints();
+			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}
 		return 0;

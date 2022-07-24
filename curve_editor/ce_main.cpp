@@ -101,7 +101,7 @@ int getResult(lua_State* L)
 	double	ed		= lua_tonumber(L, 4);
 
 	if (index < 0 || index > CE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_cv_id[index].getValue(ratio, st, ed));
+	else lua_pushnumber(L, g_cv_id[index].GetValue(ratio, st, ed));
 	return 1;
 }
 

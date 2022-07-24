@@ -123,13 +123,14 @@ namespace ce {
 		}
 
 		void				addPoint(POINT cl_pt);
-		void				deletePoint(POINT cl_pt);
-		void				movePoint(Point_Address address, POINT gr_pt, BOOL bReset);
+		void				DeletePoint(POINT cl_pt);
+		void				MovePoint(Point_Address address, POINT gr_pt, BOOL bReset);
 		Point_Address		PtInCtpts(POINT cl_pt);
-		double				getHandleAngle(Point_Address address);
-		void				correctHandle(Point_Address address, int x, BOOL bAngle, double agl);
-		void				setHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth);
-		double				getValue(double ratio, double st, double ed);
+		double				GetHandleAngle(Point_Address address);
+		void				CorrectHandle(Point_Address address, int x, BOOL bAngle, double agl);
+		void				SetHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth);
+		void				ReversePoints();
+		double				GetValue(double ratio, double st, double ed);
 	};
 
 	class Control {

@@ -8,7 +8,7 @@
 
 
 //---------------------------------------------------------------------
-//		Add Points
+//		制御点群を追加
 //---------------------------------------------------------------------
 void ce::Curve_ID::addPoint(POINT gr_pt)
 {
@@ -39,19 +39,19 @@ void ce::Curve_ID::addPoint(POINT gr_pt)
 	//両隣の左右の点が中央の点より右/左に出ていたら修正
 	if (ctpts[index - 1].pt_right.x > ctpts[index].pt_center.x) {
 		tmp = { index - 1, 3 };
-		correctHandle(tmp, ctpts[index].pt_center.x, FALSE, NULL);
+		CorrectHandle(tmp, ctpts[index].pt_center.x, FALSE, NULL);
 	}
 	if (ctpts[index + 1].pt_left.x < ctpts[index].pt_center.x) {
 		tmp = { index + 1, 2 };
-		correctHandle(tmp, ctpts[index].pt_center.x, FALSE, NULL);
+		CorrectHandle(tmp, ctpts[index].pt_center.x, FALSE, NULL);
 	}
 }
 
 
 //---------------------------------------------------------------------
-//		Delete Points
+//		制御点群を削除
 //---------------------------------------------------------------------
-void ce::Curve_ID::deletePoint(POINT cl_pt)
+void ce::Curve_ID::DeletePoint(POINT cl_pt)
 {
 	Point_Address address = PtInCtpts(cl_pt);
 	if (!address.CLR) return;
@@ -65,9 +65,9 @@ void ce::Curve_ID::deletePoint(POINT cl_pt)
 
 
 //---------------------------------------------------------------------
-//		Move Points
+//		制御点(群)を移動
 //---------------------------------------------------------------------
-void ce::Curve_ID::movePoint(Point_Address address, POINT gr_pt, BOOL bReset)
+void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 {
 	constexpr double MATH_PI = 3.14159265;
 	static POINT prevright, nextleft, hdleft, hdright;
@@ -90,13 +90,13 @@ void ce::Curve_ID::movePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 			ctpts[address.index].pt_right.y - ctpts[address.index].pt_center.y,
 		};
 		tmp = { address.index - 1, 3 };
-		agl_prev = getHandleAngle(tmp);
+		agl_prev = GetHandleAngle(tmp);
 		tmp = { address.index + 1, 2 };
-		agl_next = getHandleAngle(tmp);
+		agl_next = GetHandleAngle(tmp);
 		tmp = { address.index, 2 };
-		agl_left = getHandleAngle(tmp);
+		agl_left = GetHandleAngle(tmp);
 		tmp = { address.index, 3 };
-		agl_right = getHandleAngle(tmp);
+		agl_right = GetHandleAngle(tmp);
 
 		lgth_left = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_left);
 		lgth_right = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_right);
@@ -125,17 +125,17 @@ void ce::Curve_ID::movePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 		if (ctpts[address.index].type > 1) {
 			tmp = { address.index, 2 };//Left  o-----O
 			if (ctpts[address.index].pt_left.x < ctpts[address.index - 1].pt_center.x)
-				correctHandle(tmp, ctpts[address.index - 1].pt_center.x, TRUE, agl_left);
+				CorrectHandle(tmp, ctpts[address.index - 1].pt_center.x, TRUE, agl_left);
 			tmp = { address.index, 3 };//Right O-----o
 			if (ctpts[address.index].pt_right.x > ctpts[address.index + 1].pt_center.x)
-				correctHandle(tmp, ctpts[address.index + 1].pt_center.x, TRUE, agl_right);
+				CorrectHandle(tmp, ctpts[address.index + 1].pt_center.x, TRUE, agl_right);
 
 			tmp = { address.index - 1, 3 };//Right o-----O
 			if (prevright.x > ctpts[address.index].pt_center.x)
-				correctHandle(tmp, ctpts[address.index].pt_center.x, TRUE, agl_prev);
+				CorrectHandle(tmp, ctpts[address.index].pt_center.x, TRUE, agl_prev);
 			tmp = { address.index + 1, 2 };//Left  O-----o
 			if (nextleft.x < ctpts[address.index].pt_center.x)
-				correctHandle(tmp, ctpts[address.index].pt_center.x, TRUE, agl_next);
+				CorrectHandle(tmp, ctpts[address.index].pt_center.x, TRUE, agl_next);
 		}
 
 		break;
@@ -150,9 +150,9 @@ void ce::Curve_ID::movePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 		//整列(角度)
 		if (g_cfg.align_mode == 1) {
 			tmp = { address.index, 2 };
-			agl_tmp = getHandleAngle(tmp);
+			agl_tmp = GetHandleAngle(tmp);
 			tmp = { address.index, 3 };
-			setHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, lgth_right);
+			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, lgth_right);
 		}
 		break;
 
@@ -167,9 +167,9 @@ void ce::Curve_ID::movePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 		//整列(角度)
 		if (g_cfg.align_mode == 1) {
 			tmp = { address.index, 3 };
-			agl_tmp = getHandleAngle(tmp);
+			agl_tmp = GetHandleAngle(tmp);
 			tmp = { address.index, 2 };
-			setHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, lgth_left);
+			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, lgth_left);
 		}
 		break;
 	}
@@ -177,7 +177,7 @@ void ce::Curve_ID::movePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 
 
 //---------------------------------------------------------------------
-//		PtInCtpts
+//		指定した座標が制御点群の内部に存在しているか
 //---------------------------------------------------------------------
 ce::Point_Address ce::Curve_ID::PtInCtpts(POINT cl_pt)
 {
@@ -214,9 +214,9 @@ ce::Point_Address ce::Curve_ID::PtInCtpts(POINT cl_pt)
 
 
 //---------------------------------------------------------------------
-//		getHandleAngle
+//		ハンドルの角度を取得
 //---------------------------------------------------------------------
-double ce::Curve_ID::getHandleAngle(Point_Address address)
+double ce::Curve_ID::GetHandleAngle(Point_Address address)
 {
 	double angle;
 	int dstx, dsty;
@@ -239,9 +239,9 @@ double ce::Curve_ID::getHandleAngle(Point_Address address)
 
 
 //---------------------------------------------------------------------
-//		setHandleAngle
+//		ハンドルの角度を設定
 //---------------------------------------------------------------------
-void ce::Curve_ID::setHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth)
+void ce::Curve_ID::SetHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth)
 {
 	double length;
 	if (address.CLR == 2 && ctpts[address.index].type != 0) {
@@ -271,11 +271,11 @@ void ce::Curve_ID::setHandleAngle(Point_Address address, double angle, BOOL bLen
 
 
 //---------------------------------------------------------------------
-//		correctHandle
+//		ハンドルを連動
 //---------------------------------------------------------------------
-void ce::Curve_ID::correctHandle(Point_Address address, int x, BOOL bAngle, double agl)
+void ce::Curve_ID::CorrectHandle(Point_Address address, int x, BOOL bAngle, double agl)
 {
-	double angle = bAngle ? agl : getHandleAngle(address);
+	double angle = bAngle ? agl : GetHandleAngle(address);
 	int x_dst;
 	switch (address.CLR) {
 	case 2://Left   O-----o
@@ -297,9 +297,35 @@ void ce::Curve_ID::correctHandle(Point_Address address, int x, BOOL bAngle, doub
 
 
 //---------------------------------------------------------------------
+//		グラフを反転
+//---------------------------------------------------------------------
+void ce::Curve_ID::ReversePoints()
+{
+	std::vector<Points_ID> ctpts_old;
+	for (int i = 0; i < ctpts.size() / 2.0; i++) {
+		ctpts_old.emplace_back(ctpts[i]);
+		ctpts[i].pt_center.x = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_center.x;
+		ctpts[i].pt_center.y = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_center.y;
+		ctpts[i].pt_left.x = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_right.x;
+		ctpts[i].pt_left.y = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_right.y;
+		ctpts[i].pt_right.x = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_left.x;
+		ctpts[i].pt_right.y = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_left.y;
+
+		ctpts[ctpts.size() - i - 1].pt_center.x = CE_GR_RES - ctpts_old[i].pt_center.x;
+		ctpts[ctpts.size() - i - 1].pt_center.y = CE_GR_RES - ctpts_old[i].pt_center.y;
+		ctpts[ctpts.size() - i - 1].pt_left.x = CE_GR_RES - ctpts_old[i].pt_right.x;
+		ctpts[ctpts.size() - i - 1].pt_left.y = CE_GR_RES - ctpts_old[i].pt_right.y;
+		ctpts[ctpts.size() - i - 1].pt_right.x = CE_GR_RES - ctpts_old[i].pt_left.x;
+		ctpts[ctpts.size() - i - 1].pt_right.y = CE_GR_RES - ctpts_old[i].pt_left.y;
+	}
+
+}
+
+
+//---------------------------------------------------------------------
 //		Get Value
 //---------------------------------------------------------------------
-double ce::Curve_ID::getValue(double ratio, double st, double ed)
+double ce::Curve_ID::GetValue(double ratio, double st, double ed)
 {
 	if (!ISINRANGE(ratio, 0, 1)) return 0;
 	for (int i = 0; i < ctpts.size() - 1; i++) {
