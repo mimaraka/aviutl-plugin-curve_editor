@@ -4,7 +4,7 @@
 ## ダウンロード方法
 
 ## インストール方法
-同梱されている「curve_editor.auf」をaviutl.exeのあるフォルダもしくは「plugins」フォルダ内に入れ，「@Curve Editor.tra」を「script」フォルダまたはその下のフォルダに入れてください。
+同梱されている「curve_editor.auf」をaviutl.exeのあるフォルダもしくはpluginsフォルダ内に入れ，「@Curve Editor.tra」をscriptフォルダまたはその下のフォルダに入れてください。
 
 ## 使用方法
 AviUtlを起動後，メインウィンドウの「表示」メニューから「Curve Editorの表示」をクリックすると，Curve EditorのGUIが表示されます。
