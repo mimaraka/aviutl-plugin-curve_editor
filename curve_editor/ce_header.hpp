@@ -124,10 +124,11 @@ namespace ce {
 
 		void				addPoint(POINT cl_pt);
 		void				DeletePoint(POINT cl_pt);
+		POINT				GetPoint(Point_Address address);
 		void				MovePoint(Point_Address address, POINT gr_pt, BOOL bReset);
 		Point_Address		PtInCtpts(POINT cl_pt);
 		double				GetHandleAngle(Point_Address address);
-		void				CorrectHandle(Point_Address address, int x, BOOL bAngle, double agl);
+		void				CorrectHandle(Point_Address address, double angle);
 		void				SetHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth);
 		void				ReversePoints();
 		double				GetValue(double ratio, double st, double ed);

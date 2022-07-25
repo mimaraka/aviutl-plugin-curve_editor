@@ -37,14 +37,13 @@ void ce::Curve_ID::addPoint(POINT gr_pt)
 		ctpts[index].pt_right.x = ctpts[index + 1].pt_center.x;
 
 	//両隣の左右の点が中央の点より右/左に出ていたら修正
-	if (ctpts[index - 1].pt_right.x > ctpts[index].pt_center.x) {
-		tmp = { index - 1, 3 };
-		CorrectHandle(tmp, ctpts[index].pt_center.x, FALSE, NULL);
-	}
-	if (ctpts[index + 1].pt_left.x < ctpts[index].pt_center.x) {
-		tmp = { index + 1, 2 };
-		CorrectHandle(tmp, ctpts[index].pt_center.x, FALSE, NULL);
-	}
+	
+	tmp = { index - 1, 3 };
+	CorrectHandle(tmp, GetHandleAngle(tmp));
+	
+	tmp = { index + 1, 2 };
+	CorrectHandle(tmp, GetHandleAngle(tmp));
+	
 }
 
 
@@ -64,6 +63,29 @@ void ce::Curve_ID::DeletePoint(POINT cl_pt)
 }
 
 
+POINT ce::Curve_ID::GetPoint(Point_Address address)
+{
+	POINT result = { -1, -1 };
+		switch (address.CLR) {
+		case 1://中央
+			result = ctpts[address.index].pt_center;
+			break;
+
+		case 2://左
+			result = ctpts[address.index].pt_left;
+			break;
+
+		case 3://右
+			result = ctpts[address.index].pt_right;
+			break;
+
+		default:
+			break;
+	}
+		return result;
+}
+
+
 //---------------------------------------------------------------------
 //		制御点(群)を移動
 //---------------------------------------------------------------------
@@ -75,7 +97,7 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 	double agl_tmp;
 	static double agl_prev, agl_next,
 		agl_left, agl_right,
-		lgth_left, lgth_right;
+		len_left, len_right;
 
 	//ハンドル位置&角度を記憶
 	if (bReset && ctpts[address.index].type > 1) {
@@ -98,47 +120,46 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 		tmp = { address.index, 3 };
 		agl_right = GetHandleAngle(tmp);
 
-		lgth_left = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_left);
-		lgth_right = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_right);
+		len_left = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_left);
+		len_right = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_right);
 	}
 	switch (address.CLR) {
-		//Center ---o---
+		//中央 ---[]---
 	case 1:
 		if (ctpts[address.index].type < 2) return;
 
-		//中央 ---o---
+		//中央 ---[]---
 		ctpts[address.index].pt_center.x = MINMAXLIM(gr_pt.x,
 			ctpts[address.index - 1].pt_center.x + 1,
 			ctpts[address.index + 1].pt_center.x - 1);
 		ctpts[address.index].pt_center.y = gr_pt.y;
 
-		//左   O-----o
+		//左   O-----[]
 		ctpts[address.index].pt_left.x = ctpts[address.index].pt_center.x + hdleft.x;
 		ctpts[address.index].pt_left.y = gr_pt.y + hdleft.y;
 
-		//右  o-----O
+		//右  []-----O
 		ctpts[address.index].pt_right.x = ctpts[address.index].pt_center.x + hdright.x;
 		ctpts[address.index].pt_right.y = gr_pt.y + hdright.y;
 
 
 		//左右両端のハンドル補正
-		if (ctpts[address.index].type > 1) {
-			tmp = { address.index, 2 };//Left  o-----O
-			if (ctpts[address.index].pt_left.x < ctpts[address.index - 1].pt_center.x)
-				CorrectHandle(tmp, ctpts[address.index - 1].pt_center.x, TRUE, agl_left);
-			tmp = { address.index, 3 };//Right O-----o
-			if (ctpts[address.index].pt_right.x > ctpts[address.index + 1].pt_center.x)
-				CorrectHandle(tmp, ctpts[address.index + 1].pt_center.x, TRUE, agl_right);
+		if (ctpts[address.index].type > 1) {//拡張制御点だった場合
+			tmp = { address.index, 2 };//左  O-----[]
+			CorrectHandle(tmp, agl_left);
+			tmp = { address.index, 3 };//右 []-----O
+			CorrectHandle(tmp, agl_right);
 
-			tmp = { address.index - 1, 3 };//Right o-----O
-			if (prevright.x > ctpts[address.index].pt_center.x)
-				CorrectHandle(tmp, ctpts[address.index].pt_center.x, TRUE, agl_prev);
-			tmp = { address.index + 1, 2 };//Left  O-----o
-			if (nextleft.x < ctpts[address.index].pt_center.x)
-				CorrectHandle(tmp, ctpts[address.index].pt_center.x, TRUE, agl_next);
+			ctpts[address.index - 1].pt_right = prevright;
+			ctpts[address.index + 1].pt_left = nextleft;
+
+			tmp = { address.index - 1, 3 };//右 []-----O (前の制御点群)
+			CorrectHandle(tmp, agl_prev);
+			tmp = { address.index + 1, 2 };//左  O-----[] (次の制御点群)
+			CorrectHandle(tmp, agl_next);
 		}
-
 		break;
+
 	case 2://Left   O-----o
 		if (ctpts[address.index].type == 0) return;
 
@@ -152,7 +173,7 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 			tmp = { address.index, 2 };
 			agl_tmp = GetHandleAngle(tmp);
 			tmp = { address.index, 3 };
-			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, lgth_right);
+			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, len_right);
 		}
 		break;
 
@@ -169,7 +190,7 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 			tmp = { address.index, 3 };
 			agl_tmp = GetHandleAngle(tmp);
 			tmp = { address.index, 2 };
-			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, lgth_left);
+			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, len_left);
 		}
 		break;
 	}
@@ -244,51 +265,57 @@ double ce::Curve_ID::GetHandleAngle(Point_Address address)
 void ce::Curve_ID::SetHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth)
 {
 	double length;
-	if (address.CLR == 2 && ctpts[address.index].type != 0) {
+	if (address.CLR == 2 && ctpts[address.index].type != 0) { //左-left
 		length = bLength ? lgth : DISTANCE(
 			ctpts[address.index].pt_center,
 			ctpts[address.index].pt_left);
 
-		ctpts[address.index].pt_left.x = MINMAXLIM(
-			ctpts[address.index].pt_center.x + std::cos(angle) * length,
-			ctpts[address.index - 1].pt_center.x,
-			ctpts[address.index].pt_center.x);
+		ctpts[address.index].pt_left.x = ctpts[address.index].pt_center.x + std::cos(angle) * length;
 		ctpts[address.index].pt_left.y = ctpts[address.index].pt_center.y + std::sin(angle) * length;
+		CorrectHandle(address, angle);
 	}
-	else if (address.CLR == 3 && ctpts[address.index].type != 1) {
+	else if (address.CLR == 3 && ctpts[address.index].type != 1) { //右-right
 		length = bLength ? lgth : DISTANCE(
 			ctpts[address.index].pt_center,
 			ctpts[address.index].pt_right);
 
-		ctpts[address.index].pt_right.x = MINMAXLIM(
-			ctpts[address.index].pt_center.x + std::cos(angle) * length,
-			ctpts[address.index].pt_center.x,
-			ctpts[address.index + 1].pt_center.x);
+		ctpts[address.index].pt_right.x = ctpts[address.index].pt_center.x + std::cos(angle) * length;
 		ctpts[address.index].pt_right.y = ctpts[address.index].pt_center.y + std::sin(angle) * length;
+		CorrectHandle(address, angle);
 	}
 	else return;
 }
 
 
 //---------------------------------------------------------------------
-//		ハンドルを連動
+//		指定したアドレスのハンドル(右か左)が，前または次の制御点群の中央の点を超えている場合に，
+//		ハンドルの角度を保ちながら修正する関数
+//		address:	指定する制御点のアドレス
+//		x:			指定するX座標
+//		bAngle:		角度を設定するかどうか(FALSEなら指定したアドレスのハンドルの角度を取得する)
+//		agl:		設定する角度
 //---------------------------------------------------------------------
-void ce::Curve_ID::CorrectHandle(Point_Address address, int x, BOOL bAngle, double agl)
+void ce::Curve_ID::CorrectHandle(Point_Address address, double angle)
 {
-	double angle = bAngle ? agl : GetHandleAngle(address);
-	int x_dst;
 	switch (address.CLR) {
-	case 2://Left   O-----o
-		ctpts[address.index].pt_left.x = MAXLIM(x, ctpts[address.index].pt_center.x);
-		ctpts[address.index].pt_left.y =
-			ctpts[address.index].pt_center.y + std::tan(angle) *
-			(ctpts[address.index].pt_left.x - ctpts[address.index].pt_center.x);
+	case 2://左   O-----[]
+		//左の制御点が前の制御点群の中央の点より左側にあったとき
+		if (GetPoint(address).x < ctpts[address.index - 1].pt_center.x) {
+			ctpts[address.index].pt_left.x = ctpts[address.index - 1].pt_center.x;
+			//角度を保つ
+			ctpts[address.index].pt_left.y =
+				ctpts[address.index].pt_center.y + std::tan(angle) *
+				(ctpts[address.index].pt_left.x - ctpts[address.index].pt_center.x);
+		}
 		break;
-	case 3://Right  o-----O
-		ctpts[address.index].pt_right.x = MINLIM(x, ctpts[address.index].pt_center.x);
-		ctpts[address.index].pt_right.y =
-			ctpts[address.index].pt_center.y + std::tan(angle) *
-			(ctpts[address.index].pt_right.x - ctpts[address.index].pt_center.x);
+	case 3://右  []-----O
+		if (GetPoint(address).x > ctpts[address.index + 1].pt_center.x) {
+			ctpts[address.index].pt_right.x = ctpts[address.index + 1].pt_center.x;
+			//角度を保つ
+			ctpts[address.index].pt_right.y =
+				ctpts[address.index].pt_center.y + std::tan(angle) *
+				(ctpts[address.index].pt_right.x - ctpts[address.index].pt_center.x);
+		}
 		break;
 	default:
 		return;
