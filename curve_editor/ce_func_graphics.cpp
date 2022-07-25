@@ -35,18 +35,18 @@ void D2D1_DrawGrid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 	double dy = (CE_GR_RES * g_disp_info.scale.y) / ny;
 	int lx, ly;
 
-	if (toGraph(0, 0).x >= 0)
-		lx = std::floor(toGraph(0, 0).x * nx / (double)CE_GR_RES);
+	if (ToGraph(0, 0).x >= 0)
+		lx = std::floor(ToGraph(0, 0).x * nx / (double)CE_GR_RES);
 	else
-		lx = std::ceil(toGraph(0, 0).x * nx / (double)CE_GR_RES);
+		lx = std::ceil(ToGraph(0, 0).x * nx / (double)CE_GR_RES);
 
-	if (toGraph(0, 0).y >= 0)
-		ly = std::floor(toGraph(0, 0).y * ny / (double)CE_GR_RES);
+	if (ToGraph(0, 0).y >= 0)
+		ly = std::floor(ToGraph(0, 0).y * ny / (double)CE_GR_RES);
 	else
-		ly = std::ceil(toGraph(0, 0).y * ny / (double)CE_GR_RES);
+		ly = std::ceil(ToGraph(0, 0).y * ny / (double)CE_GR_RES);
 
-	double ax = toClient(lx * CE_GR_RES / (double)nx, 0).x;
-	double ay = toClient(0, ly * CE_GR_RES / (double)ny).y;
+	double ax = ToClient(lx * CE_GR_RES / (double)nx, 0).x;
+	double ay = ToClient(0, ly * CE_GR_RES / (double)ny).y;
 	float thickness;
 
 	for (int i = 0; ax + dx * i <= rect_wnd->right; i++) {
@@ -215,7 +215,7 @@ void D2D1_FillWndEdge(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd, int flags)
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void drawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void DrawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	RECT rect_sepr;
@@ -255,7 +255,7 @@ void drawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		サイドパネルを描画
 //---------------------------------------------------------------------
-void drawSide(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void DrawSide(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -275,7 +275,7 @@ void drawSide(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		ライブラリを描画
 //---------------------------------------------------------------------
-void drawLib(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void DrawLibrary(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -295,7 +295,7 @@ void drawLib(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void drawEditor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void DrawEditor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -315,7 +315,7 @@ void drawEditor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		グラフパネルを描画
 //---------------------------------------------------------------------
-void drawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
+void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -328,12 +328,12 @@ void drawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 			g_disp_info.o.y
 		},
 		{
-			toClient(g_cv_vl.ctpt[0]).x,
-			toClient(g_cv_vl.ctpt[0]).y
+			ToClient(g_cv_vl.ctpt[0]).x,
+			ToClient(g_cv_vl.ctpt[0]).y
 		},
 		{
-			toClient(g_cv_vl.ctpt[1]).x,
-			toClient(g_cv_vl.ctpt[1]).y
+			ToClient(g_cv_vl.ctpt[1]).x,
+			ToClient(g_cv_vl.ctpt[1]).y
 		},
 		{
 			g_disp_info.o.x + g_disp_info.scale.x * CE_GR_RES,
@@ -343,12 +343,12 @@ void drawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 	DoublePoint ctpt_hs_cl[] = {
 		ctpt_cl[0],
 		{
-			toClient(pt_trace[0]).x,
-			toClient(pt_trace[0]).y
+			ToClient(pt_trace[0]).x,
+			ToClient(pt_trace[0]).y
 		},
 		{
-			toClient(pt_trace[1]).x,
-			toClient(pt_trace[1]).y
+			ToClient(pt_trace[1]).x,
+			ToClient(pt_trace[1]).y
 		},
 		ctpt_cl[3]
 	};
@@ -425,28 +425,28 @@ void drawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 				);
 				if (i > 0)
 					g_render_target->DrawLine(
-						D2D1::Point2F(toClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center).x, 0),
-						D2D1::Point2F(toClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center).x, rect_wnd->bottom),
+						D2D1::Point2F(ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center).x, 0),
+						D2D1::Point2F(ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center).x, rect_wnd->bottom),
 						pBrush, CE_GR_POINT_TH, pStyle
 					);
 
 				pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].curve)));
 				D2D1_DrawBezier(pBrush,
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center),
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_right),
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_left),
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_center),
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center),
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_right),
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_left),
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_center),
 					CE_CURVE_TH
 				);
 
 				pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].handle)));
 				D2D1_DrawHandle(pBrush,
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center),
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_right)
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center),
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_right)
 				);
 				D2D1_DrawHandle(pBrush,
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_center),
-					toClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_left)
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_center),
+					ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_left)
 				);
 
 				if (!g_theme[g_cfg.theme].shape && pBrush) {
@@ -459,7 +459,7 @@ void drawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 						pBrush, CE_POINT_SIZE * 2
 					);
 				}
-				else if(pBrush) D2D1_DrawSquare(pBrush, toClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center));
+				else if(pBrush) D2D1_DrawSquare(pBrush, ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center));
 			}
 			if (!g_theme[g_cfg.theme].shape && pBrush) {
 				g_render_target->DrawEllipse(
@@ -471,7 +471,7 @@ void drawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 					pBrush, CE_POINT_SIZE * 2
 				);
 			}
-			else if (pBrush) D2D1_DrawSquare(pBrush, toClient(g_cv_id[g_cfg.id_current].ctpts[g_cv_id[g_cfg.id_current].ctpts.size() - 1].pt_center));
+			else if (pBrush) D2D1_DrawSquare(pBrush, ToClient(g_cv_id[g_cfg.id_current].ctpts[g_cv_id[g_cfg.id_current].ctpts.size() - 1].pt_center));
 		}
 
 		if (!g_theme[g_cfg.theme].shape && pBrush) {

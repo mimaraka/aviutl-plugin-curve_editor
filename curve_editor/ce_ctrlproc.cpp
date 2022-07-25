@@ -159,7 +159,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Apply Button
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK ctrlProc_apply(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK CtrlProc_Apply(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -301,7 +301,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Value Panel
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK ctrlProc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK CtrlProc_Value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -340,7 +340,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		return 0;
 //
 //	case WM_PAINT:
-//		strBuffer = CtptToStr4DValues();
+//		strBuffer = Create4DValue();
 //		lpsResult = strBuffer.c_str();
 //		hfValue = CreateFont(
 //			rect_wnd.right >= MINCTRLSIZE * 0.7143 ? 20 : rect_wnd.right * 0.112, 0,
@@ -435,7 +435,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Mode(Value) Switch
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK ctrlProc_mode_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK CtrlProc_Mode_Value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -558,7 +558,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Mode(ID) Switch
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK ctrlProc_mode_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK CtrlProc_Mode_ID(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -681,7 +681,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		ID(ID) Button
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK ctrlProc_id_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK CtrlProc_ID_ID(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;

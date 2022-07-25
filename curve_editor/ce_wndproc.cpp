@@ -12,7 +12,7 @@
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（ベース）
 //---------------------------------------------------------------------
-BOOL wndProc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp, FILTER* fp)
+BOOL WndProc_Base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp, FILTER* fp)
 {
 	static HWND hwnd_main;
 	RECT rect_wnd;
@@ -21,8 +21,8 @@ BOOL wndProc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 	switch (msg) {
 	case WM_FILTER_INIT:
 		SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
-		hwnd_main = createChild(
-			hwnd, wndProc_main, "Wnd_Main", WS_CLIPCHILDREN,
+		hwnd_main = CreateChild(
+			hwnd, WndProc_Main, "Wnd_Main", WS_CLIPCHILDREN,
 			0, 0, rect_wnd.right, rect_wnd.bottom
 		);
 		g_wnd.base = hwnd;
@@ -85,7 +85,7 @@ BOOL wndProc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（メイン）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndProc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static BOOL bSepr = FALSE;
 	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
@@ -118,14 +118,14 @@ LRESULT CALLBACK wndProc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		ReleaseDC(hwnd, hdc);
 
 		//サイドパネル
-		hwnd_side = createChild(
-			hwnd, wndProc_side, "Wnd_Side", WS_CLIPCHILDREN,
+		hwnd_side = CreateChild(
+			hwnd, WndProc_Side, "Wnd_Side", WS_CLIPCHILDREN,
 			CE_WD_POS_SIDE(rect_wnd)
 		);
 
 		//エディタ
-		hwnd_editor = createChild(
-			hwnd, wndProc_editor, "Wnd_Editor", WS_CLIPCHILDREN,
+		hwnd_editor = CreateChild(
+			hwnd, WndProc_Editor, "Wnd_Editor", WS_CLIPCHILDREN,
 			CE_WD_POS_EDT(rect_wnd)
 		);
 
@@ -133,7 +133,7 @@ LRESULT CALLBACK wndProc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_PAINT:
-		drawMain(hwnd, hdc_mem, &rect_wnd);
+		DrawMain(hwnd, hdc_mem, &rect_wnd);
 		return 0;
 
 	case WM_SIZE:
@@ -174,7 +174,7 @@ LRESULT CALLBACK wndProc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（サイドパネル）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndProc_side(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_Side(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HDC hdc, hdc_mem;
 	static HBITMAP bitmap;
@@ -204,7 +204,7 @@ LRESULT CALLBACK wndProc_side(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		SelectObject(hdc_mem, bitmap);
 		ReleaseDC(hwnd, hdc);
 
-		hwnd_test = createChild(hwnd, wndProc_test, "test", NULL, CE_CT_POS_APPLY(rect_wnd));
+		hwnd_test = CreateChild(hwnd, WndProc_Test, "test", NULL, CE_CT_POS_APPLY(rect_wnd));
 
 		//↓これを出すとバグる
 
@@ -274,7 +274,7 @@ LRESULT CALLBACK wndProc_side(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_PAINT:
-		drawSide(hwnd, hdc_mem, &rect_wnd);
+		DrawSide(hwnd, hdc_mem, &rect_wnd);
 		return 0;
 
 	case WM_SIZE:
@@ -291,10 +291,10 @@ LRESULT CALLBACK wndProc_side(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（エディタパネル）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//int
-	int intResult;
+	int result;
 	//LPTSTR, std::string
 	LPCTSTR lpcsResult;
 	std::string strBuffer;
@@ -355,8 +355,8 @@ LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			);*/
 
 		//グラフ
-		hwnd_graph = createChild(
-			hwnd, wndProc_graph, "Wnd_Graph", WS_CLIPCHILDREN,
+		hwnd_graph = CreateChild(
+			hwnd, WndProc_Graph, "Wnd_Graph", WS_CLIPCHILDREN,
 			CE_WD_POS_GRAPH(rect_wnd)
 		);
 		hwnd_parent = GetParent(hwnd);
@@ -376,7 +376,7 @@ LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(ウィンドウが描画されたとき)
 		///////////////////////////////////////////
 	case WM_PAINT:
-		drawEditor(hwnd, hdc_mem, &rect_wnd);
+		DrawEditor(hwnd, hdc_mem, &rect_wnd);
 		return 0;
 
 		///////////////////////////////////////////
@@ -399,16 +399,16 @@ LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//case ID_RCLICKMENU_COPYVALUES:
 		//case CT_APPLY:
 		//	TCHAR chResult[12];
-		//	intResult = CtptToInt1DValue();
-		//	if (intResult == OUTOFRANGE) {
+		//	result = Create1DValue();
+		//	if (result == OUTOFRANGE) {
 		//		if (g_cfg.bAlerts)
 		//			MessageBox(hwnd, g_cfg.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
 		//		return 0;
 		//	}
 		//	//文字列へ変換
-		//	_itoa_s(intResult, chResult, 12, 10);
+		//	_itoa_s(result, chResult, 12, 10);
 		//	//コピー
-		//	copyToClipboard(hwnd, chResult);
+		//	CopyToClipboard(hwnd, chResult);
 		//	return 0;
 
 		//	//保存ボタン
@@ -419,7 +419,7 @@ LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		if (g_cfg.bAlerts) MessageBox(hwnd, g_cfg.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, "Flow", MB_OK | MB_ICONINFORMATION);
 		//		return 0;
 		//	}
-		//	DialogBox(g_fp->dll_hinst, g_cfg.lang ? MAKEINTRESOURCE(IDD_SAVE_JA) : MAKEINTRESOURCE(IDD_SAVE), hwnd, dlgProc_save);
+		//	DialogBox(g_fp->dll_hinst, g_cfg.lang ? MAKEINTRESOURCE(IDD_SAVE_JA) : MAKEINTRESOURCE(IDD_SAVE), hwnd, DlgProc_Save);
 		//	return 0;
 
 		//	//制御点を反転
@@ -434,29 +434,29 @@ LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//	//Valueパネル
 		//case CM_EDITOR_VALUE:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, dlgProc_value);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE_JA), hwnd, dlgProc_value);
+		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, DlgProc_Value);
+		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE_JA), hwnd, DlgProc_Value);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	RedrawChildren();
 		//	return 0;
 
 		//	//読み取りボタン
 		//case CM_EDITOR_READ:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dlgProc_read);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ_JA), hwnd, dlgProc_read);
+		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, DlgProc_Read);
+		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ_JA), hwnd, DlgProc_Read);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	return 0;
 
 		//	//About
 		//case ID_RCLICKMENU_ABOUT:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, dlgProc_about);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT_JA), hwnd, dlgProc_about);
+		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, DlgProc_About);
+		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT_JA), hwnd, DlgProc_About);
 		//	return 0;
 
 		//	//設定
 		//case ID_RCLICKMENU_PREFERENCES:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, dlgProc_pref);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF_JA), hwnd, dlgProc_pref);
+		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, DlgProc_Pref);
+		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF_JA), hwnd, DlgProc_Pref);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
 		//	RedrawChildren();
@@ -464,9 +464,9 @@ LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//	//値をコピー
 		//case ID_RCLICKMENU_COPYVALUES4:
-		//	strBuffer = CtptToStr4DValues();
+		//	strBuffer = Create4DValue();
 		//	lpcsResult = strBuffer.c_str();
-		//	copyToClipboard(hwnd, lpcsResult);
+		//	CopyToClipboard(hwnd, lpcsResult);
 		//	return 0;
 
 		//	//コントロール再描画
@@ -487,7 +487,7 @@ LRESULT CALLBACK wndProc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（グラフパネル）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//int
 	static int		move_pt		= 0;			//0:None, 1:Ctpt1, 2:Ctpt2
@@ -521,7 +521,7 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	GetClientRect(hwnd, &rect_wnd);
 	//グラフ座標
 	if (g_disp_info.o.x != NULL)
-		gr_pt = toGraph(cl_pt);
+		gr_pt = ToGraph(cl_pt);
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -570,7 +570,7 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(ウィンドウが描画されたとき)
 		///////////////////////////////////////////
 	case WM_PAINT:
-		drawGraph(hwnd, hdc_mem, pt_trace, &rect_wnd);
+		DrawGraph(hwnd, hdc_mem, pt_trace, &rect_wnd);
 		return 0;
 
 		///////////////////////////////////////////
@@ -620,15 +620,15 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			//近くにある制御点をカーソルに移動
 			if (!move_pt) {
 				pt_trace[0] = g_cv_vl.ctpt[0]; pt_trace[1] = g_cv_vl.ctpt[1];
-				int d1 = (int)DISTANCE(toClient(g_cv_vl.ctpt[0]), cl_pt);
-				int d2 = (int)DISTANCE(toClient(g_cv_vl.ctpt[1]), cl_pt);
+				int d1 = (int)DISTANCE(ToClient(g_cv_vl.ctpt[0]), cl_pt);
+				int d2 = (int)DISTANCE(ToClient(g_cv_vl.ctpt[1]), cl_pt);
 				if (d1 < d2) {
-					g_cv_vl.ctpt[0].x = toGraph(cl_pt).x;
-					g_cv_vl.ctpt[0].y = toGraph(cl_pt).y;
+					g_cv_vl.ctpt[0].x = ToGraph(cl_pt).x;
+					g_cv_vl.ctpt[0].y = ToGraph(cl_pt).y;
 				}
 				else if (d1 >= d2) {
-					g_cv_vl.ctpt[1].x = toGraph(cl_pt).x;
-					g_cv_vl.ctpt[1].y = toGraph(cl_pt).y;
+					g_cv_vl.ctpt[1].x = ToGraph(cl_pt).x;
+					g_cv_vl.ctpt[1].y = ToGraph(cl_pt).y;
 				}
 				InvalidateRect(hwnd, NULL, FALSE);
 				if (g_cfg.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
@@ -799,7 +799,7 @@ LRESULT CALLBACK wndProc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（ライブラリ）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndProc_lib(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_Library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	POINT			cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	HDC				hdc;
@@ -826,7 +826,7 @@ LRESULT CALLBACK wndProc_lib(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_PAINT:
-		drawLib(hwnd, hdc_mem, &rect_wnd);
+		DrawLibrary(hwnd, hdc_mem, &rect_wnd);
 		return 0;
 
 	case WM_SIZE:

@@ -207,7 +207,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		バグってるのでテスト用ウィンドウプロシージャ(Apply)
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndProc_test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static	HWND					hwnd_parent;
 			HDC						hdc;

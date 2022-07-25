@@ -13,16 +13,16 @@
 int ce::Curve_Value::PtInCtpt(POINT cl_pt)
 {
 	RECT rcCtpt1 = {
-		toClient(ctpt[0]).x - CE_POINT_RANGE,
-		toClient(ctpt[0]).y - CE_POINT_RANGE,
-		toClient(ctpt[0]).x + CE_POINT_RANGE,
-		toClient(ctpt[0]).y + CE_POINT_RANGE
+		ToClient(ctpt[0]).x - CE_POINT_RANGE,
+		ToClient(ctpt[0]).y - CE_POINT_RANGE,
+		ToClient(ctpt[0]).x + CE_POINT_RANGE,
+		ToClient(ctpt[0]).y + CE_POINT_RANGE
 	};
 	RECT rcCtpt2 = {
-		toClient(ctpt[1]).x - CE_POINT_RANGE,
-		toClient(ctpt[1]).y - CE_POINT_RANGE,
-		toClient(ctpt[1]).x + CE_POINT_RANGE,
-		toClient(ctpt[1]).y + CE_POINT_RANGE
+		ToClient(ctpt[1]).x - CE_POINT_RANGE,
+		ToClient(ctpt[1]).y - CE_POINT_RANGE,
+		ToClient(ctpt[1]).x + CE_POINT_RANGE,
+		ToClient(ctpt[1]).y + CE_POINT_RANGE
 	};
 	if (PtInRect(&rcCtpt2, cl_pt))
 		return 2;

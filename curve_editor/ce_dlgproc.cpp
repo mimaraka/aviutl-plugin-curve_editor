@@ -16,7 +16,7 @@
 //---------------------------------------------------------------------
 //		Dialog Procedure (Preferences)
 //---------------------------------------------------------------------
-BOOL CALLBACK dlgProc_pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HDC hdc, hdc_mem;
 	static HWND hCombo, hCombo2;
@@ -80,8 +80,8 @@ BOOL CALLBACK dlgProc_pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 
 		case IDC_CUSTOM:
-			if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM), hDlg, dlgProc_custom);
-			else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM_JA), hDlg, dlgProc_custom);
+			if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM), hDlg, DlgProc_Custom);
+			else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM_JA), hDlg, DlgProc_Custom);
 			return 0;
 
 		case IDC_COMBO1:
@@ -110,7 +110,7 @@ BOOL CALLBACK dlgProc_pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		Dialog Procedure (Value)
 //---------------------------------------------------------------------
-BOOL CALLBACK dlgProc_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK DlgProc_Value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	TCHAR chBuffer[30];
 	std::regex re(R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)");
@@ -151,7 +151,7 @@ BOOL CALLBACK dlgProc_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		Dialog Procedure (Read)
 //---------------------------------------------------------------------
-BOOL CALLBACK dlgProc_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	HWND hEdit;
 	TCHAR chBuffer[12];
@@ -190,7 +190,7 @@ BOOL CALLBACK dlgProc_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 					MessageBox(hDlg, g_cfg.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
-				readValue(intValue);
+				ReadValue(intValue);
 				EndDialog(hDlg, 1);
 			}
 			else if (g_cfg.bAlerts)MessageBox(hDlg, g_cfg.lang ? FLSTR_JA_WRONGINPUTVALUES : FLSTR_WRONGINPUTVALUES, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
@@ -207,7 +207,7 @@ BOOL CALLBACK dlgProc_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		Dialog Procedure (Save)
 //---------------------------------------------------------------------
-BOOL CALLBACK dlgProc_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK DlgProc_Save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//Creare 4D-Curve IDs
 	HDC hdc;
@@ -216,7 +216,7 @@ BOOL CALLBACK dlgProc_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	LPCTSTR lpsResult;
 	std::string strBuffer;
 	TCHAR chBuffer[64];
-	strBuffer = CtptToStr4DValues();
+	strBuffer = Create4DValue();
 	lpsResult = strBuffer.c_str();
 
 	switch (msg) {

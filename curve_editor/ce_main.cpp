@@ -77,7 +77,7 @@ FILTER_DLL g_filter = {
 	Init,
 	Exit,
 	NULL,
-	wndProc_base,
+	WndProc_Base,
 	NULL,NULL,
 	NULL,
 	NULL,

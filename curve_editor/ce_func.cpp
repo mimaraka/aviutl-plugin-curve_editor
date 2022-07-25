@@ -81,7 +81,7 @@ BOOL Exit(FILTER* fp)
 //---------------------------------------------------------------------
 //		create child window
 //---------------------------------------------------------------------
-HWND createChild(HWND hwnd, WNDPROC wndProc, LPSTR name, LONG style, int x, int y, int width, int height)
+HWND CreateChild(HWND hwnd, WNDPROC wndProc, LPSTR name, LONG style, int x, int y, int width, int height)
 {
 	HWND hCld;
 	WNDCLASSEX tmp;
@@ -119,7 +119,7 @@ HWND createChild(HWND hwnd, WNDPROC wndProc, LPSTR name, LONG style, int x, int 
 //---------------------------------------------------------------------
 //		get 1D curve ID and change CT	CE_Points -> change CT
 //---------------------------------------------------------------------
-void readValue(int value)
+void ReadValue(int value)
 {
 	UINT usint;
 	if (value < 0) usint = value + 2147483647;
@@ -162,7 +162,7 @@ std::vector<std::string> split(const std::string& s, TCHAR c)
 //---------------------------------------------------------------------
 //		Ctpt -> 4D-Value (String)
 //---------------------------------------------------------------------
-std::string CtptToStr4DValues()
+std::string Create4DValue()
 {
 	FLOAT ptx, pty;
 	std::string strx, stry, strResult;
@@ -184,9 +184,9 @@ std::string CtptToStr4DValues()
 //---------------------------------------------------------------------
 //		Ctpt -> 1D-Value (Number)
 //---------------------------------------------------------------------
-int CtptToInt1DValue()
+int Create1DValue()
 {
-	int intResult;
+	int result;
 	int x1, y1, x2, y2;
 	x1 = (int)std::round(g_cv_vl.ctpt[0].x * 100 / (double)CE_GR_RES);
 	y1 = (int)std::round(g_cv_vl.ctpt[0].y * 100 / (double)CE_GR_RES);
@@ -197,15 +197,15 @@ int CtptToInt1DValue()
 		return CE_OUTOFRANGE;
 	}
 	//Calculate
-	intResult = 6600047 * (y2 + 273) + 65347 * x2 + 101 * (y1 + 273) + x1 - 2147483647;
-	return intResult;
+	result = 6600047 * (y2 + 273) + 65347 * x2 + 101 * (y1 + 273) + x1 - 2147483647;
+	return result;
 }
 
 
 //---------------------------------------------------------------------
 //		Copy Texts to Clipboard
 //---------------------------------------------------------------------
-BOOL copyToClipboard(HWND hwnd, LPCTSTR lpsText)
+BOOL CopyToClipboard(HWND hwnd, LPCTSTR lpsText)
 {
 	HGLOBAL hMem;
 	LPTSTR lpsBuffer;

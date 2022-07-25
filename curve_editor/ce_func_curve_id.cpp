@@ -184,22 +184,22 @@ ce::Point_Address ce::Curve_ID::PtInCtpts(POINT cl_pt)
 	RECT rcCenter, rcLeft, rcRight;
 	for (int i = 0; i < ctpts.size(); i++) {
 		rcCenter = {
-			(LONG)toClient(ctpts[i].pt_center).x - CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_center).y - CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_center).x + CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_center).y + CE_POINT_RANGE
+			(LONG)ToClient(ctpts[i].pt_center).x - CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_center).y - CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_center).x + CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_center).y + CE_POINT_RANGE
 		};
 		rcLeft = {
-			(LONG)toClient(ctpts[i].pt_left).x - CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_left).y - CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_left).x + CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_left).y + CE_POINT_RANGE
+			(LONG)ToClient(ctpts[i].pt_left).x - CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_left).y - CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_left).x + CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_left).y + CE_POINT_RANGE
 		};
 		rcRight = {
-			(LONG)toClient(ctpts[i].pt_right).x - CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_right).y - CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_right).x + CE_POINT_RANGE,
-			(LONG)toClient(ctpts[i].pt_right).y + CE_POINT_RANGE
+			(LONG)ToClient(ctpts[i].pt_right).x - CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_right).y - CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_right).x + CE_POINT_RANGE,
+			(LONG)ToClient(ctpts[i].pt_right).y + CE_POINT_RANGE
 		};
 
 		if (PtInRect(&rcLeft, cl_pt) && ctpts[i].type != 0)
