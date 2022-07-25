@@ -83,6 +83,19 @@ void D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
 {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* bezier;
+	ID2D1StrokeStyle* pStyle = NULL;
+	g_d2d1_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.0f,
+			D2D1_DASH_STYLE_SOLID,
+			0.0f),
+		NULL, NULL,
+		&pStyle
+	);
 	g_d2d1_factory->CreatePathGeometry(&bezier);
 	bezier->Open(&sink);
 	sink->BeginFigure(D2D1::Point2F(stpt.x, stpt.y), D2D1_FIGURE_BEGIN_HOLLOW);
@@ -95,7 +108,23 @@ void D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
 	sink->Close();
 
 	if (bezier)
-		g_render_target->DrawGeometry(bezier, pBrush, thickness);
+		g_render_target->DrawGeometry(bezier, pBrush, thickness, pStyle);
+}
+
+
+//---------------------------------------------------------------------
+//		矩形を描画(Direct2D)
+//---------------------------------------------------------------------
+void D2D1_DrawSquare(ID2D1SolidColorBrush* pBrush, DoublePoint cl_pt)
+{
+	D2D1_RECT_F rect = {
+		cl_pt.x - CE_POINT_SIZE,
+		cl_pt.y - CE_POINT_SIZE,
+		cl_pt.x + CE_POINT_SIZE,
+		cl_pt.y + CE_POINT_SIZE,
+	};
+	pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].handle)));
+	g_render_target->FillRectangle(rect, pBrush);
 }
 
 
@@ -115,22 +144,7 @@ void D2D1_DrawHandle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint
 			CE_HANDLE_SIZE, CE_HANDLE_SIZE),
 		pBrush, CE_HANDLE_SIZE * 2
 	);
-}
-
-
-//---------------------------------------------------------------------
-//		矩形を描画(Direct2D)
-//---------------------------------------------------------------------
-void D2D1_DrawSquare(ID2D1SolidColorBrush* pBrush, DoublePoint cl_pt)
-{
-	D2D1_RECT_F rect = {
-		cl_pt.x - CE_POINT_SIZE,
-		cl_pt.y - CE_POINT_SIZE,
-		cl_pt.x + CE_POINT_SIZE,
-		cl_pt.y + CE_POINT_SIZE,
-	};
-	pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].handle)));
-	g_render_target->FillRectangle(rect, pBrush);
+	D2D1_DrawSquare(pBrush, stpt);
 }
 
 
@@ -396,19 +410,21 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 			pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].curve)));
 			D2D1_DrawBezier(pBrush, ctpt_cl[0], ctpt_cl[1], ctpt_cl[2], ctpt_cl[3], CE_CURVE_TH);
 
-			//ハンドルの色
-			pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].handle)));
-
-			//ハンドル（左）
-			D2D1_DrawHandle(pBrush, ctpt_cl[0], ctpt_cl[1]);
-			//ハンドル（右）
-			D2D1_DrawHandle(pBrush, ctpt_cl[3], ctpt_cl[2]);
+			if (g_cfg.show_handle) {
+				//ハンドルの色
+				pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].handle)));
+				//ハンドル（左）
+				D2D1_DrawHandle(pBrush, ctpt_cl[0], ctpt_cl[1]);
+				//ハンドル（右）
+				D2D1_DrawHandle(pBrush, ctpt_cl[3], ctpt_cl[2]);
+			}
 		}
 
 		//IDモードのとき
 		else {
 			for (int i = 0; i < g_cv_id[g_cfg.id_current].ctpts.size() - 1; i++)
 			{
+				//色を指定
 				pBrush->SetColor(D2D1::ColorF(ToBGR(CONTRAST(INVERT(g_theme[g_cfg.theme].gr_bg), CE_GR_POINT_CONTRAST))));
 				g_d2d1_factory->CreateStrokeStyle(
 					D2D1::StrokeStyleProperties(
@@ -423,6 +439,8 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 					ARRAYSIZE(dashes),
 					&pStyle
 				);
+
+				//端点以外の制御点に引かれる点線
 				if (i > 0)
 					g_render_target->DrawLine(
 						D2D1::Point2F(ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center).x, 0),
@@ -430,6 +448,7 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 						pBrush, CE_GR_POINT_TH, pStyle
 					);
 
+				//ベジェ曲線を描画
 				pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].curve)));
 				D2D1_DrawBezier(pBrush,
 					ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center),
@@ -439,53 +458,19 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 					CE_CURVE_TH
 				);
 
-				pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].handle)));
-				D2D1_DrawHandle(pBrush,
-					ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center),
-					ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_right)
-				);
-				D2D1_DrawHandle(pBrush,
-					ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_center),
-					ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_left)
-				);
-
-				if (!g_theme[g_cfg.theme].shape && pBrush) {
-					g_render_target->DrawEllipse(
-						D2D1::Ellipse(
-							D2D1::Point2F(
-								g_cv_id[g_cfg.id_current].ctpts[i].pt_center.x,
-								g_cv_id[g_cfg.id_current].ctpts[i].pt_center.y),
-							CE_POINT_SIZE, CE_POINT_SIZE),
-						pBrush, CE_POINT_SIZE * 2
+				//ハンドルの描画
+				if (g_cfg.show_handle) {
+					pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].handle)));
+					D2D1_DrawHandle(pBrush,
+						ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center),
+						ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_right)
+					);
+					D2D1_DrawHandle(pBrush,
+						ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_center),
+						ToClient(g_cv_id[g_cfg.id_current].ctpts[i + 1].pt_left)
 					);
 				}
-				else if(pBrush) D2D1_DrawSquare(pBrush, ToClient(g_cv_id[g_cfg.id_current].ctpts[i].pt_center));
 			}
-			if (!g_theme[g_cfg.theme].shape && pBrush) {
-				g_render_target->DrawEllipse(
-					D2D1::Ellipse(
-						D2D1::Point2F(
-							g_cv_id[g_cfg.id_current].ctpts[g_cv_id[g_cfg.id_current].ctpts.size() - 1].pt_center.x,
-							g_cv_id[g_cfg.id_current].ctpts[g_cv_id[g_cfg.id_current].ctpts.size() - 1].pt_center.y),
-						CE_POINT_SIZE, CE_POINT_SIZE),
-					pBrush, CE_POINT_SIZE * 2
-				);
-			}
-			else if (pBrush) D2D1_DrawSquare(pBrush, ToClient(g_cv_id[g_cfg.id_current].ctpts[g_cv_id[g_cfg.id_current].ctpts.size() - 1].pt_center));
-		}
-
-		if (!g_theme[g_cfg.theme].shape && pBrush) {
-			g_render_target->DrawEllipse(
-				D2D1::Ellipse(
-					D2D1::Point2F(ctpt_cl[0].x, ctpt_cl[0].y),
-					2.5f, 2.5f),
-				pBrush, 4
-			);
-			g_render_target->DrawEllipse(
-				D2D1::Ellipse(
-					D2D1::Point2F(ctpt_cl[3].x, ctpt_cl[3].y),
-					2.5f, 2.5f), pBrush, 4
-			);
 		}
 
 		D2D1_FillWndEdge(pBrush, rect_wnd, CE_EDGE_LT | CE_EDGE_LB | CE_EDGE_RT | CE_EDGE_RB);

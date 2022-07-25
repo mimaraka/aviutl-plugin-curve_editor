@@ -37,7 +37,6 @@ namespace ce {
 			bt_tx,
 			bt_other;
 		COLORREF reserved[10];
-		BOOL shape;
 	} Theme;
 
 	typedef struct tagWindow {
@@ -68,7 +67,8 @@ namespace ce {
 			alert,
 			trace,
 			auto_copy,
-			mode;
+			mode,
+			show_handle;
 		int
 			theme,
 			sepr,

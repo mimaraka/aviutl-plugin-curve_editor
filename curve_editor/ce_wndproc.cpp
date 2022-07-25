@@ -53,6 +53,8 @@ BOOL WndProc_Base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 		case 83: //[S]
 			if (GetAsyncKeyState(VK_CONTROL) < 0)
 				SendMessage(g_wnd.graph, WM_COMMAND, CE_CT_SAVE, 0);
+			else
+				SendMessage(g_wnd.graph, WM_COMMAND, CE_WM_SHOWHANDLE, 0);
 			return 0;
 
 		case 37: //[<]	
@@ -784,6 +786,11 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		case CE_WM_REVERSE:
 			g_cv_id[g_cfg.id_current].ReversePoints();
+			InvalidateRect(hwnd, NULL, FALSE);
+			return 0;
+
+		case CE_WM_SHOWHANDLE:
+			g_cfg.show_handle = g_cfg.show_handle ? 0 : 1;
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}

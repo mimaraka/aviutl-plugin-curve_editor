@@ -35,6 +35,7 @@ BOOL Init(FILTER* fp)
 	g_cfg.sepr = fp->exfunc->ini_load_int(fp, "sepr", 200);
 	g_cfg.mode = fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_cfg.align_mode = fp->exfunc->ini_load_int(fp, "align_mode", 1);
+	g_cfg.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
 
 	g_th_custom = {0};
 
@@ -68,6 +69,7 @@ BOOL Exit(FILTER* fp)
 	fp->exfunc->ini_save_int(fp, "sepr", g_cfg.sepr);
 	fp->exfunc->ini_save_int(fp, "mode", g_cfg.mode);
 	fp->exfunc->ini_save_int(fp, "align_mode", g_cfg.align_mode);
+	fp->exfunc->ini_save_int(fp, "show_handle", g_cfg.show_handle);
 	if (NULL != g_render_target) {
 		g_render_target->Release();
 	}

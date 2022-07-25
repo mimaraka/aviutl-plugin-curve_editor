@@ -80,6 +80,7 @@
 #define CE_WM_REVERSE			2000
 #define CE_WM_CHANGEID			2001
 #define CE_WM_REDRAW			2002
+#define CE_WM_SHOWHANDLE		2003
 
 //ƒtƒ‰ƒO
 #define BIT(num)				((UINT)1 << num)

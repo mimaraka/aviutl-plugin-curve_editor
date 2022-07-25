@@ -31,7 +31,6 @@ const ce::Theme g_th_dark = {
 	RGB(60,60,60),
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
-	TRUE
 };
 const ce::Theme g_th_light = {
 	RGB(32,32,32),
@@ -44,7 +43,6 @@ const ce::Theme g_th_light = {
 	RGB(60,60,60),
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
-	TRUE
 };
 ce::Theme g_th_custom = { 0 };
 
