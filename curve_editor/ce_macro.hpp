@@ -25,7 +25,7 @@
 #define CE_POINT_MAX			64
 #define CE_CURVE_MAX			256
 #define CE_HANDLE_DEF_L			1500
-#define CE_HANDLE_TH			3.2
+#define CE_HANDLE_TH			1.6
 #define CE_HANDLE_SIZE			2.8
 #define CE_POINT_RANGE			8
 #define CE_POINT_SIZE			4.8
