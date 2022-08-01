@@ -36,7 +36,7 @@
 #define CE_SEPR_W				6
 #define CE_SEPR_LINE_W			3
 #define CE_SEPR_LINE_L			14
-#define CE_CURVE_TH				3.4
+#define CE_CURVE_TH				1.2
 
 //ƒRƒ“ƒgƒ[ƒ‹
 #define CE_CT_APPLY				1000
