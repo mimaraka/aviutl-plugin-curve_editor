@@ -171,8 +171,7 @@ extern ce::Curve_ID							g_cv_id[CE_CURVE_MAX];
 extern std::vector<ce::Preset_Value>		g_pres_vl;
 extern std::vector<ce::Preset_ID>			g_pres_id;
 extern const ce::Theme						g_th_dark, g_th_light;
-extern ce::Theme							g_th_custom;
-extern ce::Theme							g_theme[3];
+extern ce::Theme							g_theme[2];
 extern ce::Config							g_cfg;
 extern ce::Window							g_wnd;
 extern ce::Gr_Disp_Info						g_disp_info;
@@ -216,7 +215,6 @@ void				D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
 					DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness);
 void				D2D1_DrawHandle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt);
 void				D2D1_DrawSquare(ID2D1SolidColorBrush* pBrush, DoublePoint cl_pt);
-void				D2D1_FillWndEdge(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd, int flags);
 void				DrawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				DrawSide(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				DrawLibrary(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);

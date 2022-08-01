@@ -142,7 +142,6 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if (g_render_target != NULL && g_d2d1_factory != NULL) {
 				g_render_target->BeginDraw();
 				if (pBrush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
-				D2D1_FillWndEdge(pBrush, &rect_wnd, flag);
 				g_render_target->EndDraw();
 			}
 
@@ -219,7 +218,7 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static	TRACKMOUSEEVENT			tme;
 			RECT					rect_wnd;
 			PAINTSTRUCT				ps;
-			COLORREF				color	= RGB(71, 135, 228);
+			COLORREF				color	= g_theme[g_cfg.theme].bt_apply;
 			int						flag	= NULL;
 			LPCSTR					icon	= CE_CT_APPLY_TEXT;
 			int						id		= CE_CT_APPLY;
@@ -287,7 +286,6 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		if (g_render_target != NULL && g_d2d1_factory != NULL) {
 			g_render_target->BeginDraw();
 			if (pBrush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
-			D2D1_FillWndEdge(pBrush, &rect_wnd, flag);
 			g_render_target->EndDraw();
 		}
 

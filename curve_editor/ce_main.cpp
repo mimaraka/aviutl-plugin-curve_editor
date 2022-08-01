@@ -21,13 +21,13 @@ std::vector<ce::Preset_Value>	g_pres_vl;
 std::vector<ce::Preset_ID>		g_pres_id;
 
 const ce::Theme g_th_dark = {
-	RGB(28,28,28),
-	RGB(50,50,50),
-	RGB(40,40,40),
-	RGB(75,60,221),
-	RGB(255,255,255),
-	RGB(71,135,228),
-	RGB(238,238,238),
+	RGB(27,27,27),
+	RGB(27,27,27),
+	RGB(27,27,27),
+	RGB(91,77,232),
+	RGB(243,243,243),
+	RGB(243,243,243),
+	RGB(27,27,27),
 	RGB(60,60,60),
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
@@ -44,12 +44,10 @@ const ce::Theme g_th_light = {
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
 };
-ce::Theme g_th_custom = { 0 };
 
-ce::Theme g_theme[3] = {
+ce::Theme g_theme[2] = {
 	g_th_dark,
 	g_th_light,
-	g_th_custom
 };
 
 //Direct2D

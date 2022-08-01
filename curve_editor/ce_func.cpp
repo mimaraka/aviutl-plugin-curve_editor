@@ -37,8 +37,6 @@ BOOL Init(FILTER* fp)
 	g_cfg.align_mode = fp->exfunc->ini_load_int(fp, "align_mode", 1);
 	g_cfg.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
 
-	g_th_custom = {0};
-
 	//Direct2D
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
 	D2D1_RENDER_TARGET_PROPERTIES prop;

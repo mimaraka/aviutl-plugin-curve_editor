@@ -25,10 +25,11 @@
 #define CE_POINT_MAX			64
 #define CE_CURVE_MAX			256
 #define CE_HANDLE_DEF_L			1500
-#define CE_HANDLE_TH			1.6
-#define CE_HANDLE_SIZE			2.8
-#define CE_POINT_RANGE			8
-#define CE_POINT_SIZE			4.8
+#define CE_HANDLE_TH			2
+#define CE_HANDLE_SIZE			5.8
+#define CE_HANDLE_SIRCLE_LINE	2.6
+#define CE_POINT_RANGE			10
+#define CE_POINT_SIZE			3.2
 #define CE_OUTOFRANGE			2122746762
 #define CE_GR_SCALE_INC			1.01
 #define CE_GR_SCALE_MAX			512
@@ -68,9 +69,9 @@
 #define CE_WD_PREV_W			30
 
 //–¾‚é‚³
-#define CE_BR_GRID				20
+#define CE_BR_GRID				25
 #define CE_BR_TRACE				-10
-#define CE_BR_SEPR				-25
+#define CE_BR_SEPR				32
 #define CE_BR_GR_INVALID		-8
 #define CE_CT_BR_HOVERED		15
 #define CE_CT_BR_CLICKED		-15
@@ -123,16 +124,17 @@
 #define CE_FLT_LINK				"https://sites.google.com/view/aviutlscripts/home"
 
 //ŠÖ”ƒ}ƒNƒ
-#define ToBGR(ref)					(RGB(GetBValue(ref), GetGValue(ref), GetRValue(ref)))
-#define DISTANCE2(pt1,pt2x, pt2y)	(std::sqrt(std::pow((pt2x) - pt1.x, 2) + std::pow((pt2y) - pt1.y, 2)))
-#define DISTANCE(pt1,pt2)			(std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2)))
-#define DISTANCE1(pt)				(std::sqrt(std::pow(pt.x, 2) + std::pow(pt.y, 2)))
-#define MAXLIM(value,maxv)			(((value) > (maxv))? (maxv): (value))
-#define MINLIM(value,minv)			(((value) < (minv))? (minv): (value))
-#define MINMAXLIM(value,minv,maxv)	(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
-#define ISINRANGE(value,minv,maxv)	(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
-#define ISMORETHAN(value,vl)		(((value) >= (vl))? 1 : 0)
-#define ISLESSTHAN(value,vl)		(((value) <= (vl))? 1 : 0)
-#define BRIGHTEN(ref,num)			(RGB(GetRValue(ref) + num, GetGValue(ref) + num, GetBValue(ref) + num))
-#define INVERT(ref)					(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
-#define CONTRAST(ref,val)			(RGB(MINMAXLIM(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetBValue(ref) - 127) * val, 0, 255)))
+#define ToBGR(ref)							(RGB(GetBValue(ref), GetGValue(ref), GetRValue(ref)))
+#define DISTANCE2(pt1,pt2x, pt2y)			(std::sqrt(std::pow((pt2x) - pt1.x, 2) + std::pow((pt2y) - pt1.y, 2)))
+#define DISTANCE(pt1,pt2)					(std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2)))
+#define DISTANCE1(pt)						(std::sqrt(std::pow(pt.x, 2) + std::pow(pt.y, 2)))
+#define MAXLIM(value,maxv)					(((value) > (maxv))? (maxv): (value))
+#define MINLIM(value,minv)					(((value) < (minv))? (minv): (value))
+#define MINMAXLIM(value,minv,maxv)			(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
+#define ISINRANGE(value,minv,maxv)			(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
+#define ISMORETHAN(value,vl)				(((value) >= (vl))? 1 : 0)
+#define ISLESSTHAN(value,vl)				(((value) <= (vl))? 1 : 0)
+#define BRIGHTEN(ref,num)					(RGB(GetRValue(ref) + num, GetGValue(ref) + num, GetBValue(ref) + num))
+#define INVERT(ref)							(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
+#define CONTRAST(ref,val)					(RGB(MINMAXLIM(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetBValue(ref) - 127) * val, 0, 255)))
+#define SUBTRACTLEN(pt_src, pt_dst, len)	

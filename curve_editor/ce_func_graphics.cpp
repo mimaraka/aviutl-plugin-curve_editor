@@ -113,7 +113,7 @@ void D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
 
 
 //---------------------------------------------------------------------
-//		矩形を描画(Direct2D)
+//		ポイントの矩形を描画(Direct2D)
 //---------------------------------------------------------------------
 void D2D1_DrawSquare(ID2D1SolidColorBrush* pBrush, DoublePoint cl_pt)
 {
@@ -142,87 +142,14 @@ void D2D1_DrawHandle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint
 		D2D1::Ellipse(
 			D2D1::Point2F(edpt.x, edpt.y),
 			CE_HANDLE_SIZE, CE_HANDLE_SIZE),
-		pBrush, CE_HANDLE_SIZE * 2
+		pBrush, CE_HANDLE_SIRCLE_LINE
 	);
-	D2D1_DrawSquare(pBrush, stpt);
-}
-
-
-//---------------------------------------------------------------------
-//		ウィンドウの端を丸める処理(Direct2D)
-//---------------------------------------------------------------------
-void D2D1_FillWndEdge(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd, int flags)
-{
-	ID2D1GeometrySink* sink;
-	ID2D1PathGeometry* edge;
-	g_d2d1_factory->CreatePathGeometry(&edge);
-	edge->Open(&sink);
-
-	//左上
-	if (flags & 1 << 0) {
-		sink->BeginFigure(D2D1::Point2F(rect_wnd->left, rect_wnd->top), D2D1_FIGURE_BEGIN_FILLED);
-		sink->AddLine(D2D1::Point2F(rect_wnd->left, rect_wnd->top + CE_BORDER_RADIUS));
-		sink->AddArc(
-			D2D1::ArcSegment(
-				D2D1::Point2F(rect_wnd->left + CE_BORDER_RADIUS, rect_wnd->top),
-				D2D1::SizeF(CE_BORDER_RADIUS, CE_BORDER_RADIUS),
-				0.0f,
-				D2D1_SWEEP_DIRECTION_CLOCKWISE,
-				D2D1_ARC_SIZE_SMALL
-			)
-		);
-		sink->EndFigure(D2D1_FIGURE_END_CLOSED);
-	}
-	//左下
-	if (flags & 1 << 1) {
-		sink->BeginFigure(D2D1::Point2F(rect_wnd->left, rect_wnd->bottom), D2D1_FIGURE_BEGIN_FILLED);
-		sink->AddLine(D2D1::Point2F(rect_wnd->left + CE_BORDER_RADIUS, rect_wnd->bottom));
-		sink->AddArc(
-			D2D1::ArcSegment(
-				D2D1::Point2F(rect_wnd->left, rect_wnd->bottom - CE_BORDER_RADIUS),
-				D2D1::SizeF(CE_BORDER_RADIUS, CE_BORDER_RADIUS),
-				0.0f,
-				D2D1_SWEEP_DIRECTION_CLOCKWISE,
-				D2D1_ARC_SIZE_SMALL
-			)
-		);
-		sink->EndFigure(D2D1_FIGURE_END_CLOSED);
-	}
-	//右上
-	if (flags & 1 << 2) {
-		sink->BeginFigure(D2D1::Point2F(rect_wnd->right, rect_wnd->top), D2D1_FIGURE_BEGIN_FILLED);
-		sink->AddLine(D2D1::Point2F(rect_wnd->right - CE_BORDER_RADIUS, rect_wnd->top));
-		sink->AddArc(
-			D2D1::ArcSegment(
-				D2D1::Point2F(rect_wnd->right, rect_wnd->top + CE_BORDER_RADIUS),
-				D2D1::SizeF(CE_BORDER_RADIUS, CE_BORDER_RADIUS),
-				0.0f,
-				D2D1_SWEEP_DIRECTION_CLOCKWISE,
-				D2D1_ARC_SIZE_SMALL
-			)
-		);
-		sink->EndFigure(D2D1_FIGURE_END_CLOSED);
-	}
-	//右下
-	if (flags & 1 << 3) {
-		sink->BeginFigure(D2D1::Point2F(rect_wnd->right, rect_wnd->bottom), D2D1_FIGURE_BEGIN_FILLED);
-		sink->AddLine(D2D1::Point2F(rect_wnd->right, rect_wnd->bottom - CE_BORDER_RADIUS));
-		sink->AddArc(
-			D2D1::ArcSegment(
-				D2D1::Point2F(rect_wnd->right - CE_BORDER_RADIUS, rect_wnd->bottom),
-				D2D1::SizeF(CE_BORDER_RADIUS, CE_BORDER_RADIUS),
-				0.0f,
-				D2D1_SWEEP_DIRECTION_CLOCKWISE,
-				D2D1_ARC_SIZE_SMALL
-			)
-		);
-		sink->EndFigure(D2D1_FIGURE_END_CLOSED);
-	}
-	sink->Close();
-	pBrush->SetColor(D2D1::ColorF(ToBGR(g_theme[g_cfg.theme].bg)));
-	if (edge)
-		g_render_target->FillGeometry(edge, pBrush, NULL);
-	
+	g_render_target->DrawEllipse(
+		D2D1::Ellipse(
+			D2D1::Point2F(stpt.x, stpt.y),
+			CE_POINT_SIZE, CE_POINT_SIZE),
+		pBrush, CE_POINT_SIZE * 1.5
+	);
 }
 
 
@@ -472,8 +399,6 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 				}
 			}
 		}
-
-		D2D1_FillWndEdge(pBrush, rect_wnd, CE_EDGE_LT | CE_EDGE_LB | CE_EDGE_RT | CE_EDGE_RB);
 
 		g_render_target->EndDraw();
 	}
