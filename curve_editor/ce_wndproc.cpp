@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
 //		ソースファイル(ウィンドウプロシーじゃ)
-//		(Visual C++ 2022)
+//		VC++ 2022
 //----------------------------------------------------------------------------------
 
 #include "ce_wndproc.hpp"
@@ -25,7 +25,7 @@ BOOL WndProc_Base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 			hwnd, WndProc_Main, "Wnd_Main", WS_CLIPCHILDREN,
 			0, 0, rect_wnd.right, rect_wnd.bottom
 		);
-		g_wnd.base = hwnd;
+		g_window.base = hwnd;
 		return 0;
 
 	case WM_SIZE:
@@ -42,39 +42,39 @@ BOOL WndProc_Base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 	case WM_KEYDOWN:
 		switch (wparam) {
 		case 82: //[R]
-			if (g_wnd.graph) SendMessage(g_wnd.graph, WM_COMMAND, CE_WM_REVERSE, 0);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_WM_REVERSE, 0);
 			return 0;
 
 		case 67: //[C]
 			if (GetAsyncKeyState(VK_CONTROL) < 0)
-				SendMessage(g_wnd.graph, WM_COMMAND, CE_CT_APPLY, 0);
+				SendMessage(g_window.graph, WM_COMMAND, CE_CT_APPLY, 0);
 			return 0;
 
 		case 83: //[S]
 			if (GetAsyncKeyState(VK_CONTROL) < 0)
-				SendMessage(g_wnd.graph, WM_COMMAND, CE_CT_SAVE, 0);
+				SendMessage(g_window.graph, WM_COMMAND, CE_CT_SAVE, 0);
 			else
-				SendMessage(g_wnd.graph, WM_COMMAND, CE_WM_SHOWHANDLE, 0);
+				SendMessage(g_window.graph, WM_COMMAND, CE_WM_SHOWHANDLE, 0);
 			return 0;
 
 		case 37: //[<]	
-			g_cfg.id_current--;
-			g_cfg.id_current = MINMAXLIM(g_cfg.id_current, 0, CE_CURVE_MAX - 1);
-			if (g_wnd.graph) SendMessage(g_wnd.graph, WM_COMMAND, CE_WM_REDRAW, 0);
+			g_config.id_current--;
+			g_config.id_current = MINMAXLIM(g_config.id_current, 0, CE_CURVE_MAX - 1);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_WM_REDRAW, 0);
 			return 0;
 
 		case 39: //[>]
-			g_cfg.id_current++;
-			g_cfg.id_current = MINMAXLIM(g_cfg.id_current, 0, CE_CURVE_MAX - 1);
-			if (g_wnd.graph) SendMessage(g_wnd.graph, WM_COMMAND, CE_WM_REDRAW, 0);
+			g_config.id_current++;
+			g_config.id_current = MINMAXLIM(g_config.id_current, 0, CE_CURVE_MAX - 1);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_WM_REDRAW, 0);
 			return 0;
 
 		case 70: //[F]
-			if (g_wnd.graph) SendMessage(g_wnd.graph, WM_COMMAND, CE_CT_FIT, 0);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CT_FIT, 0);
 			return 0;
 
 		case 65: //[A]
-			if (g_wnd.graph) SendMessage(g_wnd.graph, WM_COMMAND, CE_CT_ALIGN, 0);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CT_ALIGN, 0);
 			return 0;
 		}
 		return 0;
@@ -100,9 +100,9 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	GetClientRect(hwnd, &rect_wnd);
 
 	rect_sepr = {
-		g_cfg.sepr - CE_SEPR_W,
+		g_config.sepr - CE_SEPR_W,
 		0,
-		g_cfg.sepr + CE_SEPR_W,
+		g_config.sepr + CE_SEPR_W,
 		rect_wnd.bottom
 	};
 
@@ -131,7 +131,7 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CE_WD_POS_EDT(rect_wnd)
 		);
 
-		g_wnd.main = hwnd;
+		g_window.main = hwnd;
 		return 0;
 
 	case WM_PAINT:
@@ -159,7 +159,7 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_MOUSEMOVE:
 		if (PtInRect(&rect_sepr, cl_pt)) SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 		if (bSepr) {
-			g_cfg.sepr = MINMAXLIM(cl_pt.x, CE_WD_SIDE_MINW + CE_SEPR_W, rect_wnd.right - CE_SEPR_W);
+			g_config.sepr = MINMAXLIM(cl_pt.x, CE_WD_SIDE_MINW + CE_SEPR_W, rect_wnd.right - CE_SEPR_W);
 			MoveWindow(hwnd_side, CE_WD_POS_SIDE(rect_wnd), TRUE);
 			MoveWindow(hwnd_editor, CE_WD_POS_EDT(rect_wnd), TRUE);
 			InvalidateRect(hwnd, NULL, FALSE);
@@ -183,13 +183,13 @@ LRESULT CALLBACK WndProc_Side(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	RECT rect_wnd;
 	static HWND hwnd_test;
 	ce::Control
-		mode_value{ g_theme[g_cfg.theme].bg_wnd },
-		mode_id{ g_theme[g_cfg.theme].bg_wnd },
-		apply{ g_theme[g_cfg.theme].bt_apply },
-		save{ g_theme[g_cfg.theme].bg_wnd },
-		read{ g_theme[g_cfg.theme].bg_wnd },
-		align{ g_theme[g_cfg.theme].bg_wnd },
-		pref{ g_theme[g_cfg.theme].bg_wnd };
+		mode_value{ g_theme[g_config.theme].bg_window },
+		mode_id{ g_theme[g_config.theme].bg_window },
+		apply{ g_theme[g_config.theme].bt_apply },
+		save{ g_theme[g_config.theme].bg_window },
+		read{ g_theme[g_config.theme].bg_window },
+		align{ g_theme[g_config.theme].bg_window },
+		pref{ g_theme[g_config.theme].bg_window };
 
 	GetClientRect(hwnd, &rect_wnd);
 
@@ -318,13 +318,13 @@ LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	//その他
 	static ce::Point_Address address;
 	static ce::Control
-		prev_play{ g_theme[g_cfg.theme].bg_wnd },
-		prev_dur{ g_theme[g_cfg.theme].bg_wnd },
-		fit{ g_theme[g_cfg.theme].bg_wnd },
-		id_back{ g_theme[g_cfg.theme].bg_wnd },
-		id_next{ g_theme[g_cfg.theme].bg_wnd },
-		id{ g_theme[g_cfg.theme].bg_wnd },
-		id_delete{ g_theme[g_cfg.theme].bg_wnd };
+		prev_play{ g_theme[g_config.theme].bg_window },
+		prev_dur{ g_theme[g_config.theme].bg_window },
+		fit{ g_theme[g_config.theme].bg_window },
+		id_back{ g_theme[g_config.theme].bg_window },
+		id_next{ g_theme[g_config.theme].bg_window },
+		id{ g_theme[g_config.theme].bg_window },
+		id_delete{ g_theme[g_config.theme].bg_window };
 
 
 	//クライアント領域の矩形を取得
@@ -349,9 +349,9 @@ LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		ReleaseDC(hwnd, hdc);
 
 		////メニュー
-		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_cfg.lang ? IDR_MENU2 : IDR_MENU1)), 0);
+		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_config.lang ? IDR_MENU2 : IDR_MENU1)), 0);
 
-		/*prev_play.Create(hwnd, NULL, "prev_play", CE_ICON_PREV, &g_th_dark.bt_other, CT_PREV,
+		/*prev_play.Create(hwnd, NULL, "prev_play", CE_ICON_PREV, &g_theme_dark.bt_other, CT_PREV,
 			rect_wnd.left + CE_MRG, rect_wnd.bottom - CE_MRG - CT_EDITOR_HEIGHT,
 			CT_EDITOR_HEIGHT, CT_EDITOR_HEIGHT
 			);*/
@@ -362,7 +362,7 @@ LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_WD_POS_GRAPH(rect_wnd)
 		);
 		hwnd_parent = GetParent(hwnd);
-		g_wnd.editor = hwnd;
+		g_window.editor = hwnd;
 		return 0;
 
 		///////////////////////////////////////////
@@ -403,8 +403,8 @@ LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//	TCHAR chResult[12];
 		//	result = Create1DValue();
 		//	if (result == OUTOFRANGE) {
-		//		if (g_cfg.bAlerts)
-		//			MessageBox(hwnd, g_cfg.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
+		//		if (g_config.bAlerts)
+		//			MessageBox(hwnd, g_config.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
 		//		return 0;
 		//	}
 		//	//文字列へ変換
@@ -417,26 +417,26 @@ LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//case ID_RCLICKMENU_SAVEPRESET:
 		//case CT_SAVE:
 		//	//計算
-		//	if (g_cv_vl.ctpt[0].y < -2735 || 3735 < g_cv_vl.ctpt[0].y || g_cv_vl.ctpt[1].y < -2735 || 3735 < g_cv_vl.ctpt[1].y) {
-		//		if (g_cfg.bAlerts) MessageBox(hwnd, g_cfg.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, "Flow", MB_OK | MB_ICONINFORMATION);
+		//	if (g_curve_value.ctpt[0].y < -2735 || 3735 < g_curve_value.ctpt[0].y || g_curve_value.ctpt[1].y < -2735 || 3735 < g_curve_value.ctpt[1].y) {
+		//		if (g_config.bAlerts) MessageBox(hwnd, g_config.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, "Flow", MB_OK | MB_ICONINFORMATION);
 		//		return 0;
 		//	}
-		//	DialogBox(g_fp->dll_hinst, g_cfg.lang ? MAKEINTRESOURCE(IDD_SAVE_JA) : MAKEINTRESOURCE(IDD_SAVE), hwnd, DlgProc_Save);
+		//	DialogBox(g_fp->dll_hinst, g_config.lang ? MAKEINTRESOURCE(IDD_SAVE_JA) : MAKEINTRESOURCE(IDD_SAVE), hwnd, DlgProc_Save);
 		//	return 0;
 
 		//	//制御点を反転
 		//case CM_REVERSE:
-		//	pt_tmp = g_cv_vl.ctpt[0];
-		//	g_cv_vl.ctpt[0].x = CE_GR_RES - g_cv_vl.ctpt[1].x;
-		//	g_cv_vl.ctpt[0].y = CE_GR_RES - g_cv_vl.ctpt[1].y;
-		//	g_cv_vl.ctpt[1].x = CE_GR_RES - pt_tmp.x;
-		//	g_cv_vl.ctpt[1].y = CE_GR_RES - pt_tmp.y;
+		//	pt_tmp = g_curve_value.ctpt[0];
+		//	g_curve_value.ctpt[0].x = CE_GR_RES - g_curve_value.ctpt[1].x;
+		//	g_curve_value.ctpt[0].y = CE_GR_RES - g_curve_value.ctpt[1].y;
+		//	g_curve_value.ctpt[1].x = CE_GR_RES - pt_tmp.x;
+		//	g_curve_value.ctpt[1].y = CE_GR_RES - pt_tmp.y;
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	return 0;
 
 		//	//Valueパネル
 		//case CM_EDITOR_VALUE:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, DlgProc_Value);
+		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, DlgProc_Value);
 		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE_JA), hwnd, DlgProc_Value);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	RedrawChildren();
@@ -444,20 +444,20 @@ LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//	//読み取りボタン
 		//case CM_EDITOR_READ:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, DlgProc_Read);
+		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, DlgProc_Read);
 		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ_JA), hwnd, DlgProc_Read);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	return 0;
 
 		//	//About
 		//case ID_RCLICKMENU_ABOUT:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, DlgProc_About);
+		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, DlgProc_About);
 		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT_JA), hwnd, DlgProc_About);
 		//	return 0;
 
 		//	//設定
 		//case ID_RCLICKMENU_PREFERENCES:
-		//	if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, DlgProc_Pref);
+		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, DlgProc_Pref);
 		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF_JA), hwnd, DlgProc_Pref);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
@@ -544,10 +544,10 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		ReleaseDC(hwnd, hdc);
 
 		//メニュー
-		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_cfg.lang ? IDR_MENU2 : IDR_MENU1)), 0);
+		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_config.lang ? IDR_MENU2 : IDR_MENU1)), 0);
 
-		pt_trace[0] = g_cv_vl.ctpt[0];
-		pt_trace[1] = g_cv_vl.ctpt[1];
+		pt_trace[0] = g_curve_value.ctpt[0];
+		pt_trace[1] = g_curve_value.ctpt[1];
 
 		g_disp_info.o.x = CE_GR_PADDING;
 		g_disp_info.o.y = rect_wnd.bottom - CE_GR_PADDING;
@@ -555,7 +555,7 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		g_disp_info.scale.y = ((double)rect_wnd.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RES;
 
 		hwnd_parent = GetParent(hwnd);
-		g_wnd.graph = hwnd;
+		g_window.graph = hwnd;
 
 		return 0;
 
@@ -581,20 +581,20 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		///////////////////////////////////////////
 	case WM_LBUTTONDOWN:
 		//値モード
-		if (!g_cfg.mode) {
+		if (!g_config.mode) {
 			//制御点2がクリックされたとき
-			if (g_cv_vl.PtInCtpt(cl_pt) == 2) {
+			if (g_curve_value.PtInCtpt(cl_pt) == 2) {
 				move_pt = 2;
-				pt_trace[0] = g_cv_vl.ctpt[0];
-				pt_trace[1] = g_cv_vl.ctpt[1];
+				pt_trace[0] = g_curve_value.ctpt[0];
+				pt_trace[1] = g_curve_value.ctpt[1];
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 				SetCapture(hwnd);
 			}
 			//制御点1がクリックされたとき
-			else if (g_cv_vl.PtInCtpt(cl_pt) == 1) {
+			else if (g_curve_value.PtInCtpt(cl_pt) == 1) {
 				move_pt = 1;
-				pt_trace[0] = g_cv_vl.ctpt[0];
-				pt_trace[1] = g_cv_vl.ctpt[1];
+				pt_trace[0] = g_curve_value.ctpt[0];
+				pt_trace[1] = g_curve_value.ctpt[1];
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 				SetCapture(hwnd);
 			}
@@ -602,10 +602,10 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//IDモード
 		else {
 			//カーソルが制御点上にあるかどうか
-			address = g_cv_id[g_cfg.id_current].PtInCtpts(cl_pt);
+			address = g_curve_id[g_config.id_current].PtInCtpts(cl_pt);
 			//カーソルが制御点上にあるとき，ハンドルの座標を記憶
 			if (address.CLR != 0) {
-				g_cv_id[g_cfg.id_current].MovePoint(address, gr_pt, TRUE);
+				g_curve_id[g_config.id_current].MovePoint(address, gr_pt, TRUE);
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 				SetCapture(hwnd);
 			}
@@ -618,27 +618,27 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		///////////////////////////////////////////
 	case WM_LBUTTONUP:
 		//Valueモード
-		if (!g_cfg.mode) {
+		if (!g_config.mode) {
 			//近くにある制御点をカーソルに移動
 			if (!move_pt) {
-				pt_trace[0] = g_cv_vl.ctpt[0]; pt_trace[1] = g_cv_vl.ctpt[1];
-				int d1 = (int)DISTANCE(ToClient(g_cv_vl.ctpt[0]), cl_pt);
-				int d2 = (int)DISTANCE(ToClient(g_cv_vl.ctpt[1]), cl_pt);
+				pt_trace[0] = g_curve_value.ctpt[0]; pt_trace[1] = g_curve_value.ctpt[1];
+				int d1 = (int)DISTANCE(ToClient(g_curve_value.ctpt[0]), cl_pt);
+				int d2 = (int)DISTANCE(ToClient(g_curve_value.ctpt[1]), cl_pt);
 				if (d1 < d2) {
-					g_cv_vl.ctpt[0].x = ToGraph(cl_pt).x;
-					g_cv_vl.ctpt[0].y = ToGraph(cl_pt).y;
+					g_curve_value.ctpt[0].x = ToGraph(cl_pt).x;
+					g_curve_value.ctpt[0].y = ToGraph(cl_pt).y;
 				}
 				else if (d1 >= d2) {
-					g_cv_vl.ctpt[1].x = ToGraph(cl_pt).x;
-					g_cv_vl.ctpt[1].y = ToGraph(cl_pt).y;
+					g_curve_value.ctpt[1].x = ToGraph(cl_pt).x;
+					g_curve_value.ctpt[1].y = ToGraph(cl_pt).y;
 				}
 				InvalidateRect(hwnd, NULL, FALSE);
-				if (g_cfg.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
+				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
 			}
 			//移動モード解除
 			if (move_pt) {
 				move_pt = 0;
-				if (g_cfg.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
+				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
 			}
 		}
 		//IDモード
@@ -652,12 +652,12 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		///////////////////////////////////////////
 	case WM_LBUTTONDBLCLK:
 		//カーソルが制御点上にあるかどうか
-		address = g_cv_id[g_cfg.id_current].PtInCtpts(cl_pt);
+		address = g_curve_id[g_config.id_current].PtInCtpts(cl_pt);
 
 		if (address.CLR == 1)
-			g_cv_id[g_cfg.id_current].DeletePoint(cl_pt);
+			g_curve_id[g_config.id_current].DeletePoint(cl_pt);
 		else
-			g_cv_id[g_cfg.id_current].addPoint(gr_pt);
+			g_curve_id[g_config.id_current].addPoint(gr_pt);
 
 		InvalidateRect(hwnd, NULL, FALSE);
 		return 0;
@@ -703,26 +703,26 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//制御点移動
 		//Valueモード
 		if (move_pt) {
-			g_cv_vl.MovePoint(move_pt - 1, gr_pt);
+			g_curve_value.MovePoint(move_pt - 1, gr_pt);
 			InvalidateRect(hwnd, NULL, FALSE);
 		}
 		//IDモード
-		if (g_cfg.mode) {
+		if (g_config.mode) {
 			if (address.CLR) {
-				g_cv_id[g_cfg.id_current].MovePoint(address, gr_pt, FALSE);
+				g_curve_id[g_config.id_current].MovePoint(address, gr_pt, FALSE);
 				InvalidateRect(hwnd, NULL, FALSE);
 			}
 		}
 
 		//制御点ホバー時にカーソルを変更
 		//Valueモード
-		if (!g_cfg.mode) {
-			if (g_cv_vl.PtInCtpt(cl_pt) > 0)
+		if (!g_config.mode) {
+			if (g_curve_value.PtInCtpt(cl_pt) > 0)
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 		}
 		//IDモード
 		else {
-			if (g_cv_id[g_cfg.id_current].PtInCtpts(cl_pt).CLR > 0)
+			if (g_curve_id[g_config.id_current].PtInCtpts(cl_pt).CLR > 0)
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 		}
 
@@ -781,16 +781,16 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			return 0;
 
 		case CE_CT_ALIGN:
-			g_cfg.align_mode = g_cfg.align_mode ? 0 : 1;
+			g_config.align_mode = g_config.align_mode ? 0 : 1;
 			return 0;
 
 		case CE_WM_REVERSE:
-			g_cv_id[g_cfg.id_current].ReversePoints();
+			g_curve_id[g_config.id_current].ReversePoints();
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
 		case CE_WM_SHOWHANDLE:
-			g_cfg.show_handle = g_cfg.show_handle ? 0 : 1;
+			g_config.show_handle = g_config.show_handle ? 0 : 1;
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}

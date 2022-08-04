@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
-//		Flow for AviUtl
-//		Source File (Functions for IDCurve class)
-//		(Visual C++ 2019)
+//		Curve Editor
+//		ソースファイル (IDモードでのカーブの関数)
+//		VC++ 2022
 //----------------------------------------------------------------------------------
 
 #include "ce_header.hpp"
@@ -26,8 +26,8 @@ void ce::Curve_ID::addPoint(POINT gr_pt)
 	Points_ID ctpt_add;
 	ctpt_add.type = 2;
 	ctpt_add.pt_center = gr_pt;
-	ctpt_add.pt_left = { gr_pt.x - CE_HANDLE_DEF_L, gr_pt.y };
-	ctpt_add.pt_right = { gr_pt.x + CE_HANDLE_DEF_L, gr_pt.y };
+	ctpt_add.pt_left = { gr_pt.x - (int)(CE_HANDLE_DEF_L / g_disp_info.scale.x), gr_pt.y};
+	ctpt_add.pt_right = { gr_pt.x + (int)(CE_HANDLE_DEF_L / g_disp_info.scale.x), gr_pt.y};
 	ctpts.insert(ctpts.begin() + index, ctpt_add);
 
 	//左右の点が両隣の中央の点より左/右に出ていたら修正
@@ -169,7 +169,7 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 		ctpts[address.index].pt_left.y = gr_pt.y;
 
 		//整列(角度)
-		if (g_cfg.align_mode == 1) {
+		if (g_config.align_mode == 1) {
 			tmp = { address.index, 2 };
 			agl_tmp = GetHandleAngle(tmp);
 			tmp = { address.index, 3 };
@@ -186,7 +186,7 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 		ctpts[address.index].pt_right.y = gr_pt.y;
 
 		//整列(角度)
-		if (g_cfg.align_mode == 1) {
+		if (g_config.align_mode == 1) {
 			tmp = { address.index, 3 };
 			agl_tmp = GetHandleAngle(tmp);
 			tmp = { address.index, 2 };

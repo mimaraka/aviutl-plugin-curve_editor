@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
-//		curve editor
-//		Source File (ControlProc)
-//		(Visual C++ 2019)
+//		Curve Editor
+//		ソースファイル (コントロールのプロシージャ)
+//		VC++ 2022
 //----------------------------------------------------------------------------------
 
 #include "ce_header.hpp"
@@ -90,7 +90,6 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			g_render_target->BeginDraw();
 			if (pBrush == NULL)
 				g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
-			D2D1_FillWndEdge(pBrush, &rect_wnd, flag);
 			g_render_target->EndDraw();
 		}
 
@@ -101,7 +100,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		//icon
 		SelectObject(hdc_mem, font);
 		SetBkMode(hdc_mem, TRANSPARENT);
-		SetTextColor(hdc_mem, g_theme[g_cfg.theme].bt_tx);
+		SetTextColor(hdc_mem, g_theme[g_config.theme].bt_tx);
 		DrawText(hdc_mem, icon, 1, &rcBtn, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
 		DeleteObject(font);
 
@@ -168,7 +167,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	HBRUSH brush, brush_old;
 //	HFONT hfCopy;
 //	static RECT rcBtn;
-//	ce::Theme style[] = { g_th_dark, g_th_light, g_th_custom };
+//	ce::Theme style[] = { g_theme_dark, g_theme_light, g_th_custom };
 //	static BOOL hovered, clicked;
 //	static TRACKMOUSEEVENT tme;
 //	PAINTSTRUCT ps;
@@ -230,11 +229,11 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //			CE_FONT
 //		);
 //		if (clicked)
-//			brush = CreateSolidBrush(style[g_cfg.theme].copy_button_clicked);
+//			brush = CreateSolidBrush(style[g_config.theme].copy_button_clicked);
 //		else if (hovered)
-//			brush = CreateSolidBrush(style[g_cfg.theme].copy_button_hovered);
+//			brush = CreateSolidBrush(style[g_config.theme].copy_button_hovered);
 //		else
-//			brush = CreateSolidBrush(style[g_cfg.theme].copy_button);
+//			brush = CreateSolidBrush(style[g_config.theme].copy_button);
 //
 //		brush_old = (HBRUSH)SelectObject(hdc_mem, brush);
 //		FillRect(hdc_mem, &rcBtn, brush);
@@ -243,8 +242,8 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		//COPY Button (Text)
 //		SelectObject(hdc_mem, hfCopy);
 //		SetBkMode(hdc_mem, TRANSPARENT);
-//		SetTextColor(hdc_mem, style[g_cfg.theme].copy_button_text);
-//		DrawText(hdc_mem, g_cfg.mode ? "APPLY" : "COPY", g_cfg.mode ? 5 : 4, &rcBtn, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
+//		SetTextColor(hdc_mem, style[g_config.theme].copy_button_text);
+//		DrawText(hdc_mem, g_config.mode ? "APPLY" : "COPY", g_config.mode ? 5 : 4, &rcBtn, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
 //		DeleteObject(hfCopy);
 //
 //
@@ -310,7 +309,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	HBRUSH brush, brush_old;
 //	HFONT hfValue;
 //	static RECT rect_wnd;
-//	ce::Theme style[] = { g_th_dark, g_th_light, g_th_custom };
+//	ce::Theme style[] = { g_theme_dark, g_theme_light, g_th_custom };
 //	static BOOL hovered, clicked;
 //	static TRACKMOUSEEVENT tme;
 //	LPCTSTR lpsResult;
@@ -357,13 +356,13 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //		//Value Panel
 //		if (clicked)
-//			brush = CreateSolidBrush(style[g_cfg.theme].other_buttons_clicked);
+//			brush = CreateSolidBrush(style[g_config.theme].other_buttons_clicked);
 //		else if (hovered)
-//			brush = CreateSolidBrush(style[g_cfg.theme].other_buttons_hovered);
-//		else if (g_cfg.theme == 1)
+//			brush = CreateSolidBrush(style[g_config.theme].other_buttons_hovered);
+//		else if (g_config.theme == 1)
 //			brush = CreateSolidBrush(RGB(22, 22, 22));
 //		else
-//			brush = CreateSolidBrush(style[g_cfg.theme].other_buttons);
+//			brush = CreateSolidBrush(style[g_config.theme].other_buttons);
 //		brush_old = (HBRUSH)SelectObject(hdc_mem, brush);
 //		FillRect(hdc_mem, &rect_wnd, brush);
 //		DeleteObject(brush);
@@ -372,12 +371,12 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		//Value Panel (Text)
 //		SelectObject(hdc_mem, hfValue);
 //		SetBkMode(hdc_mem, TRANSPARENT);
-//		if (clicked && g_cfg.theme == 1)
-//			SetTextColor(hdc_mem, style[g_cfg.theme].switch_selected_contents);
-//		else if (g_cfg.theme == 1)
+//		if (clicked && g_config.theme == 1)
+//			SetTextColor(hdc_mem, style[g_config.theme].switch_selected_contents);
+//		else if (g_config.theme == 1)
 //			SetTextColor(hdc_mem, RGB(255, 255, 255));
 //		else
-//			SetTextColor(hdc_mem, style[g_cfg.theme].other_buttons_contents);
+//			SetTextColor(hdc_mem, style[g_config.theme].other_buttons_contents);
 //		DrawText(hdc_mem, lpsResult, strlen(lpsResult), &rect_wnd, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
 //		DeleteObject(hfValue);
 //
@@ -444,7 +443,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	HBRUSH brush, brush_old;
 //	HFONT font;
 //	static RECT rect_wnd;
-//	ce::Theme style[] = { g_th_dark, g_th_light, g_th_custom };
+//	ce::Theme style[] = { g_theme_dark, g_theme_light, g_th_custom };
 //	static BOOL hovered, clicked;
 //	static TRACKMOUSEEVENT tme;
 //	PAINTSTRUCT ps;
@@ -486,20 +485,20 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		);
 //
 //		//Mode(value) Button
-//		if (clicked || !g_cfg.mode)
-//			brush = CreateSolidBrush(style[g_cfg.theme].switch_selected);
+//		if (clicked || !g_config.mode)
+//			brush = CreateSolidBrush(style[g_config.theme].switch_selected);
 //		else if (hovered)
-//			brush = CreateSolidBrush(style[g_cfg.theme].other_buttons_hovered);
+//			brush = CreateSolidBrush(style[g_config.theme].other_buttons_hovered);
 //		else
-//			brush = CreateSolidBrush(style[g_cfg.theme].other_buttons);
+//			brush = CreateSolidBrush(style[g_config.theme].other_buttons);
 //		brush_old = (HBRUSH)SelectObject(hdc_mem, brush);
 //		FillRect(hdc_mem, &rect_wnd, brush);
 //		DeleteObject(brush);
 //
 //		SelectObject(hdc_mem, font);
 //		SetBkMode(hdc_mem, TRANSPARENT);
-//		if (clicked || !g_cfg.mode) SetTextColor(hdc_mem, style[g_cfg.theme].switch_selected_contents);
-//		else SetTextColor(hdc_mem, style[g_cfg.theme].other_buttons_contents);
+//		if (clicked || !g_config.mode) SetTextColor(hdc_mem, style[g_config.theme].switch_selected_contents);
+//		else SetTextColor(hdc_mem, style[g_config.theme].other_buttons_contents);
 //		DrawText(hdc_mem, "#", 1, &rect_wnd, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
 //		DeleteObject(font);
 //
@@ -530,7 +529,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	case WM_LBUTTONUP:
 //		SetCursor(LoadCursor(NULL, IDC_HAND));
 //		clicked = FALSE;
-//		g_cfg.mode = 0;
+//		g_config.mode = 0;
 //		SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
 //		InvalidateRect(hwnd, NULL, FALSE);
 //		return 0;
@@ -567,7 +566,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	HBRUSH brush, brush_old;
 //	HFONT font;
 //	static RECT rect_wnd;
-//	ce::Theme style[] = { g_th_dark, g_th_light, g_th_custom };
+//	ce::Theme style[] = { g_theme_dark, g_theme_light, g_th_custom };
 //	static BOOL hovered, clicked;
 //	static TRACKMOUSEEVENT tme;
 //	PAINTSTRUCT ps;
@@ -609,20 +608,20 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		);
 //
 //		//Mode(ID) Button
-//		if (clicked || g_cfg.mode)
-//			brush = CreateSolidBrush(style[g_cfg.theme].switch_selected);
+//		if (clicked || g_config.mode)
+//			brush = CreateSolidBrush(style[g_config.theme].switch_selected);
 //		else if (hovered)
-//			brush = CreateSolidBrush(style[g_cfg.theme].other_buttons_hovered);
+//			brush = CreateSolidBrush(style[g_config.theme].other_buttons_hovered);
 //		else
-//			brush = CreateSolidBrush(style[g_cfg.theme].other_buttons);
+//			brush = CreateSolidBrush(style[g_config.theme].other_buttons);
 //		brush_old = (HBRUSH)SelectObject(hdc_mem, brush);
 //		FillRect(hdc_mem, &rect_wnd, brush);
 //		DeleteObject(brush);
 //
 //		SelectObject(hdc_mem, font);
 //		SetBkMode(hdc_mem, TRANSPARENT);
-//		if (clicked || g_cfg.mode) SetTextColor(hdc_mem, style[g_cfg.theme].switch_selected_contents);
-//		else SetTextColor(hdc_mem, style[g_cfg.theme].other_buttons_contents);
+//		if (clicked || g_config.mode) SetTextColor(hdc_mem, style[g_config.theme].switch_selected_contents);
+//		else SetTextColor(hdc_mem, style[g_config.theme].other_buttons_contents);
 //		DrawText(hdc_mem, "ID", 2, &rect_wnd, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
 //		DeleteObject(font);
 //
@@ -653,7 +652,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	case WM_LBUTTONUP:
 //		SetCursor(LoadCursor(NULL, IDC_HAND));
 //		clicked = FALSE;
-//		g_cfg.mode = 1;
+//		g_config.mode = 1;
 //		SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
 //		InvalidateRect(hwnd, NULL, FALSE);
 //		return 0;
@@ -695,7 +694,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	std::string strNum;
 //	LPCTSTR lpcsNum;
 //	static RECT rect_wnd;
-//	ce::Theme style[] = { g_th_dark, g_th_light, g_th_custom };
+//	ce::Theme style[] = { g_theme_dark, g_theme_light, g_th_custom };
 //	static BOOL hovered, clicked;
 //	static TRACKMOUSEEVENT tme;
 //	PAINTSTRUCT ps;
@@ -723,7 +722,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		return 0;
 //
 //	case WM_PAINT:
-//		strNum = std::to_string(g_cfg.id_current);
+//		strNum = std::to_string(g_config.id_current);
 //		lpcsNum = strNum.c_str();
 //
 //		font = CreateFont(
@@ -740,18 +739,18 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		);
 //
 //		//ID(ID) Button
-//		if (clicked) brush = CreateSolidBrush(style[g_cfg.theme].other_buttons_clicked);
-//		else brush = CreateSolidBrush(style[g_cfg.theme].other_buttons_hovered);
+//		if (clicked) brush = CreateSolidBrush(style[g_config.theme].other_buttons_clicked);
+//		else brush = CreateSolidBrush(style[g_config.theme].other_buttons_hovered);
 //		brush_old = (HBRUSH)SelectObject(hdc_mem, brush);
 //		FillRect(hdc_mem, &rect_wnd, brush);
 //		DeleteObject(brush);
 //
 //		SelectObject(hdc_mem, font);
 //		SetBkMode(hdc_mem, TRANSPARENT);
-//		if (clicked && g_cfg.theme == 1)
-//			SetTextColor(hdc_mem, style[g_cfg.theme].switch_selected_contents);
+//		if (clicked && g_config.theme == 1)
+//			SetTextColor(hdc_mem, style[g_config.theme].switch_selected_contents);
 //		else
-//			SetTextColor(hdc_mem, style[g_cfg.theme].other_buttons_contents);
+//			SetTextColor(hdc_mem, style[g_config.theme].other_buttons_contents);
 //		DrawText(hdc_mem, lpcsNum, strlen(lpcsNum), &rect_wnd, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP | DT_NOPREFIX);
 //		DeleteObject(font);
 //
@@ -768,8 +767,8 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	case WM_MOUSEMOVE:
 //		if (clicked) {
 //			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-//			g_cfg.id_current = intBuffer + (cl_pt.x - ptLock.x) / 9;
-//			g_cfg.id_current = MINMAXLIM(g_cfg.id_current, 0, CE_CURVE_MAX - 1);
+//			g_config.id_current = intBuffer + (cl_pt.x - ptLock.x) / 9;
+//			g_config.id_current = MINMAXLIM(g_config.id_current, 0, CE_CURVE_MAX - 1);
 //			SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
 //		}
 //		else SetCursor(LoadCursor(NULL, IDC_HAND));
@@ -781,7 +780,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //	case WM_LBUTTONDOWN:
 //		ptLock = cl_pt;
-//		intBuffer = g_cfg.id_current;
+//		intBuffer = g_config.id_current;
 //		SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 //		clicked = TRUE;
 //		InvalidateRect(hwnd, NULL, FALSE);

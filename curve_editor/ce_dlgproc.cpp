@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
-//		curve editor
-//		sourse filr (dlgproc)
-//		(Visual C++ 2019)
+//		Curve Editor
+//		ソースファイル (ダイアログのプロシージャ)
+//		VC++ 2022
 //----------------------------------------------------------------------------------
 
 #include "ce_header.hpp"
@@ -14,7 +14,7 @@
 
 
 //---------------------------------------------------------------------
-//		Dialog Procedure (Preferences)
+//		ダイアログプロシージャ（設定ダイアログ）
 //---------------------------------------------------------------------
 BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -22,7 +22,7 @@ BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	static HWND hCombo, hCombo2;
 	static HBITMAP bitmap;
 	int cursel;
-	static int prevsel = g_cfg.lang;
+	static int prevsel = g_config.lang;
 	switch (msg) {
 	case WM_CLOSE:
 		DeleteObject(bitmap);
@@ -31,23 +31,23 @@ BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_INITDIALOG:
 		bitmap = LoadBitmap(g_fp->dll_hinst, MAKEINTRESOURCE(IMG_FLOW));
-		if (g_cfg.trace) SendMessage(GetDlgItem(hDlg, IDC_CHECK1), BM_SETCHECK, BST_CHECKED, 0);
-		if (g_cfg.bAlerts) SendMessage(GetDlgItem(hDlg, IDC_CHECK4), BM_SETCHECK, BST_CHECKED, 0);
-		if (g_cfg.auto_copy) SendMessage(GetDlgItem(hDlg, IDC_CHECK5), BM_SETCHECK, BST_CHECKED, 0);
+		if (g_config.trace) SendMessage(GetDlgItem(hDlg, IDC_CHECK1), BM_SETCHECK, BST_CHECKED, 0);
+		if (g_config.bAlerts) SendMessage(GetDlgItem(hDlg, IDC_CHECK4), BM_SETCHECK, BST_CHECKED, 0);
+		if (g_config.auto_copy) SendMessage(GetDlgItem(hDlg, IDC_CHECK5), BM_SETCHECK, BST_CHECKED, 0);
 		hCombo = GetDlgItem(hDlg, IDC_COMBO1);
 		hCombo2 = GetDlgItem(hDlg, IDC_COMBO2);
 		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Flow");
 		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"AE");
 		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"AviUtl");
-		if (!g_cfg.lang) SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Custom");
+		if (!g_config.lang) SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Custom");
 		else SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"カスタム");
-		SendMessage(hCombo, CB_SETCURSEL, g_cfg.theme, 0);
+		SendMessage(hCombo, CB_SETCURSEL, g_config.theme, 0);
 
 		SendMessage(hCombo2, CB_ADDSTRING, 0, (LPARAM)"English");
 		SendMessage(hCombo2, CB_ADDSTRING, 0, (LPARAM)"日本語");
-		SendMessage(hCombo2, CB_SETCURSEL, g_cfg.lang, 0);
+		SendMessage(hCombo2, CB_SETCURSEL, g_config.lang, 0);
 
-		if (g_cfg.theme == 3) EnableWindow(GetDlgItem(hDlg, IDC_CUSTOM), TRUE);
+		if (g_config.theme == 3) EnableWindow(GetDlgItem(hDlg, IDC_CUSTOM), TRUE);
 		return 0;
 
 	case WM_PAINT:
@@ -62,16 +62,16 @@ BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			g_cfg.trace = SendMessage(GetDlgItem(hDlg, IDC_CHECK1), BM_GETCHECK, 0, 0);
-			g_cfg.bAlerts = SendMessage(GetDlgItem(hDlg, IDC_CHECK4), BM_GETCHECK, 0, 0);
-			g_cfg.auto_copy = SendMessage(GetDlgItem(hDlg, IDC_CHECK5), BM_GETCHECK, 0, 0);
-			g_cfg.theme = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
-			g_cfg.lang = SendMessage(hCombo2, CB_GETCURSEL, 0, 0);
-			g_fp->exfunc->ini_save_int(g_fp, "theme", g_cfg.theme);
-			g_fp->exfunc->ini_save_int(g_fp, "lang", g_cfg.lang);
-			g_fp->exfunc->ini_save_int(g_fp, "show_hst", g_cfg.trace);
-			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_cfg.bAlerts);
-			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_cfg.auto_copy);
+			g_config.trace = SendMessage(GetDlgItem(hDlg, IDC_CHECK1), BM_GETCHECK, 0, 0);
+			g_config.bAlerts = SendMessage(GetDlgItem(hDlg, IDC_CHECK4), BM_GETCHECK, 0, 0);
+			g_config.auto_copy = SendMessage(GetDlgItem(hDlg, IDC_CHECK5), BM_GETCHECK, 0, 0);
+			g_config.theme = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+			g_config.lang = SendMessage(hCombo2, CB_GETCURSEL, 0, 0);
+			g_fp->exfunc->ini_save_int(g_fp, "theme", g_config.theme);
+			g_fp->exfunc->ini_save_int(g_fp, "lang", g_config.lang);
+			g_fp->exfunc->ini_save_int(g_fp, "show_hst", g_config.trace);
+			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.bAlerts);
+			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
 			EndDialog(hDlg, 1);
 			return 0;
 
@@ -80,7 +80,7 @@ BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 
 		case IDC_CUSTOM:
-			if (!g_cfg.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM), hDlg, DlgProc_Custom);
+			if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM), hDlg, DlgProc_Custom);
 			else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM_JA), hDlg, DlgProc_Custom);
 			return 0;
 
@@ -108,7 +108,7 @@ BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 
 
 //---------------------------------------------------------------------
-//		Dialog Procedure (Value)
+//		ダイアログプロシージャ（カーブ値の設定）
 //---------------------------------------------------------------------
 BOOL CALLBACK DlgProc_Value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -137,7 +137,7 @@ BOOL CALLBACK DlgProc_Value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 				}
 				EndDialog(hDlg, 1);
 			}
-			else if (g_cfg.bAlerts)MessageBox(hDlg, g_cfg.lang ? FLSTR_JA_WRONGINPUTVALUES : FLSTR_WRONGINPUTVALUES, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)MessageBox(hDlg, FLSTR_WRONGINPUTVALUES, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
@@ -183,17 +183,17 @@ BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 					intValue = std::stoi(str);
 				}
 				catch (std::out_of_range& e) {
-					if (g_cfg.bAlerts) MessageBox(hDlg, g_cfg.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
+					if (g_config.alert) MessageBox(hDlg, FLSTR_OUTOFRANGE, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
-				if ((intValue < -2147483647 || 2122746761 < intValue) && g_cfg.bAlerts) {
-					MessageBox(hDlg, g_cfg.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
+				if ((intValue < -2147483647 || 2122746761 < intValue) && g_config.alert) {
+					MessageBox(hDlg, FLSTR_OUTOFRANGE, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
 				ReadValue(intValue);
 				EndDialog(hDlg, 1);
 			}
-			else if (g_cfg.bAlerts)MessageBox(hDlg, g_cfg.lang ? FLSTR_JA_WRONGINPUTVALUES : FLSTR_WRONGINPUTVALUES, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)MessageBox(hDlg, FLSTR_WRONGINPUTVALUES, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
@@ -258,7 +258,7 @@ BOOL CALLBACK DlgProc_Save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 				g_preset_items.emplace_back(additem);
 				EndDialog(hDlg, 1);
 			}
-			else if (strlen(chBuffer) == 0 && g_cfg.bAlerts) MessageBox(hDlg, g_cfg.lang ? FLSTR_JA_GIVEITANAME : FLSTR_GIVEITANAME, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
+			else if (strlen(chBuffer) == 0 && g_config.alert) MessageBox(hDlg, FLSTR_GIVEITANAME, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);

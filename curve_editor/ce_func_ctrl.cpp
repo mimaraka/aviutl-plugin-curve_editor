@@ -148,7 +148,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			//icon
 			SelectObject(hdc_mem, font);
 			SetBkMode(hdc_mem, TRANSPARENT);
-			SetTextColor(hdc_mem, g_theme[g_cfg.theme].bt_tx);
+			SetTextColor(hdc_mem, g_theme[g_config.theme].bt_tx);
 			DrawText(hdc_mem, icon, 1, &rcBtn, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
 			DeleteObject(font);
 
@@ -218,7 +218,7 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static	TRACKMOUSEEVENT			tme;
 			RECT					rect_wnd;
 			PAINTSTRUCT				ps;
-			COLORREF				color	= g_theme[g_cfg.theme].bt_apply;
+			COLORREF				color	= g_theme[g_config.theme].bt_apply;
 			int						flag	= NULL;
 			LPCSTR					icon	= CE_CT_APPLY_TEXT;
 			int						id		= CE_CT_APPLY;
@@ -269,16 +269,16 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		);
 	
 		if (clicked)
-			D2D1_Init(hdc_mem, &rect_wnd, ToBGR(BRIGHTEN(color, CE_CT_BR_CLICKED)));
+			D2D1_Init(hdc_mem, &rect_wnd, TO_BGR(BRIGHTEN(color, CE_CT_BR_CLICKED)));
 		else if (hovered)
-			D2D1_Init(hdc_mem, &rect_wnd, ToBGR(BRIGHTEN(color, CE_CT_BR_HOVERED)));
+			D2D1_Init(hdc_mem, &rect_wnd, TO_BGR(BRIGHTEN(color, CE_CT_BR_HOVERED)));
 		else
-			D2D1_Init(hdc_mem, &rect_wnd, ToBGR(color));
+			D2D1_Init(hdc_mem, &rect_wnd, TO_BGR(color));
 
 		//icon
 		SelectObject(hdc_mem, font);
 		SetBkMode(hdc_mem, TRANSPARENT);
-		SetTextColor(hdc_mem, g_theme[g_cfg.theme].bt_tx);
+		SetTextColor(hdc_mem, g_theme[g_config.theme].bt_tx);
 		DrawText(hdc_mem, icon, strlen(icon), &rect_wnd, DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP);
 		DeleteObject(font);
 

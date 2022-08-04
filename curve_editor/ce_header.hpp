@@ -29,7 +29,7 @@ namespace ce {
 	typedef struct tagTheme {
 		COLORREF
 			bg,
-			bg_wnd,
+			bg_window,
 			gr_bg,
 			curve,
 			handle,
@@ -166,14 +166,14 @@ namespace ce {
 //----------------------------------------------------------------------------------
 //		externêÈåæ
 //----------------------------------------------------------------------------------
-extern ce::Curve_Value						g_cv_vl;
-extern ce::Curve_ID							g_cv_id[CE_CURVE_MAX];
-extern std::vector<ce::Preset_Value>		g_pres_vl;
-extern std::vector<ce::Preset_ID>			g_pres_id;
-extern const ce::Theme						g_th_dark, g_th_light;
+extern ce::Curve_Value						g_curve_value;
+extern ce::Curve_ID							g_curve_id[CE_CURVE_MAX];
+extern std::vector<ce::Preset_Value>		g_presets_value;
+extern std::vector<ce::Preset_ID>			g_presets_id;
+extern const ce::Theme						g_theme_dark, g_theme_light;
 extern ce::Theme							g_theme[2];
-extern ce::Config							g_cfg;
-extern ce::Window							g_wnd;
+extern ce::Config							g_config;
+extern ce::Window							g_window;
 extern ce::Gr_Disp_Info						g_disp_info;
 extern FILTER*								g_fp;
 extern FILTER_DLL							g_filter;

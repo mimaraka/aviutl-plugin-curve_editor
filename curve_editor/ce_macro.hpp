@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
 //		ヘッダファイル（マクロ）
-//		(Visual C++ 2022)
+//		VC++ 2022
 //----------------------------------------------------------------------------------
 
 
@@ -24,7 +24,7 @@
 #define CE_SEPR_DEF				150
 #define CE_POINT_MAX			64
 #define CE_CURVE_MAX			256
-#define CE_HANDLE_DEF_L			1500
+#define CE_HANDLE_DEF_L			50
 #define CE_HANDLE_TH			2
 #define CE_HANDLE_SIZE			5.8
 #define CE_HANDLE_SIRCLE_LINE	2.6
@@ -62,7 +62,6 @@
 #define CE_CT_ICON_SIZE			22
 #define CE_CT_APPLY_SIZE		34
 #define CE_CT_APPLY_TEXT		"Apply"
-#define CE_CT_APPLY_TEXT_JA		"適用"
 
 #define CE_WD_SIDE_MINW			120
 #define CE_WD_EDT_MINW			200
@@ -117,14 +116,14 @@
 #define CE_REGEX_CEP			R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
 
 //フィルタの情報
-#define CE_FLT_NAME				"Curve Editor"
-#define CE_FLT_VERSION			"v0.1"
-#define CE_FLT_AUTHOR			"mimaraka"
-#define CE_FLT_INFO				CE_FLT_NAME " " CE_FLT_VERSION " by " CE_FLT_AUTHOR
-#define CE_FLT_LINK				"https://sites.google.com/view/aviutlscripts/home"
+#define CE_FILTER_NAME				"Curve Editor"
+#define CE_FILTER_VERSION			"v0.1"
+#define CE_FILTER_AUTHOR			"mimaraka"
+#define CE_FILTER_INFO				CE_FILTER_NAME " " CE_FILTER_VERSION " by " CE_FILTER_AUTHOR
+#define CE_FILTER_LINK				"https://sites.google.com/view/aviutlscripts/home"
 
 //関数マクロ
-#define ToBGR(ref)							(RGB(GetBValue(ref), GetGValue(ref), GetRValue(ref)))
+#define TO_BGR(ref)							(RGB(GetBValue(ref), GetGValue(ref), GetRValue(ref)))
 #define DISTANCE2(pt1,pt2x, pt2y)			(std::sqrt(std::pow((pt2x) - pt1.x, 2) + std::pow((pt2y) - pt1.y, 2)))
 #define DISTANCE(pt1,pt2)					(std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2)))
 #define DISTANCE1(pt)						(std::sqrt(std::pow(pt.x, 2) + std::pow(pt.y, 2)))

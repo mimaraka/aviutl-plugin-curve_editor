@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
-//		curve editor
-//		source file (func_curve_value)
-//		(Visual C++ 2019)
+//		Curve Editor
+//		ソースファイル (Valueモードのカーブの関数)
+//		VC++ 2022
 //----------------------------------------------------------------------------------
 
 #include "ce_header.hpp"
@@ -51,31 +51,31 @@ void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
 	//Altキーが押されている間
 	else if (GetAsyncKeyState(VK_MENU) < 0) {
 		//X
-		g_cv_vl.ctpt[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RES);
+		g_curve_value.ctpt[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RES);
 		//Y
 		//Anti-ZeroDivisionError
 		if (!index) {
 			if (ptLock.x < 0)
-				g_cv_vl.ctpt[0].y = gr_pt.y;
+				g_curve_value.ctpt[0].y = gr_pt.y;
 			else
-				g_cv_vl.ctpt[0].y = (int)(g_cv_vl.ctpt[0].x * ptLock.y / (double)ptLock.x);
+				g_curve_value.ctpt[0].y = (int)(g_curve_value.ctpt[0].x * ptLock.y / (double)ptLock.x);
 		}
 		else {
 			if (ptLock.x > CE_GR_RES)
-				g_cv_vl.ctpt[1].y = gr_pt.y;
+				g_curve_value.ctpt[1].y = gr_pt.y;
 			else
-				g_cv_vl.ctpt[1].y
-				= CE_GR_RES - (int)((CE_GR_RES - (int)g_cv_vl.ctpt[1].x) * (CE_GR_RES - ptLock.y) / (double)(CE_GR_RES - ptLock.x));
+				g_curve_value.ctpt[1].y
+				= CE_GR_RES - (int)((CE_GR_RES - (int)g_curve_value.ctpt[1].x) * (CE_GR_RES - ptLock.y) / (double)(CE_GR_RES - ptLock.x));
 		}
 	}
 	//同時に動かす
 	else if (GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) < 0) {
 		//X
-		g_cv_vl.ctpt[index].x = gr_pt.x;
-		g_cv_vl.ctpt[!index].x = MINMAXLIM(CE_GR_RES - g_cv_vl.ctpt[index].x, 0, CE_GR_RES);
+		g_curve_value.ctpt[index].x = gr_pt.x;
+		g_curve_value.ctpt[!index].x = MINMAXLIM(CE_GR_RES - g_curve_value.ctpt[index].x, 0, CE_GR_RES);
 		//Y
-		g_cv_vl.ctpt[index].y = gr_pt.y;
-		g_cv_vl.ctpt[!index].y = CE_GR_RES - g_cv_vl.ctpt[index].y;
+		g_curve_value.ctpt[index].y = gr_pt.y;
+		g_curve_value.ctpt[!index].y = CE_GR_RES - g_curve_value.ctpt[index].y;
 		bCtrlKey = FALSE;
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
@@ -90,13 +90,13 @@ void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
 	}
 	//While the Shift Key is being pressed
 	else if (GetAsyncKeyState(VK_SHIFT) < 0) {
-		g_cv_vl.ctpt[index].x = gr_pt.x;
+		g_curve_value.ctpt[index].x = gr_pt.x;
 		//if Y is larger than 500
 		if (ptLock.y < CE_GR_RES / 2)
-			g_cv_vl.ctpt[index].y = 0;
+			g_curve_value.ctpt[index].y = 0;
 		//if Y is less than 500
 		else if (ptLock.y >= CE_GR_RES / 2)
-			g_cv_vl.ctpt[index].y = CE_GR_RES;
+			g_curve_value.ctpt[index].y = CE_GR_RES;
 	}
 	//The moment the Control Key is pressed
 	else if (GetAsyncKeyState(VK_CONTROL) < 0 && !bCtrlKey) {
@@ -119,34 +119,34 @@ void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
 			intResult_x = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES) * std::cos(theta));
 			intResult_y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES) * std::sin(theta));
 		}
-		g_cv_vl.ctpt[index].x = intResult_x;
+		g_curve_value.ctpt[index].x = intResult_x;
 		//Y
 		if (!index) {
 			if (theta > MATH_PI * 0.5)
-				g_cv_vl.ctpt[0].y = (int)(DISTANCE1(ptLock));
+				g_curve_value.ctpt[0].y = (int)(DISTANCE1(ptLock));
 
 			else if (theta < -MATH_PI * 0.5)
-				g_cv_vl.ctpt[0].y = (int)-(DISTANCE1(ptLock));
+				g_curve_value.ctpt[0].y = (int)-(DISTANCE1(ptLock));
 
-			else g_cv_vl.ctpt[0].y = intResult_y;
+			else g_curve_value.ctpt[0].y = intResult_y;
 		}
 		else {
 			if (theta > MATH_PI * 0.5)
-				g_cv_vl.ctpt[1].y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
+				g_curve_value.ctpt[1].y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
 
 			else if (theta < -MATH_PI * 0.5)
-				g_cv_vl.ctpt[1].y = CE_GR_RES + (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
+				g_curve_value.ctpt[1].y = CE_GR_RES + (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
 
-			else g_cv_vl.ctpt[1].y = intResult_y;
+			else g_curve_value.ctpt[1].y = intResult_y;
 		}
 	}
 	//Nomal Mode
 	else {
-		g_cv_vl.ctpt[index] = gr_pt;
+		g_curve_value.ctpt[index] = gr_pt;
 		bCtrlKey = FALSE;
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
 	}
 
-	g_cv_vl.ctpt[index].x = MINMAXLIM(g_cv_vl.ctpt[index].x, 0, CE_GR_RES);
+	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RES);
 }

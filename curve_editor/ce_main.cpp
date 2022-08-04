@@ -11,16 +11,16 @@
 //---------------------------------------------------------------------
 //		ÉOÉçÅ[ÉoÉãïœêî
 //---------------------------------------------------------------------
-ce::Curve_Value					g_cv_vl;
-ce::Curve_ID					g_cv_id[CE_CURVE_MAX];
-ce::Config						g_cfg;
-ce::Window						g_wnd;
+ce::Curve_Value					g_curve_value;
+ce::Curve_ID					g_curve_id[CE_CURVE_MAX];
+ce::Config						g_config;
+ce::Window						g_window;
 ce::Gr_Disp_Info				g_disp_info;
 FILTER*							g_fp;
-std::vector<ce::Preset_Value>	g_pres_vl;
-std::vector<ce::Preset_ID>		g_pres_id;
+std::vector<ce::Preset_Value>	g_presets_value;
+std::vector<ce::Preset_ID>		g_presets_id;
 
-const ce::Theme g_th_dark = {
+const ce::Theme g_theme_dark = {
 	RGB(27,27,27),
 	RGB(27,27,27),
 	RGB(27,27,27),
@@ -32,7 +32,7 @@ const ce::Theme g_th_dark = {
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
 };
-const ce::Theme g_th_light = {
+const ce::Theme g_theme_light = {
 	RGB(32,32,32),
 	RGB(50,50,50),
 	RGB(45,45,45),
@@ -46,8 +46,8 @@ const ce::Theme g_th_light = {
 };
 
 ce::Theme g_theme[2] = {
-	g_th_dark,
-	g_th_light,
+	g_theme_dark,
+	g_theme_light,
 };
 
 //Direct2D
@@ -65,7 +65,7 @@ FILTER_DLL g_filter = {
 	FILTER_FLAG_EX_INFORMATION,
 	CE_DEF_W,
 	CE_DEF_H,
-	CE_FLT_NAME,
+	CE_FILTER_NAME,
 	NULL,NULL,NULL,
 	NULL,NULL,
 	NULL,NULL,NULL,
@@ -77,7 +77,7 @@ FILTER_DLL g_filter = {
 	NULL,NULL,
 	NULL,
 	NULL,
-	CE_FLT_INFO,
+	CE_FILTER_INFO,
 	NULL,NULL,
 	NULL,NULL,NULL,NULL,
 	NULL,
@@ -97,7 +97,7 @@ int getResult(lua_State* L)
 	double	ed		= lua_tonumber(L, 4);
 
 	if (index < 0 || index > CE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_cv_id[index].GetValue(ratio, st, ed));
+	else lua_pushnumber(L, g_curve_id[index].GetValue(ratio, st, ed));
 	return 1;
 }
 
