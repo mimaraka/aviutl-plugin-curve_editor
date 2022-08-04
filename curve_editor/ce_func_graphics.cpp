@@ -113,22 +113,6 @@ void D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
 
 
 //---------------------------------------------------------------------
-//		ポイントの矩形を描画(Direct2D)
-//---------------------------------------------------------------------
-void D2D1_DrawSquare(ID2D1SolidColorBrush* pBrush, DoublePoint cl_pt)
-{
-	D2D1_RECT_F rect = {
-		cl_pt.x - CE_POINT_SIZE,
-		cl_pt.y - CE_POINT_SIZE,
-		cl_pt.x + CE_POINT_SIZE,
-		cl_pt.y + CE_POINT_SIZE,
-	};
-	pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
-	g_render_target->FillRectangle(rect, pBrush);
-}
-
-
-//---------------------------------------------------------------------
 //		グラフのハンドルを描画(Direct2D)
 //---------------------------------------------------------------------
 void D2D1_DrawHandle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt)

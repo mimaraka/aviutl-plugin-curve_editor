@@ -214,7 +214,6 @@ void				D2D1_Init(HDC hdc, LPRECT rect_wnd, COLORREF cr);
 void				D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
 					DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness);
 void				D2D1_DrawHandle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt);
-void				D2D1_DrawSquare(ID2D1SolidColorBrush* pBrush, DoublePoint cl_pt);
 void				DrawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				DrawSide(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				DrawLibrary(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
