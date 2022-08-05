@@ -255,7 +255,7 @@ double ce::Curve_ID::GetHandleAngle(Point_Address address)
 	if (dstx == 0 && dsty == 0) {
 		//¶
 		if (address.CLR == 2)
-			return MATH_PI / 2.0;
+			return MATH_PI;
 		//‰E
 		else if (address.CLR == 3)
 			return 0;
