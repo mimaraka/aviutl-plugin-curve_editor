@@ -24,7 +24,7 @@ BOOL Init(FILTER* fp)
 	g_fp = fp;
 	//Load Ini (Set Config)
 	g_config.theme = fp->exfunc->ini_load_int(fp, "theme", 0);
-	g_config.trace = fp->exfunc->ini_load_int(fp, "show_hst", 1);
+	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", 1);
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", 1);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", 0);
 	g_config.id_current = 0;
@@ -32,7 +32,7 @@ BOOL Init(FILTER* fp)
 	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", 400);
 	g_curve_value.ctpt[1].x = fp->exfunc->ini_load_int(fp, "x2", 600);
 	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", 600);
-	g_config.sepr = fp->exfunc->ini_load_int(fp, "sepr", 200);
+	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", 200);
 	g_config.mode = fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_config.align_mode = fp->exfunc->ini_load_int(fp, "align_mode", 1);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
@@ -64,7 +64,7 @@ BOOL Exit(FILTER* fp)
 	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.ctpt[0].y);
 	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpt[1].x);
 	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpt[1].y);
-	fp->exfunc->ini_save_int(fp, "sepr", g_config.sepr);
+	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
 	fp->exfunc->ini_save_int(fp, "mode", g_config.mode);
 	fp->exfunc->ini_save_int(fp, "align_mode", g_config.align_mode);
 	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);

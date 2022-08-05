@@ -100,9 +100,9 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	GetClientRect(hwnd, &rect_wnd);
 
 	rect_sepr = {
-		g_config.sepr - CE_SEPR_W,
+		g_config.separator - CE_SEPR_W,
 		0,
-		g_config.sepr + CE_SEPR_W,
+		g_config.separator + CE_SEPR_W,
 		rect_wnd.bottom
 	};
 
@@ -159,7 +159,7 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_MOUSEMOVE:
 		if (PtInRect(&rect_sepr, cl_pt)) SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 		if (bSepr) {
-			g_config.sepr = MINMAXLIM(cl_pt.x, CE_WD_SIDE_MINW + CE_SEPR_W, rect_wnd.right - CE_SEPR_W);
+			g_config.separator = MINMAXLIM(cl_pt.x, CE_WD_SIDE_MINW + CE_SEPR_W, rect_wnd.right - CE_SEPR_W);
 			MoveWindow(hwnd_side, CE_WD_POS_SIDE(rect_wnd), TRUE);
 			MoveWindow(hwnd_editor, CE_WD_POS_EDT(rect_wnd), TRUE);
 			InvalidateRect(hwnd, NULL, FALSE);
@@ -457,8 +457,8 @@ LRESULT CALLBACK WndProc_Editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//	//設定
 		//case ID_RCLICKMENU_PREFERENCES:
-		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, DlgProc_Pref);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF_JA), hwnd, DlgProc_Pref);
+		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, DlgProc_Settings);
+		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF_JA), hwnd, DlgProc_Settings);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
 		//	RedrawChildren();
@@ -602,7 +602,7 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//IDモード
 		else {
 			//カーソルが制御点上にあるかどうか
-			address = g_curve_id[g_config.id_current].PtInCtpts(cl_pt);
+			address = g_curve_id[g_config.id_current].PtIncontrol_points(cl_pt);
 			//カーソルが制御点上にあるとき，ハンドルの座標を記憶
 			if (address.CLR != 0) {
 				g_curve_id[g_config.id_current].MovePoint(address, gr_pt, TRUE);
@@ -652,7 +652,7 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		///////////////////////////////////////////
 	case WM_LBUTTONDBLCLK:
 		//カーソルが制御点上にあるかどうか
-		address = g_curve_id[g_config.id_current].PtInCtpts(cl_pt);
+		address = g_curve_id[g_config.id_current].PtIncontrol_points(cl_pt);
 
 		if (address.CLR == 1)
 			g_curve_id[g_config.id_current].DeletePoint(cl_pt);
@@ -722,7 +722,7 @@ LRESULT CALLBACK WndProc_Graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		}
 		//IDモード
 		else {
-			if (g_curve_id[g_config.id_current].PtInCtpts(cl_pt).CLR > 0)
+			if (g_curve_id[g_config.id_current].PtIncontrol_points(cl_pt).CLR > 0)
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 		}
 

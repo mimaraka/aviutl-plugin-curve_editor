@@ -16,13 +16,11 @@
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（設定ダイアログ）
 //---------------------------------------------------------------------
-BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK DlgProc_Settings(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HDC hdc, hdc_mem;
 	static HWND hCombo, hCombo2;
 	static HBITMAP bitmap;
-	int cursel;
-	static int prevsel = g_config.lang;
 	switch (msg) {
 	case WM_CLOSE:
 		DeleteObject(bitmap);
@@ -30,47 +28,27 @@ BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_INITDIALOG:
-		bitmap = LoadBitmap(g_fp->dll_hinst, MAKEINTRESOURCE(IMG_FLOW));
-		if (g_config.trace) SendMessage(GetDlgItem(hDlg, IDC_CHECK1), BM_SETCHECK, BST_CHECKED, 0);
-		if (g_config.bAlerts) SendMessage(GetDlgItem(hDlg, IDC_CHECK4), BM_SETCHECK, BST_CHECKED, 0);
-		if (g_config.auto_copy) SendMessage(GetDlgItem(hDlg, IDC_CHECK5), BM_SETCHECK, BST_CHECKED, 0);
-		hCombo = GetDlgItem(hDlg, IDC_COMBO1);
-		hCombo2 = GetDlgItem(hDlg, IDC_COMBO2);
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Flow");
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"AE");
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"AviUtl");
-		if (!g_config.lang) SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"Custom");
-		else SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"カスタム");
+		if (g_config.trace) SendMessage(GetDlgItem(hDlg, IDC_PREVIOUSCURVE), BM_SETCHECK, BST_CHECKED, 0);
+		if (g_config.alert) SendMessage(GetDlgItem(hDlg, IDC_ALERT), BM_SETCHECK, BST_CHECKED, 0);
+		if (g_config.auto_copy) SendMessage(GetDlgItem(hDlg, IDC_AUTOCOPY), BM_SETCHECK, BST_CHECKED, 0);
+		hCombo = GetDlgItem(hDlg, IDC_THEME);
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"ダーク");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"ライト");
+		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"カスタム");
 		SendMessage(hCombo, CB_SETCURSEL, g_config.theme, 0);
 
-		SendMessage(hCombo2, CB_ADDSTRING, 0, (LPARAM)"English");
-		SendMessage(hCombo2, CB_ADDSTRING, 0, (LPARAM)"日本語");
-		SendMessage(hCombo2, CB_SETCURSEL, g_config.lang, 0);
-
-		if (g_config.theme == 3) EnableWindow(GetDlgItem(hDlg, IDC_CUSTOM), TRUE);
-		return 0;
-
-	case WM_PAINT:
-		hdc = GetDC(hDlg);
-		hdc_mem = CreateCompatibleDC(hdc);
-		SelectObject(hdc_mem, bitmap);
-		BitBlt(hdc, 0, 0, 437, 75, hdc_mem, 0, 0, SRCCOPY);
-		DeleteDC(hdc_mem);
-		ReleaseDC(hDlg, hdc);
 		return 0;
 
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			g_config.trace = SendMessage(GetDlgItem(hDlg, IDC_CHECK1), BM_GETCHECK, 0, 0);
-			g_config.bAlerts = SendMessage(GetDlgItem(hDlg, IDC_CHECK4), BM_GETCHECK, 0, 0);
-			g_config.auto_copy = SendMessage(GetDlgItem(hDlg, IDC_CHECK5), BM_GETCHECK, 0, 0);
+			g_config.trace = SendMessage(GetDlgItem(hDlg, IDC_PREVIOUSCURVE), BM_GETCHECK, 0, 0);
+			g_config.alert = SendMessage(GetDlgItem(hDlg, IDC_ALERT), BM_GETCHECK, 0, 0);
+			g_config.auto_copy = SendMessage(GetDlgItem(hDlg, IDC_AUTOCOPY), BM_GETCHECK, 0, 0);
 			g_config.theme = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
-			g_config.lang = SendMessage(hCombo2, CB_GETCURSEL, 0, 0);
 			g_fp->exfunc->ini_save_int(g_fp, "theme", g_config.theme);
-			g_fp->exfunc->ini_save_int(g_fp, "lang", g_config.lang);
-			g_fp->exfunc->ini_save_int(g_fp, "show_hst", g_config.trace);
-			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.bAlerts);
+			g_fp->exfunc->ini_save_int(g_fp, "show_previous_curve", g_config.trace);
+			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.alert);
 			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
 			EndDialog(hDlg, 1);
 			return 0;
@@ -78,29 +56,6 @@ BOOL CALLBACK DlgProc_Pref(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
 			return 0;
-
-		case IDC_CUSTOM:
-			if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM), hDlg, DlgProc_Custom);
-			else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CUSTOM_JA), hDlg, DlgProc_Custom);
-			return 0;
-
-		case IDC_COMBO1:
-			switch (HIWORD(wparam)) {
-			case CBN_SELCHANGE:
-				if (SendMessage(hCombo, CB_GETCURSEL, 0, 0) == 3)
-					EnableWindow(GetDlgItem(hDlg, IDC_CUSTOM), TRUE);
-				else EnableWindow(GetDlgItem(hDlg, IDC_CUSTOM), FALSE);
-				return 0;
-			}
-		case IDC_COMBO2:
-			switch (HIWORD(wparam)) {
-			case CBN_SELCHANGE:
-				cursel = SendMessage(hCombo2, CB_GETCURSEL, 0, 0);
-				if (cursel != prevsel)
-					MessageBox(hDlg, cursel ? FLSTR_JA_LANG : FLSTR_LANG, "Flow", MB_OK | MB_ICONINFORMATION);
-				prevsel = cursel;
-				return 0;
-			}
 		}
 	}
 	return 0;

@@ -82,6 +82,8 @@
 #define CE_WM_REDRAW			2002
 #define CE_WM_SHOWHANDLE		2003
 
+#define MATH_PI					3.14159265
+
 //ƒtƒ‰ƒO
 #define BIT(num)				((UINT)1 << num)
 #define CE_EDGE_LT				BIT(0)

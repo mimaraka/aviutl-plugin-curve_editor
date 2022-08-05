@@ -147,9 +147,9 @@ void DrawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 	static ID2D1SolidColorBrush* pBrush = NULL;
 
 	rect_sepr = {
-	g_config.sepr - CE_SEPR_W,
+	g_config.separator - CE_SEPR_W,
 	0,
-	g_config.sepr + CE_SEPR_W,
+	g_config.separator + CE_SEPR_W,
 	rect_wnd->bottom
 	};
 
@@ -333,7 +333,7 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 
 		//IDモードのとき
 		else {
-			for (int i = 0; i < g_curve_id[g_config.id_current].ctpts.size() - 1; i++)
+			for (int i = 0; i < g_curve_id[g_config.id_current].control_points.size() - 1; i++)
 			{
 				//色を指定
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].gr_bg), CE_GR_POINT_CONTRAST))));
@@ -354,18 +354,18 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 				//端点以外の制御点に引かれる点線
 				if (i > 0)
 					g_render_target->DrawLine(
-						D2D1::Point2F(ToClient(g_curve_id[g_config.id_current].ctpts[i].pt_center).x, 0),
-						D2D1::Point2F(ToClient(g_curve_id[g_config.id_current].ctpts[i].pt_center).x, rect_wnd->bottom),
+						D2D1::Point2F(ToClient(g_curve_id[g_config.id_current].control_points[i].pt_center).x, 0),
+						D2D1::Point2F(ToClient(g_curve_id[g_config.id_current].control_points[i].pt_center).x, rect_wnd->bottom),
 						pBrush, CE_GR_POINT_TH, pStyle
 					);
 
 				//ベジェ曲線を描画
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
 				D2D1_DrawBezier(pBrush,
-					ToClient(g_curve_id[g_config.id_current].ctpts[i].pt_center),
-					ToClient(g_curve_id[g_config.id_current].ctpts[i].pt_right),
-					ToClient(g_curve_id[g_config.id_current].ctpts[i + 1].pt_left),
-					ToClient(g_curve_id[g_config.id_current].ctpts[i + 1].pt_center),
+					ToClient(g_curve_id[g_config.id_current].control_points[i].pt_center),
+					ToClient(g_curve_id[g_config.id_current].control_points[i].pt_right),
+					ToClient(g_curve_id[g_config.id_current].control_points[i + 1].pt_left),
+					ToClient(g_curve_id[g_config.id_current].control_points[i + 1].pt_center),
 					CE_CURVE_TH
 				);
 
@@ -373,12 +373,12 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 				if (g_config.show_handle) {
 					pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
 					D2D1_DrawHandle(pBrush,
-						ToClient(g_curve_id[g_config.id_current].ctpts[i].pt_center),
-						ToClient(g_curve_id[g_config.id_current].ctpts[i].pt_right)
+						ToClient(g_curve_id[g_config.id_current].control_points[i].pt_center),
+						ToClient(g_curve_id[g_config.id_current].control_points[i].pt_right)
 					);
 					D2D1_DrawHandle(pBrush,
-						ToClient(g_curve_id[g_config.id_current].ctpts[i + 1].pt_center),
-						ToClient(g_curve_id[g_config.id_current].ctpts[i + 1].pt_left)
+						ToClient(g_curve_id[g_config.id_current].control_points[i + 1].pt_center),
+						ToClient(g_curve_id[g_config.id_current].control_points[i + 1].pt_left)
 					);
 				}
 			}

@@ -71,7 +71,7 @@ namespace ce {
 			show_handle;
 		int
 			theme,
-			sepr,
+			separator,
 			id_current,
 			align_mode;
 	} Config;
@@ -104,7 +104,7 @@ namespace ce {
 	class Curve_ID {
 	public:
 		int size = sizeof(Points_ID) * CE_POINT_MAX;
-		std::vector<Points_ID> ctpts;
+		std::vector<Points_ID> control_points;
 
 		Curve_ID()
 		{
@@ -113,20 +113,20 @@ namespace ce {
 			pt_add[0].pt_center = { 0, 0 };
 			pt_add[0].pt_right = { (int)(CE_GR_RES * 0.4), (int)(CE_GR_RES * 0.4) };
 			pt_add[0].pt_left = { 0, 0 };
-			ctpts.emplace_back(pt_add[0]);
+			control_points.emplace_back(pt_add[0]);
 
 			pt_add[1].type = 1;
 			pt_add[1].pt_center = { CE_GR_RES, CE_GR_RES };
 			pt_add[1].pt_left = { (int)(CE_GR_RES * 0.6), (int)(CE_GR_RES * 0.6) };
 			pt_add[1].pt_right = { CE_GR_RES, CE_GR_RES };
-			ctpts.emplace_back(pt_add[1]);
+			control_points.emplace_back(pt_add[1]);
 		}
 
 		void				addPoint(POINT cl_pt);
 		void				DeletePoint(POINT cl_pt);
 		POINT				GetPoint(Point_Address address);
 		void				MovePoint(Point_Address address, POINT gr_pt, BOOL bReset);
-		Point_Address		PtInCtpts(POINT cl_pt);
+		Point_Address		PtIncontrol_points(POINT cl_pt);
 		double				GetHandleAngle(Point_Address address);
 		void				CorrectHandle(Point_Address address, double angle);
 		void				SetHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth);
@@ -224,7 +224,7 @@ void				DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd);
 //ダイアログプロシージャ
 BOOL CALLBACK		DlgProc_About(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		DlgProc_Custom(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		DlgProc_Pref(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		DlgProc_Settings(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		DlgProc_Value(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		DlgProc_Read(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		DlgProc_Save(HWND, UINT, WPARAM, LPARAM);

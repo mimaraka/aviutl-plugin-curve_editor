@@ -14,11 +14,12 @@
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
 #define IDC_EDIT_READ                   1003
-#define IDC_COMBO1                      1006
+#define IDC_THEME                       1006
 #define IDC_ALERT                       1007
-#define IDC_EDIT1                       1008
-#define IDC_CHECK3                      1009
-#define IDC_CHECK4                      1010
+#define IDC_PREVIOUSCURVE               1009
+#define IDC_AUTOCOPY                    1010
+#define IDC_MAXIMUMUNDO                 1011
+#define IDC_AUTOCOPY2                   1012
 #define ID_Menu                         40001
 #define ID_MENU_CURVEEDITOR40002        40002
 
@@ -28,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        114
 #define _APS_NEXT_COMMAND_VALUE         40004
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

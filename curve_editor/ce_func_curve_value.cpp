@@ -37,7 +37,6 @@ int ce::Curve_Value::PtInCtpt(POINT cl_pt)
 //---------------------------------------------------------------------
 void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
 {
-	constexpr double MATH_PI = 3.14159265;
 	static POINT ptLock;
 	static BOOL bShiftKey, bCtrlKey, bAltKey;
 	//AltÉLÅ[Ç™âüÇ≥ÇÍÇΩíºå„
