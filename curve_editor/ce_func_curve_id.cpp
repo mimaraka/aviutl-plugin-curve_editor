@@ -170,8 +170,7 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 
 		//®—ñ(Šp“x)
 		if (g_config.align_mode == 1) {
-			tmp = { address.index, 2 };
-			agl_tmp = GetHandleAngle(tmp);
+			agl_tmp = GetHandleAngle(address);
 			tmp = { address.index, 3 };
 			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, len_right);
 		}
@@ -187,8 +186,7 @@ void ce::Curve_ID::MovePoint(Point_Address address, POINT gr_pt, BOOL bReset)
 
 		//®—ñ(Šp“x)
 		if (g_config.align_mode == 1) {
-			tmp = { address.index, 3 };
-			agl_tmp = GetHandleAngle(tmp);
+			agl_tmp = GetHandleAngle(address);
 			tmp = { address.index, 2 };
 			SetHandleAngle(tmp, agl_tmp + MATH_PI, TRUE, len_left);
 		}
