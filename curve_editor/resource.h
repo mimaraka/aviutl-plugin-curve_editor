@@ -11,6 +11,7 @@
 #define IDR_MENU1                       111
 #define CE_STR_OUTOFRANGE               112
 #define CE_STR_INVALIDINPUT             113
+#define CE_STR_GIVEITANEME              114
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
 #define IDC_EDIT_READ                   1003

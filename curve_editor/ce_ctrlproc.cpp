@@ -80,11 +80,11 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CE_FONT_ICON
 		);
 		if (clicked)
-			D2D1_Init(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
+			D2D1_Setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
 		else if (hovered)
-			D2D1_Init(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
+			D2D1_Setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
 		else
-			D2D1_Init(hdc, &rect_wnd, color);
+			D2D1_Setup(hdc, &rect_wnd, color);
 
 		if (g_render_target != NULL && g_d2d1_factory != NULL) {
 			g_render_target->BeginDraw();

@@ -8,9 +8,29 @@
 
 
 //---------------------------------------------------------------------
-//		Direct2Dの初期化
+//		Direct2Dを初期化
 //---------------------------------------------------------------------
-void D2D1_Init(HDC hdc, LPRECT rect_wnd, COLORREF cr)
+void D2D1_Init()
+{
+	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
+	D2D1_RENDER_TARGET_PROPERTIES prop;
+	prop = D2D1::RenderTargetProperties(
+		D2D1_RENDER_TARGET_TYPE_DEFAULT,
+		D2D1::PixelFormat(
+			DXGI_FORMAT_B8G8R8A8_UNORM,
+			D2D1_ALPHA_MODE_IGNORE),
+		0, 0,
+		D2D1_RENDER_TARGET_USAGE_NONE,
+		D2D1_FEATURE_LEVEL_DEFAULT
+	);
+	g_d2d1_factory->CreateDCRenderTarget(&prop, &g_render_target);
+}
+
+
+//---------------------------------------------------------------------
+//		Direct2Dの描画の準備
+//---------------------------------------------------------------------
+void D2D1_Setup(HDC hdc, LPRECT rect_wnd, COLORREF cr)
 {
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {
 		g_render_target->BindDC(hdc, rect_wnd);
@@ -154,12 +174,13 @@ void DrawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 	};
 
 	//Direct2D初期化
-	D2D1_Init(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_window));
+	D2D1_Setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_window));
 
 	if (g_render_target != NULL) {
 		g_render_target->BeginDraw();
 		if (pBrush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
 		pBrush->SetColor(D2D1::ColorF(TO_BGR(BRIGHTEN(g_theme[g_config.theme].bg_window, CE_BR_SEPR))));
+
 		if (pBrush) g_render_target->DrawLine(
 			D2D1::Point2F(rect_sepr.left + CE_SEPR_W, (rect_sepr.top + rect_sepr.bottom) * 0.5 - CE_SEPR_LINE_L),
 			D2D1::Point2F(rect_sepr.left + CE_SEPR_W, (rect_sepr.top + rect_sepr.bottom) * 0.5 + CE_SEPR_LINE_L),
@@ -186,7 +207,7 @@ void DrawSide(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 	static ID2D1SolidColorBrush* pBrush = NULL;
 
 	//Direct2D初期化
-	D2D1_Init(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	D2D1_Setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
 	PAINTSTRUCT ps;
@@ -206,7 +227,7 @@ void DrawLibrary(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 	static ID2D1SolidColorBrush* pBrush = NULL;
 
 	//Direct2D初期化
-	D2D1_Init(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	D2D1_Setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
 	PAINTSTRUCT ps;
@@ -226,7 +247,7 @@ void DrawEditor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 	static ID2D1SolidColorBrush* pBrush = NULL;
 
 	//Direct2D初期化
-	D2D1_Init(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	D2D1_Setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
 	PAINTSTRUCT ps;
@@ -253,12 +274,12 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 			g_disp_info.o.y
 		},
 		{
-			ToClient(g_curve_value.ctpt[0]).x,
-			ToClient(g_curve_value.ctpt[0]).y
+			ToClient(g_curve_value.control_point[0]).x,
+			ToClient(g_curve_value.control_point[0]).y
 		},
 		{
-			ToClient(g_curve_value.ctpt[1]).x,
-			ToClient(g_curve_value.ctpt[1]).y
+			ToClient(g_curve_value.control_point[1]).x,
+			ToClient(g_curve_value.control_point[1]).y
 		},
 		{
 			g_disp_info.o.x + g_disp_info.scale.x * CE_GR_RES,
@@ -291,7 +312,7 @@ void DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 	};
 
 	//Direct2D初期化
-	D2D1_Init(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].gr_bg));
+	D2D1_Setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].gr_bg));
 
 	//描画
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {

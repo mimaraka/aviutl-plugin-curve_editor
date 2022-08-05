@@ -76,19 +76,19 @@ BOOL CALLBACK DlgProc_Value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			GetDlgItemText(hDlg, IDC_EDIT1, chBuffer, 30);
+			GetDlgItemText(hDlg, IDC_EDIT_VALUE, chBuffer, 30);
 			if (std::regex_match(chBuffer, re)) {
 				std::string str = chBuffer;
 				std::vector<std::string> vec = split(chBuffer, ',');
-				g_value_curve.ctpt[0].x = (int)(std::stod(vec[0]) * 1000);
-				g_value_curve.ctpt[0].x = (int)(std::stod(vec[0]) * 1000);
-				g_value_curve.ctpt[0].y = (int)(std::stod(vec[1]) * 1000);
-				g_value_curve.ctpt[1].x = (int)(std::stod(vec[2]) * 1000);
-				g_value_curve.ctpt[1].y = (int)(std::stod(vec[3]) * 1000);
+				g_curve_value.control_point[0].x = (int)(std::stod(vec[0]) * 1000);
+				g_curve_value.control_point[0].x = (int)(std::stod(vec[0]) * 1000);
+				g_curve_value.control_point[0].y = (int)(std::stod(vec[1]) * 1000);
+				g_curve_value.control_point[1].x = (int)(std::stod(vec[2]) * 1000);
+				g_curve_value.control_point[1].y = (int)(std::stod(vec[3]) * 1000);
 
 				for (int i = 0; i < 2; i++) {
-					if (g_value_curve.ctpt[i].y > 3730) g_value_curve.ctpt[i].y = 3730;
-					else if (g_value_curve.ctpt[i].y < -2730) g_value_curve.ctpt[i].y = -2730;
+					if (g_curve_value.control_point[i].y > 3730) g_curve_value.control_point[i].y = 3730;
+					else if (g_curve_value.control_point[i].y < -2730) g_curve_value.control_point[i].y = -2730;
 				}
 				EndDialog(hDlg, 1);
 			}
@@ -115,7 +115,7 @@ BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	std::string str;
 	switch (msg) {
 	case WM_INITDIALOG:
-		hEdit = GetDlgItem(hDlg, IDC_EDIT1);
+		hEdit = GetDlgItem(hDlg, IDC_EDIT_VALUE);
 		SendMessage(hEdit, EM_SETLIMITTEXT, 11, 0);
 		return 0;
 
@@ -131,7 +131,7 @@ BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			GetDlgItemText(hDlg, IDC_EDIT1, chBuffer, 11);
+			GetDlgItemText(hDlg, IDC_EDIT_VALUE, chBuffer, 11);
 			if (std::regex_match(chBuffer, re)) {
 				str = chBuffer;
 				try {
@@ -160,11 +160,11 @@ BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 
 
 //---------------------------------------------------------------------
-//		Dialog Procedure (Save)
+//		ダイアログプロシージャ（カーブ保存ダイアログ）
 //---------------------------------------------------------------------
 BOOL CALLBACK DlgProc_Save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	//Creare 4D-Curve IDs
+	//4次元カーブ!Dを生成
 	HDC hdc;
 	static HFONT hfValues;
 	HWND hEdit;
@@ -179,7 +179,7 @@ BOOL CALLBACK DlgProc_Save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 		EndDialog(hDlg, 1);
 		return 0;
 	case WM_INITDIALOG:
-		hEdit = GetDlgItem(hDlg, IDC_EDIT1);
+		hEdit = GetDlgItem(hDlg, IDC_EDIT_SAVE);
 		SendMessage(hEdit, EM_SETLIMITTEXT, 64, 0);
 		return 0;
 	case WM_PAINT:
@@ -206,11 +206,11 @@ BOOL CALLBACK DlgProc_Save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			Flow_Value_Preset additem;
-			GetDlgItemText(hDlg, IDC_EDIT1, chBuffer, 64);
+			ce::Preset_Value additem;
+			GetDlgItemText(hDlg, IDC_EDIT_SAVE, chBuffer, 64);
 			if (strlen(chBuffer) < 64 && strlen(chBuffer) != 0) {
-				additem = { chBuffer, g_value_curve.ctpt[0].x, g_value_curve.ctpt[0].y, g_value_curve.ctpt[1].x, g_value_curve.ctpt[1].y };
-				g_preset_items.emplace_back(additem);
+				additem = { chBuffer, g_curve_value.control_point[0].x, g_curve_value.control_point[0].y, g_curve_value.control_point[1].x, g_curve_value.control_point[1].y };
+				g_presets_value.emplace_back(additem);
 				EndDialog(hDlg, 1);
 			}
 			else if (strlen(chBuffer) == 0 && g_config.alert) MessageBox(hDlg, FLSTR_GIVEITANAME, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);

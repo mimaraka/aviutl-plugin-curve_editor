@@ -8,21 +8,21 @@
 
 
 //---------------------------------------------------------------------
-//		PtInCtpt
+//		point_in_control_points
 //---------------------------------------------------------------------
-int ce::Curve_Value::PtInCtpt(POINT cl_pt)
+int ce::Curve_Value::point_in_control_points(POINT cl_pt)
 {
 	RECT rcCtpt1 = {
-		ToClient(ctpt[0]).x - CE_POINT_RANGE,
-		ToClient(ctpt[0]).y - CE_POINT_RANGE,
-		ToClient(ctpt[0]).x + CE_POINT_RANGE,
-		ToClient(ctpt[0]).y + CE_POINT_RANGE
+		ToClient(control_point[0]).x - CE_POINT_RANGE,
+		ToClient(control_point[0]).y - CE_POINT_RANGE,
+		ToClient(control_point[0]).x + CE_POINT_RANGE,
+		ToClient(control_point[0]).y + CE_POINT_RANGE
 	};
 	RECT rcCtpt2 = {
-		ToClient(ctpt[1]).x - CE_POINT_RANGE,
-		ToClient(ctpt[1]).y - CE_POINT_RANGE,
-		ToClient(ctpt[1]).x + CE_POINT_RANGE,
-		ToClient(ctpt[1]).y + CE_POINT_RANGE
+		ToClient(control_point[1]).x - CE_POINT_RANGE,
+		ToClient(control_point[1]).y - CE_POINT_RANGE,
+		ToClient(control_point[1]).x + CE_POINT_RANGE,
+		ToClient(control_point[1]).y + CE_POINT_RANGE
 	};
 	if (PtInRect(&rcCtpt2, cl_pt))
 		return 2;
@@ -50,31 +50,31 @@ void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
 	//AltÉLÅ[Ç™âüÇ≥ÇÍÇƒÇ¢ÇÈä‘
 	else if (GetAsyncKeyState(VK_MENU) < 0) {
 		//X
-		g_curve_value.ctpt[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RES);
+		g_curve_value.control_point[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RES);
 		//Y
 		//Anti-ZeroDivisionError
 		if (!index) {
 			if (ptLock.x < 0)
-				g_curve_value.ctpt[0].y = gr_pt.y;
+				g_curve_value.control_point[0].y = gr_pt.y;
 			else
-				g_curve_value.ctpt[0].y = (int)(g_curve_value.ctpt[0].x * ptLock.y / (double)ptLock.x);
+				g_curve_value.control_point[0].y = (int)(g_curve_value.control_point[0].x * ptLock.y / (double)ptLock.x);
 		}
 		else {
 			if (ptLock.x > CE_GR_RES)
-				g_curve_value.ctpt[1].y = gr_pt.y;
+				g_curve_value.control_point[1].y = gr_pt.y;
 			else
-				g_curve_value.ctpt[1].y
-				= CE_GR_RES - (int)((CE_GR_RES - (int)g_curve_value.ctpt[1].x) * (CE_GR_RES - ptLock.y) / (double)(CE_GR_RES - ptLock.x));
+				g_curve_value.control_point[1].y
+				= CE_GR_RES - (int)((CE_GR_RES - (int)g_curve_value.control_point[1].x) * (CE_GR_RES - ptLock.y) / (double)(CE_GR_RES - ptLock.x));
 		}
 	}
 	//ìØéûÇ…ìÆÇ©Ç∑
 	else if (GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) < 0) {
 		//X
-		g_curve_value.ctpt[index].x = gr_pt.x;
-		g_curve_value.ctpt[!index].x = MINMAXLIM(CE_GR_RES - g_curve_value.ctpt[index].x, 0, CE_GR_RES);
+		g_curve_value.control_point[index].x = gr_pt.x;
+		g_curve_value.control_point[!index].x = MINMAXLIM(CE_GR_RES - g_curve_value.control_point[index].x, 0, CE_GR_RES);
 		//Y
-		g_curve_value.ctpt[index].y = gr_pt.y;
-		g_curve_value.ctpt[!index].y = CE_GR_RES - g_curve_value.ctpt[index].y;
+		g_curve_value.control_point[index].y = gr_pt.y;
+		g_curve_value.control_point[!index].y = CE_GR_RES - g_curve_value.control_point[index].y;
 		bCtrlKey = FALSE;
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
@@ -89,13 +89,13 @@ void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
 	}
 	//While the Shift Key is being pressed
 	else if (GetAsyncKeyState(VK_SHIFT) < 0) {
-		g_curve_value.ctpt[index].x = gr_pt.x;
+		g_curve_value.control_point[index].x = gr_pt.x;
 		//if Y is larger than 500
 		if (ptLock.y < CE_GR_RES / 2)
-			g_curve_value.ctpt[index].y = 0;
+			g_curve_value.control_point[index].y = 0;
 		//if Y is less than 500
 		else if (ptLock.y >= CE_GR_RES / 2)
-			g_curve_value.ctpt[index].y = CE_GR_RES;
+			g_curve_value.control_point[index].y = CE_GR_RES;
 	}
 	//The moment the Control Key is pressed
 	else if (GetAsyncKeyState(VK_CONTROL) < 0 && !bCtrlKey) {
@@ -118,34 +118,34 @@ void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
 			intResult_x = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES) * std::cos(theta));
 			intResult_y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES) * std::sin(theta));
 		}
-		g_curve_value.ctpt[index].x = intResult_x;
+		g_curve_value.control_point[index].x = intResult_x;
 		//Y
 		if (!index) {
 			if (theta > MATH_PI * 0.5)
-				g_curve_value.ctpt[0].y = (int)(DISTANCE1(ptLock));
+				g_curve_value.control_point[0].y = (int)(DISTANCE1(ptLock));
 
 			else if (theta < -MATH_PI * 0.5)
-				g_curve_value.ctpt[0].y = (int)-(DISTANCE1(ptLock));
+				g_curve_value.control_point[0].y = (int)-(DISTANCE1(ptLock));
 
-			else g_curve_value.ctpt[0].y = intResult_y;
+			else g_curve_value.control_point[0].y = intResult_y;
 		}
 		else {
 			if (theta > MATH_PI * 0.5)
-				g_curve_value.ctpt[1].y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
+				g_curve_value.control_point[1].y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
 
 			else if (theta < -MATH_PI * 0.5)
-				g_curve_value.ctpt[1].y = CE_GR_RES + (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
+				g_curve_value.control_point[1].y = CE_GR_RES + (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
 
-			else g_curve_value.ctpt[1].y = intResult_y;
+			else g_curve_value.control_point[1].y = intResult_y;
 		}
 	}
 	//Nomal Mode
 	else {
-		g_curve_value.ctpt[index] = gr_pt;
+		g_curve_value.control_point[index] = gr_pt;
 		bCtrlKey = FALSE;
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
 	}
 
-	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RES);
+	g_curve_value.control_point[index].x = MINMAXLIM(g_curve_value.control_point[index].x, 0, CE_GR_RES);
 }

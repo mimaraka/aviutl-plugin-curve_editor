@@ -49,9 +49,16 @@ namespace ce {
 			prev;
 	} Window;
 
+	typedef enum tagPoint_Position {
+		CONTROLPOINT_NULL,
+		CONTROLPOINT_CENTER,
+		CONTROLPOINT_LEFT,
+		CONTROLPOINT_RIGHT
+	} Point_Position;
+
 	typedef struct tagPoint_Address {
-		int index,
-			CLR;							//0:NULL; 1:中央; 2:左; 3:右;
+		int index;
+		Point_Position position;
 	} Point_Address;
 
 	typedef struct tagPoints_ID {
@@ -89,15 +96,15 @@ namespace ce {
 namespace ce {
 	class Curve_Value {
 	public:
-		POINT ctpt[2];
+		POINT control_point[2];
 
 		Curve_Value()
 		{
-			ctpt[0] = { 400, 400 };
-			ctpt[1] = { 600, 600 };
+			control_point[0] = { 400, 400 };
+			control_point[1] = { 600, 600 };
 		}
 
-		int PtInCtpt(POINT cl_pt);
+		int point_in_control_points(POINT cl_pt);
 		void MovePoint(int index, POINT gr_pt);
 	};
 
@@ -195,6 +202,8 @@ BOOL				Init(FILTER*);
 //終了
 BOOL				Exit(FILTER*);
 
+void				LoadConfigsFromIni(FILTER* fp);
+
 //1次元カーブIDを受け取り制御点を変更
 void				ReadValue(int);
 //文字列の分割
@@ -210,7 +219,7 @@ HWND				CreateChild(HWND hwnd, WNDPROC wndProc, LPSTR name, LONG style, int x, i
 
 
 //描画
-void				D2D1_Init(HDC hdc, LPRECT rect_wnd, COLORREF cr);
+void				D2D1_Setup(HDC hdc, LPRECT rect_wnd, COLORREF cr);
 void				D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
 					DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness);
 void				D2D1_DrawHandle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt);

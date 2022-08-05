@@ -58,7 +58,6 @@
 #define CE_CT_SIDE_H			44
 #define CE_CT_EDT_H				30
 #define CE_CT_SEARCH_H			20
-#define CE_BORDER_RADIUS		6
 #define CE_CT_ICON_SIZE			22
 #define CE_CT_APPLY_SIZE		34
 #define CE_CT_APPLY_TEXT		"Apply"
@@ -83,13 +82,6 @@
 #define CE_WM_SHOWHANDLE		2003
 
 #define MATH_PI					3.14159265
-
-//フラグ
-#define BIT(num)				((UINT)1 << num)
-#define CE_EDGE_LT				BIT(0)
-#define CE_EDGE_LB				BIT(1)
-#define CE_EDGE_RT				BIT(2)
-#define CE_EDGE_RB				BIT(3)
 
 //フォント
 #define CE_FONT					"Roboto"
