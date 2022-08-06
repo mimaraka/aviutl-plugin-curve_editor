@@ -1,5 +1,6 @@
 # Curve Editor for AviUtl v0.1
-マルチベジェ軌道をウィンドウ上で編集できるAviUtlプラグインです。
+マルチベジェ軌道をウィンドウ上で編集できるAviUtlプラグインです。  
+![スクリーンショット 2022-08-06 193736](https://user-images.githubusercontent.com/106879397/183245391-bb7a1603-3054-441d-b912-807098646cb9.png)
 
 ## ダウンロード
 
