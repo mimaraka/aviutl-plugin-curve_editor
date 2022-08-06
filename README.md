@@ -3,6 +3,7 @@
 ![スクリーンショット 2022-08-06 193736](https://user-images.githubusercontent.com/106879397/183245391-bb7a1603-3054-441d-b912-807098646cb9.png)
 
 ## ダウンロード
+現在開発中のため配布は行っていません。
 
 ## インストール
 同梱されている「curve_editor.auf」をaviutl.exeのあるフォルダもしくはpluginsフォルダ内に入れ、「@Curve Editor.tra」をscriptフォルダまたはその下のフォルダに入れてください。
