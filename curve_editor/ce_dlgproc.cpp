@@ -16,7 +16,7 @@
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（設定ダイアログ）
 //---------------------------------------------------------------------
-BOOL CALLBACK DlgProc_Settings(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK wndproc_daialog_settings(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HDC hdc, hdc_mem;
 	static HWND hCombo, hCombo2;
@@ -65,7 +65,7 @@ BOOL CALLBACK DlgProc_Settings(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（カーブ値の設定）
 //---------------------------------------------------------------------
-BOOL CALLBACK DlgProc_Value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	TCHAR chBuffer[30];
 	std::regex re(R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)");
@@ -106,7 +106,7 @@ BOOL CALLBACK DlgProc_Value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		Dialog Procedure (Read)
 //---------------------------------------------------------------------
-BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK wndproc_daialog_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	HWND hEdit;
 	TCHAR chBuffer[12];
@@ -145,7 +145,7 @@ BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 					MessageBox(hDlg, FLSTR_OUTOFRANGE, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
-				ReadValue(intValue);
+				read_value(intValue);
 				EndDialog(hDlg, 1);
 			}
 			else if (g_config.alert)MessageBox(hDlg, FLSTR_WRONGINPUTVALUES, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
@@ -162,7 +162,7 @@ BOOL CALLBACK DlgProc_Read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（カーブ保存ダイアログ）
 //---------------------------------------------------------------------
-BOOL CALLBACK DlgProc_Save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//4次元カーブ!Dを生成
 	HDC hdc;
@@ -171,7 +171,7 @@ BOOL CALLBACK DlgProc_Save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 	LPCTSTR lpsResult;
 	std::string strBuffer;
 	TCHAR chBuffer[64];
-	strBuffer = Create4DValue();
+	strBuffer = create_value_4d();
 	lpsResult = strBuffer.c_str();
 
 	switch (msg) {

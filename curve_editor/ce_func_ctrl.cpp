@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL ce::Control::Create(HWND hwnd_p, WNDPROC exWndProc, LPSTR name, LPCTSTR icon, int ct_id, int x, int y, int w, int h, int fl)
+BOOL ce::Control::create(HWND hwnd_p, WNDPROC exWndProc, LPSTR name, LPCTSTR icon, int ct_id, int x, int y, int w, int h, int fl)
 {
 	WNDCLASSEX tmp;
 	id					= ct_id;
@@ -21,7 +21,7 @@ BOOL ce::Control::Create(HWND hwnd_p, WNDPROC exWndProc, LPSTR name, LPCTSTR ico
 	if (exWndProc != NULL)
 		tmp.lpfnWndProc	= exWndProc;
 	else
-		tmp.lpfnWndProc	= MessageRouter;
+		tmp.lpfnWndProc	= message_router;
 	tmp.cbClsExtra	= 0;
 	tmp.cbWndExtra	= 0;
 	tmp.hInstance		= g_fp->dll_hinst;
@@ -54,7 +54,7 @@ BOOL ce::Control::Create(HWND hwnd_p, WNDPROC exWndProc, LPSTR name, LPCTSTR ico
 //---------------------------------------------------------------------
 //		コントロールを移動
 //---------------------------------------------------------------------
-void ce::Control::Move(int x, int y, int w, int h)
+void ce::Control::move(int x, int y, int w, int h)
 {
 	MoveWindow(hwnd, x, y, w, h, TRUE);
 }
@@ -63,7 +63,7 @@ void ce::Control::Move(int x, int y, int w, int h)
 //---------------------------------------------------------------------
 //		仮ウィンドウプロシージャ
 //---------------------------------------------------------------------
-LRESULT CALLBACK ce::Control::MessageRouter(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK ce::Control::message_router(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	Control* app;
 	if (msg == WM_CREATE) {
@@ -74,14 +74,14 @@ LRESULT CALLBACK ce::Control::MessageRouter(HWND hwnd, UINT msg, WPARAM wparam, 
 	else {
 		app = (Control*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	}
-	return app->wndProc(hwnd, msg, wparam, lparam);
+	return app->wndproc(hwnd, msg, wparam, lparam);
 }
 
 
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（メンバ）
 //---------------------------------------------------------------------
-LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HWND hwnd_parent;
 	HDC hdc;
@@ -132,11 +132,11 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		);
 		if (this != nullptr) {
 			if (clicked)
-				D2D1_Setup(hdc_mem, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
+				d2d_setup(hdc_mem, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
 			else if (hovered)
-				D2D1_Setup(hdc_mem, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
+				d2d_setup(hdc_mem, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
 			else
-				D2D1_Setup(hdc_mem, &rect_wnd, color);
+				d2d_setup(hdc_mem, &rect_wnd, color);
 
 
 			if (g_render_target != NULL && g_d2d1_factory != NULL) {
@@ -269,11 +269,11 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		);
 	
 		if (clicked)
-			D2D1_Setup(hdc_mem, &rect_wnd, TO_BGR(BRIGHTEN(color, CE_CT_BR_CLICKED)));
+			d2d_setup(hdc_mem, &rect_wnd, TO_BGR(BRIGHTEN(color, CE_CT_BR_CLICKED)));
 		else if (hovered)
-			D2D1_Setup(hdc_mem, &rect_wnd, TO_BGR(BRIGHTEN(color, CE_CT_BR_HOVERED)));
+			d2d_setup(hdc_mem, &rect_wnd, TO_BGR(BRIGHTEN(color, CE_CT_BR_HOVERED)));
 		else
-			D2D1_Setup(hdc_mem, &rect_wnd, TO_BGR(color));
+			d2d_setup(hdc_mem, &rect_wnd, TO_BGR(color));
 
 		//icon
 		SelectObject(hdc_mem, font);

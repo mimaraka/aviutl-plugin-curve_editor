@@ -70,10 +70,10 @@ FILTER_DLL g_filter = {
 	NULL,NULL,
 	NULL,NULL,NULL,
 	NULL,
-	Init,
-	Exit,
+	initialize,
+	exit,
 	NULL,
-	WndProc_Base,
+	wndproc_base,
 	NULL,NULL,
 	NULL,
 	NULL,
@@ -89,7 +89,7 @@ FILTER_DLL g_filter = {
 //---------------------------------------------------------------------
 
 //ˆ—ŠÖ”
-int getResult(lua_State* L)
+int get_result(lua_State* L)
 {
 	int		index	= lua_tointeger(L, 1);
 	double	ratio	= lua_tonumber(L, 2);
@@ -97,13 +97,13 @@ int getResult(lua_State* L)
 	double	ed		= lua_tonumber(L, 4);
 
 	if (index < 0 || index > CE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_curve_id[index].GetValue(ratio, st, ed));
+	else lua_pushnumber(L, g_curve_id[index].get_value(ratio, st, ed));
 	return 1;
 }
 
 //ŠÖ”ƒe[ƒuƒ‹
 static luaL_Reg functions[] = {
-	{ "getResult", getResult },
+	{ "get_result", get_result },
 	{ nullptr, nullptr }
 };
 

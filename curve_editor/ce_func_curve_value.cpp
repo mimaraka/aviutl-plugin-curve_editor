@@ -13,16 +13,16 @@
 int ce::Curve_Value::point_in_control_points(POINT cl_pt)
 {
 	RECT rcCtpt1 = {
-		ToClient(control_point[0]).x - CE_POINT_RANGE,
-		ToClient(control_point[0]).y - CE_POINT_RANGE,
-		ToClient(control_point[0]).x + CE_POINT_RANGE,
-		ToClient(control_point[0]).y + CE_POINT_RANGE
+		to_client(control_point[0]).x - CE_POINT_RANGE,
+		to_client(control_point[0]).y - CE_POINT_RANGE,
+		to_client(control_point[0]).x + CE_POINT_RANGE,
+		to_client(control_point[0]).y + CE_POINT_RANGE
 	};
 	RECT rcCtpt2 = {
-		ToClient(control_point[1]).x - CE_POINT_RANGE,
-		ToClient(control_point[1]).y - CE_POINT_RANGE,
-		ToClient(control_point[1]).x + CE_POINT_RANGE,
-		ToClient(control_point[1]).y + CE_POINT_RANGE
+		to_client(control_point[1]).x - CE_POINT_RANGE,
+		to_client(control_point[1]).y - CE_POINT_RANGE,
+		to_client(control_point[1]).x + CE_POINT_RANGE,
+		to_client(control_point[1]).y + CE_POINT_RANGE
 	};
 	if (PtInRect(&rcCtpt2, cl_pt))
 		return 2;
@@ -33,9 +33,9 @@ int ce::Curve_Value::point_in_control_points(POINT cl_pt)
 
 
 //---------------------------------------------------------------------
-//		Move Point
+//		move Point
 //---------------------------------------------------------------------
-void ce::Curve_Value::MovePoint(int index, POINT gr_pt)
+void ce::Curve_Value::move_point(int index, POINT gr_pt)
 {
 	static POINT ptLock;
 	static BOOL bShiftKey, bCtrlKey, bAltKey;

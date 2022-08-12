@@ -19,10 +19,10 @@ EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void)
 //---------------------------------------------------------------------
 //		初期化時に実行される関数
 //---------------------------------------------------------------------
-BOOL Init(FILTER* fp)
+BOOL initialize(FILTER* fp)
 {
 	g_fp = fp;
-	LoadConfigsFromIni(fp);
+	ini_load_configs(fp);
 
 	return TRUE;
 }
@@ -31,7 +31,7 @@ BOOL Init(FILTER* fp)
 //---------------------------------------------------------------------
 //		終了時に実行される関数
 //---------------------------------------------------------------------
-BOOL Exit(FILTER* fp)
+BOOL exit(FILTER* fp)
 {
 	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.control_point[0].x);
 	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.control_point[0].y);
@@ -54,7 +54,7 @@ BOOL Exit(FILTER* fp)
 //---------------------------------------------------------------------
 //		aviutl.iniから設定を読み込み
 //---------------------------------------------------------------------
-void LoadConfigsFromIni(FILTER* fp)
+void ini_load_configs(FILTER* fp)
 {
 	g_config.theme = fp->exfunc->ini_load_int(fp, "theme", 0);
 	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", 1);
@@ -75,13 +75,13 @@ void LoadConfigsFromIni(FILTER* fp)
 //---------------------------------------------------------------------
 //		子ウィンドウを生成
 //---------------------------------------------------------------------
-HWND CreateChild(HWND hwnd, WNDPROC wndProc, LPSTR name, LONG style, int x, int y, int width, int height)
+HWND create_child(HWND hwnd, WNDPROC wndproc, LPSTR name, LONG style, int x, int y, int width, int height)
 {
 	HWND hCld;
 	WNDCLASSEX tmp;
 	tmp.cbSize		= sizeof(tmp);
 	tmp.style			= CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-	tmp.lpfnWndProc	= wndProc;
+	tmp.lpfnWndProc	= wndproc;
 	tmp.cbClsExtra	= 0;
 	tmp.cbWndExtra	= 0;
 	tmp.hInstance		= g_fp->dll_hinst;
@@ -113,7 +113,7 @@ HWND CreateChild(HWND hwnd, WNDPROC wndProc, LPSTR name, LONG style, int x, int 
 //---------------------------------------------------------------------
 //		1次元カーブIDを受け取りグラフに適用
 //---------------------------------------------------------------------
-void ReadValue(int value)
+void read_value(int value)
 {
 	UINT usint;
 	if (value < 0) usint = value + 2147483647;
@@ -156,7 +156,7 @@ std::vector<std::string> split(const std::string& s, TCHAR c)
 //---------------------------------------------------------------------
 //		4次元カーブIDを生成
 //---------------------------------------------------------------------
-std::string Create4DValue()
+std::string create_value_4d()
 {
 	FLOAT ptx, pty;
 	std::string strx, stry, strResult;
@@ -178,7 +178,7 @@ std::string Create4DValue()
 //---------------------------------------------------------------------
 //		1次元カーブIDを生成
 //---------------------------------------------------------------------
-int Create1DValue()
+int create_value_1d()
 {
 	int result;
 	int x1, y1, x2, y2;
@@ -199,7 +199,7 @@ int Create1DValue()
 //---------------------------------------------------------------------
 //		クリップボードにテキストをコピー
 //---------------------------------------------------------------------
-BOOL CopyToClipboard(HWND hwnd, LPCTSTR lpsText)
+BOOL copy_to_clipboard(HWND hwnd, LPCTSTR lpsText)
 {
 	HGLOBAL hMem;
 	LPTSTR lpsBuffer;

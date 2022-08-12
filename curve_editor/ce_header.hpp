@@ -105,7 +105,7 @@ namespace ce {
 		}
 
 		int point_in_control_points(POINT cl_pt);
-		void MovePoint(int index, POINT gr_pt);
+		void move_point(int index, POINT gr_pt);
 	};
 
 	class Curve_ID {
@@ -129,32 +129,32 @@ namespace ce {
 			control_points.emplace_back(pt_add[1]);
 		}
 
-		void				addPoint(POINT cl_pt);
-		void				DeletePoint(POINT cl_pt);
-		POINT				GetPoint(Point_Address address);
-		void				MovePoint(Point_Address address, POINT gr_pt, BOOL bReset);
-		Point_Address		PtIncontrol_points(POINT cl_pt);
-		double				GetHandleAngle(Point_Address address);
-		void				CorrectHandle(Point_Address address, double angle);
-		void				SetHandleAngle(Point_Address address, double angle, BOOL bLength, double lgth);
-		void				ReversePoints();
-		double				GetValue(double ratio, double st, double ed);
+		void				add_point(POINT cl_pt);
+		void				delete_point(POINT cl_pt);
+		POINT				get_point(Point_Address address);
+		void				move_point(Point_Address address, POINT gr_pt, BOOL bReset);
+		Point_Address		pt_in_control_points(POINT cl_pt);
+		double				get_handle_angle(Point_Address address);
+		void				correct_handle(Point_Address address, double angle);
+		void				set_handle_angle(Point_Address address, double angle, BOOL bLength, double lgth);
+		void				reverse_points();
+		double				get_value(double ratio, double st, double ed);
 	};
 
 	class Control {
 		int flag;
 		LPCTSTR icon;
 		COLORREF& color;
-		static LRESULT CALLBACK MessageRouter(HWND, UINT, WPARAM, LPARAM);
+		static LRESULT CALLBACK message_router(HWND, UINT, WPARAM, LPARAM);
 	public:
 		HWND hwnd;
 		int id;
 
 		Control(COLORREF& col) : color{ col } {}
 
-		BOOL				Create(HWND hwnd_p, WNDPROC exWndProc, LPSTR name, LPCTSTR icon, int ct_id, int x, int y, int w, int h, int fl);
-		void				Move(int x, int y, int w, int h);
-		LRESULT CALLBACK	wndProc(HWND, UINT, WPARAM, LPARAM);
+		BOOL				create(HWND hwnd_p, WNDPROC exWndProc, LPSTR name, LPCTSTR icon, int ct_id, int x, int y, int w, int h, int fl);
+		void				move(int x, int y, int w, int h);
+		LRESULT CALLBACK	wndproc(HWND, UINT, WPARAM, LPARAM);
 	};
 
 	//プリセット
@@ -197,66 +197,64 @@ extern ID2D1DCRenderTarget*					g_render_target;
 EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void);
 
 //初期化
-BOOL				Init(FILTER*);
+BOOL				initialize(FILTER*);
 
 //終了
-BOOL				Exit(FILTER*);
+BOOL				exit(FILTER*);
 
-void				LoadConfigsFromIni(FILTER* fp);
+void				ini_load_configs(FILTER* fp);
 
 //1次元カーブIDを受け取り制御点を変更
-void				ReadValue(int);
+void				read_value(int);
 //文字列の分割
 std::vector<std::string> split(const std::string& s, TCHAR c);
 //現在の制御点の座標から4次元カーブID(文字列)を生成
-std::string			Create4DValue();
+std::string			create_value_4d();
 //現在の制御点の座標から1次元カーブID(数値)を生成
-int					Create1DValue();
+int					create_value_1d();
 //クリップボードにテキストをコピー
-BOOL				CopyToClipboard(HWND, LPCTSTR);
+BOOL				copy_to_clipboard(HWND, LPCTSTR);
 //子ウィンドウを作成
-HWND				CreateChild(HWND hwnd, WNDPROC wndProc, LPSTR name, LONG style, int x, int y, int width, int height);
+HWND				create_child(HWND hwnd, WNDPROC wndproc, LPSTR name, LONG style, int x, int y, int width, int height);
 
 
 //描画
-void				D2D1_Setup(HDC hdc, LPRECT rect_wnd, COLORREF cr);
-void				D2D1_DrawBezier(ID2D1SolidColorBrush* pBrush,
+void				d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr);
+void				d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 					DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness);
-void				D2D1_DrawHandle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt);
-void				DrawMain(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				DrawSide(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				DrawLibrary(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				DrawEditor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				DrawGraph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd);
+void				d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt);
+void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+void				draw_side(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+void				draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+void				draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+void				draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd);
 
 
 //ダイアログプロシージャ
-BOOL CALLBACK		DlgProc_About(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		DlgProc_Custom(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		DlgProc_Settings(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		DlgProc_Value(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		DlgProc_Read(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		DlgProc_Save(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		wndproc_daialog_settings(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		wndproc_daialog_value(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		wndproc_daialog_read(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		wndproc_daialog_save(HWND, UINT, WPARAM, LPARAM);
 
 
 //ウィンドウプロシージャ
-BOOL				WndProc_Base(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
-LRESULT CALLBACK	WndProc_Main(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	WndProc_Editor(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	WndProc_Side(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	WndProc_Graph(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	WndProc_Library(HWND, UINT, WPARAM, LPARAM);
+BOOL				wndproc_base(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
+LRESULT CALLBACK	wndproc_main(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_editor(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_side(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_graph(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_library(HWND, UINT, WPARAM, LPARAM);
 
 //コントロールプロシージャ
-LRESULT CALLBACK	CtrlProc_Apply(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_Value(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_Save(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_Read(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_Mode_Value(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_Mode_ID(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_ID_ID(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_Align(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	CtrlProc_ID_Delete(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_apply(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_value(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_save(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_read(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_mode_value(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_mode_id(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_id(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_align(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_control_id_delete(HWND, UINT, WPARAM, LPARAM);
 
 
 //バグ回避のテスト用
@@ -268,7 +266,7 @@ LRESULT CALLBACK	WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //----------------------------------------------------------------------------------
 
 //グラフ -> クライアント
-inline DoublePoint ToClient(int gr_x, int gr_y)
+inline DoublePoint to_client(int gr_x, int gr_y)
 {
 	return {
 		g_disp_info.o.x + gr_x * g_disp_info.scale.x,
@@ -276,16 +274,16 @@ inline DoublePoint ToClient(int gr_x, int gr_y)
 	};
 }
 
-inline DoublePoint ToClient(POINT gr_pt)
+inline DoublePoint to_client(POINT gr_pt)
 {
 	return {
-		ToClient(gr_pt.x, gr_pt.y).x,
-		ToClient(gr_pt.x, gr_pt.y).y
+		to_client(gr_pt.x, gr_pt.y).x,
+		to_client(gr_pt.x, gr_pt.y).y
 	};
 }
 
 //クライアント -> グラフ
-inline POINT ToGraph(double cl_x, double cl_y)
+inline POINT to_graph(double cl_x, double cl_y)
 {
 	return {
 		(int)((cl_x - g_disp_info.o.x) / g_disp_info.scale.x),
@@ -293,10 +291,10 @@ inline POINT ToGraph(double cl_x, double cl_y)
 	};
 }
 
-inline POINT ToGraph(POINT cl_pt)
+inline POINT to_graph(POINT cl_pt)
 {
 	return {
-		ToGraph(cl_pt.x, cl_pt.y).x,
-		ToGraph(cl_pt.x, cl_pt.y).y
+		to_graph(cl_pt.x, cl_pt.y).x,
+		to_graph(cl_pt.x, cl_pt.y).y
 	};
 }

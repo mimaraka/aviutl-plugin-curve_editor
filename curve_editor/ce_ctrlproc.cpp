@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------
 //		message router
 //---------------------------------------------------------------------
-LRESULT CALLBACK ce::Control::MessageRouter(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK ce::Control::message_router(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	Control* app;
 	if (msg == WM_CREATE) {
@@ -21,14 +21,14 @@ LRESULT CALLBACK ce::Control::MessageRouter(HWND hwnd, UINT msg, WPARAM wparam, 
 	else {
 		app = (Control*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	}
-	return app->wndProc(hwnd, msg, wparam, lparam);
+	return app->wndproc(hwnd, msg, wparam, lparam);
 }
 
 
 //---------------------------------------------------------------------
 //		wndproc (member)
 //---------------------------------------------------------------------
-LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HWND				hwnd_parent;
 	HDC						hdc;
@@ -80,11 +80,11 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CE_FONT_ICON
 		);
 		if (clicked)
-			D2D1_Setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
+			d2d_setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
 		else if (hovered)
-			D2D1_Setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
+			d2d_setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
 		else
-			D2D1_Setup(hdc, &rect_wnd, color);
+			d2d_setup(hdc, &rect_wnd, color);
 
 		if (g_render_target != NULL && g_d2d1_factory != NULL) {
 			g_render_target->BeginDraw();
@@ -158,7 +158,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Apply Button
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK CtrlProc_Apply(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK wndproc_control_apply(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -300,7 +300,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Value Panel
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK CtrlProc_Value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK wndproc_control_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -339,7 +339,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		return 0;
 //
 //	case WM_PAINT:
-//		strBuffer = Create4DValue();
+//		strBuffer = create_value_4d();
 //		lpsResult = strBuffer.c_str();
 //		hfValue = CreateFont(
 //			rect_wnd.right >= MINCTRLSIZE * 0.7143 ? 20 : rect_wnd.right * 0.112, 0,
@@ -434,7 +434,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Mode(Value) Switch
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK CtrlProc_Mode_Value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK wndproc_control_mode_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -557,7 +557,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		Mode(ID) Switch
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK CtrlProc_Mode_ID(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK wndproc_control_mode_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
@@ -680,7 +680,7 @@ LRESULT ce::Control::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 ////---------------------------------------------------------------------
 ////		ID(ID) Button
 ////---------------------------------------------------------------------
-//LRESULT CALLBACK CtrlProc_ID_ID(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//LRESULT CALLBACK wndproc_control_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //{
 //	HDC hdc;
 //	static HWND hwnd_parent, hTool;
