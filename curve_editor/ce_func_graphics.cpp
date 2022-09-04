@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------
 //		Direct2Dを初期化
 //---------------------------------------------------------------------
-void D2D1_Init()
+void d2d_initialize()
 {
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
 	D2D1_RENDER_TARGET_PROPERTIES prop;
@@ -46,7 +46,7 @@ void d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr)
 //		グラフのグリッドを描画(Direct2D)
 //---------------------------------------------------------------------
 void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
-	pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].gr_bg), CE_BR_GRID)));
+	pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GRID)));
 	int kx = std::floor(std::log(CE_GR_RES * g_disp_info.scale.x / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
 	int ky = std::floor(std::log(CE_GR_RES * g_disp_info.scale.y / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
 	int nx = std::pow(CE_GR_GRID_N, kx);
@@ -312,7 +312,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 	};
 
 	//Direct2D初期化
-	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].gr_bg));
+	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_graph));
 
 	//描画
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {
@@ -322,7 +322,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 		//グリッド
 		d2d_draw_grid(pBrush, rect_wnd);
 
-		pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].gr_bg), CE_BR_GR_INVALID)));
+		pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GR_INVALID)));
 		pBrush->SetOpacity(0.5);
 		if (pBrush) {
 			g_render_target->FillRectangle(&rect_left, pBrush);
@@ -335,7 +335,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 		if (!g_config.mode) {
 			//bezier curve (trace)
 			if (g_config.trace) {
-				pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].gr_bg), CE_BR_TRACE)));
+				pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));
 				d2d_draw_bezier(pBrush, ctpt_hs_cl[0], ctpt_hs_cl[1], ctpt_hs_cl[2], ctpt_hs_cl[3], CE_CURVE_TH);
 			}
 			//ベジェ
@@ -357,7 +357,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 			for (int i = 0; i < g_curve_id[g_config.id_current].control_points.size() - 1; i++)
 			{
 				//色を指定
-				pBrush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].gr_bg), CE_GR_POINT_CONTRAST))));
+				pBrush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));
 				g_d2d1_factory->CreateStrokeStyle(
 					D2D1::StrokeStyleProperties(
 						D2D1_CAP_STYLE_FLAT,

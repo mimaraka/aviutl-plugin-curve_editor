@@ -23,7 +23,7 @@ BOOL initialize(FILTER* fp)
 {
 	g_fp = fp;
 	ini_load_configs(fp);
-
+	d2d_initialize();
 	return TRUE;
 }
 
@@ -73,23 +73,47 @@ void ini_load_configs(FILTER* fp)
 
 
 //---------------------------------------------------------------------
+//		XMLから設定を読み込む
+//---------------------------------------------------------------------
+void read_xml_configs()
+{
+	// レイアウト
+
+}
+
+
+//---------------------------------------------------------------------
 //		子ウィンドウを生成
 //---------------------------------------------------------------------
-HWND create_child(HWND hwnd, WNDPROC wndproc, LPSTR name, LONG style, int x, int y, int width, int height)
+HWND create_child(
+	HWND hwnd,
+	WNDPROC wndproc,
+	LPSTR name,
+	LONG style,
+	int x, int y, int width, int height)
+	//int upperleft_x,
+	//int upperleft_y,
+	//int bottomright_x,
+	//int bottomright_y,
+	//int padding_top,
+	//int padding_left,
+	//int padding_bottom,
+	//int padding_right)
 {
 	HWND hCld;
 	WNDCLASSEX tmp;
-	tmp.cbSize		= sizeof(tmp);
+	tmp.cbSize			= sizeof(tmp);
 	tmp.style			= CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-	tmp.lpfnWndProc	= wndproc;
-	tmp.cbClsExtra	= 0;
-	tmp.cbWndExtra	= 0;
+	tmp.lpfnWndProc		= wndproc;
+	tmp.cbClsExtra		= 0;
+	tmp.cbWndExtra		= 0;
 	tmp.hInstance		= g_fp->dll_hinst;
-	tmp.hIcon			= NULL; tmp.hCursor = LoadCursor(NULL, IDC_ARROW);
-	tmp.hbrBackground = NULL;
+	tmp.hIcon			= NULL;
+	tmp.hCursor			= LoadCursor(NULL, IDC_ARROW);
+	tmp.hbrBackground	= NULL;
 	tmp.lpszMenuName	= NULL;
-	tmp.lpszClassName = name;
-	tmp.hIconSm		= NULL;
+	tmp.lpszClassName	= name;
+	tmp.hIconSm			= NULL;
 
 	if (RegisterClassEx(&tmp)) {
 		hCld = CreateWindowEx(
@@ -99,6 +123,10 @@ HWND create_child(HWND hwnd, WNDPROC wndproc, LPSTR name, LONG style, int x, int
 			WS_CHILD | WS_VISIBLE | style,
 			x, y,
 			width, height,
+			/*upperleft_x + padding_left,
+			upperleft_y + padding_top,
+			bottomright_x - upperleft_x - padding_left - padding_right,
+			bottomright_y - upperleft_y - padding_top - padding_bottom,*/
 			hwnd,
 			NULL,
 			g_fp->dll_hinst,

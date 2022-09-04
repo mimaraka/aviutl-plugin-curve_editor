@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
-//		ソースファイル(ウィンドウプロシーじゃ)
+//		ソースファイル(ウィンドウプロシージャ)
 //		VC++ 2022
 //----------------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 	GetClientRect(hwnd, &rect_wnd);
 
 	switch (msg) {
+	// ウィンドウ作成時
 	case WM_FILTER_INIT:
 		SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
 		hwnd_main = create_child(
@@ -351,7 +352,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		////メニュー
 		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_config.lang ? IDR_MENU2 : IDR_MENU1)), 0);
 
-		/*prev_play.create(hwnd, NULL, "prev_play", CE_ICON_PREV, &g_theme_dark.bt_other, CT_PREV,
+		/*prev_play.create(hwnd, NULL, "prev_play", CE_ICON_PREV, &g_theme_dark.bg_others, CT_PREV,
 			rect_wnd.left + CE_MRG, rect_wnd.bottom - CE_MRG - CT_EDITOR_HEIGHT,
 			CT_EDITOR_HEIGHT, CT_EDITOR_HEIGHT
 			);*/
@@ -642,7 +643,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			}
 		}
 		//IDモード
-		else address.position = ce::CONTROLPOINT_NULL;
+		else address.position = ce::CTPT_NULL;
 		ReleaseCapture();
 		return 0;
 

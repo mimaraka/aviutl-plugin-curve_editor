@@ -16,7 +16,6 @@ LRESULT CALLBACK ce::Control::message_router(HWND hwnd, UINT msg, WPARAM wparam,
 	if (msg == WM_CREATE) {
 		app = (Control*)(((LPCREATESTRUCT)lparam)->lpCreateParams);
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)app);
-
 	}
 	else {
 		app = (Control*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
@@ -35,7 +34,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static HDC				hdc_mem;
 	static HBITMAP			bitmap;
 	HBRUSH					brush, brush_old;
-	ID2D1SolidColorBrush*	pBrush;
+	ID2D1SolidColorBrush*	pBrush = NULL;
 	HFONT					font;
 	static RECT				rcBtn;
 	static BOOL				hovered, clicked;
@@ -80,11 +79,11 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CE_FONT_ICON
 		);
 		if (clicked)
-			d2d_setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
+			d2d_setup(hdc_mem, &rect_wnd, BRIGHTEN(color, CE_CT_BR_CLICKED));
 		else if (hovered)
-			d2d_setup(hdc, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
+			d2d_setup(hdc_mem, &rect_wnd, BRIGHTEN(color, CE_CT_BR_HOVERED));
 		else
-			d2d_setup(hdc, &rect_wnd, color);
+			d2d_setup(hdc_mem, &rect_wnd, color);
 
 		if (g_render_target != NULL && g_d2d1_factory != NULL) {
 			g_render_target->BeginDraw();
@@ -92,10 +91,6 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
 			g_render_target->EndDraw();
 		}
-
-		brush_old = (HBRUSH)SelectObject(hdc_mem, brush);
-		FillRect(hdc_mem, &rcBtn, brush);
-		DeleteObject(brush);
 
 		//icon
 		SelectObject(hdc_mem, font);
@@ -111,7 +106,6 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		EndPaint(hwnd, &ps);
 		DeleteDC(hdc);
 
-		SelectObject(hdc_mem, brush_old);
 		return 0;
 
 	case WM_MOUSEMOVE:

@@ -9,7 +9,7 @@
 
 #define CE_CT_POS_MODE_VALUE(rc)	CE_MRG, CE_MRG, (rc.right - 2 * CE_MRG) * 0.5, CE_CT_SIDE_H
 #define CE_CT_POS_MODE_ID(rc)		rc.right * 0.5, CE_MRG, (rc.right - 2 * CE_MRG) * 0.5, CE_CT_SIDE_H
-#define CE_CT_POS_APPLY(rc)			CE_MRG, CE_MRG + CE_CT_SIDE_H, rc.right - 2 * CE_MRG, CE_CT_APPLY_H
+#define CE_CT_POS_APPLY(rc)			0, CE_CT_SIDE_H, rc.right, CE_CT_APPLY_H
 #define CE_CT_POS_SAVE(rc)			CE_MRG, CE_MRG + CE_CT_SIDE_H + CE_CT_APPLY_H, (rc.right - 2 * CE_MRG) * 0.25, CE_CT_SIDE_H
 #define CE_CT_POS_READ(rc)			CE_MRG + (rc.right - 2 * CE_MRG) * 0.25, CE_MRG + CE_CT_SIDE_H + CE_CT_APPLY_H, (rc.right - 2 * CE_MRG) * 0.25, CE_CT_SIDE_H
 #define CE_CT_POS_ALIGN(rc)			CE_MRG + (rc.right - 2 * CE_MRG) * 0.5, CE_MRG + CE_CT_SIDE_H + CE_CT_APPLY_H, (rc.right - 2 * CE_MRG) * 0.25, CE_CT_SIDE_H

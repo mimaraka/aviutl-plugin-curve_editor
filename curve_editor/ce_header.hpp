@@ -30,12 +30,12 @@ namespace ce {
 		COLORREF
 			bg,
 			bg_window,
-			gr_bg,
+			bg_graph,
 			curve,
 			handle,
 			bt_apply,
 			bt_tx,
-			bt_other;
+			bg_others;
 		COLORREF reserved[10];
 	} Theme;
 
@@ -49,11 +49,17 @@ namespace ce {
 			prev;
 	} Window;
 
+	typedef struct tagWindow_Position {
+		RECT
+			rect_wnd,
+			padding;
+	} Window_Position;
+
 	typedef enum tagPoint_Position {
-		CONTROLPOINT_NULL,
-		CONTROLPOINT_CENTER,
-		CONTROLPOINT_LEFT,
-		CONTROLPOINT_RIGHT
+		CTPT_NULL,
+		CTPT_CENTER,
+		CTPT_LEFT,
+		CTPT_RIGHT
 	} Point_Position;
 
 	typedef struct tagPoint_Address {
@@ -157,6 +163,44 @@ namespace ce {
 		LRESULT CALLBACK	wndproc(HWND, UINT, WPARAM, LPARAM);
 	};
 
+	class Control_Test
+	{
+		TCHAR WINDOW_CLASS_NAME[1024];
+
+		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	private:
+		HWND hwnd;
+		HINSTANCE hinstance;
+	public:
+		Control_Test();
+		virtual ~Control_Test();
+
+		// ウィンドウ定義用メンバ関数
+		bool regist_window(
+			const TCHAR* window_class_name,
+			const HINSTANCE hinst
+		);
+
+		// ウィンドウプロシージャ
+		virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+		HWND get_hwnd()const { return hwnd; }
+		HINSTANCE get_hinstance()const { return hinstance; }
+
+		// ウィンドウ作成用メンバ関数
+		bool create_window(
+			LPCTSTR window_name,	//ウィンドウ名
+			DWORD style,			//ウィンドウスタイル
+			int x,					//ウィンドウの横方向の位置
+			int y,					//ウィンドウの縦方向の位置
+			int width,				//ウィンドウの幅
+			int height,				//ウィンドウの高さ
+			HWND hwnd_parent,		//親ウィンドウまたはオーナーウィンドウのハンドル
+			HMENU menu				//メニューハンドルまたは子ウィンドウ ID
+		);
+	};
+
+
 	//プリセット
 	typedef struct tagPreset_Value {
 		LPCTSTR name;
@@ -215,10 +259,33 @@ int					create_value_1d();
 //クリップボードにテキストをコピー
 BOOL				copy_to_clipboard(HWND, LPCTSTR);
 //子ウィンドウを作成
-HWND				create_child(HWND hwnd, WNDPROC wndproc, LPSTR name, LONG style, int x, int y, int width, int height);
+HWND				create_child(
+						HWND hwnd,
+						WNDPROC wndproc,
+						LPSTR name,
+						LONG style,
+						int x,
+						int y,
+						int width,
+						int height);
+
+//HWND				create_child(
+//	HWND hwnd,
+//	WNDPROC wndproc,
+//	LPSTR name,
+//	LONG style,
+//	int upperleft_x,
+//	int upperleft_y,
+//	int bottomright_x,
+//	int bottomright_y,
+//	int padding_top,
+//	int padding_left,
+//	int padding_bottom,
+//	int padding_right);
 
 
 //描画
+void				d2d_initialize();
 void				d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr);
 void				d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 					DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness);

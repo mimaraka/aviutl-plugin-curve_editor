@@ -39,10 +39,10 @@ void ce::Curve_ID::add_point(POINT gr_pt)
 
 	//両隣の左右の点が中央の点より右/左に出ていたら修正
 	
-	tmp = { index - 1, CONTROLPOINT_RIGHT };
+	tmp = { index - 1, CTPT_RIGHT };
 	correct_handle(tmp, get_handle_angle(tmp));
 	
-	tmp = { index + 1, CONTROLPOINT_LEFT };
+	tmp = { index + 1, CTPT_LEFT };
 	correct_handle(tmp, get_handle_angle(tmp));
 	
 }
@@ -111,13 +111,13 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 			control_points[address.index].pt_right.x - control_points[address.index].pt_center.x,
 			control_points[address.index].pt_right.y - control_points[address.index].pt_center.y,
 		};
-		tmp = { address.index - 1, CONTROLPOINT_RIGHT };
+		tmp = { address.index - 1, CTPT_RIGHT };
 		agl_prev = get_handle_angle(tmp);
-		tmp = { address.index + 1, CONTROLPOINT_LEFT };
+		tmp = { address.index + 1, CTPT_LEFT };
 		agl_next = get_handle_angle(tmp);
-		tmp = { address.index, CONTROLPOINT_LEFT };
+		tmp = { address.index, CTPT_LEFT };
 		agl_left = get_handle_angle(tmp);
-		tmp = { address.index, CONTROLPOINT_RIGHT };
+		tmp = { address.index, CTPT_RIGHT };
 		agl_right = get_handle_angle(tmp);
 
 		len_left = DISTANCE(control_points[address.index].pt_center, control_points[address.index].pt_left);
@@ -145,17 +145,17 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 
 		//左右両端のハンドル補正
 		if (control_points[address.index].type > 1) {//拡張制御点だった場合
-			tmp = { address.index, CONTROLPOINT_LEFT };//左  O-----[]
+			tmp = { address.index, CTPT_LEFT };//左  O-----[]
 			correct_handle(tmp, agl_left);
-			tmp = { address.index, CONTROLPOINT_RIGHT };//右 []-----O
+			tmp = { address.index, CTPT_RIGHT };//右 []-----O
 			correct_handle(tmp, agl_right);
 
 			control_points[address.index - 1].pt_right = prevright;
 			control_points[address.index + 1].pt_left = nextleft;
 
-			tmp = { address.index - 1, CONTROLPOINT_RIGHT };//右 []-----O (前の制御点群)
+			tmp = { address.index - 1, CTPT_RIGHT };//右 []-----O (前の制御点群)
 			correct_handle(tmp, agl_prev);
-			tmp = { address.index + 1, CONTROLPOINT_LEFT };//左  O-----[] (次の制御点群)
+			tmp = { address.index + 1, CTPT_LEFT };//左  O-----[] (次の制御点群)
 			correct_handle(tmp, agl_next);
 		}
 		break;
@@ -171,7 +171,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 		//整列(角度)
 		if (g_config.align_mode == 1) {
 			agl_tmp = get_handle_angle(address);
-			tmp = { address.index, CONTROLPOINT_RIGHT };
+			tmp = { address.index, CTPT_RIGHT };
 			set_handle_angle(tmp, agl_tmp + MATH_PI, TRUE, len_right);
 		}
 		break;
@@ -187,7 +187,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 		//整列(角度)
 		if (g_config.align_mode == 1) {
 			agl_tmp = get_handle_angle(address);
-			tmp = { address.index, CONTROLPOINT_LEFT };
+			tmp = { address.index, CTPT_LEFT };
 			set_handle_angle(tmp, agl_tmp + MATH_PI, TRUE, len_left);
 		}
 		break;
@@ -222,13 +222,13 @@ ce::Point_Address ce::Curve_ID::pt_in_control_points(POINT cl_pt)
 		};
 
 		if (PtInRect(&rcLeft, cl_pt) && control_points[i].type != 0)
-			return { i, CONTROLPOINT_LEFT };
+			return { i, CTPT_LEFT };
 		else if (PtInRect(&rcRight, cl_pt) && control_points[i].type != 1)
-			return { i, CONTROLPOINT_RIGHT };
+			return { i, CTPT_RIGHT };
 		else if (PtInRect(&rcCenter, cl_pt) && control_points[i].type > 1)
-			return { i, CONTROLPOINT_CENTER };
+			return { i, CTPT_CENTER };
 	}
-	ce::Point_Address control_point_null = { 0, CONTROLPOINT_NULL };
+	ce::Point_Address control_point_null = { 0, CTPT_NULL };
 	return control_point_null;
 }
 
@@ -255,10 +255,10 @@ double ce::Curve_ID::get_handle_angle(Point_Address address)
 	//x, yがともに0のとき
 	if (dstx == 0 && dsty == 0) {
 		//左
-		if (address.position == CONTROLPOINT_LEFT)
+		if (address.position == CTPT_LEFT)
 			return MATH_PI;
 		//右
-		else if (address.position == CONTROLPOINT_RIGHT)
+		else if (address.position == CTPT_RIGHT)
 			return 0;
 	}
 	angle = std::atan2(dsty, dstx);
@@ -283,7 +283,7 @@ void ce::Curve_ID::set_handle_angle(Point_Address address, double angle, BOOL bL
 		correct_handle(address, angle);
 	}
 	//右-right
-	else if (address.position == CONTROLPOINT_RIGHT &&
+	else if (address.position == CTPT_RIGHT &&
 			control_points[address.index].type != 1) {
 		length = bLength ? lgth : DISTANCE(
 			control_points[address.index].pt_center,

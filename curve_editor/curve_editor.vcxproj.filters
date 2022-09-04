@@ -33,16 +33,16 @@
     <ClCompile Include="ce_func_graphics.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_func_curve_value.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="ce_func_curve_id.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="ce_ctrlproc_dlg.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ce_func_ctrl.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ce_curve_id.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ce_curve_value.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

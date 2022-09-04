@@ -168,12 +168,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ce_ctrlproc.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ce_ctrlproc_dlg.cpp" />
+    <ClCompile Include="ce_curve_id.cpp" />
+    <ClCompile Include="ce_curve_value.cpp" />
     <ClCompile Include="ce_dlgproc.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -191,8 +193,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="ce_func_ctrl.cpp" />
-    <ClCompile Include="ce_func_curve_id.cpp" />
-    <ClCompile Include="ce_func_curve_value.cpp" />
     <ClCompile Include="ce_func_graphics.cpp" />
     <ClCompile Include="ce_main.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>

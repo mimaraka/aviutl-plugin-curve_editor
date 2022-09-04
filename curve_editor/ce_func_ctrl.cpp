@@ -16,21 +16,21 @@ BOOL ce::Control::create(HWND hwnd_p, WNDPROC exWndProc, LPSTR name, LPCTSTR ico
 	id					= ct_id;
 	icon				= icon;
 	flag				= fl;
-	tmp.cbSize		= sizeof(tmp);
+	tmp.cbSize			= sizeof(tmp);
 	tmp.style			= CS_HREDRAW | CS_VREDRAW;
 	if (exWndProc != NULL)
 		tmp.lpfnWndProc	= exWndProc;
 	else
 		tmp.lpfnWndProc	= message_router;
-	tmp.cbClsExtra	= 0;
-	tmp.cbWndExtra	= 0;
+	tmp.cbClsExtra		= 0;
+	tmp.cbWndExtra		= 0;
 	tmp.hInstance		= g_fp->dll_hinst;
 	tmp.hIcon			= NULL;
-	tmp.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	tmp.hCursor			= LoadCursor(NULL, IDC_ARROW);
 	tmp.hbrBackground	= NULL;
 	tmp.lpszMenuName	= NULL;
-	tmp.lpszClassName = name;
-	tmp.hIconSm		= NULL;
+	tmp.lpszClassName	= name;
+	tmp.hIconSm			= NULL;
 
 	if (RegisterClassEx(&tmp)) {
 		hwnd = CreateWindowEx(
