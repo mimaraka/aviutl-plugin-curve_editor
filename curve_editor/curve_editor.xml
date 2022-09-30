@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-16"?>
 <config>
-    <layout def_margin="8">
+    <layout default_margin="8">
         <window id="main" margin="none">
             <window id="side" margin="none">
                 <line height="144">
