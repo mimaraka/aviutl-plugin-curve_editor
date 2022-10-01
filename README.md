@@ -1,6 +1,6 @@
 # Curve Editor for AviUtl v0.1
 ベジェ曲線のイージングをウィンドウ上で編集できるAviUtlプラグインです。  
-![スクリーンショット 2022-08-06 193736](https://user-images.githubusercontent.com/106879397/183245391-bb7a1603-3054-441d-b912-807098646cb9.png)
+![スクリーンショット 2022-10-01 170054](https://user-images.githubusercontent.com/106879397/193399542-45d1b0ae-7eac-4150-aeb5-5678cb52e802.png)
 
 ## ダウンロード
 現在開発中のため配布は行っていません。
