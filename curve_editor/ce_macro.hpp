@@ -65,6 +65,7 @@
 #define CE_WD_SIDE_MINW			120
 #define CE_WD_EDT_MINW			200
 #define CE_WD_PREV_W			30
+#define CE_SUBTRACT_LENGTH		10
 
 //明るさ
 #define CE_BR_GRID				25
@@ -82,26 +83,6 @@
 #define CE_WM_SHOWHANDLE		2003
 
 #define MATH_PI					3.14159265
-
-//フォント
-#define CE_FONT					"Roboto"
-#define CE_FONT_ICON			"ce_font_icon"
-#define CE_FONT_MEDIUM			"Roboto Medium"
-#define CE_FONT_BOLD			"Roboto Bold"
-#define CE_FONT_JA				"ce_font_ja"
-
-//icon
-#define CE_ICON_SAVE			"A"
-#define CE_ICON_READ			"B"
-#define CE_ICON_ALIGN			"C"
-#define CE_ICON_PREF			"D"
-#define CE_ICON_PREV			"E"
-#define CE_ICON_FIT				"F"
-#define CE_ICON_BACK			"G"
-#define CE_ICON_NEXT			"H"
-#define CE_ICON_DELETE			"I"
-#define CE_ICON_CHECK			"J"
-#define CE_ICON_DOWN			"K"
 
 //正規表現
 #define CE_REGEX_VALUE			R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
@@ -130,4 +111,3 @@
 #define BRIGHTEN(ref,num)					(RGB(GetRValue(ref) + num, GetGValue(ref) + num, GetBValue(ref) + num))
 #define INVERT(ref)							(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
 #define CONTRAST(ref,val)					(RGB(MINMAXLIM(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetBValue(ref) - 127) * val, 0, 255)))
-#define SUBTRACTLEN(pt_src, pt_dst, len)	

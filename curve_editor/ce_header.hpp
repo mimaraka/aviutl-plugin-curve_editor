@@ -259,6 +259,9 @@ std::string			create_value_4d();
 int					create_value_1d();
 //クリップボードにテキストをコピー
 BOOL				copy_to_clipboard(HWND, LPCTSTR);
+
+DoublePoint subtract_length(DoublePoint st, DoublePoint ed, double length);
+
 //子ウィンドウを作成
 HWND				create_child(
 						HWND hwnd,

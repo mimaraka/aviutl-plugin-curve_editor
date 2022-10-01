@@ -128,7 +128,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY,
 			0,
-			CE_FONT_ICON
+			NULL
 		);
 		if (this != nullptr) {
 			if (clicked)
@@ -256,7 +256,7 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		///////////////////////////////////////////
 	case WM_PAINT:
 		font = CreateFont(
-			CE_CT_APPLY_SIZE, 0,
+			24, 0,
 			0, 0,
 			FW_NORMAL,
 			FALSE, FALSE, FALSE,
@@ -265,7 +265,7 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY,
 			0,
-			CE_FONT_MEDIUM
+			NULL
 		);
 	
 		if (clicked)

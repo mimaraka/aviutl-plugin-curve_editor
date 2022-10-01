@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
-//		curve editor
-//		source file (functions)
-//		(Visual C++ 2019)
+//		Curve Editor
+//		ソースファイル (関数)
+//		(Visual C++ 2022)
 //----------------------------------------------------------------------------------
 
 #include "ce_header.hpp"
@@ -78,6 +78,7 @@ void ini_load_configs(FILTER* fp)
 void read_xml_configs()
 {
 	// レイアウト
+	//xmlパーサ(msxml)
 
 }
 
@@ -241,4 +242,23 @@ BOOL copy_to_clipboard(HWND hwnd, LPCTSTR lpsText)
 	SetClipboardData(CF_TEXT, hMem);
 	CloseClipboard();
 	return TRUE;
+}
+
+
+//---------------------------------------------------------------------
+//		for UI
+//---------------------------------------------------------------------
+DoublePoint subtract_length(DoublePoint st, DoublePoint ed, double length)
+{
+	DoublePoint result;
+	double old_length = DISTANCE(st, ed);
+	if (old_length == 0)
+		return ed;
+	if (length > old_length)
+		return st;
+	double length_ratio = (old_length - length) / old_length;
+	double after_x = st.x + (ed.x - st.x) * length_ratio;
+	double after_y = st.y + (ed.y - st.y) * length_ratio;
+	result = {after_x, after_y};
+	return result;
 }

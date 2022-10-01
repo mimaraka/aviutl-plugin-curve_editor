@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
 //		ソースファイル（描画関係の関数）
-//		VC++ 2022
+//		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
 #include "ce_header.hpp"
@@ -43,7 +43,7 @@ void d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr)
 
 
 //---------------------------------------------------------------------
-//		グラフのグリッドを描画(Direct2D)
+//		グラフのグリッドを描画
 //---------------------------------------------------------------------
 void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 	pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GRID)));
@@ -96,7 +96,7 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 
 
 //---------------------------------------------------------------------
-//		ベジェカーブを描画(Direct2D)
+//		ベジェカーブを描画
 //---------------------------------------------------------------------
 void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 	DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness)
@@ -133,24 +133,26 @@ void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 
 
 //---------------------------------------------------------------------
-//		グラフのハンドルを描画(Direct2D)
+//		グラフのハンドルを描画
 //---------------------------------------------------------------------
-void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt)
+void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint st, DoublePoint ed)
 {
+	DoublePoint st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH);
+	DoublePoint ed_new = subtract_length(st, ed, CE_SUBTRACT_LENGTH);
 	g_render_target->DrawLine(
-		D2D1::Point2F(stpt.x, stpt.y),
-		D2D1::Point2F(edpt.x, edpt.y),
+		D2D1::Point2F(st_new.x, st_new.y),
+		D2D1::Point2F(ed_new.x, ed_new.y),
 		pBrush, CE_HANDLE_TH
 	);
 	g_render_target->DrawEllipse(
 		D2D1::Ellipse(
-			D2D1::Point2F(edpt.x, edpt.y),
+			D2D1::Point2F(ed.x, ed.y),
 			CE_HANDLE_SIZE, CE_HANDLE_SIZE),
 		pBrush, CE_HANDLE_SIRCLE_LINE
 	);
 	g_render_target->DrawEllipse(
 		D2D1::Ellipse(
-			D2D1::Point2F(stpt.x, stpt.y),
+			D2D1::Point2F(st.x, st.y),
 			CE_POINT_SIZE, CE_POINT_SIZE),
 		pBrush, CE_POINT_SIZE * 1.5
 	);

@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
-//		curve_editor
-//		source file (main)
-//		(Visual C++ 2019)
+//		Curve Editor
+//		ソースファイル (メイン)
+//		(Visual C++ 2022)
 //----------------------------------------------------------------------------------
 
 
@@ -20,6 +20,7 @@ FILTER*							g_fp;
 std::vector<ce::Preset_Value>	g_presets_value;
 std::vector<ce::Preset_ID>		g_presets_id;
 
+//ダークテーマ
 const ce::Theme g_theme_dark = {
 	RGB(27,27,27),
 	RGB(27,27,27),
@@ -32,6 +33,7 @@ const ce::Theme g_theme_dark = {
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
 };
+//ライトテーマ
 const ce::Theme g_theme_light = {
 	RGB(32,32,32),
 	RGB(50,50,50),

@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
 //		ソースファイル(ウィンドウプロシージャ)
-//		VC++ 2022
+//		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
 #include "ce_wndproc.hpp"
@@ -357,7 +357,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CT_EDITOR_HEIGHT, CT_EDITOR_HEIGHT
 			);*/
 
-		//グラフ
+		//グラフパネル
 		hwnd_graph = create_child(
 			hwnd, wndproc_graph, "Wnd_Graph", WS_CLIPCHILDREN,
 			CE_WD_POS_GRAPH(rect_wnd)
@@ -496,6 +496,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	static int		move_pt		= 0;			//0:None, 1:Ctpt1, 2:Ctpt2
 	static BOOL		move_view	= 0;
 	static int		o_x, o_y;
+	static int		move_or_scale = NULL;
 
 	//double
 	static double	scale_x, scale_y;
@@ -537,15 +538,15 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(ウィンドウが作成されたとき)
 		///////////////////////////////////////////
 	case WM_CREATE:
-		//Load CompatibleItems
+		// コンパティブルデバイスコンテキストを用意
 		hdc		= GetDC(hwnd);
 		hdc_mem = CreateCompatibleDC(hdc);
 		bitmap	= CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
 		SelectObject(hdc_mem, bitmap);
 		ReleaseDC(hwnd, hdc);
 
-		//メニュー
-		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_config.lang ? IDR_MENU2 : IDR_MENU1)), 0);
+		// メニュー
+		// menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_config.lang ? IDR_MENU2 : IDR_MENU1)), 0);
 
 		pt_trace[0] = g_curve_value.control_point[0];
 		pt_trace[1] = g_curve_value.control_point[1];
@@ -581,9 +582,9 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(左クリックがされたとき)
 		///////////////////////////////////////////
 	case WM_LBUTTONDOWN:
-		//値モード
+		// 値モード
 		if (!g_config.mode) {
-			//制御点2がクリックされたとき
+			// 制御点2がクリックされたとき
 			if (g_curve_value.point_in_control_points(cl_pt) == 2) {
 				move_pt = 2;
 				pt_trace[0] = g_curve_value.control_point[0];
@@ -591,7 +592,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 				SetCapture(hwnd);
 			}
-			//制御点1がクリックされたとき
+			// 制御点1がクリックされたとき
 			else if (g_curve_value.point_in_control_points(cl_pt) == 1) {
 				move_pt = 1;
 				pt_trace[0] = g_curve_value.control_point[0];
@@ -600,11 +601,11 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				SetCapture(hwnd);
 			}
 		}
-		//IDモード
+		// IDモード
 		else {
-			//カーソルが制御点上にあるかどうか
+			// カーソルが制御点上にあるかどうか
 			address = g_curve_id[g_config.id_current].pt_in_control_points(cl_pt);
-			//カーソルが制御点上にあるとき，ハンドルの座標を記憶
+			// カーソルが制御点上にあるとき，ハンドルの座標を記憶
 			if (address.position != 0) {
 				g_curve_id[g_config.id_current].move_point(address, gr_pt, TRUE);
 				SetCursor(LoadCursor(NULL, IDC_HAND));
@@ -618,9 +619,9 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(マウスの左ボタンが離されたとき)
 		///////////////////////////////////////////
 	case WM_LBUTTONUP:
-		//Valueモード
+		// Valueモード
 		if (!g_config.mode) {
-			//近くにある制御点をカーソルに移動
+			// 近くにある制御点をカーソルに移動
 			if (!move_pt) {
 				pt_trace[0] = g_curve_value.control_point[0]; pt_trace[1] = g_curve_value.control_point[1];
 				int d1 = (int)DISTANCE(to_client(g_curve_value.control_point[0]), cl_pt);
@@ -636,7 +637,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				InvalidateRect(hwnd, NULL, FALSE);
 				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
 			}
-			//移動モード解除
+			// 移動モード解除
 			if (move_pt) {
 				move_pt = 0;
 				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
@@ -693,6 +694,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		///////////////////////////////////////////
 	case WM_MBUTTONUP:
 		move_view = FALSE;
+		move_or_scale = NULL;
 		ReleaseCapture();
 		return 0;
 
@@ -727,9 +729,10 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				SetCursor(LoadCursor(NULL, IDC_HAND));
 		}
 
-		//ビュー移動・拡大縮小
+		// ビュー移動・拡大縮小
 		if (move_view && !move_pt) {
-			if (GetAsyncKeyState(VK_CONTROL) < 0) {
+			// 拡大縮小
+			if ((GetAsyncKeyState(VK_CONTROL) < 0 && move_or_scale == 0) || move_or_scale == 2) {
 				double ratio_x, ratio_y;
 				ratio_x = MINMAXLIM(std::pow(CE_GR_SCALE_INC, cl_pt.x - pt_view.x),
 					CE_GR_SCALE_MIN / scale_x, CE_GR_SCALE_MAX / scale_x);
@@ -739,11 +742,17 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				g_disp_info.scale.y = scale_y * ratio_y;
 				g_disp_info.o.x = rect_wnd.right * 0.5 + ratio_x * (o_x - rect_wnd.right * 0.5);
 				g_disp_info.o.y = rect_wnd.bottom * 0.5 + ratio_y * (o_y - rect_wnd.bottom * 0.5);
+				if (move_or_scale == 0)
+					move_or_scale = 2;
 			}
+			// 移動
 			else {
 				g_disp_info.o.x = o_x + cl_pt.x - pt_view.x;
 				g_disp_info.o.y = o_y + cl_pt.y - pt_view.y;
+				if (move_or_scale == 0)
+					move_or_scale = 1;
 			}
+			// 再描画
 			InvalidateRect(hwnd, NULL, FALSE);
 		}
 
@@ -754,13 +763,21 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(マウスホイールが回転したとき)
 		///////////////////////////////////////////
 	case WM_MOUSEWHEEL:
-		g_disp_info.scale.x = MINMAXLIM(g_disp_info.scale.x * std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_RATIO), CE_GR_SCALE_MIN, CE_GR_SCALE_MAX);
-		g_disp_info.scale.y = MINMAXLIM(g_disp_info.scale.y * std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_RATIO), CE_GR_SCALE_MIN, CE_GR_SCALE_MAX);
-		g_disp_info.o.x = (g_disp_info.o.x - rect_wnd.right * 0.5) * std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_RATIO) + rect_wnd.right * 0.5;
-		g_disp_info.o.y = (g_disp_info.o.y - rect_wnd.bottom * 0.5) * std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_RATIO) + rect_wnd.bottom * 0.5;
-		
+	{
+		// 縮尺の上限下限を設定
+		double ratio = std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_RATIO);
+		double scale_after_x = MINMAXLIM(g_disp_info.scale.x * ratio, CE_GR_SCALE_MIN, CE_GR_SCALE_MAX);
+		double scale_after_y = MINMAXLIM(g_disp_info.scale.y * ratio, CE_GR_SCALE_MIN, CE_GR_SCALE_MAX);
+
+		g_disp_info.o.x = (g_disp_info.o.x - rect_wnd.right * 0.5) * (scale_after_x / g_disp_info.scale.x) + rect_wnd.right * 0.5;
+		g_disp_info.o.y = (g_disp_info.o.y - rect_wnd.bottom * 0.5) * (scale_after_y / g_disp_info.scale.y) + rect_wnd.bottom * 0.5;
+
+		g_disp_info.scale.x = scale_after_x;
+		g_disp_info.scale.y = scale_after_y;
+		// 再描画
 		InvalidateRect(hwnd, NULL, FALSE);
 		return 0;
+	}
 
 		///////////////////////////////////////////
 		//		WM_COMMAND
@@ -768,7 +785,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		///////////////////////////////////////////
 	case WM_COMMAND:
 		switch (wparam) {
-		//再描画
+		// 再描画
 		case CE_WM_REDRAW:
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
