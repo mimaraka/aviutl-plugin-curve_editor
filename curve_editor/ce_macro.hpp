@@ -60,7 +60,7 @@
 #define CE_CT_SEARCH_H			20
 #define CE_CT_ICON_SIZE			22
 #define CE_CT_APPLY_SIZE		34
-#define CE_CT_APPLY_TEXT		"Apply"
+#define CE_CT_APPLY_TEXT		"Copy"
 
 #define CE_WD_SIDE_MINW			120
 #define CE_WD_EDT_MINW			200

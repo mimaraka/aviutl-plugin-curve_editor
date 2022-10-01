@@ -93,6 +93,10 @@ FILTER_DLL g_filter = {
 //処理関数
 int get_result(lua_State* L)
 {
+	// index:	カーブのID
+	// ratio:	進捗(0~1)
+	// st:		トラックバーでの開始時の値
+	// ed:		トラックバーでの終了時の値
 	int		index	= lua_tointeger(L, 1);
 	double	ratio	= lua_tonumber(L, 2);
 	double	st		= lua_tonumber(L, 3);

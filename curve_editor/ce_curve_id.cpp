@@ -364,23 +364,38 @@ void ce::Curve_ID::reverse_points()
 //---------------------------------------------------------------------
 double ce::Curve_ID::get_value(double ratio, double st, double ed)
 {
-	if (!ISINRANGE(ratio, 0, 1)) return 0;
+	// 進捗が0~1の範囲外であった場合
+	if (!ISINRANGE(ratio, 0, 1))
+		return 0;
+	// 進捗に相当する区間を調べる
 	for (int i = 0; i < control_points.size() - 1; i++) {
 		if (ISINRANGE(ratio, control_points[i].pt_center.x / (double)CE_GR_RES, control_points[i + 1].pt_center.x / (double)CE_GR_RES)) {
 			double range = (control_points[i + 1].pt_center.x - control_points[i].pt_center.x) / (double)CE_GR_RES;
-			double x1 = (control_points[i].pt_right.x - control_points[i].pt_center.x) / (control_points[i + 1].pt_center.x - control_points[i].pt_center.x);
-			double y1 = (control_points[i].pt_right.y - control_points[i].pt_center.y) / (control_points[i + 1].pt_center.y - control_points[i].pt_center.y);
-			double x2 = (control_points[i + 1].pt_center.x - control_points[i + 1].pt_left.x) / (control_points[i + 1].pt_center.x - control_points[i].pt_center.x);
-			double y2 = (control_points[i + 1].pt_center.y - control_points[i + 1].pt_left.y) / (control_points[i + 1].pt_center.y - control_points[i].pt_center.y);
-			double st2 = st + control_points[i].pt_center.y * (ed - st) / (double)CE_GR_RES;
-			double ed2 = st + control_points[i + 1].pt_center.y * (ed - st) / (double)CE_GR_RES;
+			// 区間内での進捗の相対値(0~1)
+			double ratio2 = (ratio - control_points[i].pt_center.x / (double)CE_GR_RES) / range;
+			// 区間ごとの制御点1のX座標(相対値、0~1)
+			double x1 = (control_points[i].pt_right.x - control_points[i].pt_center.x) / (double)(control_points[i + 1].pt_center.x - control_points[i].pt_center.x);
+			// 区間ごとの制御点1のY座標(相対値)
+			double y1 = (control_points[i].pt_right.y - control_points[i].pt_center.y) / (double)(control_points[i + 1].pt_center.y - control_points[i].pt_center.y);
+			// 区間ごとの制御点2のX座標(相対値、0~1)
+			double x2 = (control_points[i + 1].pt_left.x - control_points[i].pt_center.x) / (double)(control_points[i + 1].pt_center.x - control_points[i].pt_center.x);
+			// 区間ごとの制御点2のY座標(相対値)
+			double y2 = (control_points[i + 1].pt_left.y - control_points[i].pt_center.y) / (double)(control_points[i + 1].pt_center.y - control_points[i].pt_center.y);
+
+			// 区間ごとの始値、終値(相対値ではなく、実際の値)
+			double st2 = st + control_points[i].pt_center.y / (double)CE_GR_RES * (ed - st);
+			double ed2 = st + control_points[i + 1].pt_center.y / (double)CE_GR_RES * (ed - st);
+			// y1,y2を相対値から実際の値に修正
+			y1 = st2 + (ed2 - st2) * y1;
+			y2 = st2 + (ed2 - st2) * y2;
+			// ベジェの計算
 			double tl = 0;
 			double tr = 1;
 			double ta = 0.5 * (tl + tr);
 			double xta;
-			for (int j = 1; j < 10; j++) {
+			for (int j = 0; j < 10; j++) {
 				xta = (1 - 3 * x2 + 3 * x1) * std::pow(ta, 3) + (x2 - 2 * x1) * 3 * std::pow(ta, 2) + 3 * x1 * ta;
-				if (ratio < xta) tr = ta;
+				if (ratio2 < xta) tr = ta;
 				else tl = ta;
 				ta = 0.5 * (tl + tr);
 			}

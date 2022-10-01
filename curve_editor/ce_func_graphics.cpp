@@ -154,7 +154,7 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint st, DoublePoint e
 		D2D1::Ellipse(
 			D2D1::Point2F(st.x, st.y),
 			CE_POINT_SIZE, CE_POINT_SIZE),
-		pBrush, CE_POINT_SIZE * 1.5
+		pBrush, CE_POINT_SIZE * 1.6
 	);
 }
 
