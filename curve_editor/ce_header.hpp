@@ -101,24 +101,83 @@ namespace ce {
 //		クラス
 //----------------------------------------------------------------------------------
 namespace ce {
+	template <typename T, size_t N>
+	class StaticArray {
+		size_t _size;
+
+	public:
+		static const size_t max_size = N;
+
+		T elements[N];
+
+		StaticArray() : _size(0) {}
+
+		template <typename U>
+		T& operator[] (U i) { return elements[MINMAXLIM(i, 0, N - 1)]; }
+
+		bool is_max(void)
+		{
+			return _size == max_size;
+		}
+
+		void clear(void)
+		{
+			_size = 0;
+		}
+
+		void insert(size_t index, const T& v)
+		{
+			int max = _size >= max_size ? max_size - 1 : _size;
+			for (int i = max; i > (int)index;) {
+				i--;
+				elements[i + 1] = elements[i];
+			}
+			elements[index] = v;
+			if (_size < max_size) _size++;
+		}
+
+		void erase(int index)
+		{
+			_size--;
+			for (int i = index; i < (int)_size; i++) {
+				elements[i] = elements[i + 1];
+			}
+		}
+
+		size_t size()
+		{
+			return _size;
+		}
+
+		void push_back(const T& v)
+		{
+			if (_size < max_size) {
+				_size++;
+				elements[_size - 1] = v;
+			}
+		}
+	};
+
+
 	class Curve_Value {
 	public:
-		POINT control_point[2];
+		POINT ctpt[2];
 
 		Curve_Value()
 		{
-			control_point[0] = { 400, 400 };
-			control_point[1] = { 600, 600 };
+			ctpt[0] = { 400, 400 };
+			ctpt[1] = { 600, 600 };
 		}
 
-		int point_in_control_points(POINT cl_pt);
+		int point_in_ctpts(POINT cl_pt);
 		void move_point(int index, POINT gr_pt);
 	};
 
+
 	class Curve_ID {
 	public:
-		int size = sizeof(Points_ID) * CE_POINT_MAX;
-		std::vector<Points_ID> control_points;
+		// std::vector<Points_ID> ctpts;
+		StaticArray <Points_ID, CE_POINT_MAX> ctpts;
 
 		Curve_ID()
 		{
@@ -127,20 +186,20 @@ namespace ce {
 			pt_add[0].pt_center = { 0, 0 };
 			pt_add[0].pt_right = { (int)(CE_GR_RES * 0.4), (int)(CE_GR_RES * 0.4) };
 			pt_add[0].pt_left = { 0, 0 };
-			control_points.emplace_back(pt_add[0]);
+			ctpts.push_back(pt_add[0]);
 
 			pt_add[1].type = 1;
 			pt_add[1].pt_center = { CE_GR_RES, CE_GR_RES };
 			pt_add[1].pt_left = { (int)(CE_GR_RES * 0.6), (int)(CE_GR_RES * 0.6) };
 			pt_add[1].pt_right = { CE_GR_RES, CE_GR_RES };
-			control_points.emplace_back(pt_add[1]);
+			ctpts.push_back(pt_add[1]);
 		}
 
 		void				add_point(POINT cl_pt);
 		void				delete_point(POINT cl_pt);
 		POINT				get_point(Point_Address address);
 		void				move_point(Point_Address address, POINT gr_pt, BOOL bReset);
-		Point_Address		pt_in_control_points(POINT cl_pt);
+		Point_Address		pt_in_ctpt(POINT cl_pt);
 		double				get_handle_angle(Point_Address address);
 		void				correct_handle(Point_Address address, double angle);
 		void				set_handle_angle(Point_Address address, double angle, BOOL bLength, double lgth);
@@ -249,6 +308,10 @@ BOOL				exit(FILTER*);
 
 void				ini_load_configs(FILTER* fp);
 
+BOOL				on_project_load(FILTER* fp, void* editp, void* data, int size);
+
+BOOL				on_project_save(FILTER* fp, void* editp, void* data, int* size);
+
 //1次元カーブIDを受け取り制御点を変更
 void				read_value(int);
 //文字列の分割
@@ -260,7 +323,7 @@ int					create_value_1d();
 //クリップボードにテキストをコピー
 BOOL				copy_to_clipboard(HWND, LPCTSTR);
 
-DoublePoint subtract_length(DoublePoint st, DoublePoint ed, double length);
+DoublePoint			subtract_length(DoublePoint st, DoublePoint ed, double length);
 
 //子ウィンドウを作成
 HWND				create_child(
@@ -294,8 +357,8 @@ void				d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr);
 void				d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 					DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness);
 void				d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt);
-void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				draw_side(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr);
+void				draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd);
@@ -312,7 +375,7 @@ BOOL CALLBACK		wndproc_daialog_save(HWND, UINT, WPARAM, LPARAM);
 BOOL				wndproc_base(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 LRESULT CALLBACK	wndproc_main(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_editor(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_side(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_footer(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_graph(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_library(HWND, UINT, WPARAM, LPARAM);
 

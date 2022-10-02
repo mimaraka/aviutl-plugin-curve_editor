@@ -92,13 +92,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_plugin_sdk;C:\aviutl_exedit_sdk;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs\aviutl_exedit_sdk;C:\aviutl_libs;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) C:\Program_Files_Portable\AviUtl\1.10_0.92\Plugins</Command>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_plugin_sdk;C:\aviutl_exedit_sdk;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs\aviutl_exedit_sdk;C:\aviutl_libs;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,7 +120,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) C:\Program_Files_Portable\AviUtl\1.10_0.92\Plugins</Command>
@@ -214,6 +214,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cur_drag.cur" />
     <None Include="curve_editor.def" />
   </ItemGroup>
   <ItemGroup>

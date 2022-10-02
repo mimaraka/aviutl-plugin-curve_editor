@@ -33,10 +33,10 @@ BOOL initialize(FILTER* fp)
 //---------------------------------------------------------------------
 BOOL exit(FILTER* fp)
 {
-	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.control_point[0].x);
-	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.control_point[0].y);
-	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.control_point[1].x);
-	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.control_point[1].y);
+	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.ctpt[0].x);
+	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.ctpt[0].y);
+	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpt[1].x);
+	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpt[1].y);
 	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
 	fp->exfunc->ini_save_int(fp, "mode", g_config.mode);
 	fp->exfunc->ini_save_int(fp, "align_mode", g_config.align_mode);
@@ -51,6 +51,37 @@ BOOL exit(FILTER* fp)
 }
 
 
+
+//---------------------------------------------------------------------
+//		プロジェクトファイル読み込み時に実行される関数
+//---------------------------------------------------------------------
+BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
+{
+	if (data) {
+		memcpy(g_curve_id, data, size);
+	}
+	return TRUE;
+}
+
+
+
+//---------------------------------------------------------------------
+//		プロジェクトファイル保存時に実行される関数
+//---------------------------------------------------------------------
+BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
+{
+	int size_curve_id = sizeof(ce::Points_ID) * CE_POINT_MAX * CE_CURVE_MAX;
+	if (!data) {
+		*size = sizeof(g_curve_id);
+	}
+	else {
+		memcpy(data, g_curve_id, sizeof(g_curve_id));
+	}
+	return TRUE;
+}
+
+
+
 //---------------------------------------------------------------------
 //		aviutl.iniから設定を読み込み
 //---------------------------------------------------------------------
@@ -61,10 +92,10 @@ void ini_load_configs(FILTER* fp)
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", 1);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", 0);
 	g_config.id_current = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.control_point[0].x = fp->exfunc->ini_load_int(fp, "x1", 400);
-	g_curve_value.control_point[0].y = fp->exfunc->ini_load_int(fp, "y1", 400);
-	g_curve_value.control_point[1].x = fp->exfunc->ini_load_int(fp, "x2", 600);
-	g_curve_value.control_point[1].y = fp->exfunc->ini_load_int(fp, "y2", 600);
+	g_curve_value.ctpt[0].x = fp->exfunc->ini_load_int(fp, "x1", 400);
+	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", 400);
+	g_curve_value.ctpt[1].x = fp->exfunc->ini_load_int(fp, "x2", 600);
+	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", 600);
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", 200);
 	g_config.mode = fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_config.align_mode = fp->exfunc->ini_load_int(fp, "align_mode", 1);
@@ -136,16 +167,16 @@ void read_value(int value)
 	UINT usint;
 	if (value < 0) usint = value + 2147483647;
 	else usint = (UINT)value + (UINT)2147483647;
-	g_curve_value.control_point[1].y = usint / 6600047;
-	g_curve_value.control_point[1].x = (usint - g_curve_value.control_point[1].y * 6600047) / 65347;
-	g_curve_value.control_point[0].y = (usint - (g_curve_value.control_point[1].y * 6600047 + g_curve_value.control_point[1].x * 65347)) / 101;
-	g_curve_value.control_point[0].x = (usint - (g_curve_value.control_point[1].y * 6600047 + g_curve_value.control_point[1].x * 65347)) % 101;
-	g_curve_value.control_point[0].x *= CE_GR_RES / 100;
-	g_curve_value.control_point[0].y *= CE_GR_RES / 100;
-	g_curve_value.control_point[1].x *= CE_GR_RES / 100;
-	g_curve_value.control_point[1].y *= CE_GR_RES / 100;
-	g_curve_value.control_point[0].y -= 273;
-	g_curve_value.control_point[0].y -= 273;
+	g_curve_value.ctpt[1].y = usint / 6600047;
+	g_curve_value.ctpt[1].x = (usint - g_curve_value.ctpt[1].y * 6600047) / 65347;
+	g_curve_value.ctpt[0].y = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) / 101;
+	g_curve_value.ctpt[0].x = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) % 101;
+	g_curve_value.ctpt[0].x *= CE_GR_RES / 100;
+	g_curve_value.ctpt[0].y *= CE_GR_RES / 100;
+	g_curve_value.ctpt[1].x *= CE_GR_RES / 100;
+	g_curve_value.ctpt[1].y *= CE_GR_RES / 100;
+	g_curve_value.ctpt[0].y -= 273;
+	g_curve_value.ctpt[0].y -= 273;
 }
 
 
@@ -179,12 +210,12 @@ std::string create_value_4d()
 	FLOAT ptx, pty;
 	std::string strx, stry, strResult;
 	for (int i = 0; i < 2; i++) {
-		ptx = std::round(g_curve_value.control_point[i].x * 100 / (double)CE_GR_RES) * 0.01;
-		pty = std::round(g_curve_value.control_point[i].y * 100 / (double)CE_GR_RES) * 0.01;
+		ptx = std::round(g_curve_value.ctpt[i].x * 100 / (double)CE_GR_RES) * 0.01;
+		pty = std::round(g_curve_value.ctpt[i].y * 100 / (double)CE_GR_RES) * 0.01;
 		strx = std::to_string(ptx);
 		stry = std::to_string(pty);
 		strx.erase(4);
-		if (g_curve_value.control_point[i].y < 0) stry.erase(5);
+		if (g_curve_value.ctpt[i].y < 0) stry.erase(5);
 		else stry.erase(4);
 		strResult += strx + ", " + stry + ", ";
 	}
@@ -200,10 +231,10 @@ int create_value_1d()
 {
 	int result;
 	int x1, y1, x2, y2;
-	x1 = (int)std::round(g_curve_value.control_point[0].x * 100 / (double)CE_GR_RES);
-	y1 = (int)std::round(g_curve_value.control_point[0].y * 100 / (double)CE_GR_RES);
-	x2 = (int)std::round(g_curve_value.control_point[1].x * 100 / (double)CE_GR_RES);
-	y2 = (int)std::round(g_curve_value.control_point[1].y * 100 / (double)CE_GR_RES);
+	x1 = (int)std::round(g_curve_value.ctpt[0].x * 100 / (double)CE_GR_RES);
+	y1 = (int)std::round(g_curve_value.ctpt[0].y * 100 / (double)CE_GR_RES);
+	x2 = (int)std::round(g_curve_value.ctpt[1].x * 100 / (double)CE_GR_RES);
+	y2 = (int)std::round(g_curve_value.ctpt[1].y * 100 / (double)CE_GR_RES);
 	//Limit Values
 	if (y1 < -273 || 373 < y1 || y2 < -273 || 373 < y2) {
 		return CE_OUTOFRANGE;

@@ -80,15 +80,15 @@ BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM l
 			if (std::regex_match(chBuffer, re)) {
 				std::string str = chBuffer;
 				std::vector<std::string> vec = split(chBuffer, ',');
-				g_curve_value.control_point[0].x = (int)(std::stod(vec[0]) * 1000);
-				g_curve_value.control_point[0].x = (int)(std::stod(vec[0]) * 1000);
-				g_curve_value.control_point[0].y = (int)(std::stod(vec[1]) * 1000);
-				g_curve_value.control_point[1].x = (int)(std::stod(vec[2]) * 1000);
-				g_curve_value.control_point[1].y = (int)(std::stod(vec[3]) * 1000);
+				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * 1000);
+				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * 1000);
+				g_curve_value.ctpt[0].y = (int)(std::stod(vec[1]) * 1000);
+				g_curve_value.ctpt[1].x = (int)(std::stod(vec[2]) * 1000);
+				g_curve_value.ctpt[1].y = (int)(std::stod(vec[3]) * 1000);
 
 				for (int i = 0; i < 2; i++) {
-					if (g_curve_value.control_point[i].y > 3730) g_curve_value.control_point[i].y = 3730;
-					else if (g_curve_value.control_point[i].y < -2730) g_curve_value.control_point[i].y = -2730;
+					if (g_curve_value.ctpt[i].y > 3730) g_curve_value.ctpt[i].y = 3730;
+					else if (g_curve_value.ctpt[i].y < -2730) g_curve_value.ctpt[i].y = -2730;
 				}
 				EndDialog(hDlg, 1);
 			}
@@ -209,7 +209,7 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 			ce::Preset_Value additem;
 			GetDlgItemText(hDlg, IDC_EDIT_SAVE, chBuffer, 64);
 			if (strlen(chBuffer) < 64 && strlen(chBuffer) != 0) {
-				additem = { chBuffer, g_curve_value.control_point[0].x, g_curve_value.control_point[0].y, g_curve_value.control_point[1].x, g_curve_value.control_point[1].y };
+				additem = { chBuffer, g_curve_value.ctpt[0].x, g_curve_value.ctpt[0].y, g_curve_value.ctpt[1].x, g_curve_value.ctpt[1].y };
 				g_presets_value.emplace_back(additem);
 				EndDialog(hDlg, 1);
 			}

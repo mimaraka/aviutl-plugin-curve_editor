@@ -64,6 +64,9 @@
     <None Include="curve_editor.def">
       <Filter>リソース ファイル</Filter>
     </None>
+    <None Include="cur_drag.cur">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc">

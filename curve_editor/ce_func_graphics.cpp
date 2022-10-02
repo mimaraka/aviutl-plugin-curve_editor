@@ -162,18 +162,23 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint st, DoublePoint e
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
 {
 	HDC hdc;
-	RECT rect_sepr;
 	static ID2D1SolidColorBrush* pBrush = NULL;
-
-	rect_sepr = {
-	g_config.separator - CE_SEPR_W,
-	0,
-	g_config.separator + CE_SEPR_W,
-	rect_wnd->bottom
-	};
+	ID2D1StrokeStyle* pStyle = NULL;
+	g_d2d1_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.0f,
+			D2D1_DASH_STYLE_SOLID,
+			0.0f),
+		NULL, NULL,
+		&pStyle
+	);
 
 	//Direct2D初期化
 	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_window));
@@ -184,9 +189,9 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 		pBrush->SetColor(D2D1::ColorF(TO_BGR(BRIGHTEN(g_theme[g_config.theme].bg_window, CE_BR_SEPR))));
 
 		if (pBrush) g_render_target->DrawLine(
-			D2D1::Point2F(rect_sepr.left + CE_SEPR_W, (rect_sepr.top + rect_sepr.bottom) * 0.5 - CE_SEPR_LINE_L),
-			D2D1::Point2F(rect_sepr.left + CE_SEPR_W, (rect_sepr.top + rect_sepr.bottom) * 0.5 + CE_SEPR_LINE_L),
-			pBrush, CE_SEPR_LINE_W, NULL
+			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5 - CE_SEPR_LINE_L, rect_sepr->top + CE_SEPR_W),
+			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5 + CE_SEPR_LINE_L, rect_sepr->top + CE_SEPR_W),
+			pBrush, CE_SEPR_LINE_W, pStyle
 		);
 		g_render_target->EndDraw();
 	}
@@ -201,9 +206,9 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 
 
 //---------------------------------------------------------------------
-//		サイドパネルを描画
+//		フッタパネルを描画
 //---------------------------------------------------------------------
-void draw_side(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -276,12 +281,12 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 			g_disp_info.o.y
 		},
 		{
-			to_client(g_curve_value.control_point[0]).x,
-			to_client(g_curve_value.control_point[0]).y
+			to_client(g_curve_value.ctpt[0]).x,
+			to_client(g_curve_value.ctpt[0]).y
 		},
 		{
-			to_client(g_curve_value.control_point[1]).x,
-			to_client(g_curve_value.control_point[1]).y
+			to_client(g_curve_value.ctpt[1]).x,
+			to_client(g_curve_value.ctpt[1]).y
 		},
 		{
 			g_disp_info.o.x + g_disp_info.scale.x * CE_GR_RES,
@@ -356,7 +361,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 
 		//IDモードのとき
 		else {
-			for (int i = 0; i < g_curve_id[g_config.id_current].control_points.size() - 1; i++)
+			for (int i = 0; i < g_curve_id[g_config.id_current].ctpts.size() - 1; i++)
 			{
 				//色を指定
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));
@@ -377,18 +382,18 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 				//端点以外の制御点に引かれる点線
 				if (i > 0)
 					g_render_target->DrawLine(
-						D2D1::Point2F(to_client(g_curve_id[g_config.id_current].control_points[i].pt_center).x, 0),
-						D2D1::Point2F(to_client(g_curve_id[g_config.id_current].control_points[i].pt_center).x, rect_wnd->bottom),
+						D2D1::Point2F(to_client(g_curve_id[g_config.id_current].ctpts[i].pt_center).x, 0),
+						D2D1::Point2F(to_client(g_curve_id[g_config.id_current].ctpts[i].pt_center).x, rect_wnd->bottom),
 						pBrush, CE_GR_POINT_TH, pStyle
 					);
 
 				//ベジェ曲線を描画
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
 				d2d_draw_bezier(pBrush,
-					to_client(g_curve_id[g_config.id_current].control_points[i].pt_center),
-					to_client(g_curve_id[g_config.id_current].control_points[i].pt_right),
-					to_client(g_curve_id[g_config.id_current].control_points[i + 1].pt_left),
-					to_client(g_curve_id[g_config.id_current].control_points[i + 1].pt_center),
+					to_client(g_curve_id[g_config.id_current].ctpts[i].pt_center),
+					to_client(g_curve_id[g_config.id_current].ctpts[i].pt_right),
+					to_client(g_curve_id[g_config.id_current].ctpts[i + 1].pt_left),
+					to_client(g_curve_id[g_config.id_current].ctpts[i + 1].pt_center),
 					CE_CURVE_TH
 				);
 
@@ -396,12 +401,12 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 				if (g_config.show_handle) {
 					pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
 					d2d_draw_handle(pBrush,
-						to_client(g_curve_id[g_config.id_current].control_points[i].pt_center),
-						to_client(g_curve_id[g_config.id_current].control_points[i].pt_right)
+						to_client(g_curve_id[g_config.id_current].ctpts[i].pt_center),
+						to_client(g_curve_id[g_config.id_current].ctpts[i].pt_right)
 					);
 					d2d_draw_handle(pBrush,
-						to_client(g_curve_id[g_config.id_current].control_points[i + 1].pt_center),
-						to_client(g_curve_id[g_config.id_current].control_points[i + 1].pt_left)
+						to_client(g_curve_id[g_config.id_current].ctpts[i + 1].pt_center),
+						to_client(g_curve_id[g_config.id_current].ctpts[i + 1].pt_left)
 					);
 				}
 			}

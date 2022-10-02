@@ -83,6 +83,8 @@ FILTER_DLL g_filter = {
 	NULL,NULL,
 	NULL,NULL,NULL,NULL,
 	NULL,
+	on_project_load,
+	on_project_save,
 };
 
 

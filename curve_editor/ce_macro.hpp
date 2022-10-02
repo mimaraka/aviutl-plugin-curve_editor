@@ -34,9 +34,9 @@
 #define CE_GR_SCALE_INC			1.01
 #define CE_GR_SCALE_MAX			512
 #define CE_GR_SCALE_MIN			0.001
-#define CE_SEPR_W				6
-#define CE_SEPR_LINE_W			3
-#define CE_SEPR_LINE_L			14
+#define CE_SEPR_W				8
+#define CE_SEPR_LINE_W			4
+#define CE_SEPR_LINE_L			32
 #define CE_CURVE_TH				1.2
 
 //コントロール
@@ -70,7 +70,7 @@
 //明るさ
 #define CE_BR_GRID				25
 #define CE_BR_TRACE				-10
-#define CE_BR_SEPR				32
+#define CE_BR_SEPR				256
 #define CE_BR_GR_INVALID		-8
 #define CE_CT_BR_HOVERED		15
 #define CE_CT_BR_CLICKED		-15
@@ -92,7 +92,7 @@
 
 //フィルタの情報
 #define CE_FILTER_NAME				"Curve Editor"
-#define CE_FILTER_VERSION			"v0.1"
+#define CE_FILTER_VERSION			"v0.1-alpha"
 #define CE_FILTER_AUTHOR			"mimaraka"
 #define CE_FILTER_INFO				CE_FILTER_NAME " " CE_FILTER_VERSION " by " CE_FILTER_AUTHOR
 #define CE_FILTER_LINK				"https://sites.google.com/view/aviutlscripts/home"
@@ -108,6 +108,6 @@
 #define ISINRANGE(value,minv,maxv)			(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
 #define ISMORETHAN(value,vl)				(((value) >= (vl))? 1 : 0)
 #define ISLESSTHAN(value,vl)				(((value) <= (vl))? 1 : 0)
-#define BRIGHTEN(ref,num)					(RGB(GetRValue(ref) + num, GetGValue(ref) + num, GetBValue(ref) + num))
+#define BRIGHTEN(ref,num)					(RGB(MINMAXLIM(GetRValue(ref) + num, 0, 255), MINMAXLIM(GetGValue(ref) + num, 0, 255), MINMAXLIM(GetBValue(ref) + num, 0, 255)))
 #define INVERT(ref)							(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
 #define CONTRAST(ref,val)					(RGB(MINMAXLIM(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetBValue(ref) - 127) * val, 0, 255)))
