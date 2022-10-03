@@ -103,57 +103,46 @@ namespace ce {
 namespace ce {
 	template <typename T, size_t N>
 	class StaticArray {
-		size_t _size;
-
 	public:
+		size_t size;
 		static const size_t max_size = N;
 
 		T elements[N];
 
-		StaticArray() : _size(0) {}
+		StaticArray() : size(0) {}
 
 		template <typename U>
 		T& operator[] (U i) { return elements[MINMAXLIM(i, 0, N - 1)]; }
 
-		bool is_max(void)
-		{
-			return _size == max_size;
-		}
-
 		void clear(void)
 		{
-			_size = 0;
+			size = 0;
 		}
 
 		void insert(size_t index, const T& v)
 		{
-			int max = _size >= max_size ? max_size - 1 : _size;
+			int max = size >= max_size ? max_size - 1 : size;
 			for (int i = max; i > (int)index;) {
 				i--;
 				elements[i + 1] = elements[i];
 			}
 			elements[index] = v;
-			if (_size < max_size) _size++;
-		}
-
-		void erase(int index)
-		{
-			_size--;
-			for (int i = index; i < (int)_size; i++) {
-				elements[i] = elements[i + 1];
-			}
-		}
-
-		size_t size()
-		{
-			return _size;
+			if (size < max_size) size++;
 		}
 
 		void push_back(const T& v)
 		{
-			if (_size < max_size) {
-				_size++;
-				elements[_size - 1] = v;
+			if (size < max_size) {
+				size++;
+				elements[size - 1] = v;
+			}
+		}
+
+		void erase(int index)
+		{
+			size--;
+			for (int i = index; i < (int)size; i++) {
+				elements[i] = elements[i + 1];
 			}
 		}
 	};
@@ -176,7 +165,6 @@ namespace ce {
 
 	class Curve_ID {
 	public:
-		// std::vector<Points_ID> ctpts;
 		StaticArray <Points_ID, CE_POINT_MAX> ctpts;
 
 		Curve_ID()

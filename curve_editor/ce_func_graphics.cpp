@@ -361,7 +361,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 
 		//IDモードのとき
 		else {
-			for (int i = 0; i < g_curve_id[g_config.id_current].ctpts.size() - 1; i++)
+			for (int i = 0; i < g_curve_id[g_config.id_current].ctpts.size - 1; i++)
 			{
 				//色を指定
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));

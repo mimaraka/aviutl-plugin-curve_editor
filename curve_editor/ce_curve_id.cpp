@@ -14,8 +14,8 @@ void ce::Curve_ID::add_point(POINT gr_pt)
 {
 	int index = 0;
 	Point_Address tmp;
-	if (ctpts.size() >= CE_POINT_MAX) return;
-	for (int i = 0; i < ctpts.size(); i++) {
+	if (ctpts.size >= CE_POINT_MAX) return;
+	for (int i = 0; i < ctpts.size; i++) {
 		if (ctpts[i].pt_center.x == gr_pt.x)
 			return;
 		else if (ctpts[i].pt_center.x > gr_pt.x) {
@@ -55,7 +55,7 @@ void ce::Curve_ID::delete_point(POINT cl_pt)
 {
 	Point_Address address = pt_in_ctpt(cl_pt);
 	if (!address.position) return;
-	for (int i = 1; i < ctpts.size() - 1; i++) {
+	for (int i = 1; i < ctpts.size - 1; i++) {
 		if (address.index == i) {
 			ctpts.erase(i);
 			break;
@@ -201,7 +201,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 ce::Point_Address ce::Curve_ID::pt_in_ctpt(POINT cl_pt)
 {
 	RECT rcCenter, rcLeft, rcRight;
-	for (int i = 0; i < ctpts.size(); i++) {
+	for (int i = 0; i < ctpts.size; i++) {
 		rcCenter = {
 			(LONG)to_client(ctpts[i].pt_center).x - CE_POINT_RANGE,
 			(LONG)to_client(ctpts[i].pt_center).y - CE_POINT_RANGE,
@@ -339,21 +339,21 @@ void ce::Curve_ID::correct_handle(Point_Address address, double angle)
 void ce::Curve_ID::reverse_points()
 {
 	std::vector<Points_ID> ctpts_old;
-	for (int i = 0; i < ctpts.size() / 2.0; i++) {
+	for (int i = 0; i < ctpts.size / 2.0; i++) {
 		ctpts_old.emplace_back(ctpts[i]);
-		ctpts[i].pt_center.x = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_center.x;
-		ctpts[i].pt_center.y = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_center.y;
-		ctpts[i].pt_left.x = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_right.x;
-		ctpts[i].pt_left.y = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_right.y;
-		ctpts[i].pt_right.x = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_left.x;
-		ctpts[i].pt_right.y = CE_GR_RES - ctpts[ctpts.size() - i - 1].pt_left.y;
+		ctpts[i].pt_center.x = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_center.x;
+		ctpts[i].pt_center.y = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_center.y;
+		ctpts[i].pt_left.x = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_right.x;
+		ctpts[i].pt_left.y = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_right.y;
+		ctpts[i].pt_right.x = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_left.x;
+		ctpts[i].pt_right.y = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_left.y;
 
-		ctpts[ctpts.size() - i - 1].pt_center.x = CE_GR_RES - ctpts_old[i].pt_center.x;
-		ctpts[ctpts.size() - i - 1].pt_center.y = CE_GR_RES - ctpts_old[i].pt_center.y;
-		ctpts[ctpts.size() - i - 1].pt_left.x = CE_GR_RES - ctpts_old[i].pt_right.x;
-		ctpts[ctpts.size() - i - 1].pt_left.y = CE_GR_RES - ctpts_old[i].pt_right.y;
-		ctpts[ctpts.size() - i - 1].pt_right.x = CE_GR_RES - ctpts_old[i].pt_left.x;
-		ctpts[ctpts.size() - i - 1].pt_right.y = CE_GR_RES - ctpts_old[i].pt_left.y;
+		ctpts[ctpts.size - i - 1].pt_center.x = CE_GR_RES - ctpts_old[i].pt_center.x;
+		ctpts[ctpts.size - i - 1].pt_center.y = CE_GR_RES - ctpts_old[i].pt_center.y;
+		ctpts[ctpts.size - i - 1].pt_left.x = CE_GR_RES - ctpts_old[i].pt_right.x;
+		ctpts[ctpts.size - i - 1].pt_left.y = CE_GR_RES - ctpts_old[i].pt_right.y;
+		ctpts[ctpts.size - i - 1].pt_right.x = CE_GR_RES - ctpts_old[i].pt_left.x;
+		ctpts[ctpts.size - i - 1].pt_right.y = CE_GR_RES - ctpts_old[i].pt_left.y;
 	}
 
 }
@@ -368,7 +368,7 @@ double ce::Curve_ID::get_value(double ratio, double st, double ed)
 	if (!ISINRANGE(ratio, 0, 1))
 		return 0;
 	// i’»‚É‘Š“–‚·‚é‹æŠÔ‚ð’²‚×‚é
-	for (int i = 0; i < ctpts.size() - 1; i++) {
+	for (int i = 0; i < ctpts.size - 1; i++) {
 		if (ISINRANGE(ratio, ctpts[i].pt_center.x / (double)CE_GR_RES, ctpts[i + 1].pt_center.x / (double)CE_GR_RES)) {
 			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CE_GR_RES;
 			// ‹æŠÔ‚²‚Æ‚Ìi’»‚Ì‘Š‘Î’l(0~1)
