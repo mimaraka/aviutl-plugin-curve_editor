@@ -169,7 +169,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 		ctpts[address.index].pt_left.y = gr_pt.y;
 
 		//整列(角度)
-		if (g_config.align_mode == 1) {
+		if (g_config.align_handle) {
 			agl_tmp = get_handle_angle(address);
 			tmp = { address.index, CTPT_RIGHT };
 			set_handle_angle(tmp, agl_tmp + MATH_PI, TRUE, len_right);
@@ -185,7 +185,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 		ctpts[address.index].pt_right.y = gr_pt.y;
 
 		//整列(角度)
-		if (g_config.align_mode == 1) {
+		if (g_config.align_handle) {
 			agl_tmp = get_handle_angle(address);
 			tmp = { address.index, CTPT_LEFT };
 			set_handle_angle(tmp, agl_tmp + MATH_PI, TRUE, len_left);
@@ -341,19 +341,19 @@ void ce::Curve_ID::reverse_points()
 	std::vector<Points_ID> ctpts_old;
 	for (int i = 0; i < ctpts.size / 2.0; i++) {
 		ctpts_old.emplace_back(ctpts[i]);
-		ctpts[i].pt_center.x = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_center.x;
-		ctpts[i].pt_center.y = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_center.y;
-		ctpts[i].pt_left.x = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_right.x;
-		ctpts[i].pt_left.y = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_right.y;
-		ctpts[i].pt_right.x = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_left.x;
-		ctpts[i].pt_right.y = CE_GR_RES - ctpts[ctpts.size - i - 1].pt_left.y;
+		ctpts[i].pt_center.x = CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_center.x;
+		ctpts[i].pt_center.y = CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_center.y;
+		ctpts[i].pt_left.x = CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_right.x;
+		ctpts[i].pt_left.y = CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_right.y;
+		ctpts[i].pt_right.x = CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_left.x;
+		ctpts[i].pt_right.y = CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_left.y;
 
-		ctpts[ctpts.size - i - 1].pt_center.x = CE_GR_RES - ctpts_old[i].pt_center.x;
-		ctpts[ctpts.size - i - 1].pt_center.y = CE_GR_RES - ctpts_old[i].pt_center.y;
-		ctpts[ctpts.size - i - 1].pt_left.x = CE_GR_RES - ctpts_old[i].pt_right.x;
-		ctpts[ctpts.size - i - 1].pt_left.y = CE_GR_RES - ctpts_old[i].pt_right.y;
-		ctpts[ctpts.size - i - 1].pt_right.x = CE_GR_RES - ctpts_old[i].pt_left.x;
-		ctpts[ctpts.size - i - 1].pt_right.y = CE_GR_RES - ctpts_old[i].pt_left.y;
+		ctpts[ctpts.size - i - 1].pt_center.x = CE_GR_RESOLUTION - ctpts_old[i].pt_center.x;
+		ctpts[ctpts.size - i - 1].pt_center.y = CE_GR_RESOLUTION - ctpts_old[i].pt_center.y;
+		ctpts[ctpts.size - i - 1].pt_left.x = CE_GR_RESOLUTION - ctpts_old[i].pt_right.x;
+		ctpts[ctpts.size - i - 1].pt_left.y = CE_GR_RESOLUTION - ctpts_old[i].pt_right.y;
+		ctpts[ctpts.size - i - 1].pt_right.x = CE_GR_RESOLUTION - ctpts_old[i].pt_left.x;
+		ctpts[ctpts.size - i - 1].pt_right.y = CE_GR_RESOLUTION - ctpts_old[i].pt_left.y;
 	}
 
 }
@@ -369,10 +369,10 @@ double ce::Curve_ID::get_value(double ratio, double st, double ed)
 		return 0;
 	// 進捗に相当する区間を調べる
 	for (int i = 0; i < ctpts.size - 1; i++) {
-		if (ISINRANGE(ratio, ctpts[i].pt_center.x / (double)CE_GR_RES, ctpts[i + 1].pt_center.x / (double)CE_GR_RES)) {
-			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CE_GR_RES;
+		if (ISINRANGE(ratio, ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CE_GR_RESOLUTION)) {
+			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CE_GR_RESOLUTION;
 			// 区間ごとの進捗の相対値(0~1)
-			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CE_GR_RES) / range;
+			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION) / range;
 			// 区間ごとの制御点1のX座標(相対値、0~1)
 			double x1 = (ctpts[i].pt_right.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
 			// 区間ごとの制御点1のY座標(相対値)
@@ -383,8 +383,8 @@ double ce::Curve_ID::get_value(double ratio, double st, double ed)
 			double y2 = (ctpts[i + 1].pt_left.y - ctpts[i].pt_center.y) / (double)(ctpts[i + 1].pt_center.y - ctpts[i].pt_center.y);
 
 			// 区間ごとの始値、終値(相対値ではなく、実際の値)
-			double st2 = st + ctpts[i].pt_center.y / (double)CE_GR_RES * (ed - st);
-			double ed2 = st + ctpts[i + 1].pt_center.y / (double)CE_GR_RES * (ed - st);
+			double st2 = st + ctpts[i].pt_center.y / (double)CE_GR_RESOLUTION * (ed - st);
+			double ed2 = st + ctpts[i + 1].pt_center.y / (double)CE_GR_RESOLUTION * (ed - st);
 			// y1,y2を相対値から実際の値に修正
 			y1 = st2 + (ed2 - st2) * y1;
 			y2 = st2 + (ed2 - st2) * y2;

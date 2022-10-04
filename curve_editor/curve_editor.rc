@@ -205,8 +205,23 @@ IDR_MENU1 MENU
 BEGIN
     POPUP "MENU"
     BEGIN
-        MENUITEM "設定",                          ID_Menu
-        MENUITEM "Curve Editorについて",            ID_MENU_CURVEEDITOR40002
+        POPUP "編集モード"
+        BEGIN
+            MENUITEM "Valueモード",                    ID_MENU_MODE_VALUE
+            MENUITEM "IDモード",                       ID_MENU_MODE_ID
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "カーブの値をコピー (Ctrl+C)",          ID_MENU_COPY
+        MENUITEM "プリセットとして保存 (Ctrl+S)",         ID_MENU_SAVE
+        MENUITEM SEPARATOR
+        MENUITEM "カーブの値をコピー(4次元)",              ID_MENU_COPY4D
+        MENUITEM "カーブを反転 (R)",                  ID_MENU_REVERSE
+        MENUITEM "ハンドルを連動させる (A)",              ID_MENU_ALIGNHANDLE
+        MENUITEM "ハンドルを表示 (S)",                 ID_MENU_SHOWHANDLE
+        MENUITEM "グラフをフィット (F)",                ID_MENU_FIT
+        MENUITEM SEPARATOR
+        MENUITEM "設定",                          ID_MENU_CONFIG
+        MENUITEM "Curve Editorについて",            ID_MENU_ABOUT
     END
 END
 

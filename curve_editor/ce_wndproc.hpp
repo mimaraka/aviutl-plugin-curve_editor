@@ -22,6 +22,3 @@
 #define CE_CT_POS_ID(rc)			3 * CE_MRG + (rc.right - 4 * CE_MRG) * 4 / 6.5, rc.bottom - CE_CT_EDT_H - CE_MRG, (rc.right - 4 * CE_MRG) / 6.5, CE_CT_EDT_H
 #define CE_CT_POS_DELETE(rc)		3 * CE_MRG + (rc.right - 4 * CE_MRG) * 5.5 / 6.5, rc.bottom - CE_CT_EDT_H - CE_MRG, (rc.right - 4 * CE_MRG) / 6.5, CE_CT_EDT_H
 #define CE_CT_POS_SEARCH(rc)		CE_MRG, CE_MRG, rc.right - 2 * CE_MRG, CE_CT_SEARCH_H
-
-#define CE_WD_POS_PREV(rc)			CE_MRG, CE_MRG, CE_WD_PREV_W, rc.bottom - CE_CT_EDT_H - 3 * CE_MRG
-#define CE_WD_POS_LIB(rc)			CE_MRG, 2 * (CE_MRG + CE_CT_SIDE_H) + CE_CT_APPLY_H, rc.right - 2 * CE_MRG, rc.bottom - 2 * (CE_MRG + CE_CT_SIDE_H) - CE_CT_APPLY_H - CE_MRG

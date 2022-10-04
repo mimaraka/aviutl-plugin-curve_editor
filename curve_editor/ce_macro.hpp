@@ -13,11 +13,11 @@
 #define CE_MRG					8
 #define CE_MAX_W				1440
 #define CE_MAX_H				1280
-#define CE_DEF_W				500
-#define CE_DEF_H				400
+#define CE_DEF_W				280
+#define CE_DEF_H				460
 
 // セパレータ
-#define CE_SEPR_DEF				150
+#define CE_SEPR_DEF				CE_DEF_H - 50
 #define CE_SEPR_W				8
 #define CE_SEPR_LINE_W			4
 #define CE_SEPR_LINE_L			32
@@ -25,9 +25,10 @@
 // グラフ
 #define CE_GR_PADDING			20
 #define CE_GR_RATIO				0.9
-#define CE_GR_WHEEL_RATIO		0.1
+#define CE_GR_WHEEL_COEF_SCALE	0.1
+#define CE_GR_WHEEL_COEF_POS	0.2
 #define CE_GR_GRID_N			2
-#define CE_GR_RES				10000
+#define CE_GR_RESOLUTION		10000
 #define CE_GR_GRID_MIN			36
 #define CE_GR_GRID_TH_L			0.5
 #define CE_GR_GRID_TH_B			1

@@ -50,7 +50,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 	//AltÉLÅ[Ç™âüÇ≥ÇÍÇƒÇ¢ÇÈä‘
 	else if (GetAsyncKeyState(VK_MENU) < 0) {
 		//X
-		g_curve_value.ctpt[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RES);
+		g_curve_value.ctpt[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RESOLUTION);
 		//Y
 		//Anti-ZeroDivisionError
 		if (!index) {
@@ -60,21 +60,21 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 				g_curve_value.ctpt[0].y = (int)(g_curve_value.ctpt[0].x * ptLock.y / (double)ptLock.x);
 		}
 		else {
-			if (ptLock.x > CE_GR_RES)
+			if (ptLock.x > CE_GR_RESOLUTION)
 				g_curve_value.ctpt[1].y = gr_pt.y;
 			else
 				g_curve_value.ctpt[1].y
-				= CE_GR_RES - (int)((CE_GR_RES - (int)g_curve_value.ctpt[1].x) * (CE_GR_RES - ptLock.y) / (double)(CE_GR_RES - ptLock.x));
+				= CE_GR_RESOLUTION - (int)((CE_GR_RESOLUTION - (int)g_curve_value.ctpt[1].x) * (CE_GR_RESOLUTION - ptLock.y) / (double)(CE_GR_RESOLUTION - ptLock.x));
 		}
 	}
 	//ìØéûÇ…ìÆÇ©Ç∑
 	else if (GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) < 0) {
 		//X
 		g_curve_value.ctpt[index].x = gr_pt.x;
-		g_curve_value.ctpt[!index].x = MINMAXLIM(CE_GR_RES - g_curve_value.ctpt[index].x, 0, CE_GR_RES);
+		g_curve_value.ctpt[!index].x = MINMAXLIM(CE_GR_RESOLUTION - g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
 		//Y
 		g_curve_value.ctpt[index].y = gr_pt.y;
-		g_curve_value.ctpt[!index].y = CE_GR_RES - g_curve_value.ctpt[index].y;
+		g_curve_value.ctpt[!index].y = CE_GR_RESOLUTION - g_curve_value.ctpt[index].y;
 		bCtrlKey = FALSE;
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
@@ -91,11 +91,11 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 	else if (GetAsyncKeyState(VK_SHIFT) < 0) {
 		g_curve_value.ctpt[index].x = gr_pt.x;
 		//if Y is larger than 500
-		if (ptLock.y < CE_GR_RES / 2)
+		if (ptLock.y < CE_GR_RESOLUTION / 2)
 			g_curve_value.ctpt[index].y = 0;
 		//if Y is less than 500
-		else if (ptLock.y >= CE_GR_RES / 2)
-			g_curve_value.ctpt[index].y = CE_GR_RES;
+		else if (ptLock.y >= CE_GR_RESOLUTION / 2)
+			g_curve_value.ctpt[index].y = CE_GR_RESOLUTION;
 	}
 	//The moment the Control Key is pressed
 	else if (GetAsyncKeyState(VK_CONTROL) < 0 && !bCtrlKey) {
@@ -114,9 +114,9 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 			intResult_y = (int)(DISTANCE1(ptLock) * std::sin(theta));
 		}
 		else {
-			theta = std::atan2(CE_GR_RES - gr_pt.y, CE_GR_RES - gr_pt.x);
-			intResult_x = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES) * std::cos(theta));
-			intResult_y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES) * std::sin(theta));
+			theta = std::atan2(CE_GR_RESOLUTION - gr_pt.y, CE_GR_RESOLUTION - gr_pt.x);
+			intResult_x = CE_GR_RESOLUTION - (int)(DISTANCE2(ptLock, CE_GR_RESOLUTION, CE_GR_RESOLUTION) * std::cos(theta));
+			intResult_y = CE_GR_RESOLUTION - (int)(DISTANCE2(ptLock, CE_GR_RESOLUTION, CE_GR_RESOLUTION) * std::sin(theta));
 		}
 		g_curve_value.ctpt[index].x = intResult_x;
 		//Y
@@ -131,10 +131,10 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		}
 		else {
 			if (theta > MATH_PI * 0.5)
-				g_curve_value.ctpt[1].y = CE_GR_RES - (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
+				g_curve_value.ctpt[1].y = CE_GR_RESOLUTION - (int)(DISTANCE2(ptLock, CE_GR_RESOLUTION, CE_GR_RESOLUTION));
 
 			else if (theta < -MATH_PI * 0.5)
-				g_curve_value.ctpt[1].y = CE_GR_RES + (int)(DISTANCE2(ptLock, CE_GR_RES, CE_GR_RES));
+				g_curve_value.ctpt[1].y = CE_GR_RESOLUTION + (int)(DISTANCE2(ptLock, CE_GR_RESOLUTION, CE_GR_RESOLUTION));
 
 			else g_curve_value.ctpt[1].y = intResult_y;
 		}
@@ -147,5 +147,5 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		bShiftKey = FALSE;
 	}
 
-	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RES);
+	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
 }

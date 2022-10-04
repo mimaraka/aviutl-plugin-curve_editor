@@ -333,7 +333,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		return 0;
 //
 //	case WM_PAINT:
-//		strBuffer = create_value_4d();
+//		strBuffer = create_curve_value_4d();
 //		lpsResult = strBuffer.c_str();
 //		hfValue = CreateFont(
 //			rect_wnd.right >= MINCTRLSIZE * 0.7143 ? 20 : rect_wnd.right * 0.112, 0,
@@ -716,7 +716,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		return 0;
 //
 //	case WM_PAINT:
-//		strNum = std::to_string(g_config.id_current);
+//		strNum = std::to_string(g_config.current_id);
 //		lpcsNum = strNum.c_str();
 //
 //		font = CreateFont(
@@ -761,8 +761,8 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //	case WM_MOUSEMOVE:
 //		if (clicked) {
 //			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-//			g_config.id_current = intBuffer + (cl_pt.x - ptLock.x) / 9;
-//			g_config.id_current = MINMAXLIM(g_config.id_current, 0, CE_CURVE_MAX - 1);
+//			g_config.current_id = intBuffer + (cl_pt.x - ptLock.x) / 9;
+//			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
 //			SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
 //		}
 //		else SetCursor(LoadCursor(NULL, IDC_HAND));
@@ -774,7 +774,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //	case WM_LBUTTONDOWN:
 //		ptLock = cl_pt;
-//		intBuffer = g_config.id_current;
+//		intBuffer = g_config.current_id;
 //		SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 //		clicked = TRUE;
 //		InvalidateRect(hwnd, NULL, FALSE);

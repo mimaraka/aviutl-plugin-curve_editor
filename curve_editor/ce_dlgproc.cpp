@@ -171,7 +171,7 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 	LPCTSTR lpsResult;
 	std::string strBuffer;
 	TCHAR chBuffer[64];
-	strBuffer = create_value_4d();
+	strBuffer = create_curve_value_4d();
 	lpsResult = strBuffer.c_str();
 
 	switch (msg) {

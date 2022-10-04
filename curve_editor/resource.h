@@ -22,15 +22,25 @@
 #define IDC_AUTOCOPY                    1010
 #define IDC_MAXIMUMUNDO                 1011
 #define IDC_AUTOCOPY2                   1012
-#define ID_Menu                         40001
-#define ID_MENU_CURVEEDITOR40002        40002
+#define ID_MENU_ABOUT                   40011
+#define ID_MENU_CONFIG                  40012
+#define ID_MENU_SHOWHANDLE              40013
+#define ID_MENU_ALIGNHANDLE             40014
+#define ID_MENU_REVERSE                 40015
+#define ID_MENU_40022                   40022
+#define ID_MENU_FIT                     40026
+#define ID_MENU_COPY4D                  40027
+#define ID_MENU_SAVE                    40028
+#define ID_MENU_COPY                    40029
+#define ID_MENU_MODE_VALUE              40030
+#define ID_MENU_MODE_ID                 40031
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        116
-#define _APS_NEXT_COMMAND_VALUE         40004
+#define _APS_NEXT_COMMAND_VALUE         40032
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
