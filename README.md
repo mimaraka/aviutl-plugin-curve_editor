@@ -1,9 +1,9 @@
-# Curve Editor v0.1 for AviUtl
+# Curve Editor v0.1.1 for AviUtl
 ベジェ曲線のイージングをウィンドウ上で編集できるAviUtlプラグインです。  
 ![スクリーンショット 2022-10-01 170054](https://user-images.githubusercontent.com/106879397/193399542-45d1b0ae-7eac-4150-aeb5-5678cb52e802.png)
 
 ## ダウンロード
-**v0.1**(テスト版)：https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v0.1  
+**v0.1.1**(テスト版)：https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v0.1.1  
 ※カーブを編集するUIと、カーブの適用・プロジェクトファイルへの保存機能が実装されています。
 
 ## インストール
@@ -65,7 +65,7 @@ AviUtlを起動後、メインウィンドウの「表示」メニューから�
 カーブ編集時には、以下のショートカットキーが使用できます：
 
 #### [A]キー
-操作しているハンドルと反対方向のハンドルの挙動を切り替えます。
+ペアのハンドルとの角度を固定するかどうかを切り替えます。
 
 #### [F]キー
 カーブをグラフウィンドウにフィットさせます。
