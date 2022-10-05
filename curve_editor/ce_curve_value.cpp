@@ -7,6 +7,18 @@
 #include "ce_header.hpp"
 
 
+
+//---------------------------------------------------------------------
+//		初期化
+//---------------------------------------------------------------------
+void ce::Curve_Value::init()
+{
+	ctpt[0] = { (int)(CE_GR_RESOLUTION * 0.4), (int)(CE_GR_RESOLUTION * 0.4) };
+	ctpt[1] = { (int)(CE_GR_RESOLUTION * 0.6), (int)(CE_GR_RESOLUTION * 0.6) };
+}
+
+
+
 //---------------------------------------------------------------------
 //		指定した座標が制御点の内部に存在するか
 //---------------------------------------------------------------------
@@ -104,7 +116,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
 	}
-	//While the Control Key is being pressed
+	//Ctrlキーが押されている間
 	else if (GetAsyncKeyState(VK_CONTROL) < 0) {
 		float theta;
 		int intResult_x, intResult_y;
@@ -139,7 +151,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 			else g_curve_value.ctpt[1].y = intResult_y;
 		}
 	}
-	//Nomal Mode
+	//通常
 	else {
 		g_curve_value.ctpt[index] = gr_pt;
 		bCtrlKey = FALSE;
@@ -148,4 +160,5 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 	}
 
 	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
+	g_curve_value.ctpt[index].y = MINMAXLIM(g_curve_value.ctpt[index].y, -2.73 *CE_GR_RESOLUTION, 3.73 * CE_GR_RESOLUTION);
 }

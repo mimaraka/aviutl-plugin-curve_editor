@@ -191,7 +191,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CE_WM_REDRAW:
+		case CE_CM_REDRAW:
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}
@@ -327,7 +327,7 @@ LRESULT CALLBACK WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CE_WM_REDRAW:
+		case CE_CM_REDRAW:
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}

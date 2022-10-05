@@ -137,7 +137,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CE_WM_REDRAW:
+		case CE_CM_REDRAW:
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}
@@ -279,7 +279,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //	case WM_COMMAND:
 //		switch (wparam) {
-//		case CE_WM_REDRAW:
+//		case CE_CM_REDRAW:
 //			InvalidateRect(hwnd, NULL, FALSE);
 //			return 0;
 //		}
@@ -413,7 +413,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //	case WM_COMMAND:
 //		switch (wparam) {
-//		case CE_WM_REDRAW:
+//		case CE_CM_REDRAW:
 //			InvalidateRect(hwnd, NULL, FALSE);
 //			return 0;
 //		}
@@ -524,7 +524,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		SetCursor(LoadCursor(NULL, IDC_HAND));
 //		clicked = FALSE;
 //		g_config.mode = 0;
-//		SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
+//		SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
 //		InvalidateRect(hwnd, NULL, FALSE);
 //		return 0;
 //
@@ -536,7 +536,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //	case WM_COMMAND:
 //		switch (wparam) {
-//		case CE_WM_REDRAW:
+//		case CE_CM_REDRAW:
 //			InvalidateRect(hwnd, NULL, FALSE);
 //			return 0;
 //		}
@@ -647,7 +647,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //		SetCursor(LoadCursor(NULL, IDC_HAND));
 //		clicked = FALSE;
 //		g_config.mode = 1;
-//		SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
+//		SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
 //		InvalidateRect(hwnd, NULL, FALSE);
 //		return 0;
 //
@@ -659,7 +659,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //	case WM_COMMAND:
 //		switch (wparam) {
-//		case CE_WM_REDRAW:
+//		case CE_CM_REDRAW:
 //			InvalidateRect(hwnd, NULL, FALSE);
 //			return 0;
 //		}
@@ -763,7 +763,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //			SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 //			g_config.current_id = intBuffer + (cl_pt.x - ptLock.x) / 9;
 //			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
-//			SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
+//			SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
 //		}
 //		else SetCursor(LoadCursor(NULL, IDC_HAND));
 //
@@ -795,7 +795,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //
 //	case WM_COMMAND:
 //		switch (wparam) {
-//		case CE_WM_REDRAW:
+//		case CE_CM_REDRAW:
 //			InvalidateRect(hwnd, NULL, FALSE);
 //			return 0;
 //		}

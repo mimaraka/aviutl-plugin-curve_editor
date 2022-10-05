@@ -7,6 +7,28 @@
 #include "ce_header.hpp"
 
 
+
+//---------------------------------------------------------------------
+//		初期化
+//---------------------------------------------------------------------
+void ce::Curve_ID::init()
+{
+	Points_ID pt_add[2];
+	pt_add[0].type = 0;
+	pt_add[0].pt_center = { 0, 0 };
+	pt_add[0].pt_right = { (int)(CE_GR_RESOLUTION * 0.4), (int)(CE_GR_RESOLUTION * 0.4) };
+	pt_add[0].pt_left = { 0, 0 };
+	ctpts.push_back(pt_add[0]);
+
+	pt_add[1].type = 1;
+	pt_add[1].pt_center = { CE_GR_RESOLUTION, CE_GR_RESOLUTION };
+	pt_add[1].pt_left = { (int)(CE_GR_RESOLUTION * 0.6), (int)(CE_GR_RESOLUTION * 0.6) };
+	pt_add[1].pt_right = { CE_GR_RESOLUTION, CE_GR_RESOLUTION };
+	ctpts.push_back(pt_add[1]);
+}
+
+
+
 //---------------------------------------------------------------------
 //		制御点群を追加
 //---------------------------------------------------------------------
@@ -85,6 +107,18 @@ POINT ce::Curve_ID::get_point(Point_Address address)
 	}
 		return result;
 }
+
+
+
+//---------------------------------------------------------------------
+//		制御点(群)をクリア
+//---------------------------------------------------------------------
+void ce::Curve_ID::clear()
+{
+	ctpts.clear();
+	init();
+}
+
 
 
 //---------------------------------------------------------------------

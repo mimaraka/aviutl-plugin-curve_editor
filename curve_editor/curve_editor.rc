@@ -213,15 +213,17 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "カーブの値をコピー (Ctrl+C)",          ID_MENU_COPY
         MENUITEM "プリセットとして保存 (Ctrl+S)",         ID_MENU_SAVE
-        MENUITEM SEPARATOR
         MENUITEM "カーブの値をコピー(4次元)",              ID_MENU_COPY4D
         MENUITEM "カーブを反転 (R)",                  ID_MENU_REVERSE
+        MENUITEM "カーブを初期化",                     ID_MENU_DELETE
+        MENUITEM "カーブのプロパティ",                   ID_MENU_PROPERTY
+        MENUITEM SEPARATOR
         MENUITEM "ハンドルを連動させる (A)",              ID_MENU_ALIGNHANDLE
         MENUITEM "ハンドルを表示 (S)",                 ID_MENU_SHOWHANDLE
         MENUITEM "グラフをフィット (F)",                ID_MENU_FIT
         MENUITEM SEPARATOR
         MENUITEM "設定",                          ID_MENU_CONFIG
-        MENUITEM "Curve Editorについて",            ID_MENU_ABOUT
+        MENUITEM "About",                       ID_MENU_ABOUT
     END
 END
 
@@ -232,19 +234,6 @@ END
 //
 
 IDC_DRAGGING            CURSOR                  "cur_drag.cur"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE
-BEGIN
-    CE_STR_OUTOFRANGE       "値が範囲外です"
-    CE_STR_INVALIDINPUT     "入力値が無効です"
-    CE_STR_GIVEITANEME      "名前を入力してください"
-END
 
 #endif    // 日本語 (日本) resources
 /////////////////////////////////////////////////////////////////////////////

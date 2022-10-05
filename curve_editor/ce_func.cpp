@@ -96,6 +96,10 @@ void ini_load_configs(FILTER* fp)
 }
 
 
+
+//---------------------------------------------------------------------
+//		aviutl.iniから設定を書き込み
+//---------------------------------------------------------------------
 void ini_write_configs(FILTER* fp)
 {
 	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.ctpt[0].x);
@@ -107,6 +111,7 @@ void ini_write_configs(FILTER* fp)
 	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
 	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
 }
+
 
 
 //---------------------------------------------------------------------
@@ -165,6 +170,7 @@ HWND create_child(
 }
 
 
+
 //---------------------------------------------------------------------
 //		1次元カーブIDを受け取りグラフに適用
 //---------------------------------------------------------------------
@@ -184,6 +190,7 @@ void read_value(int value)
 	g_curve_value.ctpt[0].y -= 273;
 	g_curve_value.ctpt[0].y -= 273;
 }
+
 
 
 //---------------------------------------------------------------------
@@ -208,6 +215,7 @@ std::vector<std::string> split(const std::string& s, TCHAR c)
 }
 
 
+
 //---------------------------------------------------------------------
 //		4次元カーブIDを生成
 //---------------------------------------------------------------------
@@ -230,6 +238,7 @@ std::string create_curve_value_4d()
 }
 
 
+
 //---------------------------------------------------------------------
 //		1次元カーブIDを生成
 //---------------------------------------------------------------------
@@ -245,6 +254,7 @@ int create_curve_value_1d()
 	result = 6600047 * (y2 + 273) + 65347 * x2 + 101 * (y1 + 273) + x1 - 2147483647;
 	return result;
 }
+
 
 
 //---------------------------------------------------------------------
@@ -265,6 +275,7 @@ BOOL copy_to_clipboard(HWND hwnd, LPCTSTR lpsText)
 	CloseClipboard();
 	return TRUE;
 }
+
 
 
 //---------------------------------------------------------------------
@@ -313,4 +324,9 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, &minfo);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, &minfo);
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, &minfo);
+
+	//プラグイン名の反映
+	minfo.fMask = MIIM_TYPE;
+	minfo.dwTypeData = CE_FILTER_NAME "について";
+	SetMenuItemInfo(menu, ID_MENU_ABOUT, FALSE, &minfo);
 }

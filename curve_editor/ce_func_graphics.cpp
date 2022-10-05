@@ -318,6 +318,20 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 		rect_wnd->bottom,
 	};
 
+	D2D1_RECT_F rect_up = {
+		ctpt_cl[0].x,
+		0,
+		ctpt_cl[3].x,
+		to_client(0, 3.73 * CE_GR_RESOLUTION).y
+	};
+
+	D2D1_RECT_F rect_down = {
+		ctpt_cl[0].x,
+		to_client(0, -2.73 * CE_GR_RESOLUTION).y,
+		ctpt_cl[3].x,
+		rect_wnd->bottom
+	};
+
 	//Direct2D初期化
 	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_graph));
 
@@ -332,14 +346,20 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 		pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GR_INVALID)));
 		pBrush->SetOpacity(0.5);
 		if (pBrush) {
+			// Xが0未満1より大の部分を暗くする
 			g_render_target->FillRectangle(&rect_left, pBrush);
 			g_render_target->FillRectangle(&rect_right, pBrush);
+			// Valueモードのとき
+			if (g_config.mode == 0) {
+				g_render_target->FillRectangle(&rect_up, pBrush);
+				g_render_target->FillRectangle(&rect_down, pBrush);
+			}
 		}
 		pBrush->SetOpacity(1);
 
 
 		//値モードのとき
-		if (!g_config.mode) {
+		if (g_config.mode == 0) {
 			//bezier curve (trace)
 			if (g_config.trace) {
 				pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));

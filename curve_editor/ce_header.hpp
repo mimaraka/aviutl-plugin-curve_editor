@@ -152,12 +152,9 @@ namespace ce {
 	public:
 		POINT ctpt[2];
 
-		Curve_Value()
-		{
-			ctpt[0] = { 400, 400 };
-			ctpt[1] = { 600, 600 };
-		}
+		Curve_Value() { init(); }
 
+		void init();
 		int point_in_ctpts(POINT cl_pt);
 		void move_point(int index, POINT gr_pt);
 	};
@@ -167,24 +164,12 @@ namespace ce {
 	public:
 		StaticArray <Points_ID, CE_POINT_MAX> ctpts;
 
-		Curve_ID()
-		{
-			Points_ID pt_add[2];
-			pt_add[0].type = 0;
-			pt_add[0].pt_center = { 0, 0 };
-			pt_add[0].pt_right = { (int)(CE_GR_RESOLUTION * 0.4), (int)(CE_GR_RESOLUTION * 0.4) };
-			pt_add[0].pt_left = { 0, 0 };
-			ctpts.push_back(pt_add[0]);
+		Curve_ID() { init(); }
 
-			pt_add[1].type = 1;
-			pt_add[1].pt_center = { CE_GR_RESOLUTION, CE_GR_RESOLUTION };
-			pt_add[1].pt_left = { (int)(CE_GR_RESOLUTION * 0.6), (int)(CE_GR_RESOLUTION * 0.6) };
-			pt_add[1].pt_right = { CE_GR_RESOLUTION, CE_GR_RESOLUTION };
-			ctpts.push_back(pt_add[1]);
-		}
-
+		void				init();
 		void				add_point(POINT cl_pt);
 		void				delete_point(POINT cl_pt);
+		void				clear();
 		POINT				get_point(Point_Address address);
 		void				move_point(Point_Address address, POINT gr_pt, BOOL bReset);
 		Point_Address		pt_in_ctpt(POINT cl_pt);
@@ -194,6 +179,7 @@ namespace ce {
 		void				reverse_points();
 		double				get_value(double ratio, double st, double ed);
 	};
+
 
 	class Control {
 		int flag;

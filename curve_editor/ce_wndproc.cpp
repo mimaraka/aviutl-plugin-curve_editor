@@ -42,7 +42,7 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 	case WM_KEYDOWN:
 		switch (wparam) {
 		case 82: //[R]
-			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_WM_REVERSE, 0);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_REVERSE, 0);
 			return 0;
 
 		case 67: //[C]
@@ -54,19 +54,23 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 			if (GetAsyncKeyState(VK_CONTROL) < 0)
 				SendMessage(g_window.graph, WM_COMMAND, CE_CT_SAVE, 0);
 			else
-				SendMessage(g_window.graph, WM_COMMAND, CE_WM_SHOWHANDLE, 0);
+				SendMessage(g_window.graph, WM_COMMAND, CE_CM_SHOWHANDLE, 0);
 			return 0;
 
-		case 37: //[<]	
-			g_config.current_id--;
-			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
-			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_WM_REDRAW, 0);
+		case VK_LEFT: //[<]	
+			if (g_config.mode) {
+				g_config.current_id--;
+				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+				if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_REDRAW, 0);
+			}
 			return 0;
 
-		case 39: //[>]
-			g_config.current_id++;
-			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
-			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_WM_REDRAW, 0);
+		case VK_RIGHT: //[>]
+			if (g_config.mode) {
+				g_config.current_id++;
+				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+				if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_REDRAW, 0);
+			}
 			return 0;
 
 		case 70: //[F]
@@ -75,6 +79,10 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 
 		case 65: //[A]
 			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CT_ALIGN, 0);
+			return 0;
+
+		case VK_DELETE:
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_DELETE, 0);
 			return 0;
 		}
 		return 0;
@@ -343,7 +351,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, wndproc_daialog_settings);
 		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF_JA), hwnd, wndproc_daialog_settings);
 		//	InvalidateRect(hwnd, NULL, FALSE);
-		//	SendMessage(hwnd_parent, WM_COMMAND, CE_WM_REDRAW, 0);
+		//	SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
 		//	RedrawChildren();
 		//	return 0;
 
@@ -355,7 +363,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//	return 0;
 
 		//	//コントロール再描画
-		//case CE_WM_REDRAW:
+		//case CE_CM_REDRAW:
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	RedrawChildren();
 		//	return 0;
@@ -678,8 +686,17 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		// 縮尺の上限下限を設定
 		else {
 			double coef = std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_SCALE);
-			double scale_after_x = MINMAXLIM(g_disp_info.scale.x * coef, CE_GR_SCALE_MIN, CE_GR_SCALE_MAX);
-			double scale_after_y = MINMAXLIM(g_disp_info.scale.y * coef, CE_GR_SCALE_MIN, CE_GR_SCALE_MAX);
+			double scale_after_x, scale_after_y;
+
+			if (max(g_disp_info.scale.x, g_disp_info.scale.y) > CE_GR_SCALE_MAX / coef) {
+				coef = CE_GR_SCALE_MAX / max(g_disp_info.scale.x, g_disp_info.scale.y);
+			}
+			else if (min(g_disp_info.scale.x, g_disp_info.scale.y) < CE_GR_SCALE_MIN / coef) {
+				coef = CE_GR_SCALE_MIN / min(g_disp_info.scale.x, g_disp_info.scale.y);
+			}
+
+			scale_after_x = g_disp_info.scale.x * coef;
+			scale_after_y = g_disp_info.scale.y * coef;
 
 			g_disp_info.o.x = (g_disp_info.o.x - rect_wnd.right * 0.5) * (scale_after_x / g_disp_info.scale.x) + rect_wnd.right * 0.5;
 			g_disp_info.o.y = (g_disp_info.o.y - rect_wnd.bottom * 0.5) * (scale_after_y / g_disp_info.scale.y) + rect_wnd.bottom * 0.5;
@@ -699,7 +716,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	case WM_COMMAND:
 		switch (wparam) {
 		// 再描画
-		case CE_WM_REDRAW:
+		case CE_CM_REDRAW:
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
@@ -728,15 +745,30 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			return 0;
 
 		case ID_MENU_REVERSE:
-		case CE_WM_REVERSE:
+		case CE_CM_REVERSE:
 			g_curve_id[g_config.current_id].reverse_points();
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
 		case ID_MENU_SHOWHANDLE:
-		case CE_WM_SHOWHANDLE:
+		case CE_CM_SHOWHANDLE:
 			g_config.show_handle = g_config.show_handle ? 0 : 1;
 			InvalidateRect(hwnd, NULL, FALSE);
+			return 0;
+
+		case ID_MENU_DELETE:
+		case CE_CM_DELETE:
+		{
+			int responce = MessageBox(hwnd, "編集中のカーブを初期化します。よろしいですか？", CE_FILTER_NAME, MB_OKCANCEL);
+			if (responce == IDOK) {
+				if (g_config.mode)
+					g_curve_id[g_config.current_id].clear();
+				else
+					g_curve_value.init();
+
+				InvalidateRect(hwnd, NULL, FALSE);
+			}
+		}
 			return 0;
 		}
 		return 0;
@@ -827,10 +859,10 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 	case WM_COMMAND:
 		/*switch (wparam) {
-		case CE_WM_REDRAW:
+		case CE_CM_REDRAW:
 			InvalidateRect(hwnd, NULL, FALSE);
-			SendMessage(buttons.hDefault, WM_COMMAND, CE_WM_REDRAW, 0);
-			SendMessage(buttons.hUser, WM_COMMAND, CE_WM_REDRAW, 0);
+			SendMessage(buttons.hDefault, WM_COMMAND, CE_CM_REDRAW, 0);
+			SendMessage(buttons.hUser, WM_COMMAND, CE_CM_REDRAW, 0);
 			return 0;
 		}*/
 		return 0;
