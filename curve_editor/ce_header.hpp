@@ -156,6 +156,9 @@ namespace ce {
 		void init();
 		int point_in_ctpts(POINT cl_pt);
 		void move_point(int index, POINT gr_pt);
+		int create_value_1d();
+		std::string create_value_4d();
+		void read_value_1d(int value);
 	};
 
 
@@ -289,14 +292,8 @@ BOOL				on_project_load(FILTER* fp, void* editp, void* data, int size);
 
 BOOL				on_project_save(FILTER* fp, void* editp, void* data, int* size);
 
-//1次元カーブIDを受け取り制御点を変更
-void				read_value(int);
 //文字列の分割
 std::vector<std::string> split(const std::string& s, TCHAR c);
-//現在の制御点の座標から4次元カーブID(文字列)を生成
-std::string			create_curve_value_4d();
-//現在の制御点の座標から1次元カーブID(数値)を生成
-int					create_curve_value_1d();
 //クリップボードにテキストをコピー
 BOOL				copy_to_clipboard(HWND, LPCTSTR);
 

@@ -51,7 +51,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 {
 	static POINT ptLock;
 	static BOOL bShiftKey, bCtrlKey, bAltKey;
-	//Altキーが押された直後
+	// Altキーが押された瞬間
 	if (GetAsyncKeyState(VK_MENU) < 0 && !bAltKey) {
 		ptLock.x = gr_pt.x;
 		ptLock.y = gr_pt.y;
@@ -59,12 +59,12 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		bCtrlKey = FALSE;
 		bShiftKey = FALSE;
 	}
-	//Altキーが押されている間
+	// Altキーが押されている間
 	else if (GetAsyncKeyState(VK_MENU) < 0) {
 		//X
 		g_curve_value.ctpt[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RESOLUTION);
 		//Y
-		//Anti-ZeroDivisionError
+		// ゼロ除算対策
 		if (!index) {
 			if (ptLock.x < 0)
 				g_curve_value.ctpt[0].y = gr_pt.y;
@@ -79,7 +79,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 				= CE_GR_RESOLUTION - (int)((CE_GR_RESOLUTION - (int)g_curve_value.ctpt[1].x) * (CE_GR_RESOLUTION - ptLock.y) / (double)(CE_GR_RESOLUTION - ptLock.x));
 		}
 	}
-	//同時に動かす
+	// 同時に動かす
 	else if (GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) < 0) {
 		//X
 		g_curve_value.ctpt[index].x = gr_pt.x;
@@ -92,14 +92,14 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		bShiftKey = FALSE;
 	}
 
-	//The moment the Shift Key is pressed
+	// Shiftキーが押された瞬間
 	else if (GetAsyncKeyState(VK_SHIFT) < 0 && !bShiftKey) {
 		ptLock.y = gr_pt.y;
 		bShiftKey = TRUE;
 		bCtrlKey = FALSE;
 		bAltKey = FALSE;
 	}
-	//While the Shift Key is being pressed
+	// Shiftキーが押されている間
 	else if (GetAsyncKeyState(VK_SHIFT) < 0) {
 		g_curve_value.ctpt[index].x = gr_pt.x;
 		//if Y is larger than 500
@@ -109,14 +109,14 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		else if (ptLock.y >= CE_GR_RESOLUTION / 2)
 			g_curve_value.ctpt[index].y = CE_GR_RESOLUTION;
 	}
-	//The moment the Control Key is pressed
+	// Ctrlキーが押された瞬間
 	else if (GetAsyncKeyState(VK_CONTROL) < 0 && !bCtrlKey) {
 		ptLock.x = gr_pt.x; ptLock.y = gr_pt.y;
 		bCtrlKey = TRUE;
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
 	}
-	//Ctrlキーが押されている間
+	// Ctrlキーが押されている間
 	else if (GetAsyncKeyState(VK_CONTROL) < 0) {
 		float theta;
 		int intResult_x, intResult_y;
@@ -161,4 +161,67 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 
 	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
 	g_curve_value.ctpt[index].y = MINMAXLIM(g_curve_value.ctpt[index].y, -2.73 *CE_GR_RESOLUTION, 3.73 * CE_GR_RESOLUTION);
+}
+
+
+
+//---------------------------------------------------------------------
+//		値を生成(1次元)
+//---------------------------------------------------------------------
+int ce::Curve_Value::create_value_1d()
+{
+	int result;
+	int x1, y1, x2, y2;
+	x1 = (int)std::round(ctpt[0].x * 100 / (double)CE_GR_RESOLUTION);
+	y1 = MINMAXLIM((int)std::round(ctpt[0].y * 100 / (double)CE_GR_RESOLUTION), -273, 373);
+	x2 = (int)std::round(ctpt[1].x * 100 / (double)CE_GR_RESOLUTION);
+	y2 = MINMAXLIM((int)std::round(ctpt[1].y * 100 / (double)CE_GR_RESOLUTION), -273, 373);
+	// 計算
+	result = 6600047 * (y2 + 273) + 65347 * x2 + 101 * (y1 + 273) + x1 - 2147483647;
+	return result;
+}
+
+
+
+//---------------------------------------------------------------------
+//		値を生成(4次元)
+//---------------------------------------------------------------------
+std::string ce::Curve_Value::create_value_4d()
+{
+	float ptx, pty;
+	std::string strx, stry, result;
+	for (int i = 0; i < 2; i++) {
+		ptx = std::round(ctpt[i].x * 100 / (double)CE_GR_RESOLUTION) * 0.01;
+		pty = std::round(ctpt[i].y * 100 / (double)CE_GR_RESOLUTION) * 0.01;
+		strx = std::to_string(ptx);
+		stry = std::to_string(pty);
+		strx.erase(4);
+		if (ctpt[i].y < 0) stry.erase(5);
+		else stry.erase(4);
+		result += strx + ", " + stry + ", ";
+	}
+	result.erase(result.size() - 2, 2);
+	return result;
+}
+
+
+
+//---------------------------------------------------------------------
+//		1次元値を読み取る
+//---------------------------------------------------------------------
+void ce::Curve_Value::read_value_1d(int value)
+{
+	UINT usint;
+	if (value < 0) usint = value + 2147483647;
+	else usint = (UINT)value + (UINT)2147483647;
+	ctpt[1].y = usint / 6600047;
+	ctpt[1].x = (usint - g_curve_value.ctpt[1].y * 6600047) / 65347;
+	ctpt[0].y = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) / 101;
+	ctpt[0].x = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) % 101;
+	ctpt[0].x *= CE_GR_RESOLUTION / 100;
+	ctpt[0].y *= CE_GR_RESOLUTION / 100;
+	ctpt[1].x *= CE_GR_RESOLUTION / 100;
+	ctpt[1].y *= CE_GR_RESOLUTION / 100;
+	ctpt[0].y -= 2.73 * CE_GR_RESOLUTION;
+	ctpt[0].y -= 2.73 * CE_GR_RESOLUTION;
 }

@@ -47,10 +47,12 @@ void d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr)
 //---------------------------------------------------------------------
 void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 	pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GRID)));
+	// 
 	int kx = std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.x / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
 	int ky = std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.y / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
-	int nx = std::pow(CE_GR_GRID_N, kx);
-	int ny = std::pow(CE_GR_GRID_N, ky);
+	// グラフの枠内に表示されるグリッドの本数
+	int nx = MINLIM(std::pow(CE_GR_GRID_N, kx), 1);
+	int ny = MINLIM(std::pow(CE_GR_GRID_N, ky), 1);
 	double dx = (CE_GR_RESOLUTION * g_disp_info.scale.x) / nx;
 	double dy = (CE_GR_RESOLUTION * g_disp_info.scale.y) / ny;
 	int lx, ly;

@@ -14,11 +14,11 @@
 #define CE_MRG					8
 #define CE_MAX_W				1440
 #define CE_MAX_H				1280
-#define CE_DEF_W				280
+#define CE_DEF_W				360
 #define CE_DEF_H				460
 
 // セパレータ
-#define CE_SEPR_DEF				CE_DEF_H - 50
+#define CE_SEPR_DEF				CE_DEF_H
 #define CE_SEPR_W				8
 #define CE_SEPR_LINE_W			4
 #define CE_SEPR_LINE_L			32
@@ -125,11 +125,21 @@
 //---------------------------------------------------------------------
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
-#define CE_FILTER_NAME				"Curve Editor"
-#define CE_FILTER_VERSION			"v0.1-alpha"
-#define CE_FILTER_AUTHOR			"mimaraka"
-#define CE_FILTER_INFO				CE_FILTER_NAME " " CE_FILTER_VERSION " by " CE_FILTER_AUTHOR
-#define CE_FILTER_LINK				"https://sites.google.com/view/aviutlscripts/home"
+#define CE_PLUGIN_NAME				"Curve Editor"
+#define CE_PLUGIN_VERSION			"v0.1.2"
+#define CE_PLUGIN_AUTHOR			"mimaraka"
+#define CE_PLUGIN_YEAR				"2022"
+#define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR
+#define CE_PLUGIN_LINK				"https://sites.google.com/view/aviutlscripts/home"
+
+
+//---------------------------------------------------------------------
+//		文字列
+//---------------------------------------------------------------------
+#define CE_STR_DELETE			"編集中のカーブを初期化します。よろしいですか？"
+#define CE_STR_ABOUT			CE_PLUGIN_NAME " " CE_PLUGIN_VERSION "\n" "Copyright : (C) " CE_PLUGIN_YEAR " " CE_PLUGIN_AUTHOR
+#define CE_STR_INVALIDINPUT		"無効な入力値です。"
+#define CE_STR_INPUTANAME		"プリセット名を入力してください。"
 
 
 //---------------------------------------------------------------------

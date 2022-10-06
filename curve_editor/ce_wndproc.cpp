@@ -387,7 +387,6 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 	//POINT
 	static POINT	pt_view;
-	POINT			pt_tmp;							//値反転用
 	POINT			cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	POINT			gr_pt;
 
@@ -515,6 +514,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 					g_curve_value.ctpt[1].y = to_graph(cl_pt).y;
 				}
 				InvalidateRect(hwnd, NULL, FALSE);
+				// オートコピー
 				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
 			}
 			// 移動モード解除
@@ -536,15 +536,18 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(マウスの左ボタンがダブルクリックされたとき)
 		///////////////////////////////////////////
 	case WM_LBUTTONDBLCLK:
-		//カーソルが制御点上にあるかどうか
-		address = g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt);
+		// IDモードのとき
+		if (g_config.mode == 1) {
+			//カーソルが制御点上にあるかどうか
+			address = g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt);
 
-		if (address.position == 1)
-			g_curve_id[g_config.current_id].delete_point(cl_pt);
-		else
-			g_curve_id[g_config.current_id].add_point(gr_pt);
+			if (address.position == ce::CTPT_CENTER)
+				g_curve_id[g_config.current_id].delete_point(cl_pt);
+			else
+				g_curve_id[g_config.current_id].add_point(gr_pt);
 
-		InvalidateRect(hwnd, NULL, FALSE);
+			InvalidateRect(hwnd, NULL, FALSE);
+		}
 		return 0;
 
 		///////////////////////////////////////////
@@ -731,7 +734,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				g_curve_id[g_config.current_id].reverse_curve();
 			// Valueモード
 			else {
-				pt_tmp = g_curve_value.ctpt[0];
+				POINT pt_tmp = g_curve_value.ctpt[0];
 				g_curve_value.ctpt[0].x = CE_GR_RESOLUTION - g_curve_value.ctpt[1].x;
 				g_curve_value.ctpt[0].y = CE_GR_RESOLUTION - g_curve_value.ctpt[1].y;
 				g_curve_value.ctpt[1].x = CE_GR_RESOLUTION - pt_tmp.x;
@@ -751,7 +754,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		{
 			int response = IDOK;
 			if (g_config.alert)
-				response = MessageBox(hwnd, "編集中のカーブを初期化します。よろしいですか？", CE_FILTER_NAME, MB_OKCANCEL);
+				response = MessageBox(hwnd, CE_STR_DELETE, CE_PLUGIN_NAME, MB_OKCANCEL | MB_ICONEXCLAMATION);
 			if (response == IDOK) {
 				if (g_config.mode)
 					g_curve_id[g_config.current_id].clear();
@@ -768,7 +771,30 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			std::string info;
 			info = "ID : " + std::to_string(g_config.current_id) + "\n"
 				+ "ポイント数 : " + std::to_string(g_curve_id[g_config.current_id].ctpts.size);
-			MessageBox(hwnd, info.c_str(), CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+			MessageBox(hwnd, info.c_str(), CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			return 0;
+		}
+			//設定
+		case ID_MENU_CONFIG:
+			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, wndproc_daialog_settings);
+			InvalidateRect(hwnd, NULL, FALSE);
+			SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
+			return 0;
+
+		case ID_MENU_ABOUT:
+			MessageBox(hwnd, CE_STR_ABOUT, CE_PLUGIN_NAME, MB_OK);
+			return 0;
+
+		// 値をコピー
+		case ID_MENU_COPY:
+		case CE_CT_APPLY:
+		{
+			TCHAR result_str[12];
+			int result = g_curve_value.create_value_1d();
+			//文字列へ変換
+			_itoa_s(result, result_str, 12, 10);
+			//コピー
+			copy_to_clipboard(hwnd, result_str);
 			return 0;
 		}
 		}

@@ -6,12 +6,6 @@
 
 #include "ce_header.hpp"
 
-#define TOPLEFTX 20
-#define TOPLEFTY 33
-#define BOTTOMRIGHTX 276
-#define BOTTOMRIGHTY 264
-#define CTGSIZE 236
-
 
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（設定ダイアログ）
@@ -91,7 +85,7 @@ BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM l
 				}
 				EndDialog(hDlg, 1);
 			}
-			else if (g_config.alert)MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)MessageBox(hDlg, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
@@ -103,7 +97,7 @@ BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM l
 
 
 //---------------------------------------------------------------------
-//		Dialog Procedure (Read)
+//		ダイアログプロシージャ(カーブ読み取り)
 //---------------------------------------------------------------------
 BOOL CALLBACK wndproc_daialog_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -137,17 +131,17 @@ BOOL CALLBACK wndproc_daialog_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 					intValue = std::stoi(str);
 				}
 				catch (std::out_of_range& e) {
-					if (g_config.alert) MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+					if (g_config.alert) MessageBox(hDlg, "", CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
 				if ((intValue < -2147483647 || 2122746761 < intValue) && g_config.alert) {
-					MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+					MessageBox(hDlg, "", CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
-				read_value(intValue);
+				g_curve_value.read_value_1d(intValue);
 				EndDialog(hDlg, 1);
 			}
-			else if (g_config.alert)MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)MessageBox(hDlg, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
@@ -170,7 +164,7 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 	LPCTSTR lpsResult;
 	std::string strBuffer;
 	TCHAR chBuffer[64];
-	strBuffer = create_curve_value_4d();
+	strBuffer = g_curve_value.create_value_4d();
 	lpsResult = strBuffer.c_str();
 
 	switch (msg) {
@@ -212,7 +206,7 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 				g_presets_value.emplace_back(additem);
 				EndDialog(hDlg, 1);
 			}
-			else if (strlen(chBuffer) == 0 && g_config.alert) MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (strlen(chBuffer) == 0 && g_config.alert) MessageBox(hDlg, CE_STR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);

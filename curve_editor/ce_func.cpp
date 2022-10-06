@@ -173,28 +173,6 @@ HWND create_child(
 
 
 //---------------------------------------------------------------------
-//		1次元カーブIDを受け取りグラフに適用
-//---------------------------------------------------------------------
-void read_value(int value)
-{
-	UINT usint;
-	if (value < 0) usint = value + 2147483647;
-	else usint = (UINT)value + (UINT)2147483647;
-	g_curve_value.ctpt[1].y = usint / 6600047;
-	g_curve_value.ctpt[1].x = (usint - g_curve_value.ctpt[1].y * 6600047) / 65347;
-	g_curve_value.ctpt[0].y = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) / 101;
-	g_curve_value.ctpt[0].x = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) % 101;
-	g_curve_value.ctpt[0].x *= CE_GR_RESOLUTION / 100;
-	g_curve_value.ctpt[0].y *= CE_GR_RESOLUTION / 100;
-	g_curve_value.ctpt[1].x *= CE_GR_RESOLUTION / 100;
-	g_curve_value.ctpt[1].y *= CE_GR_RESOLUTION / 100;
-	g_curve_value.ctpt[0].y -= 273;
-	g_curve_value.ctpt[0].y -= 273;
-}
-
-
-
-//---------------------------------------------------------------------
 //		split関数
 //---------------------------------------------------------------------
 std::vector<std::string> split(const std::string& s, TCHAR c)
@@ -213,47 +191,6 @@ std::vector<std::string> split(const std::string& s, TCHAR c)
 	if (!item.empty())
 		elems.emplace_back(item);
 	return elems;
-}
-
-
-
-//---------------------------------------------------------------------
-//		4次元カーブIDを生成
-//---------------------------------------------------------------------
-std::string create_curve_value_4d()
-{
-	FLOAT ptx, pty;
-	std::string strx, stry, strResult;
-	for (int i = 0; i < 2; i++) {
-		ptx = std::round(g_curve_value.ctpt[i].x * 100 / (double)CE_GR_RESOLUTION) * 0.01;
-		pty = std::round(g_curve_value.ctpt[i].y * 100 / (double)CE_GR_RESOLUTION) * 0.01;
-		strx = std::to_string(ptx);
-		stry = std::to_string(pty);
-		strx.erase(4);
-		if (g_curve_value.ctpt[i].y < 0) stry.erase(5);
-		else stry.erase(4);
-		strResult += strx + ", " + stry + ", ";
-	}
-	strResult.erase(strResult.size() - 2, 2);
-	return strResult;
-}
-
-
-
-//---------------------------------------------------------------------
-//		1次元カーブIDを生成
-//---------------------------------------------------------------------
-int create_curve_value_1d()
-{
-	int result;
-	int x1, y1, x2, y2;
-	x1 = (int)std::round(g_curve_value.ctpt[0].x * 100 / (double)CE_GR_RESOLUTION);
-	y1 = MINMAXLIM((int)std::round(g_curve_value.ctpt[0].y * 100 / (double)CE_GR_RESOLUTION), -273, 373);
-	x2 = (int)std::round(g_curve_value.ctpt[1].x * 100 / (double)CE_GR_RESOLUTION);
-	y2 = MINMAXLIM((int)std::round(g_curve_value.ctpt[1].y * 100 / (double)CE_GR_RESOLUTION), -273, 373);
-	// 計算
-	result = 6600047 * (y2 + 273) + 65347 * x2 + 101 * (y1 + 273) + x1 - 2147483647;
-	return result;
 }
 
 
@@ -334,6 +271,6 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
 
 	//プラグイン名の反映
 	minfo.fMask = MIIM_TYPE;
-	minfo.dwTypeData = CE_FILTER_NAME "について";
+	minfo.dwTypeData = CE_PLUGIN_NAME "について";
 	SetMenuItemInfo(menu, ID_MENU_ABOUT, FALSE, &minfo);
 }

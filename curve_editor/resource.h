@@ -2,12 +2,10 @@
 // Microsoft Visual C++ で生成されたインクルード ファイル。
 // curve_editor.rc で使用
 //
-#define IDD_PREF                        101
-#define IDD_SETTINGS                    101
+#define IDD_CONFIG                      101
 #define IDD_SAVE                        103
 #define IDD_VALUE                       105
 #define IDD_READ                        107
-#define IDD_DIALOG1                     109
 #define IDD_ABOUT                       109
 #define IDR_MENU1                       111
 #define IDC_DRAGGING                    200
