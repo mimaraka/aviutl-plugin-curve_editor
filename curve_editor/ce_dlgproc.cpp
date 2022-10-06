@@ -34,7 +34,6 @@ BOOL CALLBACK wndproc_daialog_settings(HWND hDlg, UINT msg, WPARAM wparam, LPARA
 		hCombo = GetDlgItem(hDlg, IDC_THEME);
 		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"ダーク");
 		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"ライト");
-		SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)"カスタム");
 		SendMessage(hCombo, CB_SETCURSEL, g_config.theme, 0);
 
 		return 0;
@@ -92,7 +91,7 @@ BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM l
 				}
 				EndDialog(hDlg, 1);
 			}
-			else if (g_config.alert)MessageBox(hDlg, FLSTR_WRONGINPUTVALUES, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
@@ -138,17 +137,17 @@ BOOL CALLBACK wndproc_daialog_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 					intValue = std::stoi(str);
 				}
 				catch (std::out_of_range& e) {
-					if (g_config.alert) MessageBox(hDlg, FLSTR_OUTOFRANGE, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+					if (g_config.alert) MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
 				if ((intValue < -2147483647 || 2122746761 < intValue) && g_config.alert) {
-					MessageBox(hDlg, FLSTR_OUTOFRANGE, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+					MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 					return 0;
 				}
 				read_value(intValue);
 				EndDialog(hDlg, 1);
 			}
-			else if (g_config.alert)MessageBox(hDlg, FLSTR_WRONGINPUTVALUES, CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
@@ -213,7 +212,7 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 				g_presets_value.emplace_back(additem);
 				EndDialog(hDlg, 1);
 			}
-			else if (strlen(chBuffer) == 0 && g_config.alert) MessageBox(hDlg, FLSTR_GIVEITANAME, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
+			else if (strlen(chBuffer) == 0 && g_config.alert) MessageBox(hDlg, "", CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);

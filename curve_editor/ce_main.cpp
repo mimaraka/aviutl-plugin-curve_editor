@@ -12,7 +12,9 @@
 //		グローバル変数
 //---------------------------------------------------------------------
 ce::Curve_Value					g_curve_value;
+ce::Curve_Value					g_curve_value_previous;
 ce::Curve_ID					g_curve_id[CE_CURVE_MAX];
+ce::Curve_ID					g_curve_id_previous;
 ce::Config						g_config;
 ce::Window						g_window;
 ce::Gr_Disp_Info				g_disp_info;
@@ -35,11 +37,11 @@ const ce::Theme g_theme_dark = {
 };
 //ライトテーマ
 const ce::Theme g_theme_light = {
-	RGB(32,32,32),
-	RGB(50,50,50),
-	RGB(45,45,45),
-	RGB(259,249,249),
-	RGB(64,96,222),
+	RGB(244, 244, 244),
+	RGB(244, 244, 244),
+	RGB(230, 230, 230),
+	RGB(103, 103, 241),
+	RGB(50, 50, 50),
 	RGB(71,135,228),
 	RGB(238,238,238),
 	RGB(60,60,60),

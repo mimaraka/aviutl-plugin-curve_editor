@@ -11,7 +11,6 @@
 #include <wininet.h>
 #include <d2d1.h>
 #include <lua.hpp>
-#include <commctrl.h>
 #include <fstream>
 #include <regex>
 #include <filter.h>
@@ -176,7 +175,7 @@ namespace ce {
 		double				get_handle_angle(Point_Address address);
 		void				correct_handle(Point_Address address, double angle);
 		void				set_handle_angle(Point_Address address, double angle, BOOL bLength, double lgth);
-		void				reverse_points();
+		void				reverse_curve();
 		double				get_value(double ratio, double st, double ed);
 	};
 
@@ -252,7 +251,9 @@ namespace ce {
 //		extern宣言
 //----------------------------------------------------------------------------------
 extern ce::Curve_Value						g_curve_value;
+extern ce::Curve_Value						g_curve_value_previous;
 extern ce::Curve_ID							g_curve_id[CE_CURVE_MAX];
+extern ce::Curve_ID							g_curve_id_previous;
 extern std::vector<ce::Preset_Value>		g_presets_value;
 extern std::vector<ce::Preset_ID>			g_presets_id;
 extern const ce::Theme						g_theme_dark, g_theme_light;
@@ -339,7 +340,7 @@ void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr);
 void				draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd);
+void				draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 
 
 //ダイアログプロシージャ

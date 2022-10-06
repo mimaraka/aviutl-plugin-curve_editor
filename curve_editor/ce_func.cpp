@@ -52,6 +52,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 {
 	if (data) {
 		memcpy(g_curve_id, data, size);
+		g_curve_id_previous = g_curve_id[g_config.current_id];
 	}
 	return TRUE;
 }

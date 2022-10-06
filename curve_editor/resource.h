@@ -8,6 +8,7 @@
 #define IDD_VALUE                       105
 #define IDD_READ                        107
 #define IDD_DIALOG1                     109
+#define IDD_ABOUT                       109
 #define IDR_MENU1                       111
 #define IDC_DRAGGING                    200
 #define IDC_EDIT_SAVE                   1001

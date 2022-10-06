@@ -268,7 +268,7 @@ void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		グラフパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
+void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -293,15 +293,15 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 			g_disp_info.o.y - g_disp_info.scale.y * CE_GR_RESOLUTION
 		}
 	};
-	DoublePoint ctpt_hs_cl[] = {
+	DoublePoint ctpt_trace_cl[] = {
 		ctpt_cl[0],
 		{
-			to_client(pt_trace[0]).x,
-			to_client(pt_trace[0]).y
+			to_client(g_curve_value_previous.ctpt[0]).x,
+			to_client(g_curve_value_previous.ctpt[0]).y
 		},
 		{
-			to_client(pt_trace[1]).x,
-			to_client(pt_trace[1]).y
+			to_client(g_curve_value_previous.ctpt[1]).x,
+			to_client(g_curve_value_previous.ctpt[1]).y
 		},
 		ctpt_cl[3]
 	};
@@ -360,12 +360,12 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 
 		//値モードのとき
 		if (g_config.mode == 0) {
-			//bezier curve (trace)
+			// ベジェ(トレース)
 			if (g_config.trace) {
 				pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));
-				d2d_draw_bezier(pBrush, ctpt_hs_cl[0], ctpt_hs_cl[1], ctpt_hs_cl[2], ctpt_hs_cl[3], CE_CURVE_TH);
+				d2d_draw_bezier(pBrush, ctpt_trace_cl[0], ctpt_trace_cl[1], ctpt_trace_cl[2], ctpt_trace_cl[3], CE_CURVE_TH);
 			}
-			//ベジェ
+			// ベジェ
 			pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
 			d2d_draw_bezier(pBrush, ctpt_cl[0], ctpt_cl[1], ctpt_cl[2], ctpt_cl[3], CE_CURVE_TH);
 
@@ -399,7 +399,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 					&pStyle
 				);
 
-				//端点以外の制御点に引かれる点線
+				// 端点以外の制御点に引かれる点線
 				if (i > 0)
 					g_render_target->DrawLine(
 						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, 0),
@@ -407,7 +407,19 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, POINT* pt_trace, LPRECT rect_wnd)
 						pBrush, CE_GR_POINT_TH, pStyle
 					);
 
-				//ベジェ曲線を描画
+				// ベジェ曲線(トレース)を描画
+				if (g_config.trace) {
+					pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));
+					d2d_draw_bezier(pBrush,
+						to_client(g_curve_id_previous.ctpts[i].pt_center),
+						to_client(g_curve_id_previous.ctpts[i].pt_right),
+						to_client(g_curve_id_previous.ctpts[i + 1].pt_left),
+						to_client(g_curve_id_previous.ctpts[i + 1].pt_center),
+						CE_CURVE_TH
+					);
+				}
+
+				// ベジェ曲線を描画
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
 				d2d_draw_bezier(pBrush,
 					to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center),

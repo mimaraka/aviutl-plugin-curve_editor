@@ -96,7 +96,7 @@
 //---------------------------------------------------------------------
 // –¾‚é‚³
 #define CE_BR_GRID				25
-#define CE_BR_TRACE				-10
+#define CE_BR_TRACE				20
 #define CE_BR_SEPR				256
 #define CE_BR_GR_INVALID		-8
 #define CE_CT_BR_HOVERED		15
