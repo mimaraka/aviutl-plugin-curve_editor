@@ -768,8 +768,17 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 				InvalidateRect(hwnd, NULL, FALSE);
 			}
-		}
 			return 0;
+		}
+
+		case ID_MENU_PROPERTY:
+		{
+			std::string info;
+			info = "ID : " + std::to_string(g_config.current_id) + "\n"
+				+ "É|ÉCÉìÉgêî : " + std::to_string(g_curve_id[g_config.current_id].ctpts.size);
+			MessageBox(hwnd, info.c_str(), CE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
+			return 0;
+		}
 		}
 		return 0;
 

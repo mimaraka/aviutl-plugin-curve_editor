@@ -317,9 +317,15 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, &minfo);
 
 	// ボタンを無効化/有効化
+	// IDモードで有効化
+	// チェックボックスが存在する場合
 	minfo.fState |= g_config.mode ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, &minfo);
+	// チェックボックスが存在しない場合
+	minfo.fState = g_config.mode ? MFS_ENABLED : MFS_DISABLED;
+	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, &minfo);
 
+	// Valueモードで有効化
 	minfo.fState = g_config.mode ? MFS_DISABLED : MFS_ENABLED;
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, &minfo);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, &minfo);
