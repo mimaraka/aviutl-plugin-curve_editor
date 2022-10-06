@@ -1,0 +1,45 @@
+@Value
+--param:320896157
+local index,ratio = math.modf(obj.getpoint"index")
+local st=obj.getpoint(index)
+local ed=obj.getpoint(index+1)
+local par=obj.getpoint"param"+2147483647
+if (par < 0 or par > 4270230409) then
+	return obj.getpoint"default"
+end
+local y2=math.floor(par/6600047)
+local x2=math.floor((par-y2*6600047)/65347)
+local y1=math.floor((par-(y2*6600047+x2*65347))/101)
+local x1=(par-(y2*6600047+x2*65347))%101
+x1=x1*0.01
+y1=(ed-st)*(y1-273)*0.01+st
+x2=x2*0.01
+y2=(ed-st)*(y2-273)*0.01+st
+
+local tl=0
+local tr=1
+local ta=0.5*(tl+tr)
+local xta
+for i=1,10 do
+	xta=(1-3*x2+3*x1)*ta^3+(x2-2*x1)*3*ta^2+3*x1*ta
+	if ratio<xta then tr=ta
+	else tl=ta end
+	ta=0.5*(tl+tr)
+end
+return ta^3*(ed-st-3*y2+3*y1)+3*ta^2*(y2-2*y1+st)+3*ta*(y1-st)+st
+
+@ID
+--param:0
+local module_name = "curve_editor"
+if not package.loaded[module_name] then
+	package.preload[module_name] = package.loadlib(module_name .. ".auf", "luaopen_" .. module_name)
+	require(module_name)
+	package.preload[module_name] = nil
+end
+
+local index,ratio = math.modf(obj.getpoint"index")
+local st = obj.getpoint(index)
+local ed = obj.getpoint(index + 1)
+local par = obj.getpoint"param"
+
+return curve_editor.get_result(par, ratio, st, ed)
