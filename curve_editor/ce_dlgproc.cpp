@@ -7,6 +7,7 @@
 #include "ce_header.hpp"
 
 
+
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（設定ダイアログ）
 //---------------------------------------------------------------------
@@ -55,12 +56,13 @@ BOOL CALLBACK wndproc_daialog_settings(HWND hDlg, UINT msg, WPARAM wparam, LPARA
 }
 
 
+
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（カーブ値の設定）
 //---------------------------------------------------------------------
 BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	TCHAR chBuffer[30];
+	TCHAR buffer[30];
 	std::regex re(R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)");
 	switch (msg) {
 	case WM_CLOSE:
@@ -69,10 +71,10 @@ BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM l
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			GetDlgItemText(hDlg, IDC_EDIT_VALUE, chBuffer, 30);
-			if (std::regex_match(chBuffer, re)) {
-				std::string str = chBuffer;
-				std::vector<std::string> vec = split(chBuffer, ',');
+			GetDlgItemText(hDlg, IDC_EDIT_VALUE, buffer, 30);
+			if (std::regex_match(buffer, re)) {
+				std::string str = buffer;
+				std::vector<std::string> vec = split(buffer, ',');
 				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * 1000);
 				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * 1000);
 				g_curve_value.ctpt[0].y = (int)(std::stod(vec[1]) * 1000);
@@ -96,20 +98,23 @@ BOOL CALLBACK wndproc_daialog_value(HWND hDlg, UINT msg, WPARAM wparam, LPARAM l
 }
 
 
+
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ(カーブ読み取り)
 //---------------------------------------------------------------------
 BOOL CALLBACK wndproc_daialog_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	HWND hEdit;
-	TCHAR chBuffer[12];
-	int intValue;
+	// エディットコントロール
+	HWND edit;
+	TCHAR buffer[12];
+	int value;
+	// 値の正規表現
 	std::regex re(R"(^-?\d+$)");
 	std::string str;
 	switch (msg) {
 	case WM_INITDIALOG:
-		hEdit = GetDlgItem(hDlg, IDC_EDIT_VALUE);
-		SendMessage(hEdit, EM_SETLIMITTEXT, 11, 0);
+		edit = GetDlgItem(hDlg, IDC_EDIT_READ);
+		SendMessage(edit, EM_SETLIMITTEXT, 11, 0);
 		return 0;
 
 	case WM_CLOSE:
@@ -124,24 +129,25 @@ BOOL CALLBACK wndproc_daialog_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			GetDlgItemText(hDlg, IDC_EDIT_VALUE, chBuffer, 11);
-			if (std::regex_match(chBuffer, re)) {
-				str = chBuffer;
+			GetDlgItemText(hDlg, IDC_EDIT_READ, buffer, 11);
+			if (std::regex_match(buffer, re)) {
+				str = buffer;
 				try {
-					intValue = std::stoi(str);
+					value = std::stoi(str);
 				}
 				catch (std::out_of_range& e) {
-					if (g_config.alert) MessageBox(hDlg, "", CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+					if (g_config.alert) MessageBox(hDlg, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 					return 0;
 				}
-				if ((intValue < -2147483647 || 2122746761 < intValue) && g_config.alert) {
-					MessageBox(hDlg, "", CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+				if ((value < -2147483647 || 2122746761 < value) && g_config.alert) {
+					MessageBox(hDlg, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 					return 0;
 				}
-				g_curve_value.read_value_1d(intValue);
+				g_curve_value.read_value_1d(value);
 				EndDialog(hDlg, 1);
 			}
-			else if (g_config.alert)MessageBox(hDlg, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)
+				MessageBox(hDlg, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);
@@ -152,6 +158,7 @@ BOOL CALLBACK wndproc_daialog_read(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 }
 
 
+
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（カーブ保存ダイアログ）
 //---------------------------------------------------------------------
@@ -160,10 +167,10 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 	//4次元カーブ!Dを生成
 	HDC hdc;
 	static HFONT hfValues;
-	HWND hEdit;
+	HWND edit;
 	LPCTSTR lpsResult;
 	std::string strBuffer;
-	TCHAR chBuffer[64];
+	TCHAR buffer[64];
 	strBuffer = g_curve_value.create_value_4d();
 	lpsResult = strBuffer.c_str();
 
@@ -172,8 +179,8 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 		EndDialog(hDlg, 1);
 		return 0;
 	case WM_INITDIALOG:
-		hEdit = GetDlgItem(hDlg, IDC_EDIT_SAVE);
-		SendMessage(hEdit, EM_SETLIMITTEXT, 64, 0);
+		edit = GetDlgItem(hDlg, IDC_EDIT_SAVE);
+		SendMessage(edit, EM_SETLIMITTEXT, 64, 0);
 		return 0;
 	case WM_PAINT:
 		hfValues = CreateFont(
@@ -200,13 +207,13 @@ BOOL CALLBACK wndproc_daialog_save(HWND hDlg, UINT msg, WPARAM wparam, LPARAM lp
 		switch (LOWORD(wparam)) {
 		case IDOK:
 			ce::Preset_Value additem;
-			GetDlgItemText(hDlg, IDC_EDIT_SAVE, chBuffer, 64);
-			if (strlen(chBuffer) < 64 && strlen(chBuffer) != 0) {
-				additem = { chBuffer, g_curve_value.ctpt[0].x, g_curve_value.ctpt[0].y, g_curve_value.ctpt[1].x, g_curve_value.ctpt[1].y };
+			GetDlgItemText(hDlg, IDC_EDIT_SAVE, buffer, 64);
+			if (strlen(buffer) < 64 && strlen(buffer) != 0) {
+				additem = { buffer, g_curve_value.ctpt[0].x, g_curve_value.ctpt[0].y, g_curve_value.ctpt[1].x, g_curve_value.ctpt[1].y };
 				g_presets_value.emplace_back(additem);
 				EndDialog(hDlg, 1);
 			}
-			else if (strlen(chBuffer) == 0 && g_config.alert) MessageBox(hDlg, CE_STR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (strlen(buffer) == 0 && g_config.alert) MessageBox(hDlg, CE_STR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			EndDialog(hDlg, 1);

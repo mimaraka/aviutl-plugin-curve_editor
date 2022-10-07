@@ -7,6 +7,7 @@
 #include "ce_header.hpp"
 
 
+
 //---------------------------------------------------------------------
 //		FILTER構造体のポインタを取得
 //---------------------------------------------------------------------
@@ -16,6 +17,7 @@ EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void)
 }
 
 
+
 //---------------------------------------------------------------------
 //		初期化時に実行される関数
 //---------------------------------------------------------------------
@@ -23,9 +25,10 @@ BOOL initialize(FILTER* fp)
 {
 	g_fp = fp;
 	ini_load_configs(fp);
-	d2d_initialize();
+	d2d_init();
 	return TRUE;
 }
+
 
 
 //---------------------------------------------------------------------
@@ -219,9 +222,9 @@ BOOL copy_to_clipboard(HWND hwnd, LPCTSTR lpsText)
 //---------------------------------------------------------------------
 //		for UI
 //---------------------------------------------------------------------
-DoublePoint subtract_length(DoublePoint st, DoublePoint ed, double length)
+ce::Double_Point subtract_length(ce::Double_Point st, ce::Double_Point ed, double length)
 {
-	DoublePoint result;
+	ce::Double_Point result;
 	double old_length = DISTANCE(st, ed);
 	if (old_length == 0)
 		return ed;
@@ -267,7 +270,7 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
 	minfo.fState = g_config.mode ? MFS_DISABLED : MFS_ENABLED;
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, &minfo);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, &minfo);
-	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, &minfo);
+	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, &minfo);
 
 	//プラグイン名の反映
 	minfo.fMask = MIIM_TYPE;

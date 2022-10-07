@@ -18,14 +18,21 @@
 #include "resource.h"
 
 
+namespace ce {
+	class Curve_Value;
+	class Curve_ID;
+	class Direct2d_Window;
+}
+
+
 //----------------------------------------------------------------------------------
 //		typedef
 //----------------------------------------------------------------------------------
-typedef struct tagDoublePoint {
-	double x, y;
-} DoublePoint;
-
 namespace ce {
+	typedef struct tagDouble_Point {
+		double x, y;
+	} Double_Point;
+
 	typedef struct tagTheme {
 		COLORREF
 			bg,
@@ -90,9 +97,20 @@ namespace ce {
 	} Config;
 
 	typedef struct tagGr_Disp_Info {
-		DoublePoint o;
-		DoublePoint scale;
+		Double_Point o;
+		Double_Point scale;
 	} Gr_Disp_Info;
+
+	//プリセット
+	typedef struct tagPreset_Value {
+		LPCTSTR name;
+		POINT ct1, ct2;
+	} Preset_Value;
+
+	typedef struct Preset_ID {
+		LPCTSTR name;
+		Curve_ID curve;
+	} Preset_ID;
 }
 
 
@@ -100,24 +118,26 @@ namespace ce {
 //		クラス
 //----------------------------------------------------------------------------------
 namespace ce {
+	// 配列
 	template <typename T, size_t N>
-	class StaticArray {
+	class Static_Array {
 	public:
 		size_t size;
 		static const size_t max_size = N;
-
 		T elements[N];
 
-		StaticArray() : size(0) {}
+		Static_Array() : size(0) {}
 
 		template <typename U>
 		T& operator[] (U i) { return elements[MINMAXLIM(i, 0, N - 1)]; }
 
-		void clear(void)
+		// クリア
+		void clear()
 		{
 			size = 0;
 		}
 
+		// 挿入
 		void insert(size_t index, const T& v)
 		{
 			int max = size >= max_size ? max_size - 1 : size;
@@ -129,6 +149,7 @@ namespace ce {
 			if (size < max_size) size++;
 		}
 
+		// 押し込み
 		void push_back(const T& v)
 		{
 			if (size < max_size) {
@@ -137,6 +158,7 @@ namespace ce {
 			}
 		}
 
+		// 削除
 		void erase(int index)
 		{
 			size--;
@@ -147,24 +169,26 @@ namespace ce {
 	};
 
 
+	// カーブ(Valueモード)
 	class Curve_Value {
 	public:
 		POINT ctpt[2];
 
 		Curve_Value() { init(); }
 
-		void init();
-		int point_in_ctpts(POINT cl_pt);
-		void move_point(int index, POINT gr_pt);
-		int create_value_1d();
-		std::string create_value_4d();
-		void read_value_1d(int value);
+		void				init();
+		int					point_in_ctpts(POINT cl_pt);
+		void				move_point(int index, POINT gr_pt);
+		int					create_value_1d();
+		std::string			create_value_4d();
+		void				read_value_1d(int value);
 	};
 
 
+	// カーブ(IDモード)
 	class Curve_ID {
 	public:
-		StaticArray <Points_ID, CE_POINT_MAX> ctpts;
+		Static_Array <Points_ID, CE_POINT_MAX> ctpts;
 
 		Curve_ID() { init(); }
 
@@ -199,8 +223,7 @@ namespace ce {
 		LRESULT CALLBACK	wndproc(HWND, UINT, WPARAM, LPARAM);
 	};
 
-	class Control_Test
-	{
+	class Control_Test {
 		TCHAR WINDOW_CLASS_NAME[1024];
 
 		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -237,16 +260,16 @@ namespace ce {
 	};
 
 
-	//プリセット
-	typedef struct tagPreset_Value {
-		LPCTSTR name;
-		POINT ct1, ct2;
-	} Preset_Value;
+	// Direct2D
+	class Direct2d_Window {
+	public:
+		ID2D1HwndRenderTarget* render_target;
 
-	typedef struct Preset_ID {
-		LPCTSTR name;
-		Curve_ID curve;
-	} Preset_ID;
+		void init(HWND hwnd, LPRECT rect);
+		void setup(COLORREF cr);
+		void resize(int width, int height);
+		void exit();
+	};
 }
 
 
@@ -297,7 +320,7 @@ std::vector<std::string> split(const std::string& s, TCHAR c);
 //クリップボードにテキストをコピー
 BOOL				copy_to_clipboard(HWND, LPCTSTR);
 
-DoublePoint			subtract_length(DoublePoint st, DoublePoint ed, double length);
+ce::Double_Point			subtract_length(ce::Double_Point st, ce::Double_Point ed, double length);
 
 void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo);
 
@@ -328,16 +351,16 @@ HWND				create_child(
 
 
 //描画
-void				d2d_initialize();
+void				d2d_init();
 void				d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr);
 void				d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
-					DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness);
-void				d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint stpt, DoublePoint edpt);
-void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr);
-void				draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+					ce::Double_Point stpt, ce::Double_Point ctpt1, ce::Double_Point ctpt2, ce::Double_Point edpt, float thickness);
+void				d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point stpt, ce::Double_Point edpt);
+void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr, ce::Direct2d_Window* d2d_window);
+void				draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window);
 void				draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+void				draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window);
+void				draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window);
 
 
 //ダイアログプロシージャ
@@ -376,7 +399,7 @@ LRESULT CALLBACK	WndProc_Test(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //----------------------------------------------------------------------------------
 
 //グラフ -> クライアント
-inline DoublePoint to_client(int gr_x, int gr_y)
+inline ce::Double_Point to_client(int gr_x, int gr_y)
 {
 	return {
 		g_disp_info.o.x + gr_x * g_disp_info.scale.x,
@@ -384,7 +407,7 @@ inline DoublePoint to_client(int gr_x, int gr_y)
 	};
 }
 
-inline DoublePoint to_client(POINT gr_pt)
+inline ce::Double_Point to_client(POINT gr_pt)
 {
 	return {
 		to_client(gr_pt.x, gr_pt.y).x,

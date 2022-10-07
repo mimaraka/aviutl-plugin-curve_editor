@@ -44,6 +44,7 @@ int ce::Curve_Value::point_in_ctpts(POINT cl_pt)
 }
 
 
+
 //---------------------------------------------------------------------
 //		êßå‰ì_Çà⁄ìÆÇ≥ÇπÇÈ
 //---------------------------------------------------------------------
@@ -211,13 +212,12 @@ std::string ce::Curve_Value::create_value_4d()
 //---------------------------------------------------------------------
 void ce::Curve_Value::read_value_1d(int value)
 {
-	UINT usint;
-	if (value < 0) usint = value + 2147483647;
-	else usint = (UINT)value + (UINT)2147483647;
-	ctpt[1].y = usint / 6600047;
-	ctpt[1].x = (usint - g_curve_value.ctpt[1].y * 6600047) / 65347;
-	ctpt[0].y = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) / 101;
-	ctpt[0].x = (usint - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) % 101;
+	int64_t int64;
+	int64 = value + 2147483647;
+	ctpt[1].y = int64 / 6600047;
+	ctpt[1].x = (int64 - g_curve_value.ctpt[1].y * 6600047) / 65347;
+	ctpt[0].y = (int64 - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) / 101;
+	ctpt[0].x = (int64 - (g_curve_value.ctpt[1].y * 6600047 + g_curve_value.ctpt[1].x * 65347)) % 101;
 	ctpt[0].x *= CE_GR_RESOLUTION / 100;
 	ctpt[0].y *= CE_GR_RESOLUTION / 100;
 	ctpt[1].x *= CE_GR_RESOLUTION / 100;

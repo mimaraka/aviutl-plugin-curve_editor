@@ -7,10 +7,11 @@
 #include "ce_header.hpp"
 
 
+
 //---------------------------------------------------------------------
 //		Direct2Dを初期化
 //---------------------------------------------------------------------
-void d2d_initialize()
+void d2d_init()
 {
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
 	D2D1_RENDER_TARGET_PROPERTIES prop;
@@ -27,6 +28,7 @@ void d2d_initialize()
 }
 
 
+
 //---------------------------------------------------------------------
 //		Direct2Dの描画の準備
 //---------------------------------------------------------------------
@@ -40,6 +42,7 @@ void d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr)
 		g_render_target->EndDraw();
 	}
 }
+
 
 
 //---------------------------------------------------------------------
@@ -97,11 +100,12 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 }
 
 
+
 //---------------------------------------------------------------------
 //		ベジェカーブを描画
 //---------------------------------------------------------------------
 void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
-	DoublePoint stpt, DoublePoint ctpt1, DoublePoint ctpt2, DoublePoint edpt, float thickness)
+	ce::Double_Point stpt, ce::Double_Point ctpt1, ce::Double_Point ctpt2, ce::Double_Point edpt, float thickness)
 {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* bezier;
@@ -134,13 +138,14 @@ void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 }
 
 
+
 //---------------------------------------------------------------------
 //		グラフのハンドルを描画
 //---------------------------------------------------------------------
-void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint st, DoublePoint ed)
+void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point st, ce::Double_Point ed)
 {
-	DoublePoint st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH);
-	DoublePoint ed_new = subtract_length(st, ed, CE_SUBTRACT_LENGTH);
+	ce::Double_Point st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH);
+	ce::Double_Point ed_new = subtract_length(st, ed, CE_SUBTRACT_LENGTH);
 	g_render_target->DrawLine(
 		D2D1::Point2F(st_new.x, st_new.y),
 		D2D1::Point2F(ed_new.x, ed_new.y),
@@ -161,10 +166,11 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, DoublePoint st, DoublePoint e
 }
 
 
+
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
+void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr, ce::Direct2d_Window d2d_window)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -207,10 +213,11 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
 }
 
 
+
 //---------------------------------------------------------------------
 //		フッタパネルを描画
 //---------------------------------------------------------------------
-void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -225,6 +232,7 @@ void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 	EndPaint(hwnd, &ps);
 	DeleteDC(hdc);
 }
+
 
 
 //---------------------------------------------------------------------
@@ -247,10 +255,11 @@ void draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 }
 
 
+
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -267,17 +276,18 @@ void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 }
 
 
+
 //---------------------------------------------------------------------
 //		グラフパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
 	float dashes[] = { CE_GR_POINT_DASH, CE_GR_POINT_DASH };
 
-	DoublePoint ctpt_cl[] = {//クライアント
+	ce::Double_Point ctpt_cl[] = {//クライアント
 		{
 			g_disp_info.o.x,
 			g_disp_info.o.y
@@ -295,7 +305,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 			g_disp_info.o.y - g_disp_info.scale.y * CE_GR_RESOLUTION
 		}
 	};
-	DoublePoint ctpt_trace_cl[] = {
+	ce::Double_Point ctpt_trace_cl[] = {
 		ctpt_cl[0],
 		{
 			to_client(g_curve_value_previous.ctpt[0]).x,

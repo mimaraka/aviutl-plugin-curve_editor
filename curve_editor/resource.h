@@ -31,13 +31,15 @@
 #define ID_MENU_MODE_ID                 40031
 #define ID_MENU_DELETE                  40035
 #define ID_MENU_PROPERTY                40037
+#define ID_MENU_40038                   40038
+#define ID_MENU_READ                    40039
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        116
-#define _APS_NEXT_COMMAND_VALUE         40038
+#define _APS_NEXT_COMMAND_VALUE         40040
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

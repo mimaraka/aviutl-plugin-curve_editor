@@ -11,7 +11,7 @@
 //		レイアウト関連
 //---------------------------------------------------------------------
 // ウィンドウ
-#define CE_MRG					8
+#define CE_MARGIN					8
 #define CE_MAX_W				1440
 #define CE_MAX_H				1280
 #define CE_DEF_W				360
@@ -126,7 +126,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.1.2"
+#define CE_PLUGIN_VERSION			"v0.1.3"
 #define CE_PLUGIN_AUTHOR			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR
@@ -140,6 +140,7 @@
 #define CE_STR_ABOUT			CE_PLUGIN_NAME " " CE_PLUGIN_VERSION "\n" "Copyright : (C) " CE_PLUGIN_YEAR " " CE_PLUGIN_AUTHOR
 #define CE_STR_INVALIDINPUT		"無効な入力値です。"
 #define CE_STR_INPUTANAME		"プリセット名を入力してください。"
+#define CE_STR_OUTOFRANGE		"値が範囲外です。"
 
 
 //---------------------------------------------------------------------

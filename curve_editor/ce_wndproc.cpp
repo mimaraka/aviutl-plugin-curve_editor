@@ -107,6 +107,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static HDC hdc, hdc_mem;
 	static HBITMAP bitmap;
 
+	static ce::Direct2d_Window d2d_window;
+
 	GetClientRect(hwnd, &rect_wnd);
 
 	rect_sepr = {
@@ -120,6 +122,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_CLOSE:
 		DeleteDC(hdc_mem);
 		DeleteObject(bitmap);
+
+		d2d_window.exit();
 		return 0;
 
 	case WM_CREATE:
@@ -128,6 +132,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		bitmap = CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
 		SelectObject(hdc_mem, bitmap);
 		ReleaseDC(hwnd, hdc);
+
+		d2d_window.init(hwnd, &rect_wnd);
 
 		//エディタパネル
 		hwnd_editor = create_child(
@@ -245,14 +251,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_config.lang ? IDR_MENU2 : IDR_MENU1)), 0);
 
 		/*prev_play.create(hwnd, NULL, "prev_play", CE_ICON_PREV, &g_theme_dark.bg_others, CT_PREV,
-			rect_wnd.left + CE_MRG, rect_wnd.bottom - CE_MRG - CT_EDITOR_HEIGHT,
+			rect_wnd.left + CE_MARGIN, rect_wnd.bottom - CE_MARGIN - CT_EDITOR_HEIGHT,
 			CT_EDITOR_HEIGHT, CT_EDITOR_HEIGHT
 			);*/
 
 		//グラフパネル
 		hwnd_graph = create_child(
 			hwnd, wndproc_graph, "Wnd_Graph", WS_CLIPCHILDREN,
-			CE_MRG, CE_MRG, rect_wnd.right - CE_MRG * 2, rect_wnd.bottom - CE_MRG * 2
+			CE_MARGIN, CE_MARGIN, rect_wnd.right - CE_MARGIN * 2, rect_wnd.bottom - CE_MARGIN * 2
 		);
 		hwnd_parent = GetParent(hwnd);
 		g_window.editor = hwnd;
@@ -263,7 +269,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(サイズが変更されたとき)
 		///////////////////////////////////////////
 	case WM_SIZE:
-		MoveWindow(hwnd_graph, CE_MRG, CE_MRG, rect_wnd.right - CE_MRG * 2, rect_wnd.bottom - CE_MRG * 2, TRUE);
+		MoveWindow(hwnd_graph, CE_MARGIN, CE_MARGIN, rect_wnd.right - CE_MARGIN * 2, rect_wnd.bottom - CE_MARGIN * 2, TRUE);
 		return 0;
 
 		///////////////////////////////////////////
@@ -290,21 +296,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_COMMAND:
 		//switch (LOWORD(wparam)) {
-		//	//COPYボタン
-		//case ID_RCLICKMENU_COPYVALUES:
-		//case CT_APPLY:
-		//	TCHAR chResult[12];
-		//	result = create_curve_value_1d();
-		//	if (result == OUTOFRANGE) {
-		//		if (g_config.bAlerts)
-		//			MessageBox(hwnd, g_config.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, TEXT("Flow"), MB_OK | MB_ICONINFORMATION);
-		//		return 0;
-		//	}
-		//	//文字列へ変換
-		//	_itoa_s(result, chResult, 12, 10);
-		//	//コピー
-		//	copy_to_clipboard(hwnd, chResult);
-		//	return 0;
 
 		//	//保存ボタン
 		//case ID_RCLICKMENU_SAVEPRESET:
@@ -323,35 +314,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE_JA), hwnd, wndproc_daialog_value);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	RedrawChildren();
-		//	return 0;
-
-		//	//読み取りボタン
-		//case CM_EDITOR_READ:
-		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, wndproc_daialog_read);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ_JA), hwnd, wndproc_daialog_read);
-		//	InvalidateRect(hwnd, NULL, FALSE);
-		//	return 0;
-
-		//	//About
-		//case ID_RCLICKMENU_ABOUT:
-		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, wndproc_dialog_about);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT_JA), hwnd, wndproc_dialog_about);
-		//	return 0;
-
-		//	//設定
-		//case ID_RCLICKMENU_PREFERENCES:
-		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF), hwnd, wndproc_daialog_settings);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PREF_JA), hwnd, wndproc_daialog_settings);
-		//	InvalidateRect(hwnd, NULL, FALSE);
-		//	SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
-		//	RedrawChildren();
-		//	return 0;
-
-		//	//値をコピー
-		//case ID_RCLICKMENU_COPYVALUES4:
-		//	strBuffer = create_curve_value_4d();
-		//	lpcsResult = strBuffer.c_str();
-		//	copy_to_clipboard(hwnd, lpcsResult);
 		//	return 0;
 
 		//	//コントロール再描画
@@ -797,6 +759,21 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			copy_to_clipboard(hwnd, result_str);
 			return 0;
 		}
+
+		// 値をコピー(4次元)
+		case ID_MENU_COPY4D:
+		{
+			std::string buffer = g_curve_value.create_value_4d();
+			LPCTSTR result = buffer.c_str();
+			copy_to_clipboard(hwnd, result);
+			return 0;
+		}
+
+		// 値を読み取り
+		case ID_MENU_READ:
+			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, wndproc_daialog_read);
+			InvalidateRect(hwnd, NULL, FALSE);
+			return 0;
 		}
 		return 0;
 
