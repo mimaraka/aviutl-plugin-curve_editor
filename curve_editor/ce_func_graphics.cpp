@@ -170,7 +170,7 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point st, ce::Doub
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr, ce::Direct2d_Window d2d_window)
+void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -217,7 +217,7 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr, ce::Di
 //---------------------------------------------------------------------
 //		フッタパネルを描画
 //---------------------------------------------------------------------
-void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window)
+void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -259,7 +259,7 @@ void draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window)
+void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
@@ -280,7 +280,7 @@ void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Win
 //---------------------------------------------------------------------
 //		グラフパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window)
+void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 {
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;

@@ -18,12 +18,6 @@
 #include "resource.h"
 
 
-namespace ce {
-	class Curve_Value;
-	class Curve_ID;
-	class Direct2d_Window;
-}
-
 
 //----------------------------------------------------------------------------------
 //		typedef
@@ -100,17 +94,6 @@ namespace ce {
 		Double_Point o;
 		Double_Point scale;
 	} Gr_Disp_Info;
-
-	//プリセット
-	typedef struct tagPreset_Value {
-		LPCTSTR name;
-		POINT ct1, ct2;
-	} Preset_Value;
-
-	typedef struct Preset_ID {
-		LPCTSTR name;
-		Curve_ID curve;
-	} Preset_ID;
 }
 
 
@@ -207,7 +190,20 @@ namespace ce {
 	};
 
 
+	//プリセット
+	typedef struct tagPreset_Value {
+		LPCTSTR name;
+		POINT ct1, ct2;
+	} Preset_Value;
+
+	typedef struct Preset_ID {
+		LPCTSTR name;
+		Curve_ID curve;
+	} Preset_ID;
+
+
 	class Control {
+	private:
 		int flag;
 		LPCTSTR icon;
 		COLORREF& color;
@@ -223,14 +219,15 @@ namespace ce {
 		LRESULT CALLBACK	wndproc(HWND, UINT, WPARAM, LPARAM);
 	};
 
-	class Control_Test {
-		TCHAR WINDOW_CLASS_NAME[1024];
 
-		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	class Control_Test {
 	private:
-		HWND hwnd;
+		TCHAR WINDOW_CLASS_NAME[1024];
+		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 		HINSTANCE hinstance;
 	public:
+		HWND hwnd;
+
 		Control_Test();
 		virtual ~Control_Test();
 
@@ -257,18 +254,6 @@ namespace ce {
 			HWND hwnd_parent,		//親ウィンドウまたはオーナーウィンドウのハンドル
 			HMENU menu				//メニューハンドルまたは子ウィンドウ ID
 		);
-	};
-
-
-	// Direct2D
-	class Direct2d_Window {
-	public:
-		ID2D1HwndRenderTarget* render_target;
-
-		void init(HWND hwnd, LPRECT rect);
-		void setup(COLORREF cr);
-		void resize(int width, int height);
-		void exit();
 	};
 }
 
@@ -352,22 +337,18 @@ HWND				create_child(
 
 //描画
 void				d2d_init();
-void				d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr);
-void				d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
-					ce::Double_Point stpt, ce::Double_Point ctpt1, ce::Double_Point ctpt2, ce::Double_Point edpt, float thickness);
-void				d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point stpt, ce::Double_Point edpt);
-void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr, ce::Direct2d_Window* d2d_window);
-void				draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window);
+void				draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr);
+void				draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 void				draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
-void				draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window);
-void				draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, ce::Direct2d_Window* d2d_window);
+void				draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
+void				draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd);
 
 
 //ダイアログプロシージャ
-BOOL CALLBACK		wndproc_daialog_settings(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		wndproc_daialog_value(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		wndproc_daialog_read(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		wndproc_daialog_save(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_settings(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_value(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_read(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_save(HWND, UINT, WPARAM, LPARAM);
 
 
 //ウィンドウプロシージャ

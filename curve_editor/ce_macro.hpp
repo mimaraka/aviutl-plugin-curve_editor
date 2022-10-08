@@ -11,14 +11,14 @@
 //		レイアウト関連
 //---------------------------------------------------------------------
 // ウィンドウ
-#define CE_MARGIN					8
+#define CE_MARGIN				8
 #define CE_MAX_W				1440
 #define CE_MAX_H				1280
 #define CE_DEF_W				360
 #define CE_DEF_H				460
 
 // セパレータ
-#define CE_SEPR_DEF				CE_DEF_H
+#define CE_SEPR_DEF				CE_DEF_H - 120
 #define CE_SEPR_W				8
 #define CE_SEPR_LINE_W			4
 #define CE_SEPR_LINE_L			32
@@ -108,7 +108,7 @@
 //		その他
 //---------------------------------------------------------------------
 #define CE_POINT_MAX			64
-#define CE_CURVE_MAX			512
+#define CE_CURVE_MAX			1024
 #define CE_OUTOFRANGE			2122746762
 #define MATH_PI					3.14159265
 

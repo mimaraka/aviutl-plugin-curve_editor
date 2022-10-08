@@ -107,8 +107,6 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static HDC hdc, hdc_mem;
 	static HBITMAP bitmap;
 
-	static ce::Direct2d_Window d2d_window;
-
 	GetClientRect(hwnd, &rect_wnd);
 
 	rect_sepr = {
@@ -122,8 +120,6 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_CLOSE:
 		DeleteDC(hdc_mem);
 		DeleteObject(bitmap);
-
-		d2d_window.exit();
 		return 0;
 
 	case WM_CREATE:
@@ -132,8 +128,6 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		bitmap = CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
 		SelectObject(hdc_mem, bitmap);
 		ReleaseDC(hwnd, hdc);
-
-		d2d_window.init(hwnd, &rect_wnd);
 
 		//エディタパネル
 		hwnd_editor = create_child(
@@ -305,13 +299,13 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		if (g_config.bAlerts) MessageBox(hwnd, g_config.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, "Flow", MB_OK | MB_ICONINFORMATION);
 		//		return 0;
 		//	}
-		//	DialogBox(g_fp->dll_hinst, g_config.lang ? MAKEINTRESOURCE(IDD_SAVE_JA) : MAKEINTRESOURCE(IDD_SAVE), hwnd, wndproc_daialog_save);
+		//	DialogBox(g_fp->dll_hinst, g_config.lang ? MAKEINTRESOURCE(IDD_SAVE_JA) : MAKEINTRESOURCE(IDD_SAVE), hwnd, dialogproc_save);
 		//	return 0;
 
 		//	//Valueパネル
 		//case CM_EDITOR_VALUE:
-		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, wndproc_daialog_value);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE_JA), hwnd, wndproc_daialog_value);
+		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, dialogproc_value);
+		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE_JA), hwnd, dialogproc_value);
 		//	InvalidateRect(hwnd, NULL, FALSE);
 		//	RedrawChildren();
 		//	return 0;
@@ -340,12 +334,12 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	//int
 	static int		move_pt			= 0;			//0:None, 1:Ctpt1, 2:Ctpt2
 	static BOOL		move_view		= 0;
-	static int		o_x, o_y;
+	static int		prev_o_x, prev_o_y;
 	static int		move_or_scale	= NULL;
 	static int		is_dragging		= FALSE;
 
 	//double
-	static double	scale_x, scale_y;
+	static double	prev_scale_x, prev_scale_y;
 
 	//POINT
 	static POINT	pt_view;
@@ -530,10 +524,10 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	case WM_MBUTTONDOWN:
 		move_view	= TRUE;
 		pt_view		= cl_pt;
-		scale_x		= g_disp_info.scale.x;
-		scale_y		= g_disp_info.scale.y;
-		o_x			= g_disp_info.o.x;
-		o_y			= g_disp_info.o.y;
+		prev_scale_x		= g_disp_info.scale.x;
+		prev_scale_y		= g_disp_info.scale.y;
+		prev_o_x			= g_disp_info.o.x;
+		prev_o_y			= g_disp_info.o.y;
 		SetCursor(LoadCursor(NULL, IDC_SIZEALL));
 		SetCapture(hwnd);
 		return 0;
@@ -583,22 +577,26 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		if (move_view && !move_pt) {
 			// 拡大縮小
 			if ((GetAsyncKeyState(VK_CONTROL) < 0 && move_or_scale == 0) || move_or_scale == 2) {
-				double ratio_x, ratio_y;
-				ratio_x = MINMAXLIM(std::pow(CE_GR_SCALE_INC, cl_pt.x - pt_view.x),
-					CE_GR_SCALE_MIN / scale_x, CE_GR_SCALE_MAX / scale_x);
-				ratio_y = MINMAXLIM(std::pow(CE_GR_SCALE_INC, pt_view.y - cl_pt.y),
-					CE_GR_SCALE_MIN / scale_y, CE_GR_SCALE_MAX / scale_y);
-				g_disp_info.scale.x = scale_x * ratio_x;
-				g_disp_info.scale.y = scale_y * ratio_y;
-				g_disp_info.o.x = rect_wnd.right * 0.5 + ratio_x * (o_x - rect_wnd.right * 0.5);
-				g_disp_info.o.y = rect_wnd.bottom * 0.5 + ratio_y * (o_y - rect_wnd.bottom * 0.5);
+				double coef_x, coef_y;
+				coef_x = MINMAXLIM(std::pow(CE_GR_SCALE_INC, cl_pt.x - pt_view.x),
+					CE_GR_SCALE_MIN / prev_scale_x, CE_GR_SCALE_MAX / prev_scale_x);
+				coef_y = MINMAXLIM(std::pow(CE_GR_SCALE_INC, pt_view.y - cl_pt.y),
+					CE_GR_SCALE_MIN / prev_scale_y, CE_GR_SCALE_MAX / prev_scale_y);
+				if (GetAsyncKeyState(VK_SHIFT) < 0) {
+					coef_x = coef_y = max(coef_x, coef_y);
+					prev_scale_x = prev_scale_y = max(prev_scale_x, prev_scale_y);
+				}
+				g_disp_info.scale.x = prev_scale_x * coef_x;
+				g_disp_info.scale.y = prev_scale_y * coef_y;
+				g_disp_info.o.x = rect_wnd.right * 0.5 + coef_x * (prev_o_x - rect_wnd.right * 0.5);
+				g_disp_info.o.y = rect_wnd.bottom * 0.5 + coef_y * (prev_o_y - rect_wnd.bottom * 0.5);
 				if (move_or_scale == 0)
 					move_or_scale = 2;
 			}
 			// 移動
 			else {
-				g_disp_info.o.x = o_x + cl_pt.x - pt_view.x;
-				g_disp_info.o.y = o_y + cl_pt.y - pt_view.y;
+				g_disp_info.o.x = prev_o_x + cl_pt.x - pt_view.x;
+				g_disp_info.o.y = prev_o_y + cl_pt.y - pt_view.y;
 				if (move_or_scale == 0)
 					move_or_scale = 1;
 			}
@@ -738,7 +736,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		}
 			//設定
 		case ID_MENU_CONFIG:
-			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, wndproc_daialog_settings);
+			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, dialogproc_settings);
 			InvalidateRect(hwnd, NULL, FALSE);
 			SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
 			return 0;
@@ -771,7 +769,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		// 値を読み取り
 		case ID_MENU_READ:
-			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, wndproc_daialog_read);
+			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}

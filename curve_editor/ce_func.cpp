@@ -93,7 +93,7 @@ void ini_load_configs(FILTER* fp)
 	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", CE_GR_RESOLUTION * 0.4);
 	g_curve_value.ctpt[1].x = fp->exfunc->ini_load_int(fp, "x2", CE_GR_RESOLUTION * 0.6);
 	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", CE_GR_RESOLUTION * 0.6);
-	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", 200);
+	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_DEF);
 	g_config.mode = fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", 1);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
