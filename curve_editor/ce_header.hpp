@@ -1,11 +1,16 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
 //		ヘッダファイル
-//		(Visual C++ 2022)
+//		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
 #pragma once
 
+
+
+//----------------------------------------------------------------------------------
+//		include
+//----------------------------------------------------------------------------------
 #include <windows.h>
 #include <windowsx.h>
 #include <wininet.h>
@@ -16,6 +21,8 @@
 #include <filter.h>
 #include "ce_macro.hpp"
 #include "resource.h"
+
+#pragma comment(lib, "d2d1.lib")
 
 
 
@@ -254,6 +261,19 @@ namespace ce {
 			HWND hwnd_parent,		//親ウィンドウまたはオーナーウィンドウのハンドル
 			HMENU menu				//メニューハンドルまたは子ウィンドウ ID
 		);
+	};
+
+
+	class Bitmap_Canvas {
+	private:
+		HBITMAP bitmap;
+		HWND hwnd;
+	public:
+		HDC hdc_memory;
+
+		void init(HWND hw);
+		void exit();
+		void transfer(LPRECT rect);
 	};
 }
 

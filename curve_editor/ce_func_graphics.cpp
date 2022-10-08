@@ -144,24 +144,42 @@ void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 //---------------------------------------------------------------------
 void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point st, ce::Double_Point ed)
 {
-	ce::Double_Point st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH);
+	ce::Double_Point st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH_2);
 	ce::Double_Point ed_new = subtract_length(st, ed, CE_SUBTRACT_LENGTH);
+
+	ID2D1StrokeStyle* pStyle = NULL;
+
+	g_d2d1_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.0f,
+			D2D1_DASH_STYLE_SOLID,
+			0.0f),
+		NULL, NULL,
+		&pStyle
+	);
+
 	g_render_target->DrawLine(
 		D2D1::Point2F(st_new.x, st_new.y),
 		D2D1::Point2F(ed_new.x, ed_new.y),
 		pBrush, CE_HANDLE_TH
 	);
+
 	g_render_target->DrawEllipse(
 		D2D1::Ellipse(
 			D2D1::Point2F(ed.x, ed.y),
 			CE_HANDLE_SIZE, CE_HANDLE_SIZE),
 		pBrush, CE_HANDLE_SIRCLE_LINE
 	);
-	g_render_target->DrawEllipse(
+
+	g_render_target->FillEllipse(
 		D2D1::Ellipse(
 			D2D1::Point2F(st.x, st.y),
 			CE_POINT_SIZE, CE_POINT_SIZE),
-		pBrush, CE_POINT_SIZE * 1.7
+			pBrush
 	);
 }
 
@@ -175,6 +193,7 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
 	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
+
 	g_d2d1_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
 			D2D1_CAP_STYLE_ROUND,

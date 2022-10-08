@@ -107,6 +107,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static HDC hdc, hdc_mem;
 	static HBITMAP bitmap;
 
+	//static ce::Bitmap_Canvas bitmap_canvas;
+
 	GetClientRect(hwnd, &rect_wnd);
 
 	rect_sepr = {
