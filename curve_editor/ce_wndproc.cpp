@@ -47,7 +47,7 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 
 		case 67: //[C]
 			if (GetAsyncKeyState(VK_CONTROL) < 0)
-				SendMessage(g_window.graph, WM_COMMAND, CE_CT_APPLY, 0);
+				SendMessage(g_window.graph, WM_COMMAND, CE_CT_COPY, 0);
 			return 0;
 
 		case 83: //[S]
@@ -104,10 +104,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	RECT rect_wnd, rect_sepr;
 	//HANDLE
 	static HWND hwnd_editor, hwnd_footer;
-	static HDC hdc, hdc_mem;
-	static HBITMAP bitmap;
 
-	//static ce::Bitmap_Canvas bitmap_canvas;
+	static ce::Bitmap_Canvas canvas;
 
 	GetClientRect(hwnd, &rect_wnd);
 
@@ -120,16 +118,11 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	switch (msg) {
 	case WM_CLOSE:
-		DeleteDC(hdc_mem);
-		DeleteObject(bitmap);
+		canvas.exit();
 		return 0;
 
 	case WM_CREATE:
-		hdc = GetDC(hwnd);
-		hdc_mem = CreateCompatibleDC(hdc);
-		bitmap = CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
-		SelectObject(hdc_mem, bitmap);
-		ReleaseDC(hwnd, hdc);
+		canvas.init(hwnd);
 
 		//エディタパネル
 		hwnd_editor = create_child(
@@ -147,7 +140,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_PAINT:
-		draw_main(hwnd, hdc_mem, &rect_wnd, &rect_sepr);
+		draw_main(&canvas, &rect_wnd, &rect_sepr);
 		return 0;
 
 	case WM_SIZE:
@@ -190,36 +183,9 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	//int
-	int result;
-	//LPTSTR, std::string
-	LPCTSTR lpcsResult;
-	std::string strBuffer;
-
-	//POINT
-	POINT ctpt_tmp;
-	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	POINT gr_pt;
-
-	//RECT
 	RECT rect_wnd;
-
-	//HANDLE
-	static HDC hdc, hdc_mem;
-	static HBITMAP bitmap;
-	static HMENU menu;
 	static HWND hwnd_parent, hwnd_graph;
-
-	//その他
-	static ce::Point_Address address;
-	static ce::Control
-		prev_play{ g_theme[g_config.theme].bg_window },
-		prev_dur{ g_theme[g_config.theme].bg_window },
-		fit{ g_theme[g_config.theme].bg_window },
-		id_back{ g_theme[g_config.theme].bg_window },
-		id_next{ g_theme[g_config.theme].bg_window },
-		id{ g_theme[g_config.theme].bg_window },
-		id_delete{ g_theme[g_config.theme].bg_window };
+	static ce::Bitmap_Canvas canvas;
 
 
 	//クライアント領域の矩形を取得
@@ -227,8 +193,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	switch (msg) {
 	case WM_CLOSE:
-		DeleteDC(hdc_mem);
-		DeleteObject(bitmap);
+		canvas.exit();
 		return 0;
 
 		///////////////////////////////////////////
@@ -236,20 +201,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(ウィンドウが作成されたとき)
 		///////////////////////////////////////////
 	case WM_CREATE:
-		//Load CompatibleItems
-		hdc = GetDC(hwnd);
-		hdc_mem = CreateCompatibleDC(hdc);
-		bitmap = CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
-		SelectObject(hdc_mem, bitmap);
-		ReleaseDC(hwnd, hdc);
-
-		////メニュー
-		//menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(g_config.lang ? IDR_MENU2 : IDR_MENU1)), 0);
-
-		/*prev_play.create(hwnd, NULL, "prev_play", CE_ICON_PREV, &g_theme_dark.bg_others, CT_PREV,
-			rect_wnd.left + CE_MARGIN, rect_wnd.bottom - CE_MARGIN - CT_EDITOR_HEIGHT,
-			CT_EDITOR_HEIGHT, CT_EDITOR_HEIGHT
-			);*/
+		canvas.init(hwnd);
 
 		//グラフパネル
 		hwnd_graph = create_child(
@@ -273,17 +225,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(ウィンドウが描画されたとき)
 		///////////////////////////////////////////
 	case WM_PAINT:
-		draw_panel_editor(hwnd, hdc_mem, &rect_wnd);
-		return 0;
-
-		///////////////////////////////////////////
-		//		WM_RBUTTONUP
-		//		(マウスの右ボタンが離されたとき)
-		///////////////////////////////////////////
-		//右クリックメニュー
-	case WM_RBUTTONUP:
-		ClientToScreen(hwnd, &cl_pt);
-		TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN, cl_pt.x, cl_pt.y, 0, hwnd, NULL);
+		draw_panel_editor(&canvas, &rect_wnd);
 		return 0;
 
 		///////////////////////////////////////////
@@ -292,7 +234,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_COMMAND:
 		//switch (LOWORD(wparam)) {
-
 		//	//保存ボタン
 		//case ID_RCLICKMENU_SAVEPRESET:
 		//case CT_SAVE:
@@ -336,12 +277,12 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	//int
 	static int		move_pt			= 0;			//0:None, 1:Ctpt1, 2:Ctpt2
 	static BOOL		move_view		= 0;
-	static int		prev_o_x, prev_o_y;
 	static int		move_or_scale	= NULL;
 	static int		is_dragging		= FALSE;
 
 	//double
 	static double	prev_scale_x, prev_scale_y;
+	static float	prev_o_x, prev_o_y;
 
 	//POINT
 	static POINT	pt_view;
@@ -352,26 +293,24 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	RECT			rect_wnd;
 
 	//ハンドル
-	static HDC		hdc, hdc_mem;
-	static HBITMAP	bitmap;
 	static HMENU	menu;
 	static HWND		hwnd_parent;
 
 	//その他
 	static ce::Point_Address address;
 	static MENUITEMINFO minfo = { 0 };
+	static ce::Bitmap_Canvas canvas;
 
 
 	//クライアント領域の矩形を取得
 	GetClientRect(hwnd, &rect_wnd);
 	//グラフ座標
-	if (g_disp_info.o.x != NULL)
+	if (g_disp_info.origin.x != NULL)
 		gr_pt = to_graph(cl_pt);
 
 	switch (msg) {
 	case WM_CLOSE:
-		DeleteDC(hdc_mem);
-		DeleteObject(bitmap);
+		canvas.exit();
 		return 0;
 
 		///////////////////////////////////////////
@@ -379,12 +318,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(ウィンドウが作成されたとき)
 		///////////////////////////////////////////
 	case WM_CREATE:
-		// コンパティブルデバイスコンテキストを用意
-		hdc = GetDC(hwnd);
-		hdc_mem = CreateCompatibleDC(hdc);
-		bitmap = CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
-		SelectObject(hdc_mem, bitmap);
-		ReleaseDC(hwnd, hdc);
+		canvas.init(hwnd);
 
 		// メニュー
 		menu = GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU1)), 0);
@@ -394,8 +328,8 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		g_curve_value_previous = g_curve_value;
 		g_curve_id_previous = g_curve_id[g_config.current_id];
 
-		g_disp_info.o.x = CE_GR_PADDING;
-		g_disp_info.o.y = rect_wnd.bottom - CE_GR_PADDING;
+		g_disp_info.origin.x = CE_GR_PADDING;
+		g_disp_info.origin.y = (float)(rect_wnd.bottom - CE_GR_PADDING);
 		g_disp_info.scale.x = ((double)rect_wnd.right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 		g_disp_info.scale.y = ((double)rect_wnd.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 
@@ -417,7 +351,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//		(ウィンドウが描画されたとき)
 		///////////////////////////////////////////
 	case WM_PAINT:
-		draw_panel_graph(hwnd, hdc_mem, &rect_wnd);
+		draw_panel_graph(&canvas, &rect_wnd);
 		return 0;
 
 		///////////////////////////////////////////
@@ -473,12 +407,12 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				}
 				InvalidateRect(hwnd, NULL, FALSE);
 				// オートコピー
-				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
+				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_COPY, 0);
 			}
 			// 移動モード解除
 			if (move_pt) {
 				move_pt = 0;
-				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_APPLY, 0);
+				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_COPY, 0);
 			}
 		}
 		// IDモード・カーブのD&D処理
@@ -528,8 +462,8 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		pt_view		= cl_pt;
 		prev_scale_x		= g_disp_info.scale.x;
 		prev_scale_y		= g_disp_info.scale.y;
-		prev_o_x			= g_disp_info.o.x;
-		prev_o_y			= g_disp_info.o.y;
+		prev_o_x			= g_disp_info.origin.x;
+		prev_o_y			= g_disp_info.origin.y;
 		SetCursor(LoadCursor(NULL, IDC_SIZEALL));
 		SetCapture(hwnd);
 		return 0;
@@ -590,15 +524,15 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				}
 				g_disp_info.scale.x = prev_scale_x * coef_x;
 				g_disp_info.scale.y = prev_scale_y * coef_y;
-				g_disp_info.o.x = rect_wnd.right * 0.5 + coef_x * (prev_o_x - rect_wnd.right * 0.5);
-				g_disp_info.o.y = rect_wnd.bottom * 0.5 + coef_y * (prev_o_y - rect_wnd.bottom * 0.5);
+				g_disp_info.origin.x = rect_wnd.right * 0.5f + (float)(coef_x * (prev_o_x - rect_wnd.right * 0.5f));
+				g_disp_info.origin.y = rect_wnd.bottom * 0.5f + (float)(coef_y * (prev_o_y - rect_wnd.bottom * 0.5f));
 				if (move_or_scale == 0)
 					move_or_scale = 2;
 			}
 			// 移動
 			else {
-				g_disp_info.o.x = prev_o_x + cl_pt.x - pt_view.x;
-				g_disp_info.o.y = prev_o_y + cl_pt.y - pt_view.y;
+				g_disp_info.origin.x = prev_o_x + cl_pt.x - pt_view.x;
+				g_disp_info.origin.y = prev_o_y + cl_pt.y - pt_view.y;
 				if (move_or_scale == 0)
 					move_or_scale = 1;
 			}
@@ -622,11 +556,11 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	{
 		// Ctrlキーが押されているとき(横に移動)
 		if (GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(VK_SHIFT) >= 0)
-			g_disp_info.o.x += GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS;
+			g_disp_info.origin.x += (float)(GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS);
 
 		// Shiftキーが押されているとき(縦に移動)
 		else if (GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) >= 0)
-			g_disp_info.o.y += GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS;
+			g_disp_info.origin.y += (float)(GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS);
 
 		// 縮尺の上限下限を設定
 		else {
@@ -643,8 +577,8 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			scale_after_x = g_disp_info.scale.x * coef;
 			scale_after_y = g_disp_info.scale.y * coef;
 
-			g_disp_info.o.x = (g_disp_info.o.x - rect_wnd.right * 0.5) * (scale_after_x / g_disp_info.scale.x) + rect_wnd.right * 0.5;
-			g_disp_info.o.y = (g_disp_info.o.y - rect_wnd.bottom * 0.5) * (scale_after_y / g_disp_info.scale.y) + rect_wnd.bottom * 0.5;
+			g_disp_info.origin.x = (g_disp_info.origin.x - rect_wnd.right * 0.5f) * (float)(scale_after_x / g_disp_info.scale.x) + rect_wnd.right * 0.5f;
+			g_disp_info.origin.y = (g_disp_info.origin.y - rect_wnd.bottom * 0.5f) * (float)(scale_after_y / g_disp_info.scale.y) + rect_wnd.bottom * 0.5f;
 
 			g_disp_info.scale.x = scale_after_x;
 			g_disp_info.scale.y = scale_after_y;
@@ -665,30 +599,35 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
+		// Valueモードに変更
 		case ID_MENU_MODE_VALUE:
 			g_config.mode = 0;
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
+		// IDモードに変更
 		case ID_MENU_MODE_ID:
 			g_config.mode = 1;
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
+		// グラフをフィット
 		case ID_MENU_FIT:
 		case CE_CT_FIT:
-			g_disp_info.o.x = CE_GR_PADDING;
-			g_disp_info.o.y = rect_wnd.bottom - CE_GR_PADDING;
+			g_disp_info.origin.x = CE_GR_PADDING;
+			g_disp_info.origin.y = (float)(rect_wnd.bottom - CE_GR_PADDING);
 			g_disp_info.scale.x = ((double)rect_wnd.right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 			g_disp_info.scale.y = ((double)rect_wnd.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
+		// ハンドルを整列
 		case ID_MENU_ALIGNHANDLE:
 		case CE_CT_ALIGN:
 			g_config.align_handle = g_config.align_handle ? 0 : 1;
 			return 0;
 
+		// カーブを反転
 		case ID_MENU_REVERSE:
 		case CE_CM_REVERSE:
 			// IDモード
@@ -705,12 +644,14 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
+		// ハンドルを表示
 		case ID_MENU_SHOWHANDLE:
 		case CE_CM_SHOWHANDLE:
 			g_config.show_handle = g_config.show_handle ? 0 : 1;
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
+		// カーブを削除
 		case ID_MENU_DELETE:
 		case CE_CM_DELETE:
 		{
@@ -728,6 +669,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			return 0;
 		}
 
+		// カーブのプロパティ
 		case ID_MENU_PROPERTY:
 		{
 			std::string info;
@@ -736,20 +678,22 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			MessageBox(hwnd, info.c_str(), CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		}
-			//設定
+
+		//設定
 		case ID_MENU_CONFIG:
 			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, dialogproc_settings);
 			InvalidateRect(hwnd, NULL, FALSE);
 			SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
 			return 0;
 
+		// 本プラグインについて
 		case ID_MENU_ABOUT:
 			MessageBox(hwnd, CE_STR_ABOUT, CE_PLUGIN_NAME, MB_OK);
 			return 0;
 
 		// 値をコピー
 		case ID_MENU_COPY:
-		case CE_CT_APPLY:
+		case CE_CT_COPY:
 		{
 			TCHAR result_str[12];
 			int result = g_curve_value.create_value_1d();
@@ -790,30 +734,65 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	static HDC hdc, hdc_mem;
-	static HBITMAP bitmap;
 	RECT rect_wnd;
 	static HWND hwnd_test;
+	static ce::Bitmap_Canvas canvas;
+	static ce::Control copy, read, save, clear, fit;
+	RECT rect_buttons_parent, rect_copy, rect_read, rect_save, rect_clear, rect_fit;
+
+	LPRECT lprect_buttons[] = {
+		&rect_copy,
+		&rect_read,
+		&rect_save,
+		&rect_clear,
+		&rect_fit
+	};
 
 	GetClientRect(hwnd, &rect_wnd);
 
+	rect_buttons_parent = {
+		CE_MARGIN,
+		CE_MARGIN * 2 + CE_CT_H,
+		rect_wnd.right - CE_MARGIN,
+		CE_MARGIN * 2 + CE_CT_H * 2
+	};
+	divide_rect(&rect_buttons_parent, lprect_buttons, 5);
+
 	switch (msg) {
 	case WM_CLOSE:
-		DeleteDC(hdc_mem);
-		DeleteObject(bitmap);
+		canvas.exit();
 		return 0;
 
 	case WM_CREATE:
-		hdc = GetDC(hwnd);
-		hdc_mem = CreateCompatibleDC(hdc);
-		bitmap = CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
-		SelectObject(hdc_mem, bitmap);
-		ReleaseDC(hwnd, hdc);
+		canvas.init(hwnd);
 
+		copy.create(hwnd, "CTRL_COPY", NULL, CE_CT_COPY, &rect_copy);
+		read.create(hwnd, "CTRL_READ", NULL, CE_CT_READ, &rect_read);
+		save.create(hwnd, "CTRL_SAVE", NULL, CE_CT_SAVE, &rect_save);
+		clear.create(hwnd, "CTRL_CLEAR", NULL, CE_CT_DELETE, &rect_clear);
+		fit.create(hwnd, "CTRL_FIT", NULL, CE_CT_FIT, &rect_fit);
+		return 0;
+
+	case WM_SIZE:
+		copy.move(&rect_copy);
+		read.move(&rect_read);
+		save.move(&rect_save);
+		clear.move(&rect_clear);
+		fit.move(&rect_fit);
 		return 0;
 
 	case WM_PAINT:
-		draw_footer(hwnd, hdc_mem, &rect_wnd);
+		draw_footer(&canvas, &rect_wnd);
+		return 0;
+
+	case WM_COMMAND:
+		switch (wparam) {
+		case CE_CT_COPY:
+			SendMessage(g_window.graph, WM_COMMAND, CE_CT_COPY, 0);
+			return 0;
+
+
+		}
 		return 0;
 
 	default:
@@ -830,35 +809,23 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	POINT			cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	HDC				hdc;
-	static HDC		hdc_mem;
-	static HBITMAP	bitmap;
 	RECT			rect_wnd;
+	static ce::Bitmap_Canvas canvas;
 
 	GetClientRect(hwnd, &rect_wnd);
 
 
 	switch (msg) {
 	case WM_CLOSE:
-		DeleteDC(hdc_mem);
-		DeleteObject(bitmap);
+		canvas.exit();
 		return 0;
 
 	case WM_CREATE:
-		hdc		= GetDC(hwnd);
-		hdc_mem = CreateCompatibleDC(hdc);
-		bitmap	= CreateCompatibleBitmap(hdc, CE_MAX_W, CE_MAX_H);
-		SelectObject(hdc_mem, bitmap);
-		ReleaseDC(hwnd, hdc);
-
+		canvas.init(hwnd);
 		return 0;
 
 	case WM_PAINT:
-		draw_panel_library(hwnd, hdc_mem, &rect_wnd);
-		return 0;
-
-	case WM_SIZE:
-
+		draw_panel_library(&canvas, &rect_wnd);
 		return 0;
 
 	case WM_COMMAND:

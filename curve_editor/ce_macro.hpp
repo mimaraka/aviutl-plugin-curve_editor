@@ -32,9 +32,9 @@
 #define CE_GR_GRID_N				2
 #define CE_GR_RESOLUTION			10000
 #define CE_GR_GRID_MIN				36
-#define CE_GR_GRID_TH_L				0.5
-#define CE_GR_GRID_TH_B				1
-#define CE_GR_POINT_TH				0.2
+#define CE_GR_GRID_TH_L				0.5f
+#define CE_GR_GRID_TH_B				1.0f
+#define CE_GR_POINT_TH				0.2f
 #define CE_GR_POINT_DASH			30
 #define CE_GR_POINT_CONTRAST		3
 #define CE_GR_SCALE_INC				1.01
@@ -48,15 +48,15 @@
 #define CE_HANDLE_SIRCLE_LINE		2.6
 #define CE_POINT_RANGE				10
 #define CE_POINT_SIZE				5
-#define CE_CURVE_TH					1.2
-#define CE_SUBTRACT_LENGTH			10
-#define CE_SUBTRACT_LENGTH_2		8
+#define CE_CURVE_TH					1.2f
+#define CE_SUBTRACT_LENGTH			10.0f
+#define CE_SUBTRACT_LENGTH_2		8.0f
 
 
 //---------------------------------------------------------------------
 //		コントロール
 //---------------------------------------------------------------------
-#define CE_CT_APPLY					1000
+#define CE_CT_COPY					1000
 #define CE_CT_MODE_VALUE			1001
 #define CE_CT_MODE_ID				1002
 #define CE_CT_SAVE					1003
@@ -70,13 +70,11 @@
 #define CE_CT_ID_NEXT				1011
 #define CE_CT_ID					1012
 #define CE_CT_DELETE				1013
-#define CE_CT_APPLY_H				56
-#define CE_CT_SIDE_H				44
 #define CE_CT_EDT_H					30
 #define CE_CT_SEARCH_H				20
 #define CE_CT_ICON_SIZE				22
-#define CE_CT_APPLY_SIZE			34
 #define CE_CT_APPLY_TEXT			"Copy"
+#define CE_CT_H						44
 
 #define CE_WD_SIDE_MINW				120
 #define CE_WD_EDT_MINW				200
@@ -102,16 +100,15 @@
 #define CE_BR_SEPR					256
 #define CE_BR_GR_INVALID			-8
 #define CE_CT_BR_HOVERED			15
-#define CE_CT_BR_CLICKED			-15
-#define CE_CT_BR_SWITCH				-20					//unselected
+#define CE_CT_BR_CLICKED			-10
+#define CE_CT_BR_SWITCH				-20					//選択していない状態
 
 
 //---------------------------------------------------------------------
 //		その他
 //---------------------------------------------------------------------
-#define CE_POINT_MAX				64
-#define CE_CURVE_MAX				1024
-#define CE_OUTOFRANGE				2122746762
+#define CE_POINT_MAX				64					// 変更不可
+#define CE_CURVE_MAX				1024				// 変更不可
 #define MATH_PI						3.14159265
 
 
@@ -128,7 +125,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.1.4"
+#define CE_PLUGIN_VERSION			"v0.1.5"
 #define CE_PLUGIN_AUTHOR			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR

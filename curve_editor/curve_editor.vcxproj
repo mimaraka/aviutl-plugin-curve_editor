@@ -172,6 +172,7 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ce_bitmap_canvas.cpp" />
+    <ClCompile Include="ce_control.cpp" />
     <ClCompile Include="ce_ctrlproc.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -190,15 +191,11 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="ce_func.cpp">
+    <ClCompile Include="ce_funcs.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="ce_func_ctrl.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="ce_func_graphics.cpp" />
     <ClCompile Include="ce_main.cpp">
@@ -215,9 +212,12 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ce_classes.hpp" />
     <ClInclude Include="ce_header.hpp" />
     <ClInclude Include="ce_macro.hpp" />
+    <ClInclude Include="ce_structs.hpp" />
     <ClInclude Include="ce_wndproc.hpp" />
+    <ClInclude Include="framework.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

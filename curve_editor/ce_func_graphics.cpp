@@ -32,10 +32,10 @@ void d2d_init()
 //---------------------------------------------------------------------
 //		Direct2Dの描画の準備
 //---------------------------------------------------------------------
-void d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr)
+void d2d_setup(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, COLORREF cr)
 {
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {
-		g_render_target->BindDC(hdc, rect_wnd);
+		g_render_target->BindDC(canvas->hdc_memory, rect_wnd);
 		g_render_target->BeginDraw();
 		g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
 		g_render_target->Clear(D2D1::ColorF(cr));
@@ -51,29 +51,31 @@ void d2d_setup(HDC hdc, LPRECT rect_wnd, COLORREF cr)
 void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 	pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GRID)));
 	// 
-	int kx = std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.x / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
-	int ky = std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.y / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
+	int kx = (int)std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.x / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
+	int ky = (int)std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.y / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
 	// グラフの枠内に表示されるグリッドの本数
-	int nx = MINLIM(std::pow(CE_GR_GRID_N, kx), 1);
-	int ny = MINLIM(std::pow(CE_GR_GRID_N, ky), 1);
-	double dx = (CE_GR_RESOLUTION * g_disp_info.scale.x) / nx;
-	double dy = (CE_GR_RESOLUTION * g_disp_info.scale.y) / ny;
+	int nx = MINLIM((int)std::pow(CE_GR_GRID_N, kx), 1);
+	int ny = MINLIM((int)std::pow(CE_GR_GRID_N, ky), 1);
+	// 
+	float dx = (float)(CE_GR_RESOLUTION * g_disp_info.scale.x) / (float)nx;
+	float dy = (float)(CE_GR_RESOLUTION * g_disp_info.scale.y) / (float)ny;
 	int lx, ly;
 
 	if (to_graph(0, 0).x >= 0)
-		lx = std::floor(to_graph(0, 0).x * nx / (double)CE_GR_RESOLUTION);
+		lx = (int)std::floor(to_graph(0, 0).x * nx / (double)CE_GR_RESOLUTION);
 	else
-		lx = std::ceil(to_graph(0, 0).x * nx / (double)CE_GR_RESOLUTION);
+		lx = (int)std::ceil(to_graph(0, 0).x * nx / (double)CE_GR_RESOLUTION);
 
 	if (to_graph(0, 0).y >= 0)
-		ly = std::floor(to_graph(0, 0).y * ny / (double)CE_GR_RESOLUTION);
+		ly = (int)std::floor(to_graph(0, 0).y * ny / (double)CE_GR_RESOLUTION);
 	else
-		ly = std::ceil(to_graph(0, 0).y * ny / (double)CE_GR_RESOLUTION);
+		ly = (int)std::ceil(to_graph(0, 0).y * ny / (double)CE_GR_RESOLUTION);
 
-	double ax = to_client(lx * CE_GR_RESOLUTION / (double)nx, 0).x;
-	double ay = to_client(0, ly * CE_GR_RESOLUTION / (double)ny).y;
+	float ax = to_client((int)(lx * CE_GR_RESOLUTION / (float)nx), 0).x;
+	float ay = to_client(0, (int)(ly * CE_GR_RESOLUTION / (float)ny)).y;
 	float thickness;
 
+	// 縦方向
 	for (int i = 0; ax + dx * i <= rect_wnd->right; i++) {
 		if ((lx + i) % CE_GR_GRID_N == 0)
 			thickness = CE_GR_GRID_TH_B;
@@ -81,11 +83,12 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 			thickness = CE_GR_GRID_TH_L;
 		g_render_target->DrawLine(
 			D2D1::Point2F(ax + dx * i, 0),
-			D2D1::Point2F(ax + dx * i, rect_wnd->bottom),
+			D2D1::Point2F(ax + dx * i, (float)rect_wnd->bottom),
 			pBrush, thickness, NULL
 		);
 	}
 
+	// 横方向
 	for (int i = 0; ay + dy * i <= rect_wnd->bottom; i++) {
 		if ((ly - i) % CE_GR_GRID_N == 0)
 			thickness = CE_GR_GRID_TH_B;
@@ -93,7 +96,7 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 			thickness = CE_GR_GRID_TH_L;
 		g_render_target->DrawLine(
 			D2D1::Point2F(0, ay + dy * i),
-			D2D1::Point2F(rect_wnd->right, ay + dy * i),
+			D2D1::Point2F((float)rect_wnd->right, ay + dy * i),
 			pBrush, thickness, NULL
 		);
 	}
@@ -105,7 +108,7 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 //		ベジェカーブを描画
 //---------------------------------------------------------------------
 void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
-	ce::Double_Point stpt, ce::Double_Point ctpt1, ce::Double_Point ctpt2, ce::Double_Point edpt, float thickness)
+	ce::Float_Point stpt, ce::Float_Point ctpt1, ce::Float_Point ctpt2, ce::Float_Point edpt, float thickness)
 {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* bezier;
@@ -142,10 +145,10 @@ void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 //---------------------------------------------------------------------
 //		グラフのハンドルを描画
 //---------------------------------------------------------------------
-void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point st, ce::Double_Point ed)
+void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Float_Point st, ce::Float_Point ed)
 {
-	ce::Double_Point st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH_2);
-	ce::Double_Point ed_new = subtract_length(st, ed, CE_SUBTRACT_LENGTH);
+	ce::Float_Point st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH_2);
+	ce::Float_Point ed_new = subtract_length(st, ed, CE_SUBTRACT_LENGTH);
 
 	ID2D1StrokeStyle* pStyle = NULL;
 
@@ -171,14 +174,14 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point st, ce::Doub
 	g_render_target->DrawEllipse(
 		D2D1::Ellipse(
 			D2D1::Point2F(ed.x, ed.y),
-			CE_HANDLE_SIZE, CE_HANDLE_SIZE),
-		pBrush, CE_HANDLE_SIRCLE_LINE
+			(float)CE_HANDLE_SIZE, (float)CE_HANDLE_SIZE),
+		pBrush, (float)CE_HANDLE_SIRCLE_LINE
 	);
 
 	g_render_target->FillEllipse(
 		D2D1::Ellipse(
 			D2D1::Point2F(st.x, st.y),
-			CE_POINT_SIZE, CE_POINT_SIZE),
+			(float)CE_POINT_SIZE, (float)CE_POINT_SIZE),
 			pBrush
 	);
 }
@@ -188,9 +191,8 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Double_Point st, ce::Doub
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
+void draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
 {
-	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
 
@@ -208,7 +210,7 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
 	);
 
 	//Direct2D初期化
-	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_window));
+	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_window));
 
 	if (g_render_target != NULL) {
 		g_render_target->BeginDraw();
@@ -216,19 +218,15 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
 		pBrush->SetColor(D2D1::ColorF(TO_BGR(BRIGHTEN(g_theme[g_config.theme].bg_window, CE_BR_SEPR))));
 
 		if (pBrush) g_render_target->DrawLine(
-			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5 - CE_SEPR_LINE_L, rect_sepr->top + CE_SEPR_W),
-			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5 + CE_SEPR_LINE_L, rect_sepr->top + CE_SEPR_W),
+			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5f - CE_SEPR_LINE_L, (float)(rect_sepr->top + CE_SEPR_W)),
+			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5f + CE_SEPR_LINE_L, (float)(rect_sepr->top + CE_SEPR_W)),
 			pBrush, CE_SEPR_LINE_W, pStyle
 		);
 		g_render_target->EndDraw();
 	}
 
 	//ビットマップをバッファから画面に転送
-	PAINTSTRUCT ps;
-	hdc = BeginPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, rect_wnd->right, rect_wnd->bottom, hdc_mem, 0, 0, SRCCOPY);
-	EndPaint(hwnd, &ps);
-	DeleteDC(hdc);
+	canvas->transfer(rect_wnd);
 }
 
 
@@ -236,20 +234,15 @@ void draw_main(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd, LPRECT rect_sepr)
 //---------------------------------------------------------------------
 //		フッタパネルを描画
 //---------------------------------------------------------------------
-void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_footer(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
 
 	//Direct2D初期化
-	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
-	PAINTSTRUCT ps;
-	hdc = BeginPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, rect_wnd->right, rect_wnd->bottom, hdc_mem, 0, 0, SRCCOPY);
-	EndPaint(hwnd, &ps);
-	DeleteDC(hdc);
+	canvas->transfer(rect_wnd);
 }
 
 
@@ -257,20 +250,15 @@ void draw_footer(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		ライブラリを描画
 //---------------------------------------------------------------------
-void draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_panel_library(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
 
 	//Direct2D初期化
-	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
-	PAINTSTRUCT ps;
-	hdc = BeginPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, rect_wnd->right, rect_wnd->bottom, hdc_mem, 0, 0, SRCCOPY);
-	EndPaint(hwnd, &ps);
-	DeleteDC(hdc);
+	canvas->transfer(rect_wnd);
 }
 
 
@@ -278,20 +266,15 @@ void draw_panel_library(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
 
 	//Direct2D初期化
-	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
-	PAINTSTRUCT ps;
-	hdc = BeginPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, rect_wnd->right, rect_wnd->bottom, hdc_mem, 0, 0, SRCCOPY);
-	EndPaint(hwnd, &ps);
-	DeleteDC(hdc);
+	canvas->transfer(rect_wnd);
 }
 
 
@@ -299,17 +282,16 @@ void draw_panel_editor(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		グラフパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
+void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	HDC hdc;
 	static ID2D1SolidColorBrush* pBrush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
 	float dashes[] = { CE_GR_POINT_DASH, CE_GR_POINT_DASH };
 
-	ce::Double_Point ctpt_cl[] = {//クライアント
+	ce::Float_Point ctpt_cl[] = {//クライアント
 		{
-			g_disp_info.o.x,
-			g_disp_info.o.y
+			g_disp_info.origin.x,
+			g_disp_info.origin.y
 		},
 		{
 			to_client(g_curve_value.ctpt[0]).x,
@@ -320,11 +302,11 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 			to_client(g_curve_value.ctpt[1]).y
 		},
 		{
-			g_disp_info.o.x + g_disp_info.scale.x * CE_GR_RESOLUTION,
-			g_disp_info.o.y - g_disp_info.scale.y * CE_GR_RESOLUTION
+			g_disp_info.origin.x + (float)(g_disp_info.scale.x * CE_GR_RESOLUTION),
+			g_disp_info.origin.y - (float)(g_disp_info.scale.y * CE_GR_RESOLUTION)
 		}
 	};
-	ce::Double_Point ctpt_trace_cl[] = {
+	ce::Float_Point ctpt_trace_cl[] = {
 		ctpt_cl[0],
 		{
 			to_client(g_curve_value_previous.ctpt[0]).x,
@@ -340,31 +322,31 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 	D2D1_RECT_F rect_left = {
 		0, 0,
 		ctpt_cl[0].x,
-		rect_wnd->bottom
+		(float)rect_wnd->bottom
 	};
 
 	D2D1_RECT_F rect_right = {
 		ctpt_cl[3].x, 0,
-		rect_wnd->right,
-		rect_wnd->bottom,
+		(float)rect_wnd->right,
+		(float)rect_wnd->bottom,
 	};
 
 	D2D1_RECT_F rect_up = {
 		ctpt_cl[0].x,
 		0,
 		ctpt_cl[3].x,
-		to_client(0, 3.73 * CE_GR_RESOLUTION).y
+		to_client(0, (int)(3.73 * CE_GR_RESOLUTION)).y
 	};
 
 	D2D1_RECT_F rect_down = {
 		ctpt_cl[0].x,
-		to_client(0, -2.73 * CE_GR_RESOLUTION).y,
+		to_client(0, (int)(-2.73 * CE_GR_RESOLUTION)).y,
 		ctpt_cl[3].x,
-		rect_wnd->bottom
+		(float)rect_wnd->bottom
 	};
 
 	//Direct2D初期化
-	d2d_setup(hdc_mem, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_graph));
+	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_graph));
 
 	//描画
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {
@@ -412,7 +394,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 
 		//IDモードのとき
 		else {
-			for (int i = 0; i < g_curve_id[g_config.current_id].ctpts.size - 1; i++)
+			for (int i = 0; i < (int)g_curve_id[g_config.current_id].ctpts.size - 1; i++)
 			{
 				//色を指定
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));
@@ -434,7 +416,7 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 				if (i > 0)
 					g_render_target->DrawLine(
 						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, 0),
-						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, rect_wnd->bottom),
+						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, (float)rect_wnd->bottom),
 						pBrush, CE_GR_POINT_TH, pStyle
 					);
 
@@ -480,9 +462,5 @@ void draw_panel_graph(HWND hwnd, HDC hdc_mem, LPRECT rect_wnd)
 
 
 	//ビットマップをバッファから画面に転送
-	PAINTSTRUCT ps;
-	hdc = BeginPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, rect_wnd->right, rect_wnd->bottom, hdc_mem, 0, 0, SRCCOPY);
-	EndPaint(hwnd, &ps);
-	DeleteDC(hdc);
+	canvas->transfer(rect_wnd);
 }

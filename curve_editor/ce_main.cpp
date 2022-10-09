@@ -19,8 +19,7 @@ ce::Config						g_config;
 ce::Window						g_window;
 ce::Gr_Disp_Info				g_disp_info;
 FILTER*							g_fp;
-std::vector<ce::Preset_Value>	g_presets_value;
-std::vector<ce::Preset_ID>		g_presets_id;
+std::vector<ce::Preset>			g_presets;
 
 //ダークテーマ
 const ce::Theme g_theme_dark = {
@@ -31,7 +30,7 @@ const ce::Theme g_theme_dark = {
 	RGB(243,243,243),
 	RGB(243,243,243),
 	RGB(27,27,27),
-	RGB(60,60,60),
+	RGB(27,27,27),
 	NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL,
 };

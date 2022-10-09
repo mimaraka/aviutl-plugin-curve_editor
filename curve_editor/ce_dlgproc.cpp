@@ -64,10 +64,12 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 {
 	TCHAR buffer[30];
 	std::regex re(R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)");
+
 	switch (msg) {
 	case WM_CLOSE:
 		EndDialog(hwnd, 1);
 		return 0;
+
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
@@ -75,6 +77,7 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			if (std::regex_match(buffer, re)) {
 				std::string str = buffer;
 				std::vector<std::string> vec = split(buffer, ',');
+
 				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * CE_GR_RESOLUTION);
 				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * CE_GR_RESOLUTION);
 				g_curve_value.ctpt[0].y = (int)(std::stod(vec[1]) * CE_GR_RESOLUTION);
@@ -82,13 +85,14 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				g_curve_value.ctpt[1].y = (int)(std::stod(vec[3]) * CE_GR_RESOLUTION);
 
 				for (int i = 0; i < 2; i++) {
-					if (g_curve_value.ctpt[i].y > 3.73 * CE_GR_RESOLUTION) g_curve_value.ctpt[i].y = 3.73 * CE_GR_RESOLUTION;
-					else if (g_curve_value.ctpt[i].y < -2.73 * CE_GR_RESOLUTION) g_curve_value.ctpt[i].y = -2.73 * CE_GR_RESOLUTION;
+					if (g_curve_value.ctpt[i].y > 3.73 * CE_GR_RESOLUTION) g_curve_value.ctpt[i].y = (int)(3.73 * CE_GR_RESOLUTION);
+					else if (g_curve_value.ctpt[i].y < -2.73 * CE_GR_RESOLUTION) g_curve_value.ctpt[i].y = (int)(-2.73 * CE_GR_RESOLUTION);
 				}
 				EndDialog(hwnd, 1);
 			}
 			else if (g_config.alert)MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
+
 		case IDCANCEL:
 			EndDialog(hwnd, 1);
 			return 0;
@@ -111,6 +115,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	// ’l‚Ì³‹K•\Œ»
 	std::regex re(R"(^-?\d+$)");
 	std::string str;
+
 	switch (msg) {
 	case WM_INITDIALOG:
 		edit = GetDlgItem(hwnd, IDC_EDIT_READ);
@@ -170,7 +175,7 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	HWND edit;
 	LPCTSTR lpsResult;
 	std::string strBuffer;
-	TCHAR buffer[64];
+	//TCHAR buffer[64];
 	strBuffer = g_curve_value.create_value_4d();
 	lpsResult = strBuffer.c_str();
 
@@ -206,14 +211,14 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			ce::Preset_Value additem;
+			/*ce::Preset additem;
 			GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, 64);
 			if (strlen(buffer) < 64 && strlen(buffer) != 0) {
 				additem = { buffer, g_curve_value.ctpt[0].x, g_curve_value.ctpt[0].y, g_curve_value.ctpt[1].x, g_curve_value.ctpt[1].y };
-				g_presets_value.emplace_back(additem);
+				g_presets.emplace_back(additem);
 				EndDialog(hwnd, 1);
 			}
-			else if (strlen(buffer) == 0 && g_config.alert) MessageBox(hwnd, CE_STR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (strlen(buffer) == 0 && g_config.alert) MessageBox(hwnd, CE_STR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);*/
 			return 0;
 		case IDCANCEL:
 			EndDialog(hwnd, 1);

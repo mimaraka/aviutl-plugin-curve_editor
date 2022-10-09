@@ -25,16 +25,16 @@ void ce::Curve_Value::init()
 int ce::Curve_Value::point_in_ctpts(POINT cl_pt)
 {
 	RECT rcCtpt1 = {
-		to_client(ctpt[0]).x - CE_POINT_RANGE,
-		to_client(ctpt[0]).y - CE_POINT_RANGE,
-		to_client(ctpt[0]).x + CE_POINT_RANGE,
-		to_client(ctpt[0]).y + CE_POINT_RANGE
+		(LONG)to_client(ctpt[0]).x - CE_POINT_RANGE,
+		(LONG)to_client(ctpt[0]).y - CE_POINT_RANGE,
+		(LONG)to_client(ctpt[0]).x + CE_POINT_RANGE,
+		(LONG)to_client(ctpt[0]).y + CE_POINT_RANGE
 	};
 	RECT rcCtpt2 = {
-		to_client(ctpt[1]).x - CE_POINT_RANGE,
-		to_client(ctpt[1]).y - CE_POINT_RANGE,
-		to_client(ctpt[1]).x + CE_POINT_RANGE,
-		to_client(ctpt[1]).y + CE_POINT_RANGE
+		(LONG)to_client(ctpt[1]).x - CE_POINT_RANGE,
+		(LONG)to_client(ctpt[1]).y - CE_POINT_RANGE,
+		(LONG)to_client(ctpt[1]).x + CE_POINT_RANGE,
+		(LONG)to_client(ctpt[1]).y + CE_POINT_RANGE
 	};
 	if (PtInRect(&rcCtpt2, cl_pt))
 		return 2;
@@ -122,12 +122,12 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		float theta;
 		int intResult_x, intResult_y;
 		if (!index) {
-			theta = std::atan2(gr_pt.y, gr_pt.x);
+			theta = (float)std::atan2(gr_pt.y, gr_pt.x);
 			intResult_x = (int)(DISTANCE1(ptLock) * std::cos(theta));
 			intResult_y = (int)(DISTANCE1(ptLock) * std::sin(theta));
 		}
 		else {
-			theta = std::atan2(CE_GR_RESOLUTION - gr_pt.y, CE_GR_RESOLUTION - gr_pt.x);
+			theta = (float)std::atan2(CE_GR_RESOLUTION - gr_pt.y, CE_GR_RESOLUTION - gr_pt.x);
 			intResult_x = CE_GR_RESOLUTION - (int)(DISTANCE2(ptLock, CE_GR_RESOLUTION, CE_GR_RESOLUTION) * std::cos(theta));
 			intResult_y = CE_GR_RESOLUTION - (int)(DISTANCE2(ptLock, CE_GR_RESOLUTION, CE_GR_RESOLUTION) * std::sin(theta));
 		}
@@ -161,7 +161,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 	}
 
 	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
-	g_curve_value.ctpt[index].y = MINMAXLIM(g_curve_value.ctpt[index].y, -2.73 *CE_GR_RESOLUTION, 3.73 * CE_GR_RESOLUTION);
+	g_curve_value.ctpt[index].y = MINMAXLIM(g_curve_value.ctpt[index].y, (LONG)(-2.73 * CE_GR_RESOLUTION), (LONG)(3.73 * CE_GR_RESOLUTION));
 }
 
 
@@ -192,8 +192,8 @@ std::string ce::Curve_Value::create_value_4d()
 	float ptx, pty;
 	std::string strx, stry, result;
 	for (int i = 0; i < 2; i++) {
-		ptx = std::round(ctpt[i].x * 100 / (double)CE_GR_RESOLUTION) * 0.01;
-		pty = std::round(ctpt[i].y * 100 / (double)CE_GR_RESOLUTION) * 0.01;
+		ptx = (float)(std::round(ctpt[i].x * 100 / (double)CE_GR_RESOLUTION) * 0.01);
+		pty = (float)(std::round(ctpt[i].y * 100 / (double)CE_GR_RESOLUTION) * 0.01);
 		strx = std::to_string(ptx);
 		stry = std::to_string(pty);
 		strx.erase(4);
@@ -214,14 +214,14 @@ void ce::Curve_Value::read_value_1d(int value)
 {
 	int64_t int64;
 	int64 = (int64_t)value + (int64_t)2147483647;
-	ctpt[1].y = int64 / 6600047;
-	ctpt[1].x = (int64 - (int64_t)ctpt[1].y * 6600047) / 65347;
-	ctpt[0].y = (int64 - ((int64_t)ctpt[1].y * 6600047 + (int64_t)ctpt[1].x * 65347)) / 101;
-	ctpt[0].x = (int64 - ((int64_t)ctpt[1].y * 6600047 + (int64_t)ctpt[1].x * 65347)) % 101;
+	ctpt[1].y = (LONG)(int64 / 6600047);
+	ctpt[1].x = (LONG)((int64 - (int64_t)ctpt[1].y * 6600047) / 65347);
+	ctpt[0].y = (LONG)((int64 - ((int64_t)ctpt[1].y * 6600047 + (int64_t)ctpt[1].x * 65347)) / 101);
+	ctpt[0].x = (LONG)((int64 - ((int64_t)ctpt[1].y * 6600047 + (int64_t)ctpt[1].x * 65347)) % 101);
 	ctpt[0].x *= CE_GR_RESOLUTION / 100;
 	ctpt[0].y *= CE_GR_RESOLUTION / 100;
 	ctpt[1].x *= CE_GR_RESOLUTION / 100;
 	ctpt[1].y *= CE_GR_RESOLUTION / 100;
-	ctpt[0].y -= 2.73 * CE_GR_RESOLUTION;
-	ctpt[1].y -= 2.73 * CE_GR_RESOLUTION;
+	ctpt[0].y -= (LONG)(2.73 * CE_GR_RESOLUTION);
+	ctpt[1].y -= (LONG)(2.73 * CE_GR_RESOLUTION);
 }

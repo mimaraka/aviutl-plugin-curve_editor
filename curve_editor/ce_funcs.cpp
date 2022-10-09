@@ -89,10 +89,10 @@ void ini_load_configs(FILTER* fp)
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", 1);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", 0);
 	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.ctpt[0].x = fp->exfunc->ini_load_int(fp, "x1", CE_GR_RESOLUTION * 0.4);
-	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", CE_GR_RESOLUTION * 0.4);
-	g_curve_value.ctpt[1].x = fp->exfunc->ini_load_int(fp, "x2", CE_GR_RESOLUTION * 0.6);
-	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", CE_GR_RESOLUTION * 0.6);
+	g_curve_value.ctpt[0].x = fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * 0.4));
+	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * 0.4));
+	g_curve_value.ctpt[1].x = fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * 0.6));
+	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * 0.6));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_DEF);
 	g_config.mode = fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", 1);
@@ -222,17 +222,17 @@ BOOL copy_to_clipboard(HWND hwnd, LPCTSTR lpsText)
 //---------------------------------------------------------------------
 //		for UI
 //---------------------------------------------------------------------
-ce::Double_Point subtract_length(ce::Double_Point st, ce::Double_Point ed, double length)
+ce::Float_Point subtract_length(ce::Float_Point st, ce::Float_Point ed, float length)
 {
-	ce::Double_Point result;
-	double old_length = DISTANCE(st, ed);
+	ce::Float_Point result;
+	float old_length = (float)DISTANCE(st, ed);
 	if (old_length == 0)
 		return ed;
 	if (length > old_length)
 		return st;
 	double length_ratio = (old_length - length) / old_length;
-	double after_x = st.x + (ed.x - st.x) * length_ratio;
-	double after_y = st.y + (ed.y - st.y) * length_ratio;
+	float after_x = (float)(st.x + (ed.x - st.x) * length_ratio);
+	float after_y = (float)(st.y + (ed.y - st.y) * length_ratio);
 	result = {after_x, after_y};
 	return result;
 }
@@ -276,4 +276,22 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
 	minfo.fMask = MIIM_TYPE;
 	minfo.dwTypeData = CE_PLUGIN_NAME "‚É‚Â‚¢‚Ä";
 	SetMenuItemInfo(menu, ID_MENU_ABOUT, FALSE, &minfo);
+}
+
+
+
+//---------------------------------------------------------------------
+//		RECT‚ð‰¡nŒÂ‚É•ªŠ„‚·‚é
+//---------------------------------------------------------------------
+void divide_rect(LPRECT rect_parent, LPRECT* rects_child, int n)
+{
+	int width_parent = rect_parent->right - rect_parent->left;
+	int width_child = width_parent / n;
+
+	for (int i = 0; i < n; i++) {
+		rects_child[i]->left = rect_parent->left + i * width_child;
+		rects_child[i]->right = rect_parent->left + (i + 1) * width_child;
+		rects_child[i]->top = rect_parent->top;
+		rects_child[i]->bottom = rect_parent->bottom;
+	}
 }

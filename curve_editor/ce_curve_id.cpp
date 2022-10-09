@@ -37,7 +37,7 @@ void ce::Curve_ID::add_point(POINT gr_pt)
 	int index = 0;
 	Point_Address tmp;
 	if (ctpts.size >= CE_POINT_MAX) return;
-	for (int i = 0; i < ctpts.size; i++) {
+	for (int i = 0; i < (int)ctpts.size; i++) {
 		if (ctpts[i].pt_center.x == gr_pt.x)
 			return;
 		else if (ctpts[i].pt_center.x > gr_pt.x) {
@@ -77,7 +77,7 @@ void ce::Curve_ID::delete_point(POINT cl_pt)
 {
 	Point_Address address = pt_in_ctpt(cl_pt);
 	if (!address.position) return;
-	for (int i = 1; i < ctpts.size - 1; i++) {
+	for (int i = 1; i < (int)ctpts.size - 1; i++) {
 		if (address.index == i) {
 			ctpts.erase(i);
 			break;
@@ -214,7 +214,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 		}
 		break;
 
-	case 3://Right  o-----O
+	case 3://Right  origin-----O
 		if (ctpts[address.index].type == 1) return;
 
 		ctpts[address.index].pt_right.x = MINMAXLIM(gr_pt.x,
@@ -239,7 +239,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 ce::Point_Address ce::Curve_ID::pt_in_ctpt(POINT cl_pt)
 {
 	RECT rcCenter, rcLeft, rcRight;
-	for (int i = 0; i < ctpts.size; i++) {
+	for (int i = 0; i < (int)ctpts.size; i++) {
 		rcCenter = {
 			(LONG)to_client(ctpts[i].pt_center).x - CE_POINT_RANGE,
 			(LONG)to_client(ctpts[i].pt_center).y - CE_POINT_RANGE,
@@ -316,8 +316,8 @@ void ce::Curve_ID::set_handle_angle(Point_Address address, double angle, BOOL bL
 			ctpts[address.index].pt_center,
 			ctpts[address.index].pt_left);
 
-		ctpts[address.index].pt_left.x = ctpts[address.index].pt_center.x + std::cos(angle) * length;
-		ctpts[address.index].pt_left.y = ctpts[address.index].pt_center.y + std::sin(angle) * length;
+		ctpts[address.index].pt_left.x = (LONG)(ctpts[address.index].pt_center.x + std::cos(angle) * length);
+		ctpts[address.index].pt_left.y = (LONG)(ctpts[address.index].pt_center.y + std::sin(angle) * length);
 		correct_handle(address, angle);
 	}
 	//右-right
@@ -327,8 +327,8 @@ void ce::Curve_ID::set_handle_angle(Point_Address address, double angle, BOOL bL
 			ctpts[address.index].pt_center,
 			ctpts[address.index].pt_right);
 
-		ctpts[address.index].pt_right.x = ctpts[address.index].pt_center.x + std::cos(angle) * length;
-		ctpts[address.index].pt_right.y = ctpts[address.index].pt_center.y + std::sin(angle) * length;
+		ctpts[address.index].pt_right.x = (LONG)(ctpts[address.index].pt_center.x + std::cos(angle) * length);
+		ctpts[address.index].pt_right.y = (LONG)(ctpts[address.index].pt_center.y + std::sin(angle) * length);
 		correct_handle(address, angle);
 	}
 	else return;
@@ -351,18 +351,18 @@ void ce::Curve_ID::correct_handle(Point_Address address, double angle)
 		if (get_point(address).x < ctpts[address.index - 1].pt_center.x) {
 			ctpts[address.index].pt_left.x = ctpts[address.index - 1].pt_center.x;
 			//角度を保つ
-			ctpts[address.index].pt_left.y =
-				ctpts[address.index].pt_center.y + std::tan(angle) *
-				(ctpts[address.index].pt_left.x - ctpts[address.index].pt_center.x);
+			ctpts[address.index].pt_left.y = (LONG)
+				(ctpts[address.index].pt_center.y + std::tan(angle) *
+					(ctpts[address.index].pt_left.x - ctpts[address.index].pt_center.x));
 		}
 		break;
 	case 3://右  []-----O
 		if (get_point(address).x > ctpts[address.index + 1].pt_center.x) {
 			ctpts[address.index].pt_right.x = ctpts[address.index + 1].pt_center.x;
 			//角度を保つ
-			ctpts[address.index].pt_right.y =
-				ctpts[address.index].pt_center.y + std::tan(angle) *
-				(ctpts[address.index].pt_right.x - ctpts[address.index].pt_center.x);
+			ctpts[address.index].pt_right.y = (LONG)
+				(ctpts[address.index].pt_center.y + std::tan(angle) *
+					(ctpts[address.index].pt_right.x - ctpts[address.index].pt_center.x));
 		}
 		break;
 	default:
@@ -406,7 +406,7 @@ double ce::Curve_ID::get_value(double ratio, double st, double ed)
 	if (!ISINRANGE(ratio, 0, 1))
 		return 0;
 	// 進捗に相当する区間を調べる
-	for (int i = 0; i < ctpts.size - 1; i++) {
+	for (int i = 0; i < (int)ctpts.size - 1; i++) {
 		if (ISINRANGE(ratio, ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CE_GR_RESOLUTION)) {
 			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CE_GR_RESOLUTION;
 			// 区間ごとの進捗の相対値(0~1)
@@ -441,4 +441,5 @@ double ce::Curve_ID::get_value(double ratio, double st, double ed)
 			return std::pow(ta, 3) * (ed2 - st2 - 3 * y2 + 3 * y1) + 3 * std::pow(ta, 2) * (y2 - 2 * y1 + st2) + 3 * ta * (y1 - st2) + st2;
 		}
 	}
+	return 0;
 }
