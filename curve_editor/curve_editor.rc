@@ -235,6 +235,24 @@ END
 
 IDC_DRAGGING            CURSOR                  "cur_drag.cur"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_COPY                ICON                    "icon_copy.ico"
+
+IDI_READ                ICON                    "icon_read.ico"
+
+IDI_SAVE                ICON                    "icon_save.ico"
+
+IDI_CLEAR               ICON                    "icon_clear.ico"
+
+IDI_FIT                 ICON                    "icon_fit.ico"
+
 #endif    // “ú–{Œê (“ú–{) resources
 /////////////////////////////////////////////////////////////////////////////
 

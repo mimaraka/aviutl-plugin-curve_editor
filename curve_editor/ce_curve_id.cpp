@@ -37,6 +37,7 @@ void ce::Curve_ID::add_point(POINT gr_pt)
 	int index = 0;
 	Point_Address tmp;
 	if (ctpts.size >= CE_POINT_MAX) return;
+	if (!ISINRANGE2(gr_pt.x, 0, CE_GR_RESOLUTION)) return;
 	for (int i = 0; i < (int)ctpts.size; i++) {
 		if (ctpts[i].pt_center.x == gr_pt.x)
 			return;
@@ -233,6 +234,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 }
 
 
+
 //---------------------------------------------------------------------
 //		指定した座標がポイント・ハンドルの内部に存在しているか
 //---------------------------------------------------------------------
@@ -271,6 +273,7 @@ ce::Point_Address ce::Curve_ID::pt_in_ctpt(POINT cl_pt)
 }
 
 
+
 //---------------------------------------------------------------------
 //		ハンドルの角度を取得
 //---------------------------------------------------------------------
@@ -304,6 +307,7 @@ double ce::Curve_ID::get_handle_angle(Point_Address address)
 }
 
 
+
 //---------------------------------------------------------------------
 //		ハンドルの角度を設定
 //---------------------------------------------------------------------
@@ -333,6 +337,7 @@ void ce::Curve_ID::set_handle_angle(Point_Address address, double angle, BOOL bL
 	}
 	else return;
 }
+
 
 
 //---------------------------------------------------------------------
@@ -371,6 +376,7 @@ void ce::Curve_ID::correct_handle(Point_Address address, double angle)
 }
 
 
+
 //---------------------------------------------------------------------
 //		カーブを反転
 //---------------------------------------------------------------------
@@ -395,6 +401,7 @@ void ce::Curve_ID::reverse_curve()
 	}
 
 }
+
 
 
 //---------------------------------------------------------------------

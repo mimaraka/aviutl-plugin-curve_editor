@@ -161,11 +161,12 @@ namespace ce {
 	//---------------------------------------------------------------------
 	class Control {
 	private:
-		int icon;
+		LPTSTR icon_res;
 		Bitmap_Canvas canvas;
 		HWND hwnd_parent;
 		BOOL hovered, clicked;
 		TRACKMOUSEEVENT	tme;
+		HICON icon;
 
 		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -173,7 +174,7 @@ namespace ce {
 		HWND hwnd;
 		int id;
 
-		BOOL				create(HWND hwnd_p, LPSTR name, int ico, int ct_id, LPRECT rect);
+		BOOL				create(HWND hwnd_p, LPSTR name, LPTSTR ico_res, int ct_id, LPRECT rect);
 		void				move(LPRECT rect);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};

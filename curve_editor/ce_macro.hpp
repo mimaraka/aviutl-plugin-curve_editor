@@ -153,6 +153,7 @@
 #define MINLIM(value,minv)					(((value) < (minv))? (minv): (value))
 #define MINMAXLIM(value,minv,maxv)			(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
 #define ISINRANGE(value,minv,maxv)			(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
+#define ISINRANGE2(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
 #define ISMORETHAN(value,vl)				(((value) >= (vl))? 1 : 0)
 #define ISLESSTHAN(value,vl)				(((value) <= (vl))? 1 : 0)
 #define BRIGHTEN(ref,num)					(RGB(MINMAXLIM(GetRValue(ref) + num, 0, 255), MINMAXLIM(GetGValue(ref) + num, 0, 255), MINMAXLIM(GetBValue(ref) + num, 0, 255)))

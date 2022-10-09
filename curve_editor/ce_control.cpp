@@ -11,11 +11,11 @@
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL ce::Control::create(HWND hwnd_p, LPSTR name, int ico, int ct_id, LPRECT rect)
+BOOL ce::Control::create(HWND hwnd_p, LPSTR name, LPTSTR ico_res, int ct_id, LPRECT rect)
 {
 	WNDCLASSEX tmp;
 	id = ct_id;
-	icon = ico;
+	icon_res = ico_res;
 
 	tmp.cbSize			= sizeof(tmp);
 	tmp.style			= CS_HREDRAW | CS_VREDRAW;
@@ -96,7 +96,7 @@ LRESULT CALLBACK ce::Control::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam,
 //---------------------------------------------------------------------
 LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	RECT					rect_wnd;
+	RECT rect_wnd;
 
 	GetClientRect(hwnd, &rect_wnd);
 
@@ -105,6 +105,8 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		canvas.init(hwnd);
 
 		hwnd_parent = GetParent(hwnd);
+
+
 
 		tme.cbSize = sizeof(tme);
 		tme.dwFlags = TME_LEAVE;
@@ -115,6 +117,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		canvas.exit();
 		return 0;
 
+	// 描画
 	case WM_PAINT:
 	{
 		COLORREF bg;
@@ -136,9 +139,10 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 
 		canvas.transfer(&rect_wnd);
+		return 0;
 	}
-	return 0;
 
+	// マウスが動いたとき
 	case WM_MOUSEMOVE:
 		SetCursor(LoadCursor(NULL, IDC_HAND));
 		hovered = TRUE;
@@ -146,6 +150,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		TrackMouseEvent(&tme);
 		return 0;
 
+	// 左クリックがされたとき
 	case WM_LBUTTONDOWN:
 		SetCursor(LoadCursor(NULL, IDC_HAND));
 		clicked = TRUE;
@@ -153,6 +158,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		TrackMouseEvent(&tme);
 		return 0;
 
+	// 左クリックが終わったとき
 	case WM_LBUTTONUP:
 		SetCursor(LoadCursor(NULL, IDC_HAND));
 		clicked = FALSE;
@@ -160,12 +166,14 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		SendMessage(hwnd_parent, WM_COMMAND, id, 0);
 		return 0;
 
+	// マウスがウィンドウから離れたとき
 	case WM_MOUSELEAVE:
 		clicked = FALSE;
 		hovered = FALSE;
 		InvalidateRect(hwnd, NULL, FALSE);
 		return 0;
 
+	// コマンド
 	case WM_COMMAND:
 		switch (wparam) {
 		case CE_CM_REDRAW:

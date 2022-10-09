@@ -61,7 +61,7 @@ ce::Float_Point		subtract_length(ce::Float_Point st, ce::Float_Point ed, float l
 void				apply_config_to_menu(HMENU menu, MENUITEMINFO minfo);
 
 // RECTを分割
-void divide_rect(LPRECT rect_parent, LPRECT* rects_child, int n);
+void				divide_rect(LPRECT rect_parent, LPRECT* rects_child, int n);
 
 //子ウィンドウを作成
 HWND				create_child(
