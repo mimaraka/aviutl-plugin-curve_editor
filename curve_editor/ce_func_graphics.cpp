@@ -51,14 +51,14 @@ void d2d_setup(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, COLORREF cr)
 void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 	pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GRID)));
 	// 
-	int kx = (int)std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.x / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
-	int ky = (int)std::floor(std::log(CE_GR_RESOLUTION * g_disp_info.scale.y / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
+	int kx = (int)std::floor(std::log(CE_GR_RESOLUTION * g_view_info.scale.x / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
+	int ky = (int)std::floor(std::log(CE_GR_RESOLUTION * g_view_info.scale.y / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
 	// グラフの枠内に表示されるグリッドの本数
 	int nx = MINLIM((int)std::pow(CE_GR_GRID_N, kx), 1);
 	int ny = MINLIM((int)std::pow(CE_GR_GRID_N, ky), 1);
 	// 
-	float dx = (float)(CE_GR_RESOLUTION * g_disp_info.scale.x) / (float)nx;
-	float dy = (float)(CE_GR_RESOLUTION * g_disp_info.scale.y) / (float)ny;
+	float dx = (float)(CE_GR_RESOLUTION * g_view_info.scale.x) / (float)nx;
+	float dy = (float)(CE_GR_RESOLUTION * g_view_info.scale.y) / (float)ny;
 	int lx, ly;
 
 	if (to_graph(0, 0).x >= 0)
@@ -210,12 +210,12 @@ void draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
 	);
 
 	//Direct2D初期化
-	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_window));
+	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	if (g_render_target != NULL) {
 		g_render_target->BeginDraw();
 		if (pBrush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
-		pBrush->SetColor(D2D1::ColorF(TO_BGR(BRIGHTEN(g_theme[g_config.theme].bg_window, CE_BR_SEPR))));
+		pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
 
 		if (pBrush) g_render_target->DrawLine(
 			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5f - CE_SEPR_LINE_L, (float)(rect_sepr->top + CE_SEPR_W)),
@@ -290,8 +290,8 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 
 	ce::Float_Point ctpt_cl[] = {//クライアント
 		{
-			g_disp_info.origin.x,
-			g_disp_info.origin.y
+			g_view_info.origin.x,
+			g_view_info.origin.y
 		},
 		{
 			to_client(g_curve_value.ctpt[0]).x,
@@ -302,8 +302,8 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 			to_client(g_curve_value.ctpt[1]).y
 		},
 		{
-			g_disp_info.origin.x + (float)(g_disp_info.scale.x * CE_GR_RESOLUTION),
-			g_disp_info.origin.y - (float)(g_disp_info.scale.y * CE_GR_RESOLUTION)
+			g_view_info.origin.x + (float)(g_view_info.scale.x * CE_GR_RESOLUTION),
+			g_view_info.origin.y - (float)(g_view_info.scale.y * CE_GR_RESOLUTION)
 		}
 	};
 	ce::Float_Point ctpt_trace_cl[] = {

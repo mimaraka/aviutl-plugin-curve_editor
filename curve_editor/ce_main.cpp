@@ -17,38 +17,28 @@ ce::Curve_ID					g_curve_id[CE_CURVE_MAX];
 ce::Curve_ID					g_curve_id_previous;
 ce::Config						g_config;
 ce::Window						g_window;
-ce::Gr_Disp_Info				g_disp_info;
+ce::Graph_View_Info				g_view_info;
 FILTER*							g_fp;
 std::vector<ce::Preset>			g_presets;
 
 //ダークテーマ
 const ce::Theme g_theme_dark = {
-	RGB(27,27,27),
-	RGB(27,27,27),
-	RGB(27,27,27),
-	RGB(103,103,241),
-	RGB(243,243,243),
-	RGB(243,243,243),
-	RGB(27,27,27),
-	RGB(27,27,27),
-	NULL, NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL, NULL,
+	RGB(27, 27, 27),
+	RGB(27, 27, 27),
+	RGB(240, 240, 240),
+	RGB(103, 103, 241),
+	RGB(243, 243, 243),
 };
 //ライトテーマ
 const ce::Theme g_theme_light = {
 	RGB(244, 244, 244),
-	RGB(244, 244, 244),
 	RGB(230, 230, 230),
+	RGB(70, 70, 70),
 	RGB(103, 103, 241),
-	RGB(50, 50, 50),
-	RGB(71,135,228),
-	RGB(238,238,238),
-	RGB(60,60,60),
-	NULL, NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL, NULL,
+	RGB(70, 70, 70)
 };
 
-ce::Theme g_theme[2] = {
+const ce::Theme g_theme[2] = {
 	g_theme_dark,
 	g_theme_light,
 };

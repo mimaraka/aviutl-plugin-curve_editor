@@ -47,12 +47,12 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 
 		case 67: //[C]
 			if (GetAsyncKeyState(VK_CONTROL) < 0)
-				SendMessage(g_window.graph, WM_COMMAND, CE_CT_COPY, 0);
+				SendMessage(g_window.graph, WM_COMMAND, CE_CM_COPY, 0);
 			return 0;
 
 		case 83: //[S]
 			if (GetAsyncKeyState(VK_CONTROL) < 0)
-				SendMessage(g_window.graph, WM_COMMAND, CE_CT_SAVE, 0);
+				SendMessage(g_window.graph, WM_COMMAND, CE_CM_SAVE, 0);
 			else
 				SendMessage(g_window.graph, WM_COMMAND, CE_CM_SHOWHANDLE, 0);
 			return 0;
@@ -76,7 +76,7 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 			return 0;
 
 		case 70: //[F]
-			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CT_FIT, 0);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_FIT, 0);
 			return 0;
 
 		case 65: //[A]
@@ -84,7 +84,7 @@ BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp
 			return 0;
 
 		case VK_DELETE:
-			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_DELETE, 0);
+			if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_CLEAR, 0);
 			return 0;
 		}
 		return 0;
@@ -305,7 +305,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	//クライアント領域の矩形を取得
 	GetClientRect(hwnd, &rect_wnd);
 	//グラフ座標
-	if (g_disp_info.origin.x != NULL)
+	if (g_view_info.origin.x != NULL)
 		gr_pt = to_graph(cl_pt);
 
 	switch (msg) {
@@ -328,10 +328,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		g_curve_value_previous = g_curve_value;
 		g_curve_id_previous = g_curve_id[g_config.current_id];
 
-		g_disp_info.origin.x = CE_GR_PADDING;
-		g_disp_info.origin.y = (float)(rect_wnd.bottom - CE_GR_PADDING);
-		g_disp_info.scale.x = ((double)rect_wnd.right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
-		g_disp_info.scale.y = ((double)rect_wnd.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+		g_view_info.fit(&rect_wnd);
 
 		hwnd_parent = GetParent(hwnd);
 		g_window.graph = hwnd;
@@ -407,12 +404,12 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				}
 				InvalidateRect(hwnd, NULL, FALSE);
 				// オートコピー
-				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_COPY, 0);
+				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CM_COPY, 0);
 			}
 			// 移動モード解除
 			if (move_pt) {
 				move_pt = 0;
-				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CT_COPY, 0);
+				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CM_COPY, 0);
 			}
 		}
 		// IDモード・カーブのD&D処理
@@ -460,10 +457,10 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	case WM_MBUTTONDOWN:
 		move_view	= TRUE;
 		pt_view		= cl_pt;
-		prev_scale_x		= g_disp_info.scale.x;
-		prev_scale_y		= g_disp_info.scale.y;
-		prev_o_x			= g_disp_info.origin.x;
-		prev_o_y			= g_disp_info.origin.y;
+		prev_scale_x		= g_view_info.scale.x;
+		prev_scale_y		= g_view_info.scale.y;
+		prev_o_x			= g_view_info.origin.x;
+		prev_o_y			= g_view_info.origin.y;
 		SetCursor(LoadCursor(NULL, IDC_SIZEALL));
 		SetCapture(hwnd);
 		return 0;
@@ -522,17 +519,17 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 					coef_x = coef_y = max(coef_x, coef_y);
 					prev_scale_x = prev_scale_y = max(prev_scale_x, prev_scale_y);
 				}
-				g_disp_info.scale.x = prev_scale_x * coef_x;
-				g_disp_info.scale.y = prev_scale_y * coef_y;
-				g_disp_info.origin.x = rect_wnd.right * 0.5f + (float)(coef_x * (prev_o_x - rect_wnd.right * 0.5f));
-				g_disp_info.origin.y = rect_wnd.bottom * 0.5f + (float)(coef_y * (prev_o_y - rect_wnd.bottom * 0.5f));
+				g_view_info.scale.x = prev_scale_x * coef_x;
+				g_view_info.scale.y = prev_scale_y * coef_y;
+				g_view_info.origin.x = rect_wnd.right * 0.5f + (float)(coef_x * (prev_o_x - rect_wnd.right * 0.5f));
+				g_view_info.origin.y = rect_wnd.bottom * 0.5f + (float)(coef_y * (prev_o_y - rect_wnd.bottom * 0.5f));
 				if (move_or_scale == 0)
 					move_or_scale = 2;
 			}
 			// 移動
 			else {
-				g_disp_info.origin.x = prev_o_x + cl_pt.x - pt_view.x;
-				g_disp_info.origin.y = prev_o_y + cl_pt.y - pt_view.y;
+				g_view_info.origin.x = prev_o_x + cl_pt.x - pt_view.x;
+				g_view_info.origin.y = prev_o_y + cl_pt.y - pt_view.y;
 				if (move_or_scale == 0)
 					move_or_scale = 1;
 			}
@@ -556,32 +553,32 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	{
 		// Ctrlキーが押されているとき(横に移動)
 		if (GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(VK_SHIFT) >= 0)
-			g_disp_info.origin.x += (float)(GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS);
+			g_view_info.origin.x += (float)(GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS);
 
 		// Shiftキーが押されているとき(縦に移動)
 		else if (GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) >= 0)
-			g_disp_info.origin.y += (float)(GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS);
+			g_view_info.origin.y += (float)(GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_POS);
 
 		// 縮尺の上限下限を設定
 		else {
 			double coef = std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_SCALE);
 			double scale_after_x, scale_after_y;
 
-			if (max(g_disp_info.scale.x, g_disp_info.scale.y) > CE_GR_SCALE_MAX / coef) {
-				coef = CE_GR_SCALE_MAX / max(g_disp_info.scale.x, g_disp_info.scale.y);
+			if (max(g_view_info.scale.x, g_view_info.scale.y) > CE_GR_SCALE_MAX / coef) {
+				coef = CE_GR_SCALE_MAX / max(g_view_info.scale.x, g_view_info.scale.y);
 			}
-			else if (min(g_disp_info.scale.x, g_disp_info.scale.y) < CE_GR_SCALE_MIN / coef) {
-				coef = CE_GR_SCALE_MIN / min(g_disp_info.scale.x, g_disp_info.scale.y);
+			else if (min(g_view_info.scale.x, g_view_info.scale.y) < CE_GR_SCALE_MIN / coef) {
+				coef = CE_GR_SCALE_MIN / min(g_view_info.scale.x, g_view_info.scale.y);
 			}
 
-			scale_after_x = g_disp_info.scale.x * coef;
-			scale_after_y = g_disp_info.scale.y * coef;
+			scale_after_x = g_view_info.scale.x * coef;
+			scale_after_y = g_view_info.scale.y * coef;
 
-			g_disp_info.origin.x = (g_disp_info.origin.x - rect_wnd.right * 0.5f) * (float)(scale_after_x / g_disp_info.scale.x) + rect_wnd.right * 0.5f;
-			g_disp_info.origin.y = (g_disp_info.origin.y - rect_wnd.bottom * 0.5f) * (float)(scale_after_y / g_disp_info.scale.y) + rect_wnd.bottom * 0.5f;
+			g_view_info.origin.x = (g_view_info.origin.x - rect_wnd.right * 0.5f) * (float)(scale_after_x / g_view_info.scale.x) + rect_wnd.right * 0.5f;
+			g_view_info.origin.y = (g_view_info.origin.y - rect_wnd.bottom * 0.5f) * (float)(scale_after_y / g_view_info.scale.y) + rect_wnd.bottom * 0.5f;
 
-			g_disp_info.scale.x = scale_after_x;
-			g_disp_info.scale.y = scale_after_y;
+			g_view_info.scale.x = scale_after_x;
+			g_view_info.scale.y = scale_after_y;
 		}
 		// 再描画
 		InvalidateRect(hwnd, NULL, FALSE);
@@ -613,11 +610,8 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		// グラフをフィット
 		case ID_MENU_FIT:
-		case CE_CT_FIT:
-			g_disp_info.origin.x = CE_GR_PADDING;
-			g_disp_info.origin.y = (float)(rect_wnd.bottom - CE_GR_PADDING);
-			g_disp_info.scale.x = ((double)rect_wnd.right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
-			g_disp_info.scale.y = ((double)rect_wnd.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+		case CE_CM_FIT:
+			g_view_info.fit(&rect_wnd);
 			InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
@@ -652,8 +646,8 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			return 0;
 
 		// カーブを削除
+		case CE_CM_CLEAR:
 		case ID_MENU_DELETE:
-		case CE_CM_DELETE:
 		{
 			int response = IDOK;
 			if (g_config.alert)
@@ -693,7 +687,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		// 値をコピー
 		case ID_MENU_COPY:
-		case CE_CT_COPY:
+		case CE_CM_COPY:
 		{
 			TCHAR result_str[12];
 			int result = g_curve_value.create_value_1d();
@@ -714,6 +708,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		}
 
 		// 値を読み取り
+		case CE_CM_READ:
 		case ID_MENU_READ:
 			DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
 			InvalidateRect(hwnd, NULL, FALSE);
@@ -766,11 +761,11 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_CREATE:
 		canvas.init(hwnd);
 
-		copy.create(hwnd, "CTRL_COPY", NULL, CE_CT_COPY, &rect_copy);
-		read.create(hwnd, "CTRL_READ", NULL, CE_CT_READ, &rect_read);
-		save.create(hwnd, "CTRL_SAVE", NULL, CE_CT_SAVE, &rect_save);
-		clear.create(hwnd, "CTRL_CLEAR", NULL, CE_CT_DELETE, &rect_clear);
-		fit.create(hwnd, "CTRL_FIT", NULL, CE_CT_FIT, &rect_fit);
+		copy.create(hwnd, "CTRL_COPY", MAKEINTRESOURCE(IDI_COPY), CE_CM_COPY, &rect_copy);
+		read.create(hwnd, "CTRL_READ", MAKEINTRESOURCE(IDI_READ), CE_CM_READ, &rect_read);
+		save.create(hwnd, "CTRL_SAVE", MAKEINTRESOURCE(IDI_SAVE), CE_CM_SAVE, &rect_save);
+		clear.create(hwnd, "CTRL_CLEAR", MAKEINTRESOURCE(IDI_CLEAR), CE_CM_CLEAR, &rect_clear);
+		fit.create(hwnd, "CTRL_FIT", MAKEINTRESOURCE(IDI_FIT), CE_CM_FIT, &rect_fit);
 		return 0;
 
 	case WM_SIZE:
@@ -787,11 +782,25 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CE_CT_COPY:
-			SendMessage(g_window.graph, WM_COMMAND, CE_CT_COPY, 0);
+		case CE_CM_COPY:
+			SendMessage(g_window.graph, WM_COMMAND, CE_CM_COPY, 0);
 			return 0;
 
+		case CE_CM_READ:
+			SendMessage(g_window.graph, WM_COMMAND, CE_CM_READ, 0);
+			return 0;
 
+		case CE_CM_SAVE:
+			SendMessage(g_window.graph, WM_COMMAND, CE_CM_SAVE, 0);
+			return 0;
+
+		case CE_CM_CLEAR:
+			SendMessage(g_window.graph, WM_COMMAND, CE_CM_CLEAR, 0);
+			return 0;
+
+		case CE_CM_FIT:
+			SendMessage(g_window.graph, WM_COMMAND, CE_CM_FIT, 0);
+			return 0;
 		}
 		return 0;
 

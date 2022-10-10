@@ -56,24 +56,16 @@
 //---------------------------------------------------------------------
 //		コントロール
 //---------------------------------------------------------------------
-#define CE_CT_COPY					1000
 #define CE_CT_MODE_VALUE			1001
 #define CE_CT_MODE_ID				1002
-#define CE_CT_SAVE					1003
-#define CE_CT_READ					1004
 #define CE_CT_ALIGN					1005
-#define CE_CT_PREF					1006
 #define CE_CT_PREV					1007
 #define CE_CT_PREV_DUR				1008
-#define CE_CT_FIT					1009
 #define CE_CT_ID_BACK				1010
 #define CE_CT_ID_NEXT				1011
 #define CE_CT_ID					1012
-#define CE_CT_DELETE				1013
 #define CE_CT_EDT_H					30
 #define CE_CT_SEARCH_H				20
-#define CE_CT_ICON_SIZE				22
-#define CE_CT_APPLY_TEXT			"Copy"
 #define CE_CT_H						44
 
 #define CE_WD_SIDE_MINW				120
@@ -88,7 +80,11 @@
 #define CE_CM_CHANGEID				2001
 #define CE_CM_REDRAW				2002
 #define CE_CM_SHOWHANDLE			2003
-#define CE_CM_DELETE				2004
+#define CE_CM_COPY					2004
+#define CE_CM_READ					2005
+#define CE_CM_SAVE					2006
+#define CE_CM_CLEAR					2007
+#define CE_CM_FIT					2008
 
 
 //---------------------------------------------------------------------
@@ -97,11 +93,12 @@
 // 明るさ
 #define CE_BR_GRID					25
 #define CE_BR_TRACE					30
-#define CE_BR_SEPR					256
 #define CE_BR_GR_INVALID			-8
 #define CE_CT_BR_HOVERED			15
 #define CE_CT_BR_CLICKED			-10
 #define CE_CT_BR_SWITCH				-20					//選択していない状態
+// アイコン
+#define CE_ICON_SIZE				32
 
 
 //---------------------------------------------------------------------

@@ -50,8 +50,8 @@ void ce::Curve_ID::add_point(POINT gr_pt)
 	ctpt_add.type = 2;
 	ctpt_add.pt_center = gr_pt;
 	//ビューの縮尺に合わせてハンドルのデフォルトの長さを変更
-	ctpt_add.pt_left = { gr_pt.x - (int)(CE_HANDLE_DEF_L / g_disp_info.scale.x), gr_pt.y};
-	ctpt_add.pt_right = { gr_pt.x + (int)(CE_HANDLE_DEF_L / g_disp_info.scale.x), gr_pt.y};
+	ctpt_add.pt_left = { gr_pt.x - (int)(CE_HANDLE_DEF_L / g_view_info.scale.x), gr_pt.y};
+	ctpt_add.pt_right = { gr_pt.x + (int)(CE_HANDLE_DEF_L / g_view_info.scale.x), gr_pt.y};
 	ctpts.insert(index, ctpt_add);
 
 	//左右の点が両隣の中央の点より左/右に出ていたら修正

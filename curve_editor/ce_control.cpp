@@ -31,7 +31,7 @@ BOOL ce::Control::create(HWND hwnd_p, LPSTR name, LPTSTR ico_res, int ct_id, LPR
 	tmp.lpszClassName	= name;
 
 	if (RegisterClassEx(&tmp)) {
-		hwnd = CreateWindowExA(
+		hwnd = ::CreateWindowEx(
 			NULL,
 			name,
 			NULL,
@@ -98,15 +98,15 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
-	GetClientRect(hwnd, &rect_wnd);
+	::GetClientRect(hwnd, &rect_wnd);
 
 	switch (msg) {
 	case WM_CREATE:
 		canvas.init(hwnd);
 
-		hwnd_parent = GetParent(hwnd);
+		hwnd_parent = ::GetParent(hwnd);
 
-
+		icon = ::LoadIcon(g_fp->dll_hinst, icon_res);
 
 		tme.cbSize = sizeof(tme);
 		tme.dwFlags = TME_LEAVE;
@@ -124,19 +124,19 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		ID2D1SolidColorBrush* pBrush = NULL;
 
 		if (clicked)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg_others, CE_CT_BR_CLICKED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg_others, CE_CT_BR_HOVERED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
 		else
-			bg = g_theme[g_config.theme].bg_others;
+			bg = g_theme[g_config.theme].bg;
 		d2d_setup(&canvas, &rect_wnd, bg);
 
-		if (g_render_target != NULL && g_d2d1_factory != NULL) {
-			g_render_target->BeginDraw();
-			if (pBrush == NULL)
-				g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
-			g_render_target->EndDraw();
-		}
+		::DrawIcon(
+			canvas.hdc_memory,
+			(int)(rect_wnd.right * 0.5f - CE_ICON_SIZE * 0.5f),
+			(int)(rect_wnd.bottom * 0.5f - CE_ICON_SIZE * 0.5f),
+			icon
+		);
 
 		canvas.transfer(&rect_wnd);
 		return 0;
@@ -144,25 +144,25 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// マウスが動いたとき
 	case WM_MOUSEMOVE:
-		SetCursor(LoadCursor(NULL, IDC_HAND));
+		::SetCursor(LoadCursor(NULL, IDC_HAND));
 		hovered = TRUE;
-		InvalidateRect(hwnd, NULL, FALSE);
-		TrackMouseEvent(&tme);
+		::InvalidateRect(hwnd, NULL, FALSE);
+		::TrackMouseEvent(&tme);
 		return 0;
 
 	// 左クリックがされたとき
 	case WM_LBUTTONDOWN:
-		SetCursor(LoadCursor(NULL, IDC_HAND));
+		::SetCursor(LoadCursor(NULL, IDC_HAND));
 		clicked = TRUE;
-		InvalidateRect(hwnd, NULL, FALSE);
-		TrackMouseEvent(&tme);
+		::InvalidateRect(hwnd, NULL, FALSE);
+		::TrackMouseEvent(&tme);
 		return 0;
 
 	// 左クリックが終わったとき
 	case WM_LBUTTONUP:
-		SetCursor(LoadCursor(NULL, IDC_HAND));
+		::SetCursor(LoadCursor(NULL, IDC_HAND));
 		clicked = FALSE;
-		InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hwnd, NULL, FALSE);
 		SendMessage(hwnd_parent, WM_COMMAND, id, 0);
 		return 0;
 
@@ -170,14 +170,14 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_MOUSELEAVE:
 		clicked = FALSE;
 		hovered = FALSE;
-		InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hwnd, NULL, FALSE);
 		return 0;
 
 	// コマンド
 	case WM_COMMAND:
 		switch (wparam) {
 		case CE_CM_REDRAW:
-			InvalidateRect(hwnd, NULL, FALSE);
+			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}
 		return 0;

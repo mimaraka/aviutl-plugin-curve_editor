@@ -35,14 +35,10 @@ namespace ce {
 	typedef struct tagTheme {
 		COLORREF
 			bg,
-			bg_window,
 			bg_graph,
+			sepr,
 			curve,
-			handle,
-			bt_apply,
-			bt_tx,
-			bg_others;
-		COLORREF reserved[10];
+			handle;
 	} Theme;
 
 
@@ -124,14 +120,4 @@ namespace ce {
 			separator,
 			current_id;
 	} Config;
-
-
-
-	//---------------------------------------------------------------------
-	//		ÉrÉÖÅ[
-	//---------------------------------------------------------------------
-	typedef struct tagGr_Disp_Info {
-		Float_Point origin;
-		Double_Point scale;
-	} Gr_Disp_Info;
 }

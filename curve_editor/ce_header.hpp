@@ -19,10 +19,10 @@ extern ce::Curve_ID							g_curve_id[CE_CURVE_MAX];
 extern ce::Curve_ID							g_curve_id_previous;
 extern std::vector<ce::Preset>				g_presets;
 extern const ce::Theme						g_theme_dark, g_theme_light;
-extern ce::Theme							g_theme[2];
+extern const ce::Theme						g_theme[2];
 extern ce::Config							g_config;
 extern ce::Window							g_window;
-extern ce::Gr_Disp_Info						g_disp_info;
+extern ce::Graph_View_Info					g_view_info;
 extern FILTER*								g_fp;
 extern FILTER_DLL							g_filter;
 //Direct2D
@@ -135,8 +135,8 @@ LRESULT CALLBACK	wndproc_control_id_delete(HWND, UINT, WPARAM, LPARAM);
 inline ce::Float_Point to_client(int gr_x, int gr_y)
 {
 	return {
-		g_disp_info.origin.x + (float)(gr_x * g_disp_info.scale.x),
-		g_disp_info.origin.y - (float)(gr_y * g_disp_info.scale.y)
+		g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
+		g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
 	};
 }
 
@@ -152,8 +152,8 @@ inline ce::Float_Point to_client(POINT gr_pt)
 inline POINT to_graph(double cl_x, double cl_y)
 {
 	return {
-		(int)((cl_x - g_disp_info.origin.x) / g_disp_info.scale.x),
-		(int)((-cl_y + g_disp_info.origin.y) / g_disp_info.scale.y)
+		(int)((cl_x - g_view_info.origin.x) / g_view_info.scale.x),
+		(int)((-cl_y + g_view_info.origin.y) / g_view_info.scale.y)
 	};
 }
 

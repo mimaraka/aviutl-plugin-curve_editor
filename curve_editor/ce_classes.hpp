@@ -178,4 +178,29 @@ namespace ce {
 		void				move(LPRECT rect);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
+
+
+
+	//---------------------------------------------------------------------
+	//		ƒOƒ‰ƒt•\Ž¦
+	//---------------------------------------------------------------------
+	class Graph_View_Info {
+	public:
+		Float_Point origin;
+		Double_Point scale;
+
+		void fit(LPRECT rect)
+		{
+			origin.x = CE_GR_PADDING;
+			scale.x = ((double)rect->right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+			if (rect->right <= rect->bottom) {
+				origin.y = (rect->bottom + rect->right) * 0.5f - CE_GR_PADDING;
+				scale.y = scale.x;
+			}
+			else {
+				origin.y = (float)(rect->bottom - CE_GR_PADDING);
+				scale.y = ((double)rect->bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+			}
+		}
+	};
 }
