@@ -11,11 +11,12 @@
 //---------------------------------------------------------------------
 //		ƒRƒ“ƒgƒ[ƒ‹‚ðì¬
 //---------------------------------------------------------------------
-BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res, int ct_id, LPRECT rect)
+BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect)
 {
 	WNDCLASSEX tmp;
 	id = ct_id;
-	icon_res = ico_res;
+	icon_res_dark = ico_res_dark;
+	icon_res_light = ico_res_light;
 	description = desc;
 
 	tmp.cbSize			= sizeof(tmp);
@@ -107,7 +108,8 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		hwnd_parent = ::GetParent(hwnd);
 
-		icon = ::LoadIcon(g_fp->dll_hinst, icon_res);
+		icon_dark = ::LoadIcon(g_fp->dll_hinst, icon_res_dark);
+		icon_light = ::LoadIcon(g_fp->dll_hinst, icon_res_light);
 
 		hwnd_tooltip = ::CreateWindowEx(
 			0, TOOLTIPS_CLASS,
@@ -157,7 +159,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			canvas.hdc_memory,
 			(int)(rect_wnd.right * 0.5f - CE_ICON_SIZE * 0.5f),
 			(int)(rect_wnd.bottom * 0.5f - CE_ICON_SIZE * 0.5f),
-			icon
+			g_config.theme ? icon_light : icon_dark
 		);
 
 		canvas.transfer(&rect_wnd);

@@ -14,7 +14,7 @@
 // ウィンドウ
 #define CE_MARGIN					8
 #define CE_MAX_W					1440
-#define CE_MAX_H					1280
+#define CE_MAX_H					1080
 #define CE_DEF_W					360
 #define CE_DEF_H					460
 
@@ -30,7 +30,7 @@
 #define CE_GR_WHEEL_COEF_SCALE		0.1
 #define CE_GR_WHEEL_COEF_POS		0.2
 #define CE_GR_GRID_N				2
-#define CE_GR_RESOLUTION			10000
+#define CE_GR_RESOLUTION			10000				// 変更不可
 #define CE_GR_GRID_MIN				36
 #define CE_GR_GRID_TH_L				0.5f
 #define CE_GR_GRID_TH_B				1.0f
@@ -53,38 +53,38 @@
 #define CE_SUBTRACT_LENGTH_2		8.0f
 
 
+
 //---------------------------------------------------------------------
 //		コントロール
 //---------------------------------------------------------------------
-#define CE_CT_MODE_VALUE			1001
-#define CE_CT_MODE_ID				1002
-#define CE_CT_ALIGN					1005
-#define CE_CT_PREV					1007
-#define CE_CT_PREV_DUR				1008
-#define CE_CT_ID_BACK				1010
-#define CE_CT_ID_NEXT				1011
-#define CE_CT_ID					1012
+#define CE_CT_MODE_VALUE			0x0400
+#define CE_CT_MODE_ID				0x0401
+#define CE_CT_ALIGN					0x0402
+#define CE_CT_PREV					0x0403
+#define CE_CT_PREV_DUR				0x0404
+#define CE_CT_ID_BACK				0x0405
+#define CE_CT_ID_NEXT				0x0406
+#define CE_CT_ID					0x0407
+
 #define CE_CT_EDT_H					30
 #define CE_CT_SEARCH_H				20
 #define CE_CT_H						44
 
-#define CE_WD_SIDE_MINW				120
-#define CE_WD_EDT_MINW				200
-#define CE_WD_PREV_W				30
 
 
 //---------------------------------------------------------------------
 //		コマンド
 //---------------------------------------------------------------------
-#define CE_CM_REVERSE				2000
-#define CE_CM_CHANGEID				2001
-#define CE_CM_REDRAW				2002
-#define CE_CM_SHOWHANDLE			2003
-#define CE_CM_COPY					2004
-#define CE_CM_READ					2005
-#define CE_CM_SAVE					2006
-#define CE_CM_CLEAR					2007
-#define CE_CM_FIT					2008
+#define CE_CM_REDRAW				0x0800
+#define CE_CM_COPY					0x0801
+#define CE_CM_READ					0x0802
+#define CE_CM_SAVE					0x0803
+#define CE_CM_CLEAR					0x0804
+#define CE_CM_FIT					0x0805
+#define CE_CM_REVERSE				0x0806
+#define CE_CM_SHOWHANDLE			0x0807
+#define CE_CM_CHANGEID				0x0808
+
 
 
 //---------------------------------------------------------------------
@@ -92,13 +92,13 @@
 //---------------------------------------------------------------------
 // 明るさ
 #define CE_BR_GRID					25
-#define CE_BR_TRACE					30
 #define CE_BR_GR_INVALID			-8
-#define CE_CT_BR_HOVERED			15
+#define CE_CT_BR_HOVERED			13
 #define CE_CT_BR_CLICKED			-10
 #define CE_CT_BR_SWITCH				-20					//選択していない状態
 // アイコン
 #define CE_ICON_SIZE				32
+
 
 
 //---------------------------------------------------------------------
@@ -109,6 +109,7 @@
 #define MATH_PI						3.14159265
 
 
+
 //---------------------------------------------------------------------
 //		正規表現
 //---------------------------------------------------------------------
@@ -116,6 +117,7 @@
 #define CE_REGEX_FLOW_1				R"()"
 #define CE_REGEX_FLOW_2				R"(^\s*\[\s*(\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\},)+\s*\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\}\s*\]\s*$)"
 #define CE_REGEX_CEP				R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
+
 
 
 //---------------------------------------------------------------------
@@ -129,6 +131,7 @@
 #define CE_PLUGIN_LINK				"https://sites.google.com/view/aviutlscripts/home"
 
 
+
 //---------------------------------------------------------------------
 //		文字列
 //---------------------------------------------------------------------
@@ -137,6 +140,7 @@
 #define CE_STR_INVALIDINPUT			"無効な入力値です。"
 #define CE_STR_INPUTANAME			"プリセット名を入力してください。"
 #define CE_STR_OUTOFRANGE			"値が範囲外です。"
+
 
 
 //---------------------------------------------------------------------

@@ -98,5 +98,20 @@
     <Image Include="..\..\..\..\..\OneDrive\画像\icon_copy.png">
       <Filter>リソース ファイル</Filter>
     </Image>
+    <Image Include="icon_light_copy.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="icon_light_read.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="icon_light_save.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="icon_light_clear.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="icon_fit_light.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>

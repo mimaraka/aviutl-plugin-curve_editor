@@ -38,6 +38,7 @@ namespace ce {
 			bg_graph,
 			sepr,
 			curve,
+			curve_trace,
 			handle;
 	} Theme;
 
@@ -50,7 +51,7 @@ namespace ce {
 		HWND
 			base,
 			main,
-			side,
+			footer,
 			editor,
 			graph,
 			prev;

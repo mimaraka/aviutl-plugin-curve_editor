@@ -375,7 +375,7 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 		if (g_config.mode == 0) {
 			// ベジェ(トレース)
 			if (g_config.trace) {
-				pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));
+				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));
 				d2d_draw_bezier(pBrush, ctpt_trace_cl[0], ctpt_trace_cl[1], ctpt_trace_cl[2], ctpt_trace_cl[3], CE_CURVE_TH);
 			}
 			// ベジェ
@@ -397,7 +397,7 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 			// ベジェ曲線(トレース)を描画
 			if (g_config.trace) {
 				for (int i = 0; i < (int)g_curve_id_previous.ctpts.size - 1; i++) {
-					pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));
+					pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));
 					d2d_draw_bezier(pBrush,
 						to_client(g_curve_id_previous.ctpts[i].pt_center),
 						to_client(g_curve_id_previous.ctpts[i].pt_right),

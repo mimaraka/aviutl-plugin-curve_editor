@@ -253,6 +253,16 @@ IDI_CLEAR               ICON                    "icon_clear.ico"
 
 IDI_FIT                 ICON                    "icon_fit.ico"
 
+IDI_COPY_LIGHT          ICON                    "icon_light_copy.ico"
+
+IDI_READ_LIGHT          ICON                    "icon_light_read.ico"
+
+IDI_SAVE_LIGHT          ICON                    "icon_light_save.ico"
+
+IDI_CLEAR_LIGHT         ICON                    "icon_light_clear.ico"
+
+IDI_FIT_LIGHT           ICON                    "icon_fit_light.ico"
+
 #endif    // “ú–{Œê (“ú–{) resources
 /////////////////////////////////////////////////////////////////////////////
 

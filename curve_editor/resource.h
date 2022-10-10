@@ -13,6 +13,11 @@
 #define IDI_SAVE                        121
 #define IDI_CLEAR                       122
 #define IDI_FIT                         123
+#define IDI_COPY_LIGHT                  124
+#define IDI_READ_LIGHT                  125
+#define IDI_SAVE_LIGHT                  126
+#define IDI_CLEAR_LIGHT                 127
+#define IDI_FIT_LIGHT                   128
 #define IDC_DRAGGING                    200
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
@@ -43,7 +48,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        124
+#define _APS_NEXT_RESOURCE_VALUE        129
 #define _APS_NEXT_COMMAND_VALUE         40040
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101
