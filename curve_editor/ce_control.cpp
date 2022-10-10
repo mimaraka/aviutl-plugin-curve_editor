@@ -11,11 +11,12 @@
 //---------------------------------------------------------------------
 //		ƒRƒ“ƒgƒ[ƒ‹‚ðì¬
 //---------------------------------------------------------------------
-BOOL ce::Control::create(HWND hwnd_p, LPSTR name, LPTSTR ico_res, int ct_id, LPRECT rect)
+BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res, int ct_id, LPRECT rect)
 {
 	WNDCLASSEX tmp;
 	id = ct_id;
 	icon_res = ico_res;
+	description = desc;
 
 	tmp.cbSize			= sizeof(tmp);
 	tmp.style			= CS_HREDRAW | CS_VREDRAW;
@@ -108,6 +109,22 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		icon = ::LoadIcon(g_fp->dll_hinst, icon_res);
 
+		hwnd_tooltip = ::CreateWindowEx(
+			0, TOOLTIPS_CLASS,
+			NULL, TTS_ALWAYSTIP,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			hwnd, NULL, g_fp->dll_hinst,
+			NULL
+		);
+
+		tool_info.cbSize = sizeof(TOOLINFO);
+		tool_info.uFlags = TTF_SUBCLASS;
+		tool_info.hwnd = hwnd;
+		tool_info.uId = id;
+		tool_info.lpszText = description;
+		SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
+
 		tme.cbSize = sizeof(tme);
 		tme.dwFlags = TME_LEAVE;
 		tme.hwndTrack = hwnd;
@@ -115,6 +132,11 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_CLOSE:
 		canvas.exit();
+		return 0;
+
+	case WM_SIZE:
+		tool_info.rect = rect_wnd;
+		SendMessage(hwnd_tooltip, TTM_NEWTOOLRECT, 0, (LPARAM)&tool_info);
 		return 0;
 
 	// •`‰æ

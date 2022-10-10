@@ -37,7 +37,7 @@ void ce::Curve_ID::add_point(POINT gr_pt)
 	int index = 0;
 	Point_Address tmp;
 	if (ctpts.size >= CE_POINT_MAX) return;
-	if (!ISINRANGE2(gr_pt.x, 0, CE_GR_RESOLUTION)) return;
+	if (!ISINRANGE(gr_pt.x, 0, CE_GR_RESOLUTION)) return;
 	for (int i = 0; i < (int)ctpts.size; i++) {
 		if (ctpts[i].pt_center.x == gr_pt.x)
 			return;
@@ -410,11 +410,11 @@ void ce::Curve_ID::reverse_curve()
 double ce::Curve_ID::get_value(double ratio, double st, double ed)
 {
 	// 進捗が0~1の範囲外であった場合
-	if (!ISINRANGE(ratio, 0, 1))
+	if (!ISINRANGEEQ(ratio, 0, 1))
 		return 0;
 	// 進捗に相当する区間を調べる
 	for (int i = 0; i < (int)ctpts.size - 1; i++) {
-		if (ISINRANGE(ratio, ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CE_GR_RESOLUTION)) {
+		if (ISINRANGEEQ(ratio, ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CE_GR_RESOLUTION)) {
 			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CE_GR_RESOLUTION;
 			// 区間ごとの進捗の相対値(0~1)
 			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION) / range;

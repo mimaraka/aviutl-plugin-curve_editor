@@ -164,9 +164,12 @@ namespace ce {
 		LPTSTR icon_res;
 		Bitmap_Canvas canvas;
 		HWND hwnd_parent;
+		HWND hwnd_tooltip;
+		TOOLINFO tool_info;
 		BOOL hovered, clicked;
 		TRACKMOUSEEVENT	tme;
 		HICON icon;
+		LPTSTR description;
 
 		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
@@ -174,7 +177,7 @@ namespace ce {
 		HWND hwnd;
 		int id;
 
-		BOOL				create(HWND hwnd_p, LPSTR name, LPTSTR ico_res, int ct_id, LPRECT rect);
+		BOOL				create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res, int ct_id, LPRECT rect);
 		void				move(LPRECT rect);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};

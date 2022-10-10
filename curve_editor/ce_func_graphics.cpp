@@ -394,6 +394,20 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 
 		//IDモードのとき
 		else {
+			// ベジェ曲線(トレース)を描画
+			if (g_config.trace) {
+				for (int i = 0; i < (int)g_curve_id_previous.ctpts.size - 1; i++) {
+					pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));
+					d2d_draw_bezier(pBrush,
+						to_client(g_curve_id_previous.ctpts[i].pt_center),
+						to_client(g_curve_id_previous.ctpts[i].pt_right),
+						to_client(g_curve_id_previous.ctpts[i + 1].pt_left),
+						to_client(g_curve_id_previous.ctpts[i + 1].pt_center),
+						CE_CURVE_TH
+					);
+				}
+			}
+
 			for (int i = 0; i < (int)g_curve_id[g_config.current_id].ctpts.size - 1; i++)
 			{
 				//色を指定
@@ -420,17 +434,6 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 						pBrush, CE_GR_POINT_TH, pStyle
 					);
 
-				// ベジェ曲線(トレース)を描画
-				if (g_config.trace) {
-					pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_TRACE)));
-					d2d_draw_bezier(pBrush,
-						to_client(g_curve_id_previous.ctpts[i].pt_center),
-						to_client(g_curve_id_previous.ctpts[i].pt_right),
-						to_client(g_curve_id_previous.ctpts[i + 1].pt_left),
-						to_client(g_curve_id_previous.ctpts[i + 1].pt_center),
-						CE_CURVE_TH
-					);
-				}
 
 				// ベジェ曲線を描画
 				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));

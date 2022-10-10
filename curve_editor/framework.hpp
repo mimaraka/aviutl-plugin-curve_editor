@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <wininet.h>
+#include <commctrl.h>
 #include <d2d1.h>
 #include <lua.hpp>
 #include <fstream>
@@ -20,3 +21,4 @@
 #include "resource.h"
 
 #pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "comctl32.lib")

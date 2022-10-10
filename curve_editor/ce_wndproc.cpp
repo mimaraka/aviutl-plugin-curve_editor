@@ -432,8 +432,10 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 			if (address.position == ce::CTPT_CENTER)
 				g_curve_id[g_config.current_id].delete_point(cl_pt);
-			else
+			else if (ISINRANGEEQ(gr_pt.x, 0, CE_GR_RESOLUTION)) {
+				g_curve_id_previous = g_curve_id[g_config.current_id];
 				g_curve_id[g_config.current_id].add_point(gr_pt);
+			}
 
 			InvalidateRect(hwnd, NULL, FALSE);
 		}
@@ -761,11 +763,46 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_CREATE:
 		canvas.init(hwnd);
 
-		copy.create(hwnd, "CTRL_COPY", MAKEINTRESOURCE(IDI_COPY), CE_CM_COPY, &rect_copy);
-		read.create(hwnd, "CTRL_READ", MAKEINTRESOURCE(IDI_READ), CE_CM_READ, &rect_read);
-		save.create(hwnd, "CTRL_SAVE", MAKEINTRESOURCE(IDI_SAVE), CE_CM_SAVE, &rect_save);
-		clear.create(hwnd, "CTRL_CLEAR", MAKEINTRESOURCE(IDI_CLEAR), CE_CM_CLEAR, &rect_clear);
-		fit.create(hwnd, "CTRL_FIT", MAKEINTRESOURCE(IDI_FIT), CE_CM_FIT, &rect_fit);
+		copy.create(
+			hwnd,
+			"CTRL_COPY",
+			"カーブの値をコピー",
+			MAKEINTRESOURCE(IDI_COPY),
+			CE_CM_COPY,
+			&rect_copy
+		);
+		read.create(
+			hwnd,
+			"CTRL_READ",
+			"カーブの値を読み取り",
+			MAKEINTRESOURCE(IDI_READ),
+			CE_CM_READ,
+			&rect_read
+		);
+		save.create(
+			hwnd,
+			"CTRL_SAVE",
+			"カーブをプリセットとして保存",
+			MAKEINTRESOURCE(IDI_SAVE),
+			CE_CM_SAVE,
+			&rect_save
+		);
+		clear.create(
+			hwnd,
+			"CTRL_CLEAR",
+			"カーブを初期化",
+			MAKEINTRESOURCE(IDI_CLEAR),
+			CE_CM_CLEAR,
+			&rect_clear
+		);
+		fit.create(
+			hwnd,
+			"CTRL_FIT",
+			"グラフをフィット",
+			MAKEINTRESOURCE(IDI_FIT),
+			CE_CM_FIT,
+			&rect_fit
+		);
 		return 0;
 
 	case WM_SIZE:

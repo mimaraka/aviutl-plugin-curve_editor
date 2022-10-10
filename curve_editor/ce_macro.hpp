@@ -122,7 +122,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.1.5"
+#define CE_PLUGIN_VERSION			"v0.2.1"
 #define CE_PLUGIN_AUTHOR			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR
@@ -149,8 +149,8 @@
 #define MAXLIM(value,maxv)					(((value) > (maxv))? (maxv): (value))
 #define MINLIM(value,minv)					(((value) < (minv))? (minv): (value))
 #define MINMAXLIM(value,minv,maxv)			(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
-#define ISINRANGE(value,minv,maxv)			(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
-#define ISINRANGE2(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
+#define ISINRANGE(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
+#define ISINRANGEEQ(value,minv,maxv)		(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
 #define ISMORETHAN(value,vl)				(((value) >= (vl))? 1 : 0)
 #define ISLESSTHAN(value,vl)				(((value) <= (vl))? 1 : 0)
 #define BRIGHTEN(ref,num)					(RGB(MINMAXLIM(GetRValue(ref) + num, 0, 255), MINMAXLIM(GetGValue(ref) + num, 0, 255), MINMAXLIM(GetBValue(ref) + num, 0, 255)))
