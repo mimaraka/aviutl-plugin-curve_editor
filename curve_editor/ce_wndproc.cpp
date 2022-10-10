@@ -686,8 +686,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//設定
 		case ID_MENU_CONFIG:
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, dialogproc_settings);
-			::InvalidateRect(hwnd, NULL, FALSE);
-			::SendMessage(hwnd_parent, WM_COMMAND, CE_CM_REDRAW, 0);
+			::SendMessage(g_window.main, WM_COMMAND, CE_CM_REDRAW, 0);
 			return 0;
 
 		// 本プラグインについて
@@ -816,6 +815,7 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_CM_FIT,
 			&rect_fit
 		);
+		g_window.footer = hwnd;
 		return 0;
 
 	case WM_SIZE:
@@ -832,6 +832,15 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	case WM_COMMAND:
 		switch (wparam) {
+		case CE_CM_REDRAW:
+			::InvalidateRect(hwnd, NULL, FALSE);
+			copy.redraw();
+			read.redraw();
+			save.redraw();
+			clear.redraw();
+			fit.redraw();
+			return 0;
+
 		case CE_CM_COPY:
 			::SendMessage(g_window.graph, WM_COMMAND, CE_CM_COPY, 0);
 			return 0;

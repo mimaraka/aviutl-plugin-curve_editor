@@ -128,7 +128,7 @@
 #define CE_PLUGIN_AUTHOR			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR
-#define CE_PLUGIN_LINK				"https://sites.google.com/view/aviutlscripts/home"
+#define CE_PLUGIN_LINK				"https://github.com/mimaraka/aviutl-plugin-curve_editor"
 
 
 

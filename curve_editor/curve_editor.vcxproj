@@ -205,6 +205,7 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="ce_preset.cpp" />
     <ClCompile Include="ce_wndproc.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -233,10 +234,10 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
     <Image Include="icon_copy.ico" />
     <Image Include="icon_fit.ico" />
     <Image Include="icon_fit_light.ico" />
-    <Image Include="icon_light_clear.ico" />
-    <Image Include="icon_light_copy.ico" />
-    <Image Include="icon_light_read.ico" />
-    <Image Include="icon_light_save.ico" />
+    <Image Include="icon_clear_light.ico" />
+    <Image Include="icon_copy_light.ico" />
+    <Image Include="icon_read_light.ico" />
+    <Image Include="icon_save_light.ico" />
     <Image Include="icon_read.ico" />
     <Image Include="icon_save.ico" />
   </ItemGroup>
