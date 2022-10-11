@@ -38,8 +38,8 @@ extern ID2D1DCRenderTarget*					g_render_target;
 EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void);
 
 //‰Šú‰»EI—¹
-BOOL				initialize(FILTER*);
-BOOL				exit(FILTER*);
+BOOL				filter_init(FILTER*);
+BOOL				filter_exit(FILTER*);
 
 // aviutl.ini‚ğ—p‚¢‚Äİ’è‚ğ“Ç‚İ‘‚«
 void				ini_load_configs(FILTER* fp);

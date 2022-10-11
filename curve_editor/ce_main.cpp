@@ -49,6 +49,8 @@ const ce::Theme g_theme[2] = {
 ID2D1Factory*					g_d2d1_factory;
 ID2D1DCRenderTarget*			g_render_target;
 
+
+
 //---------------------------------------------------------------------
 //		フィルタ構造体定義
 //---------------------------------------------------------------------
@@ -65,8 +67,8 @@ FILTER_DLL g_filter = {
 	NULL,NULL,
 	NULL,NULL,NULL,
 	NULL,
-	initialize,
-	exit,
+	filter_init,
+	filter_exit,
 	NULL,
 	wndproc_base,
 	NULL,NULL,
@@ -79,38 +81,3 @@ FILTER_DLL g_filter = {
 	on_project_load,
 	on_project_save,
 };
-
-
-//---------------------------------------------------------------------
-//		Lua関数
-//---------------------------------------------------------------------
-
-//処理関数
-int get_result(lua_State* L)
-{
-	// index:	カーブのID
-	// ratio:	進捗(0~1)
-	// st:		トラックバーでの開始時の値
-	// ed:		トラックバーでの終了時の値
-	int		index	= lua_tointeger(L, 1);
-	double	ratio	= lua_tonumber(L, 2);
-	double	st		= lua_tonumber(L, 3);
-	double	ed		= lua_tonumber(L, 4);
-
-	if (index < 0 || index > CE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_curve_id[index].get_value(ratio, st, ed));
-	return 1;
-}
-
-//関数テーブル
-static luaL_Reg functions[] = {
-	{ "get_result", get_result },
-	{ nullptr, nullptr }
-};
-
-//登録
-extern "C" __declspec(dllexport) int luaopen_curve_editor(lua_State * L)
-{
-	luaL_register(L, "curve_editor", functions);
-	return 1;
-}

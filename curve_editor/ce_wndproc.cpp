@@ -722,6 +722,12 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
+
+		//•Û‘¶ƒ{ƒ^ƒ“
+		case ID_MENU_SAVE:
+		case CE_CM_SAVE:
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_SAVE), hwnd, dialogproc_save);
+			return 0;
 		}
 		return 0;
 

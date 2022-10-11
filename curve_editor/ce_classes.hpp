@@ -114,7 +114,7 @@ namespace ce {
 	//---------------------------------------------------------------------
 	class Preset {
 	private:
-		static LRESULT CALLBACK wndproc_tmp(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	public:
 		HWND hwnd;
 		LPTSTR name;
@@ -133,8 +133,9 @@ namespace ce {
 			time(&unix_time);
 		}
 
-		void move(int idx, int width);
-
+		BOOL create(HWND hwnd_parent);
+		void move(int width);
+		virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 

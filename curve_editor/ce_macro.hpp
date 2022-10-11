@@ -13,15 +13,17 @@
 //---------------------------------------------------------------------
 // ウィンドウ
 #define CE_MARGIN					8
+#define CE_MARGIN_PRESET			5
 #define CE_MAX_W					1440
 #define CE_MAX_H					1080
 #define CE_DEF_W					360
 #define CE_DEF_H					460
+#define CE_DEF_PRESET_SIZE			50
 
 // セパレータ
 #define CE_SEPR_DEF					CE_DEF_H - 120
 #define CE_SEPR_W					8
-#define CE_SEPR_LINE_W				4
+#define CE_SEPR_LINE_W				3.6f
 #define CE_SEPR_LINE_L				32
 
 // グラフ

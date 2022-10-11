@@ -119,6 +119,7 @@ namespace ce {
 		int
 			theme,
 			separator,
-			current_id;
+			current_id,
+			preset_size;
 	} Config;
 }
