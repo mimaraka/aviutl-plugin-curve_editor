@@ -34,7 +34,7 @@ BOOL filter_init(FILTER* fp)
 //---------------------------------------------------------------------
 //		èIóπéûÇ…é¿çsÇ≥ÇÍÇÈä÷êî
 //---------------------------------------------------------------------
-BOOL exit(FILTER* fp)
+BOOL filter_exit(FILTER* fp)
 {
 	ini_write_configs(fp);
 	if (NULL != g_render_target) {

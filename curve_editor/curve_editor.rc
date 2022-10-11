@@ -233,7 +233,7 @@ END
 // Cursor
 //
 
-IDC_DRAGGING            CURSOR                  "cur_drag.cur"
+IDC_DRAGGING            CURSOR                  "res/cursor/drag.cur"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -243,25 +243,25 @@ IDC_DRAGGING            CURSOR                  "cur_drag.cur"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_COPY                ICON                    "icon_copy.ico"
+IDI_COPY                ICON                    "res/icon/dark/copy.ico"
 
-IDI_READ                ICON                    "icon_read.ico"
+IDI_READ                ICON                    "res/icon/dark/read.ico"
 
-IDI_SAVE                ICON                    "icon_save.ico"
+IDI_SAVE                ICON                    "res/icon/dark/save.ico"
 
-IDI_CLEAR               ICON                    "icon_clear.ico"
+IDI_CLEAR               ICON                    "res/icon/dark/clear.ico"
 
-IDI_FIT                 ICON                    "icon_fit.ico"
+IDI_FIT                 ICON                    "res/icon/dark/fit.ico"
 
-IDI_COPY_LIGHT          ICON                    "icon_copy_light.ico"
+IDI_COPY_LIGHT          ICON                    "res/icon/light/copy.ico"
 
-IDI_READ_LIGHT          ICON                    "icon_read_light.ico"
+IDI_READ_LIGHT          ICON                    "res/icon/light/read.ico"
 
-IDI_SAVE_LIGHT          ICON                    "icon_save_light.ico"
+IDI_SAVE_LIGHT          ICON                    "res/icon/light/save.ico"
 
-IDI_CLEAR_LIGHT         ICON                    "icon_clear_light.ico"
+IDI_CLEAR_LIGHT         ICON                    "res/icon/light/clear.ico"
 
-IDI_FIT_LIGHT           ICON                    "icon_fit_light.ico"
+IDI_FIT_LIGHT           ICON                    "res/icon/light/fit.ico"
 
 #endif    // “ú–{Œê (“ú–{) resources
 /////////////////////////////////////////////////////////////////////////////

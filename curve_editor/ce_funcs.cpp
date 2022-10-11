@@ -123,6 +123,7 @@ std::vector<std::string> split(const std::string& s, TCHAR c)
 	}
 	if (!item.empty())
 		elems.emplace_back(item);
+
 	return elems;
 }
 
@@ -131,19 +132,23 @@ std::vector<std::string> split(const std::string& s, TCHAR c)
 //---------------------------------------------------------------------
 //		クリップボードにテキストをコピー
 //---------------------------------------------------------------------
-BOOL copy_to_clipboard(HWND hwnd, LPCTSTR lpsText)
+BOOL copy_to_clipboard(HWND hwnd, LPCTSTR text)
 {
-	HGLOBAL hMem;
-	LPTSTR lpsBuffer;
+	HGLOBAL memory;
+	LPTSTR buffer;
+
 	if (!OpenClipboard(hwnd))
 		return FALSE;
-	EmptyClipboard();
-	hMem = GlobalAlloc(GHND | GMEM_SHARE, strlen(lpsText) + 1);
-	lpsBuffer = (PTSTR)GlobalLock(hMem);
-	lstrcpy(lpsBuffer, lpsText);
-	GlobalUnlock(hMem);
-	SetClipboardData(CF_TEXT, hMem);
-	CloseClipboard();
+
+	::EmptyClipboard();
+	memory = GlobalAlloc(GHND | GMEM_SHARE, strlen(text) + 1);
+	buffer = (PTSTR)::GlobalLock(memory);
+	::lstrcpy(buffer, text);
+
+	::GlobalUnlock(memory);
+	::SetClipboardData(CF_TEXT, memory);
+	::CloseClipboard();
+
 	return TRUE;
 }
 
@@ -164,6 +169,7 @@ ce::Float_Point subtract_length(ce::Float_Point st, ce::Float_Point ed, float le
 	float after_x = (float)(st.x + (ed.x - st.x) * length_ratio);
 	float after_y = (float)(st.y + (ed.y - st.y) * length_ratio);
 	result = {after_x, after_y};
+
 	return result;
 }
 

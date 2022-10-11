@@ -104,7 +104,7 @@ LRESULT CALLBACK ce::Control::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam,
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ(static変数使っちゃダメ！)
+//		ウィンドウプロシージャ(static変数使用不可)
 //---------------------------------------------------------------------
 LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
