@@ -76,3 +76,42 @@ BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 	}
 	return TRUE;
 }
+
+
+
+//---------------------------------------------------------------------
+//		ウィンドウプロシージャ
+//---------------------------------------------------------------------
+BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp, FILTER* fp)
+{
+	RECT rect_wnd;
+	::GetClientRect(hwnd, &rect_wnd);
+
+	switch (msg) {
+		// ウィンドウ作成時
+	case WM_FILTER_INIT:
+		// WS_CLIPCHILDRENを追加
+		::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
+
+		g_window_main.create(
+			hwnd, "WINDOW_MAIN", wndproc_main, NULL,
+			&rect_wnd
+		);
+		return 0;
+
+	case WM_SIZE:
+		g_window_main.move(&rect_wnd);
+		return 0;
+
+	case WM_GETMINMAXINFO:
+		MINMAXINFO* mmi;
+		mmi = (MINMAXINFO*)lparam;
+		mmi->ptMaxTrackSize.x = CE_MAX_W;
+		mmi->ptMaxTrackSize.y = CE_MAX_H;
+		return 0;
+
+	case WM_KEYDOWN:
+		return on_keydown(wparam);
+	}
+	return 0;
+}

@@ -27,7 +27,7 @@
     <ClCompile Include="ce_ctrlproc.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_funcs.cpp">
+    <ClCompile Include="ce_utils.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ce_func_graphics.cpp">
@@ -52,6 +52,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ce_lua.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ce_window.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -79,10 +82,45 @@
     <None Include="curve_editor.def">
       <Filter>リソース ファイル</Filter>
     </None>
+    <None Include="res\cursor\drag.cur">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc">
       <Filter>リソース ファイル</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\icon\dark\copy.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\dark\read.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\dark\save.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\dark\clear.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\dark\fit.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\light\copy.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\light\read.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\light\save.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\light\clear.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\light\fit.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>

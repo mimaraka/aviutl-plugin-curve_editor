@@ -110,11 +110,42 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
+	//		ビットマップキャンバス
+	//---------------------------------------------------------------------
+	class Bitmap_Canvas {
+	private:
+		HBITMAP bitmap;
+		HWND hwnd;
+	public:
+		HDC hdc_memory;
+
+		void init(HWND hw);
+		void exit();
+		void transfer(LPRECT rect);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		ウィンドウ
+	//---------------------------------------------------------------------
+	class Window {
+	public:
+		HWND hwnd;
+
+		virtual BOOL			create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, LPRECT rect);
+		virtual void			move(LPRECT rect);
+		void					redraw();
+		virtual LRESULT			wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
 	//		プリセット
 	//---------------------------------------------------------------------
-	class Preset {
-	private:
-		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	class Preset : public Window {
 	public:
 		HWND hwnd;
 		LPTSTR name;
@@ -133,26 +164,9 @@ namespace ce {
 			time(&unix_time);
 		}
 
-		BOOL create(HWND hwnd_parent);
-		void move(int width);
-		virtual LRESULT wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-	};
-
-
-
-	//---------------------------------------------------------------------
-	//		ビットマップキャンバス
-	//---------------------------------------------------------------------
-	class Bitmap_Canvas {
-	private:
-		HBITMAP bitmap;
-		HWND hwnd;
-	public:
-		HDC hdc_memory;
-
-		void init(HWND hw);
-		void exit();
-		void transfer(LPRECT rect);
+		BOOL				create(HWND hwnd_parent);
+		void				move(int width);
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -160,7 +174,7 @@ namespace ce {
 	//---------------------------------------------------------------------
 	//		コントロールウィンドウ
 	//---------------------------------------------------------------------
-	class Control {
+	class Control : public Window {
 	private:
 		LPTSTR icon_res_dark;
 		LPTSTR icon_res_light;
@@ -173,17 +187,11 @@ namespace ce {
 		HICON icon_dark;
 		HICON icon_light;
 		LPTSTR description;
-
-		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
 	public:
-		HWND hwnd;
 		int id;
 
 		BOOL				create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect);
-		void				move(LPRECT rect);
-		void				redraw();
-		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 

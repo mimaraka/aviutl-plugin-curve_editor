@@ -55,55 +55,6 @@ BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_d
 
 
 //---------------------------------------------------------------------
-//		コントロールを移動
-//---------------------------------------------------------------------
-void ce::Control::move(LPRECT rect)
-{
-	MoveWindow(
-		hwnd,
-		rect->left, rect->top,
-		rect->right - rect->left,
-		rect->bottom - rect->top,
-		TRUE
-	);
-}
-
-
-
-//---------------------------------------------------------------------
-//		コントロールを再描画
-//---------------------------------------------------------------------
-void ce::Control::redraw()
-{
-	::SendMessage(hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
-}
-
-
-
-//---------------------------------------------------------------------
-//		静的ウィンドウプロシージャ
-//---------------------------------------------------------------------
-LRESULT CALLBACK ce::Control::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-{
-	Control* app = (Control*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-	if (!app) {//取得できなかった(ウィンドウ生成中)場合
-		if (msg == WM_CREATE) {
-			app = (Control*)((LPCREATESTRUCT)lparam)->lpCreateParams;
-			if (app) {
-				SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)app);
-				return app->wndproc(hwnd, msg, wparam, lparam);
-			}
-		}
-	}
-	else {//取得できた場合(ウィンドウ生成後)
-		return app->wndproc(hwnd, msg, wparam, lparam);
-	}
-	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
-
-
-//---------------------------------------------------------------------
 //		ウィンドウプロシージャ(static変数使用不可)
 //---------------------------------------------------------------------
 LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -163,7 +114,7 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
-		d2d_setup(&canvas, &rect_wnd, bg);
+		d2d_setup(&canvas, &rect_wnd, TO_BGR(bg));
 
 		::DrawIcon(
 			canvas.hdc_memory,

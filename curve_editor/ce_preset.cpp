@@ -70,29 +70,6 @@ void ce::Preset::move(int width)
 
 
 //---------------------------------------------------------------------
-//		静的ウィンドウプロシージャ
-//---------------------------------------------------------------------
-LRESULT CALLBACK ce::Preset::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-{
-	Preset* app = (Preset*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-	if (!app) {//取得できなかった(ウィンドウ生成中)場合
-		if (msg == WM_CREATE) {
-			app = (Preset*)((LPCREATESTRUCT)lparam)->lpCreateParams;
-			if (app) {
-				SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)app);
-				return app->wndproc(hwnd, msg, wparam, lparam);
-			}
-		}
-	}
-	else {//取得できた場合(ウィンドウ生成後)
-		return app->wndproc(hwnd, msg, wparam, lparam);
-	}
-	return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
-
-
-//---------------------------------------------------------------------
 //		ウィンドウプロシージャ(static変数使用不可)
 //---------------------------------------------------------------------
 LRESULT ce::Preset::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)

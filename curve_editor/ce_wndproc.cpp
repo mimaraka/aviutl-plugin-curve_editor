@@ -9,101 +9,13 @@
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ（ベース）
-//---------------------------------------------------------------------
-BOOL wndproc_base(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp, FILTER* fp)
-{
-	static HWND hwnd_main;
-	RECT rect_wnd;
-	::GetClientRect(hwnd, &rect_wnd);
-
-	switch (msg) {
-	// ウィンドウ作成時
-	case WM_FILTER_INIT:
-		::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
-		hwnd_main = create_child(
-			hwnd, wndproc_main, "Wnd_Main", WS_CLIPCHILDREN,
-			0, 0, rect_wnd.right, rect_wnd.bottom
-		);
-		g_window.base = hwnd;
-		return 0;
-
-	case WM_SIZE:
-		::MoveWindow(hwnd_main, 0, 0, rect_wnd.right, rect_wnd.bottom, TRUE);
-		return 0;
-
-	case WM_GETMINMAXINFO:
-		MINMAXINFO* mmi;
-		mmi = (MINMAXINFO*)lparam;
-		mmi->ptMaxTrackSize.x = CE_MAX_W;
-		mmi->ptMaxTrackSize.y = CE_MAX_H;
-		return 0;
-
-	case WM_KEYDOWN:
-		switch (wparam) {
-		case 82: //[R]
-			if (g_window.graph) ::SendMessage(g_window.graph, WM_COMMAND, CE_CM_REVERSE, 0);
-			return 0;
-
-		case 67: //[C]
-			if (::GetAsyncKeyState(VK_CONTROL) < 0)
-				SendMessage(g_window.graph, WM_COMMAND, CE_CM_COPY, 0);
-			return 0;
-
-		case 83: //[S]
-			if (::GetAsyncKeyState(VK_CONTROL) < 0)
-				::SendMessage(g_window.graph, WM_COMMAND, CE_CM_SAVE, 0);
-			else
-				::SendMessage(g_window.graph, WM_COMMAND, CE_CM_SHOWHANDLE, 0);
-			return 0;
-
-		case VK_LEFT: //[<]	
-			if (g_config.mode) {
-				g_config.current_id--;
-				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
-				g_curve_id_previous = g_curve_id[g_config.current_id];
-				if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_REDRAW, 0);
-			}
-			return 0;
-
-		case VK_RIGHT: //[>]
-			if (g_config.mode) {
-				g_config.current_id++;
-				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
-				g_curve_id_previous = g_curve_id[g_config.current_id];
-				if (g_window.graph) SendMessage(g_window.graph, WM_COMMAND, CE_CM_REDRAW, 0);
-			}
-			return 0;
-
-		case 70: //[F]
-			if (g_window.graph) ::SendMessage(g_window.graph, WM_COMMAND, CE_CM_FIT, 0);
-			return 0;
-
-		case 65: //[A]
-			if (g_window.graph) ::SendMessage(g_window.graph, WM_COMMAND, CE_CT_ALIGN, 0);
-			return 0;
-
-		case VK_DELETE:
-			if (g_window.graph) ::SendMessage(g_window.graph, WM_COMMAND, CE_CM_CLEAR, 0);
-			return 0;
-		}
-		return 0;
-	}
-	return 0;
-}
-
-
-
-//---------------------------------------------------------------------
 //		ウィンドウプロシージャ（メイン）
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static BOOL bSepr = FALSE;
 	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	RECT rect_wnd, rect_sepr;
-	//HANDLE
-	static HWND hwnd_editor, hwnd_footer;
+	RECT rect_wnd, rect_sepr, rect_editor, rect_footer;
 
 	static ce::Bitmap_Canvas canvas;
 
@@ -116,6 +28,20 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		g_config.separator + CE_SEPR_W
 	};
 
+	rect_editor = {
+		0,
+		0,
+		rect_wnd.right,
+		g_config.separator - CE_SEPR_W
+	};
+
+	rect_footer = {
+		0,
+		g_config.separator + CE_SEPR_W,
+		rect_wnd.right,
+		rect_wnd.bottom
+	};
+
 	switch (msg) {
 	case WM_CLOSE:
 		canvas.exit();
@@ -125,18 +51,17 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		canvas.init(hwnd);
 
 		//エディタパネル
-		hwnd_editor = create_child(
-			hwnd, wndproc_editor, "Wnd_Editor", WS_CLIPCHILDREN,
-			0, 0, rect_wnd.right, g_config.separator - CE_SEPR_W
+		g_window_editor.create(
+			hwnd, "WINDOW_EDITOR", wndproc_editor, NULL,
+			&rect_editor
 		);
 
 		//フッタパネル
-		hwnd_footer = create_child(
-			hwnd, wndproc_footer, "Wnd_Side", WS_CLIPCHILDREN,
-			0, g_config.separator + CE_SEPR_W, rect_wnd.right, rect_wnd.bottom
+		g_window_footer.create(
+			hwnd, "WINDOW_FOOTER", wndproc_footer, NULL,
+			&rect_footer
 		);
 
-		g_window.main = hwnd;
 		return 0;
 
 	case WM_PAINT:
@@ -144,8 +69,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_SIZE:
-		::MoveWindow(hwnd_editor, 0, 0, rect_wnd.right, g_config.separator - CE_SEPR_W, TRUE);
-		::MoveWindow(hwnd_footer, 0, g_config.separator + CE_SEPR_W, rect_wnd.right, rect_wnd.bottom, TRUE);
+		g_window_editor.move(&rect_editor);
+		g_window_footer.move(&rect_footer);
 		return 0;
 
 	case WM_LBUTTONDOWN:
@@ -165,8 +90,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		if (::PtInRect(&rect_sepr, cl_pt)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 		if (bSepr) {
 			g_config.separator = MINMAXLIM(cl_pt.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W);
-			::MoveWindow(hwnd_editor, 0, 0, rect_wnd.right, g_config.separator - CE_SEPR_W, TRUE);
-			::MoveWindow(hwnd_footer, 0, g_config.separator + CE_SEPR_W, rect_wnd.right, rect_wnd.bottom, TRUE);
+			g_window_editor.move(&rect_editor);
+			g_window_footer.move(&rect_footer);
 			::InvalidateRect(hwnd, NULL, FALSE);
 		}
 		return 0;
@@ -175,8 +100,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (wparam) {
 		case CE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
-			::SendMessage(g_window.editor, WM_COMMAND, CE_CM_REDRAW, 0);
-			::SendMessage(g_window.footer, WM_COMMAND, CE_CM_REDRAW, 0);
+			g_window_editor.redraw();
+			g_window_footer.redraw();
 		}
 
 	default:
@@ -191,68 +116,38 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	RECT rect_wnd;
-	static HWND hwnd_parent, hwnd_graph;
+	RECT rect_wnd, rect_graph;
 	static ce::Bitmap_Canvas canvas;
 
 
 	//クライアント領域の矩形を取得
 	::GetClientRect(hwnd, &rect_wnd);
+	rect_graph = rect_set_margin(&rect_wnd, CE_MARGIN, CE_MARGIN, CE_MARGIN, CE_MARGIN);
 
 	switch (msg) {
 	case WM_CLOSE:
 		canvas.exit();
 		return 0;
 
-		///////////////////////////////////////////
-		//		WM_CREATE
-		//		(ウィンドウが作成されたとき)
-		///////////////////////////////////////////
 	case WM_CREATE:
 		canvas.init(hwnd);
 
-		//グラフパネル
-		hwnd_graph = create_child(
-			hwnd, wndproc_graph, "Wnd_Graph", WS_CLIPCHILDREN,
-			CE_MARGIN, CE_MARGIN, rect_wnd.right - CE_MARGIN * 2, rect_wnd.bottom - CE_MARGIN * 2
+		g_window_graph.create(
+			hwnd, "WINDOW_GPATH", wndproc_graph, NULL,
+			&rect_graph
 		);
-		hwnd_parent = ::GetParent(hwnd);
-		g_window.editor = hwnd;
 		return 0;
 
-		///////////////////////////////////////////
-		//		WM_SIZE
-		//		(サイズが変更されたとき)
-		///////////////////////////////////////////
 	case WM_SIZE:
-		::MoveWindow(hwnd_graph, CE_MARGIN, CE_MARGIN, rect_wnd.right - CE_MARGIN * 2, rect_wnd.bottom - CE_MARGIN * 2, TRUE);
+		g_window_graph.move(&rect_graph);
 		return 0;
 
-		///////////////////////////////////////////
-		//		WM_PAINT
-		//		(ウィンドウが描画されたとき)
-		///////////////////////////////////////////
 	case WM_PAINT:
 		draw_panel_editor(&canvas, &rect_wnd);
 		return 0;
 
-		///////////////////////////////////////////
-		//		WM_COMMAND
-		//		(コマンドを受け取ったとき)
-		///////////////////////////////////////////
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
-		//	//保存ボタン
-		//case ID_RCLICKMENU_SAVEPRESET:
-		//case CT_SAVE:
-		//	//計算
-		//	if (g_curve_value.ctpt[0].y < -2735 || 3735 < g_curve_value.ctpt[0].y || g_curve_value.ctpt[1].y < -2735 || 3735 < g_curve_value.ctpt[1].y) {
-		//		if (g_config.bAlerts) MessageBox(hwnd, g_config.lang ? FLSTR_JA_OUTOFRANGE : FLSTR_OUTOFRANGE, "Flow", MB_OK | MB_ICONINFORMATION);
-		//		return 0;
-		//	}
-		//	DialogBox(g_fp->dll_hinst, g_config.lang ? MAKEINTRESOURCE(IDD_SAVE_JA) : MAKEINTRESOURCE(IDD_SAVE), hwnd, dialogproc_save);
-		//	return 0;
-
 		//	//Valueパネル
 		//case CM_EDITOR_VALUE:
 		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, dialogproc_value);
@@ -264,7 +159,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//コントロール再描画
 		case CE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
-			SendMessage(g_window.graph, WM_COMMAND, CE_CM_REDRAW, 0);
+			g_window_graph.redraw();
 			return 0;
 		}
 		return 0;
@@ -302,7 +197,6 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 	//ハンドル
 	static HMENU	menu;
-	static HWND		hwnd_parent;
 
 	//その他
 	static ce::Point_Address address;
@@ -337,9 +231,6 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		g_curve_id_previous = g_curve_id[g_config.current_id];
 
 		g_view_info.fit(&rect_wnd);
-
-		hwnd_parent = ::GetParent(hwnd);
-		g_window.graph = hwnd;
 
 		return 0;
 
@@ -686,7 +577,7 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		//設定
 		case ID_MENU_CONFIG:
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, dialogproc_settings);
-			::SendMessage(g_window.main, WM_COMMAND, CE_CM_REDRAW, 0);
+			g_window_main.redraw();
 			return 0;
 
 		// 本プラグインについて
@@ -723,10 +614,15 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
-		//保存ボタン
+		// 保存ボタン
 		case ID_MENU_SAVE:
 		case CE_CM_SAVE:
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_SAVE), hwnd, dialogproc_save);
+			return 0;
+
+		// ヘルプ
+		case ID_MENU_HELP:
+			::ShellExecute(0, "open", CE_PLUGIN_LINK_HELP, NULL, NULL, SW_SHOWNORMAL);
 			return 0;
 		}
 		return 0;
@@ -766,7 +662,7 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		rect_wnd.right - CE_MARGIN,
 		CE_MARGIN * 2 + CE_CT_H * 2
 	};
-	divide_rect(&rect_buttons_parent, lprect_buttons, 5);
+	rect_divide(&rect_buttons_parent, lprect_buttons, 5);
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -821,7 +717,6 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_CM_FIT,
 			&rect_fit
 		);
-		g_window.footer = hwnd;
 		return 0;
 
 	case WM_SIZE:
@@ -848,23 +743,23 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			return 0;
 
 		case CE_CM_COPY:
-			::SendMessage(g_window.graph, WM_COMMAND, CE_CM_COPY, 0);
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_COPY, 0);
 			return 0;
 
 		case CE_CM_READ:
-			::SendMessage(g_window.graph, WM_COMMAND, CE_CM_READ, 0);
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_READ, 0);
 			return 0;
 
 		case CE_CM_SAVE:
-			::SendMessage(g_window.graph, WM_COMMAND, CE_CM_SAVE, 0);
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_SAVE, 0);
 			return 0;
 
 		case CE_CM_CLEAR:
-			::SendMessage(g_window.graph, WM_COMMAND, CE_CM_CLEAR, 0);
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_CLEAR, 0);
 			return 0;
 
 		case CE_CM_FIT:
-			::SendMessage(g_window.graph, WM_COMMAND, CE_CM_FIT, 0);
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_FIT, 0);
 			return 0;
 		}
 		return 0;

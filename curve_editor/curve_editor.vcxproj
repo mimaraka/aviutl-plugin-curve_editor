@@ -192,13 +192,16 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="ce_funcs.cpp">
+    <ClCompile Include="ce_utils.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="ce_func_filter.cpp" />
+    <ClCompile Include="ce_func_filter.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="ce_func_graphics.cpp" />
     <ClCompile Include="ce_lua.cpp" />
     <ClCompile Include="ce_main.cpp">
@@ -208,6 +211,7 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="ce_preset.cpp" />
+    <ClCompile Include="ce_window.cpp" />
     <ClCompile Include="ce_wndproc.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -225,9 +229,22 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
   </ItemGroup>
   <ItemGroup>
     <None Include="curve_editor.def" />
+    <None Include="res\cursor\drag.cur" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\icon\dark\clear.ico" />
+    <Image Include="res\icon\dark\copy.ico" />
+    <Image Include="res\icon\dark\fit.ico" />
+    <Image Include="res\icon\dark\read.ico" />
+    <Image Include="res\icon\dark\save.ico" />
+    <Image Include="res\icon\light\clear.ico" />
+    <Image Include="res\icon\light\copy.ico" />
+    <Image Include="res\icon\light\fit.ico" />
+    <Image Include="res\icon\light\read.ico" />
+    <Image Include="res\icon\light\save.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

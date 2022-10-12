@@ -223,6 +223,7 @@ BEGIN
         MENUITEM "グラフをフィット (F)",                ID_MENU_FIT
         MENUITEM SEPARATOR
         MENUITEM "設定",                          ID_MENU_CONFIG
+        MENUITEM "ヘルプ",                         ID_MENU_HELP
         MENUITEM "About",                       ID_MENU_ABOUT
     END
 END

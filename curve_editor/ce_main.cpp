@@ -16,7 +16,11 @@ ce::Curve_Value					g_curve_value_previous;
 ce::Curve_ID					g_curve_id[CE_CURVE_MAX];
 ce::Curve_ID					g_curve_id_previous;
 ce::Config						g_config;
-ce::Window						g_window;
+ce::Window						g_window_main,
+								g_window_footer,
+								g_window_editor,
+								g_window_graph,
+								g_window_preset;
 ce::Graph_View_Info				g_view_info;
 FILTER*							g_fp;
 std::vector<ce::Preset>			g_presets;
@@ -70,7 +74,7 @@ FILTER_DLL g_filter = {
 	filter_init,
 	filter_exit,
 	NULL,
-	wndproc_base,
+	filter_wndproc,
 	NULL,NULL,
 	NULL,
 	NULL,

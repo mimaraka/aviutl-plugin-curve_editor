@@ -131,6 +131,7 @@
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR
 #define CE_PLUGIN_LINK				"https://github.com/mimaraka/aviutl-plugin-curve_editor"
+#define CE_PLUGIN_LINK_HELP			CE_PLUGIN_LINK "#readme"
 
 
 

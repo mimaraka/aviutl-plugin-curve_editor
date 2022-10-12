@@ -49,63 +49,6 @@ void ini_write_configs(FILTER* fp)
 
 
 //---------------------------------------------------------------------
-//		子ウィンドウを生成
-//---------------------------------------------------------------------
-HWND create_child(
-	HWND hwnd,
-	WNDPROC wndproc,
-	LPSTR name,
-	LONG style,
-	int x, int y, int width, int height)
-	//int upperleft_x,
-	//int upperleft_y,
-	//int bottomright_x,
-	//int bottomright_y,
-	//int padding_top,
-	//int padding_left,
-	//int padding_bottom,
-	//int padding_right)
-{
-	HWND hCld;
-	WNDCLASSEX tmp;
-	tmp.cbSize			= sizeof(tmp);
-	tmp.style			= CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
-	tmp.lpfnWndProc		= wndproc;
-	tmp.cbClsExtra		= 0;
-	tmp.cbWndExtra		= 0;
-	tmp.hInstance		= g_fp->dll_hinst;
-	tmp.hIcon			= NULL;
-	tmp.hCursor			= LoadCursor(NULL, IDC_ARROW);
-	tmp.hbrBackground	= NULL;
-	tmp.lpszMenuName	= NULL;
-	tmp.lpszClassName	= name;
-	tmp.hIconSm			= NULL;
-
-	if (RegisterClassEx(&tmp)) {
-		hCld = CreateWindowEx(
-			NULL,
-			name,
-			NULL,
-			WS_CHILD | WS_VISIBLE | style,
-			x, y,
-			width, height,
-			/*upperleft_x + padding_left,
-			upperleft_y + padding_top,
-			bottomright_x - upperleft_x - padding_left - padding_right,
-			bottomright_y - upperleft_y - padding_top - padding_bottom,*/
-			hwnd,
-			NULL,
-			g_fp->dll_hinst,
-			NULL
-		);
-		return hCld;
-	}
-	return 0;
-}
-
-
-
-//---------------------------------------------------------------------
 //		split関数
 //---------------------------------------------------------------------
 std::vector<std::string> split(const std::string& s, TCHAR c)
@@ -219,7 +162,7 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
 //---------------------------------------------------------------------
 //		RECTを横n個に分割する
 //---------------------------------------------------------------------
-void divide_rect(LPRECT rect_parent, LPRECT* rects_child, int n)
+void rect_divide(LPRECT rect_parent, LPRECT* rects_child, int n)
 {
 	int width_parent = rect_parent->right - rect_parent->left;
 	int width_child = width_parent / n;
@@ -230,4 +173,90 @@ void divide_rect(LPRECT rect_parent, LPRECT* rects_child, int n)
 		rects_child[i]->top = rect_parent->top;
 		rects_child[i]->bottom = rect_parent->bottom;
 	}
+}
+
+
+
+//---------------------------------------------------------------------
+//		RECTに余白を設定
+//---------------------------------------------------------------------
+RECT rect_set_margin(LPRECT rect_parent, int left, int top, int right, int bottom)
+{
+	RECT result;
+	result.left = rect_parent->left + left;
+	result.top = rect_parent->top + top;
+	result.right = rect_parent->right - right;
+	result.bottom = rect_parent->bottom - bottom;
+
+	if (result.left > result.right)
+		result.left = result.right = (rect_parent->left + rect_parent->right) / 2;
+	if (result.top > result.bottom)
+		result.top = result.bottom = (rect_parent->top + rect_parent->bottom) / 2;
+
+	return result;
+}
+
+
+
+//---------------------------------------------------------------------
+//		キー押下時の処理
+//---------------------------------------------------------------------
+LRESULT on_keydown(WPARAM wparam)
+{
+	switch (wparam) {
+	case 82: //[R]
+		if (g_window_graph.hwnd)
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_REVERSE, 0);
+		return 0;
+
+	case 67: //[C]
+		if (::GetAsyncKeyState(VK_CONTROL) < 0)
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_COPY, 0);
+		return 0;
+
+	case 83: //[S]
+		if (::GetAsyncKeyState(VK_CONTROL) < 0)
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_SAVE, 0);
+		else
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_SHOWHANDLE, 0);
+		return 0;
+
+	case VK_LEFT: //[<]	
+		if (g_config.mode) {
+			g_config.current_id--;
+			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+			g_curve_id_previous = g_curve_id[g_config.current_id];
+
+			if (g_window_graph.hwnd)
+				::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+		}
+		return 0;
+
+	case VK_RIGHT: //[>]
+		if (g_config.mode) {
+			g_config.current_id++;
+			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+			g_curve_id_previous = g_curve_id[g_config.current_id];
+
+			if (g_window_graph.hwnd)
+				::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+		}
+		return 0;
+
+	case 70: //[F]
+		if (g_window_graph.hwnd)
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_FIT, 0);
+		return 0;
+
+	case 65: //[A]
+		if (g_window_graph.hwnd)
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CT_ALIGN, 0);
+		return 0;
+
+	case VK_DELETE:
+		if (g_window_graph.hwnd)
+			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_CLEAR, 0);
+		return 0;
+	}
+	return 0;
 }
