@@ -12,13 +12,15 @@
 //		レイアウト関連
 //---------------------------------------------------------------------
 // ウィンドウ
-#define CE_MARGIN					8
+#define CE_MARGIN					6
 #define CE_MARGIN_PRESET			5
 #define CE_MAX_W					1440
 #define CE_MAX_H					1080
 #define CE_DEF_W					360
 #define CE_DEF_H					460
 #define CE_DEF_PRESET_SIZE			50
+#define CE_ROUND_RADIUS				4.0f
+#define CE_HEADER_H					92
 
 // セパレータ
 #define CE_SEPR_DEF					CE_DEF_H - 120
@@ -54,6 +56,14 @@
 #define CE_SUBTRACT_LENGTH			10.0f
 #define CE_SUBTRACT_LENGTH_2		8.0f
 
+//フラグ
+#define BIT(num)				((UINT)1 << num)
+#define CE_EDGE_LT				BIT(0)
+#define CE_EDGE_LB				BIT(1)
+#define CE_EDGE_RT				BIT(2)
+#define CE_EDGE_RB				BIT(3)
+#define CE_EDGE_ALL				CE_EDGE_LT | CE_EDGE_LB | CE_EDGE_RT | CE_EDGE_RB
+
 
 
 //---------------------------------------------------------------------
@@ -68,9 +78,8 @@
 #define CE_CT_ID_NEXT				0x0406
 #define CE_CT_ID					0x0407
 
-#define CE_CT_EDT_H					30
-#define CE_CT_SEARCH_H				20
-#define CE_CT_H						44
+#define CE_CT_UPSIDE_H				32
+#define CE_CT_DOWNSIDE_H			40
 
 
 
@@ -94,7 +103,7 @@
 //---------------------------------------------------------------------
 // 明るさ
 #define CE_BR_GRID					25
-#define CE_BR_GR_INVALID			-8
+#define CE_BR_GR_INVALID			-10
 #define CE_CT_BR_HOVERED			13
 #define CE_CT_BR_CLICKED			-10
 #define CE_CT_BR_SWITCH				-20					//選択していない状態

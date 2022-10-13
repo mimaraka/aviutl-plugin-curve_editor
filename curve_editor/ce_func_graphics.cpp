@@ -48,8 +48,8 @@ void d2d_setup(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, COLORREF cr)
 //---------------------------------------------------------------------
 //		グラフのグリッドを描画
 //---------------------------------------------------------------------
-void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
-	pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GRID)));
+void d2d_draw_grid(ID2D1SolidColorBrush* brush, LPRECT rect_wnd) {
+	brush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GRID)));
 	// 
 	int kx = (int)std::floor(std::log(CE_GR_RESOLUTION * g_view_info.scale.x / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
 	int ky = (int)std::floor(std::log(CE_GR_RESOLUTION * g_view_info.scale.y / (double)CE_GR_GRID_MIN) / std::log(CE_GR_GRID_N));
@@ -84,7 +84,7 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 		g_render_target->DrawLine(
 			D2D1::Point2F(ax + dx * i, 0),
 			D2D1::Point2F(ax + dx * i, (float)rect_wnd->bottom),
-			pBrush, thickness, NULL
+			brush, thickness, NULL
 		);
 	}
 
@@ -97,7 +97,7 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 		g_render_target->DrawLine(
 			D2D1::Point2F(0, ay + dy * i),
 			D2D1::Point2F((float)rect_wnd->right, ay + dy * i),
-			pBrush, thickness, NULL
+			brush, thickness, NULL
 		);
 	}
 }
@@ -107,7 +107,7 @@ void d2d_draw_grid(ID2D1SolidColorBrush* pBrush, LPRECT rect_wnd) {
 //---------------------------------------------------------------------
 //		ベジェカーブを描画
 //---------------------------------------------------------------------
-void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
+void d2d_draw_bezier(ID2D1SolidColorBrush* brush,
 	ce::Float_Point stpt, ce::Float_Point ctpt1, ce::Float_Point ctpt2, ce::Float_Point edpt, float thickness)
 {
 	ID2D1GeometrySink* sink;
@@ -137,7 +137,7 @@ void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 	sink->Close();
 
 	if (bezier)
-		g_render_target->DrawGeometry(bezier, pBrush, thickness, pStyle);
+		g_render_target->DrawGeometry(bezier, brush, thickness, pStyle);
 }
 
 
@@ -145,7 +145,7 @@ void d2d_draw_bezier(ID2D1SolidColorBrush* pBrush,
 //---------------------------------------------------------------------
 //		グラフのハンドルを描画
 //---------------------------------------------------------------------
-void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Float_Point st, ce::Float_Point ed)
+void d2d_draw_handle(ID2D1SolidColorBrush* brush, ce::Float_Point st, ce::Float_Point ed)
 {
 	ce::Float_Point st_new = subtract_length(ed, st, CE_SUBTRACT_LENGTH_2);
 	ce::Float_Point ed_new = subtract_length(st, ed, CE_SUBTRACT_LENGTH);
@@ -168,22 +168,82 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Float_Point st, ce::Float
 	g_render_target->DrawLine(
 		D2D1::Point2F(st_new.x, st_new.y),
 		D2D1::Point2F(ed_new.x, ed_new.y),
-		pBrush, CE_HANDLE_TH
+		brush, CE_HANDLE_TH
 	);
 
 	g_render_target->DrawEllipse(
 		D2D1::Ellipse(
 			D2D1::Point2F(ed.x, ed.y),
 			(float)CE_HANDLE_SIZE, (float)CE_HANDLE_SIZE),
-		pBrush, (float)CE_HANDLE_SIRCLE_LINE
+		brush, (float)CE_HANDLE_SIRCLE_LINE
 	);
 
 	g_render_target->FillEllipse(
 		D2D1::Ellipse(
 			D2D1::Point2F(st.x, st.y),
 			(float)CE_POINT_SIZE, (float)CE_POINT_SIZE),
-			pBrush
+			brush
 	);
+}
+
+
+
+//---------------------------------------------------------------------
+//		ラウンドエッジを描画
+//---------------------------------------------------------------------
+void d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius) {
+	ID2D1GeometrySink* sink;
+	ID2D1PathGeometry* edge;
+	D2D1_POINT_2F pt_1, pt_2, pt_3;
+
+	D2D1_POINT_2F pts_1[] = {
+		D2D1::Point2F((float)rect_wnd->left, (float)rect_wnd->top),
+		D2D1::Point2F((float)rect_wnd->left, (float)rect_wnd->bottom),
+		D2D1::Point2F((float)rect_wnd->right, (float)rect_wnd->top),
+		D2D1::Point2F((float)rect_wnd->right, (float)rect_wnd->bottom)
+	};
+
+	D2D1_POINT_2F pts_2[] = {
+		D2D1::Point2F((float)rect_wnd->left, (float)rect_wnd->top + radius),
+		D2D1::Point2F((float)rect_wnd->left + radius, (float)rect_wnd->bottom),
+		D2D1::Point2F((float)rect_wnd->right - radius, (float)rect_wnd->top),
+		D2D1::Point2F((float)rect_wnd->right, (float)rect_wnd->bottom - radius)
+	};
+
+	D2D1_POINT_2F pts_3[] = {
+		D2D1::Point2F((float)rect_wnd->left + radius, (float)rect_wnd->top),
+		D2D1::Point2F((float)rect_wnd->left, (float)rect_wnd->bottom - radius),
+		D2D1::Point2F((float)rect_wnd->right, (float)rect_wnd->top + radius),
+		D2D1::Point2F((float)rect_wnd->right - radius, (float)rect_wnd->bottom)
+	};
+
+	g_d2d1_factory->CreatePathGeometry(&edge);
+	edge->Open(&sink);
+
+	for (int i = 0; i < 4; i++) {
+		if (flag & 1 << i) {
+			pt_1 = pts_1[i];
+			pt_2 = pts_2[i];
+			pt_3 = pts_3[i];
+		}
+		sink->BeginFigure(pt_1, D2D1_FIGURE_BEGIN_FILLED);
+		sink->AddLine(pt_2);
+		sink->AddArc(
+			D2D1::ArcSegment(
+				pt_3,
+				D2D1::SizeF(radius, radius),
+				0.0f,
+				D2D1_SWEEP_DIRECTION_CLOCKWISE,
+				D2D1_ARC_SIZE_SMALL
+			)
+		);
+		sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+	}
+	
+	sink->Close();
+	brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
+	if (edge)
+		g_render_target->FillGeometry(edge, brush, NULL);
 }
 
 
@@ -193,7 +253,7 @@ void d2d_draw_handle(ID2D1SolidColorBrush* pBrush, ce::Float_Point st, ce::Float
 //---------------------------------------------------------------------
 void draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
 {
-	static ID2D1SolidColorBrush* pBrush = NULL;
+	static ID2D1SolidColorBrush* brush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
 
 	g_d2d1_factory->CreateStrokeStyle(
@@ -214,13 +274,13 @@ void draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
 
 	if (g_render_target != NULL) {
 		g_render_target->BeginDraw();
-		if (pBrush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
-		pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
+		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
 
-		if (pBrush) g_render_target->DrawLine(
+		if (brush) g_render_target->DrawLine(
 			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5f - CE_SEPR_LINE_L, (float)(rect_sepr->top + CE_SEPR_W)),
 			D2D1::Point2F((rect_sepr->right + rect_sepr->left) * 0.5f + CE_SEPR_LINE_L, (float)(rect_sepr->top + CE_SEPR_W)),
-			pBrush, CE_SEPR_LINE_W, pStyle
+			brush, CE_SEPR_LINE_W, pStyle
 		);
 		g_render_target->EndDraw();
 	}
@@ -236,7 +296,7 @@ void draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
 //---------------------------------------------------------------------
 void draw_footer(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	static ID2D1SolidColorBrush* pBrush = NULL;
+	static ID2D1SolidColorBrush* brush = NULL;
 
 	//Direct2D初期化
 	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
@@ -252,7 +312,7 @@ void draw_footer(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 void draw_panel_library(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	static ID2D1SolidColorBrush* pBrush = NULL;
+	static ID2D1SolidColorBrush* brush = NULL;
 
 	//Direct2D初期化
 	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
@@ -268,7 +328,7 @@ void draw_panel_library(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	static ID2D1SolidColorBrush* pBrush = NULL;
+	static ID2D1SolidColorBrush* brush = NULL;
 
 	//Direct2D初期化
 	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
@@ -284,7 +344,7 @@ void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
-	static ID2D1SolidColorBrush* pBrush = NULL;
+	static ID2D1SolidColorBrush* brush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
 	float dashes[] = { CE_GR_POINT_DASH, CE_GR_POINT_DASH };
 
@@ -351,44 +411,44 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 	//描画
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {
 		g_render_target->BeginDraw();
-		if (pBrush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &pBrush);
+		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
 
 		//グリッド
-		d2d_draw_grid(pBrush, rect_wnd);
+		d2d_draw_grid(brush, rect_wnd);
 
-		pBrush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GR_INVALID)));
-		pBrush->SetOpacity(0.5);
-		if (pBrush) {
+		brush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GR_INVALID)));
+		brush->SetOpacity(0.5);
+		if (brush) {
 			// Xが0未満1より大の部分を暗くする
-			g_render_target->FillRectangle(&rect_left, pBrush);
-			g_render_target->FillRectangle(&rect_right, pBrush);
+			g_render_target->FillRectangle(&rect_left, brush);
+			g_render_target->FillRectangle(&rect_right, brush);
 			// Valueモードのとき
 			if (g_config.mode == 0) {
-				g_render_target->FillRectangle(&rect_up, pBrush);
-				g_render_target->FillRectangle(&rect_down, pBrush);
+				g_render_target->FillRectangle(&rect_up, brush);
+				g_render_target->FillRectangle(&rect_down, brush);
 			}
 		}
-		pBrush->SetOpacity(1);
+		brush->SetOpacity(1);
 
 
 		//値モードのとき
 		if (g_config.mode == 0) {
 			// ベジェ(トレース)
 			if (g_config.trace) {
-				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));
-				d2d_draw_bezier(pBrush, ctpt_trace_cl[0], ctpt_trace_cl[1], ctpt_trace_cl[2], ctpt_trace_cl[3], CE_CURVE_TH);
+				brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));
+				d2d_draw_bezier(brush, ctpt_trace_cl[0], ctpt_trace_cl[1], ctpt_trace_cl[2], ctpt_trace_cl[3], CE_CURVE_TH);
 			}
 			// ベジェ
-			pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
-			d2d_draw_bezier(pBrush, ctpt_cl[0], ctpt_cl[1], ctpt_cl[2], ctpt_cl[3], CE_CURVE_TH);
+			brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
+			d2d_draw_bezier(brush, ctpt_cl[0], ctpt_cl[1], ctpt_cl[2], ctpt_cl[3], CE_CURVE_TH);
 
 			if (g_config.show_handle) {
 				//ハンドルの色
-				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
+				brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
 				//ハンドル（左）
-				d2d_draw_handle(pBrush, ctpt_cl[0], ctpt_cl[1]);
+				d2d_draw_handle(brush, ctpt_cl[0], ctpt_cl[1]);
 				//ハンドル（右）
-				d2d_draw_handle(pBrush, ctpt_cl[3], ctpt_cl[2]);
+				d2d_draw_handle(brush, ctpt_cl[3], ctpt_cl[2]);
 			}
 		}
 
@@ -397,8 +457,8 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 			// ベジェ曲線(トレース)を描画
 			if (g_config.trace) {
 				for (int i = 0; i < (int)g_curve_id_previous.ctpts.size - 1; i++) {
-					pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));
-					d2d_draw_bezier(pBrush,
+					brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));
+					d2d_draw_bezier(brush,
 						to_client(g_curve_id_previous.ctpts[i].pt_center),
 						to_client(g_curve_id_previous.ctpts[i].pt_right),
 						to_client(g_curve_id_previous.ctpts[i + 1].pt_left),
@@ -411,7 +471,7 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 			for (int i = 0; i < (int)g_curve_id[g_config.current_id].ctpts.size - 1; i++)
 			{
 				//色を指定
-				pBrush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));
+				brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));
 				g_d2d1_factory->CreateStrokeStyle(
 					D2D1::StrokeStyleProperties(
 						D2D1_CAP_STYLE_FLAT,
@@ -431,13 +491,13 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 					g_render_target->DrawLine(
 						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, 0),
 						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, (float)rect_wnd->bottom),
-						pBrush, CE_GR_POINT_TH, pStyle
+						brush, CE_GR_POINT_TH, pStyle
 					);
 
 
 				// ベジェ曲線を描画
-				pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
-				d2d_draw_bezier(pBrush,
+				brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
+				d2d_draw_bezier(brush,
 					to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center),
 					to_client(g_curve_id[g_config.current_id].ctpts[i].pt_right),
 					to_client(g_curve_id[g_config.current_id].ctpts[i + 1].pt_left),
@@ -447,12 +507,12 @@ void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 
 				//ハンドルの描画
 				if (g_config.show_handle) {
-					pBrush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
-					d2d_draw_handle(pBrush,
+					brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
+					d2d_draw_handle(brush,
 						to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center),
 						to_client(g_curve_id[g_config.current_id].ctpts[i].pt_right)
 					);
-					d2d_draw_handle(pBrush,
+					d2d_draw_handle(brush,
 						to_client(g_curve_id[g_config.current_id].ctpts[i + 1].pt_center),
 						to_client(g_curve_id[g_config.current_id].ctpts[i + 1].pt_left)
 					);

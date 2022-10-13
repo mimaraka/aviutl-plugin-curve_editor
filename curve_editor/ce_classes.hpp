@@ -187,10 +187,23 @@ namespace ce {
 		HICON icon_dark;
 		HICON icon_light;
 		LPTSTR description;
+		int edge_flag;
+		ID2D1SolidColorBrush* brush;
+
 	public:
 		int id;
 
-		BOOL				create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect);
+		BOOL				create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect, int flag);
+		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		コントロールウィンドウ(スイッチ)
+	//---------------------------------------------------------------------
+	class Control_Switch : public Control {
+	public:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 

@@ -180,20 +180,17 @@ void rect_divide(LPRECT rect_parent, LPRECT* rects_child, int n)
 //---------------------------------------------------------------------
 //		RECT‚É—]”’‚ðÝ’è
 //---------------------------------------------------------------------
-RECT rect_set_margin(LPRECT rect_parent, int left, int top, int right, int bottom)
+void rect_set_margin(LPRECT rect, int left, int top, int right, int bottom)
 {
-	RECT result;
-	result.left = rect_parent->left + left;
-	result.top = rect_parent->top + top;
-	result.right = rect_parent->right - right;
-	result.bottom = rect_parent->bottom - bottom;
+	rect->left += left;
+	rect->top += top;
+	rect->right -= right;
+	rect->bottom -= bottom;
 
-	if (result.left > result.right)
-		result.left = result.right = (rect_parent->left + rect_parent->right) / 2;
-	if (result.top > result.bottom)
-		result.top = result.bottom = (rect_parent->top + rect_parent->bottom) / 2;
-
-	return result;
+	if (rect->left > rect->right)
+		rect->left = rect->right = (rect->left + rect->right) / 2;
+	if (rect->top > rect->bottom)
+		rect->top = rect->bottom = (rect->top + rect->bottom) / 2;
 }
 
 
@@ -205,20 +202,20 @@ LRESULT on_keydown(WPARAM wparam)
 {
 	switch (wparam) {
 	case 82: //[R]
-		if (g_window_graph.hwnd)
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_REVERSE, 0);
+		if (g_window_editor.hwnd)
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REVERSE, 0);
 		return 0;
 
 	case 67: //[C]
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_COPY, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_COPY, 0);
 		return 0;
 
 	case 83: //[S]
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_SAVE, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_SAVE, 0);
 		else
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_SHOWHANDLE, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_SHOWHANDLE, 0);
 		return 0;
 
 	case VK_LEFT: //[<]	
@@ -227,8 +224,8 @@ LRESULT on_keydown(WPARAM wparam)
 			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
 			g_curve_id_previous = g_curve_id[g_config.current_id];
 
-			if (g_window_graph.hwnd)
-				::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+			if (g_window_editor.hwnd)
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 		}
 		return 0;
 
@@ -238,24 +235,24 @@ LRESULT on_keydown(WPARAM wparam)
 			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
 			g_curve_id_previous = g_curve_id[g_config.current_id];
 
-			if (g_window_graph.hwnd)
-				::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+			if (g_window_editor.hwnd)
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 		}
 		return 0;
 
 	case 70: //[F]
-		if (g_window_graph.hwnd)
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_FIT, 0);
+		if (g_window_editor.hwnd)
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_FIT, 0);
 		return 0;
 
 	case 65: //[A]
-		if (g_window_graph.hwnd)
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CT_ALIGN, 0);
+		if (g_window_editor.hwnd)
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CT_ALIGN, 0);
 		return 0;
 
 	case VK_DELETE:
-		if (g_window_graph.hwnd)
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_CLEAR, 0);
+		if (g_window_editor.hwnd)
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_CLEAR, 0);
 		return 0;
 	}
 	return 0;

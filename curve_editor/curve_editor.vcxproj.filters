@@ -27,7 +27,7 @@
     <ClCompile Include="ce_ctrlproc.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_utils.cpp">
+    <ClCompile Include="ce_func.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ce_func_graphics.cpp">

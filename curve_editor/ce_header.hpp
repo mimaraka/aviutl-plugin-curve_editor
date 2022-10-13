@@ -23,9 +23,8 @@ extern const ce::Theme						g_theme_dark,
 extern const ce::Theme						g_theme[2];
 extern ce::Config							g_config;
 extern ce::Window							g_window_main,
-											g_window_footer,
+											g_window_header,
 											g_window_editor,
-											g_window_graph,
 											g_window_preset;
 extern ce::Graph_View_Info					g_view_info;
 extern FILTER*								g_fp;
@@ -55,6 +54,9 @@ void				ini_write_configs(FILTER* fp);
 BOOL				on_project_load(FILTER* fp, void* editp, void* data, int size);
 BOOL				on_project_save(FILTER* fp, void* editp, void* data, int* size);
 
+// ウィンドウプロシージャ
+BOOL				filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
+
 
 
 //----------------------------------------------------------------------------------
@@ -77,7 +79,7 @@ void				apply_config_to_menu(HMENU menu, MENUITEMINFO minfo);
 void				rect_divide(LPRECT rect_parent, LPRECT* rects_child, int n);
 
 // RECTに余白を設定
-RECT				rect_set_margin(LPRECT rect_parent, int left, int top, int right, int bottom);
+void				rect_set_margin(LPRECT rect, int left, int top, int right, int bottom);
 
 // キー押下時の処理
 LRESULT				on_keydown(WPARAM wparam);
@@ -89,6 +91,7 @@ LRESULT				on_keydown(WPARAM wparam);
 //----------------------------------------------------------------------------------
 void				d2d_init();
 void				d2d_setup(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, COLORREF cr);
+void				d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius);
 void				draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr);
 void				draw_footer(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
 void				draw_panel_library(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
@@ -100,12 +103,10 @@ void				draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
 //----------------------------------------------------------------------------------
 //		ウィンドウプロシージャ
 //----------------------------------------------------------------------------------
-BOOL				filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 LRESULT CALLBACK	wndproc_main(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_header(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_editor(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_footer(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_graph(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_library(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_preset(HWND, UINT, WPARAM, LPARAM);
 
 
 

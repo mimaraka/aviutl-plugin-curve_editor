@@ -15,7 +15,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static BOOL bSepr = FALSE;
 	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	RECT rect_wnd, rect_sepr, rect_editor, rect_footer;
+	RECT rect_wnd, rect_sepr, rect_editor, rect_header, rect_preset;
 
 	static ce::Bitmap_Canvas canvas;
 
@@ -28,19 +28,28 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		g_config.separator + CE_SEPR_W
 	};
 
-	rect_editor = {
+	rect_header = {
 		0,
 		0,
 		rect_wnd.right,
-		g_config.separator - CE_SEPR_W
+		CE_HEADER_H
 	};
 
-	rect_footer = {
+	rect_editor = {
+		0,
+		CE_HEADER_H,
+		rect_wnd.right,
+		g_config.separator - CE_SEPR_W
+	};
+	rect_set_margin(&rect_editor, CE_MARGIN, 0, CE_MARGIN, CE_MARGIN);
+
+	rect_preset = {
 		0,
 		g_config.separator + CE_SEPR_W,
 		rect_wnd.right,
 		rect_wnd.bottom
 	};
+
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -50,16 +59,22 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_CREATE:
 		canvas.init(hwnd);
 
-		//エディタパネル
+		//ヘッダパネル
+		g_window_header.create(
+			hwnd, "WINDOW_FOOTER", wndproc_header, NULL,
+			&rect_header
+		);
+
+		// グラフパネル
 		g_window_editor.create(
-			hwnd, "WINDOW_EDITOR", wndproc_editor, NULL,
+			hwnd, "WINDOW_GPATH", wndproc_editor, NULL,
 			&rect_editor
 		);
 
-		//フッタパネル
-		g_window_footer.create(
-			hwnd, "WINDOW_FOOTER", wndproc_footer, NULL,
-			&rect_footer
+		// プリセットパネル
+		g_window_preset.create(
+			hwnd, "WINDOW_PRESET", wndproc_preset, NULL,
+			&rect_preset
 		);
 
 		return 0;
@@ -69,8 +84,9 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_SIZE:
+		g_window_header.move(&rect_header);
 		g_window_editor.move(&rect_editor);
-		g_window_footer.move(&rect_footer);
+		g_window_preset.move(&rect_preset);
 		return 0;
 
 	case WM_LBUTTONDOWN:
@@ -90,8 +106,9 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		if (::PtInRect(&rect_sepr, cl_pt)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 		if (bSepr) {
 			g_config.separator = MINMAXLIM(cl_pt.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W);
+			g_window_header.move(&rect_header);
 			g_window_editor.move(&rect_editor);
-			g_window_footer.move(&rect_footer);
+			g_window_preset.move(&rect_preset);
 			::InvalidateRect(hwnd, NULL, FALSE);
 		}
 		return 0;
@@ -100,74 +117,14 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (wparam) {
 		case CE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
+			g_window_header.redraw();
 			g_window_editor.redraw();
-			g_window_footer.redraw();
+			g_window_preset.redraw();
 		}
 
 	default:
 		return ::DefWindowProc(hwnd, msg, wparam, lparam);
 	}
-}
-
-
-
-//---------------------------------------------------------------------
-//		ウィンドウプロシージャ（エディタパネル）
-//---------------------------------------------------------------------
-LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
-{
-	RECT rect_wnd, rect_graph;
-	static ce::Bitmap_Canvas canvas;
-
-
-	//クライアント領域の矩形を取得
-	::GetClientRect(hwnd, &rect_wnd);
-	rect_graph = rect_set_margin(&rect_wnd, CE_MARGIN, CE_MARGIN, CE_MARGIN, CE_MARGIN);
-
-	switch (msg) {
-	case WM_CLOSE:
-		canvas.exit();
-		return 0;
-
-	case WM_CREATE:
-		canvas.init(hwnd);
-
-		g_window_graph.create(
-			hwnd, "WINDOW_GPATH", wndproc_graph, NULL,
-			&rect_graph
-		);
-		return 0;
-
-	case WM_SIZE:
-		g_window_graph.move(&rect_graph);
-		return 0;
-
-	case WM_PAINT:
-		draw_panel_editor(&canvas, &rect_wnd);
-		return 0;
-
-	case WM_COMMAND:
-		switch (LOWORD(wparam)) {
-		//	//Valueパネル
-		//case CM_EDITOR_VALUE:
-		//	if (!g_config.lang) DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, dialogproc_value);
-		//	else DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE_JA), hwnd, dialogproc_value);
-		//	InvalidateRect(hwnd, NULL, FALSE);
-		//	RedrawChildren();
-		//	return 0;
-
-		//コントロール再描画
-		case CE_CM_REDRAW:
-			::InvalidateRect(hwnd, NULL, FALSE);
-			g_window_graph.redraw();
-			return 0;
-		}
-		return 0;
-
-	default:
-		return ::DefWindowProc(hwnd, msg, wparam, lparam);
-	}
-	return 0;
 }
 
 
@@ -175,7 +132,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（グラフパネル）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	//int
 	static int		move_pt			= 0;			//0:None, 1:Ctpt1, 2:Ctpt2
@@ -636,12 +593,11 @@ LRESULT CALLBACK wndproc_graph(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ（フッタパネル）
+//		ウィンドウプロシージャ（ヘッダパネル）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
-	static HWND hwnd_test;
 	static ce::Bitmap_Canvas canvas;
 	static ce::Control copy, read, save, clear, fit;
 	RECT rect_buttons_parent, rect_copy, rect_read, rect_save, rect_clear, rect_fit;
@@ -658,9 +614,9 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	rect_buttons_parent = {
 		CE_MARGIN,
-		CE_MARGIN * 2 + CE_CT_H,
+		CE_MARGIN * 2 + CE_CT_UPSIDE_H,
 		rect_wnd.right - CE_MARGIN,
-		CE_MARGIN * 2 + CE_CT_H * 2
+		CE_MARGIN * 2 + CE_CT_DOWNSIDE_H + CE_CT_UPSIDE_H
 	};
 	rect_divide(&rect_buttons_parent, lprect_buttons, 5);
 
@@ -679,7 +635,8 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			MAKEINTRESOURCE(IDI_COPY),
 			MAKEINTRESOURCE(IDI_COPY_LIGHT),
 			CE_CM_COPY,
-			&rect_copy
+			&rect_copy,
+			CE_EDGE_ALL
 		);
 		read.create(
 			hwnd,
@@ -688,7 +645,8 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			MAKEINTRESOURCE(IDI_READ),
 			MAKEINTRESOURCE(IDI_READ_LIGHT),
 			CE_CM_READ,
-			&rect_read
+			&rect_read,
+			CE_EDGE_ALL
 		);
 		save.create(
 			hwnd,
@@ -697,7 +655,8 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			MAKEINTRESOURCE(IDI_SAVE),
 			MAKEINTRESOURCE(IDI_SAVE_LIGHT),
 			CE_CM_SAVE,
-			&rect_save
+			&rect_save,
+			CE_EDGE_ALL
 		);
 		clear.create(
 			hwnd,
@@ -706,7 +665,8 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			MAKEINTRESOURCE(IDI_CLEAR),
 			MAKEINTRESOURCE(IDI_CLEAR_LIGHT),
 			CE_CM_CLEAR,
-			&rect_clear
+			&rect_clear,
+			CE_EDGE_ALL
 		);
 		fit.create(
 			hwnd,
@@ -715,7 +675,8 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			MAKEINTRESOURCE(IDI_FIT),
 			MAKEINTRESOURCE(IDI_FIT_LIGHT),
 			CE_CM_FIT,
-			&rect_fit
+			&rect_fit,
+			CE_EDGE_ALL
 		);
 		return 0;
 
@@ -743,23 +704,23 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			return 0;
 
 		case CE_CM_COPY:
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_COPY, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_COPY, 0);
 			return 0;
 
 		case CE_CM_READ:
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_READ, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_READ, 0);
 			return 0;
 
 		case CE_CM_SAVE:
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_SAVE, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_SAVE, 0);
 			return 0;
 
 		case CE_CM_CLEAR:
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_CLEAR, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_CLEAR, 0);
 			return 0;
 
 		case CE_CM_FIT:
-			::SendMessage(g_window_graph.hwnd, WM_COMMAND, CE_CM_FIT, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_FIT, 0);
 			return 0;
 		}
 		return 0;
@@ -773,9 +734,9 @@ LRESULT CALLBACK wndproc_footer(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ（ライブラリ）
+//		ウィンドウプロシージャ（プリセットパネル）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK wndproc_preset(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	POINT			cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT			rect_wnd;

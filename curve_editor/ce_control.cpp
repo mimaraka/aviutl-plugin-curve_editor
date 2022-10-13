@@ -11,13 +11,14 @@
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect)
+BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect, int flag)
 {
 	WNDCLASSEX tmp;
 	id = ct_id;
 	icon_res_dark = ico_res_dark;
 	icon_res_light = ico_res_light;
 	description = desc;
+	edge_flag = flag;
 
 	tmp.cbSize			= sizeof(tmp);
 	tmp.style			= CS_HREDRAW | CS_VREDRAW;
@@ -106,7 +107,6 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_PAINT:
 	{
 		COLORREF bg;
-		ID2D1SolidColorBrush* pBrush = NULL;
 
 		if (clicked)
 			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
@@ -123,6 +123,14 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			g_config.theme ? icon_light : icon_dark
 		);
 
+		if (g_render_target != NULL) {
+			g_render_target->BeginDraw();
+			if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+			d2d_draw_rounded_edge(brush, &rect_wnd, edge_flag, CE_ROUND_RADIUS);
+
+			g_render_target->EndDraw();
+		}
+		
 		canvas.transfer(&rect_wnd);
 		return 0;
 	}
@@ -168,6 +176,19 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	default:
-		return DefWindowProc(hwnd, msg, wparam, lparam);
+		return ::DefWindowProc(hwnd, msg, wparam, lparam);
+	}
+}
+
+
+
+//---------------------------------------------------------------------
+//		ウィンドウプロシージャ(スイッチ)
+//---------------------------------------------------------------------
+LRESULT ce::Control_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	switch (msg) {
+	default:
+		return ::DefWindowProc(hwnd, msg, wparam, lparam);
 	}
 }

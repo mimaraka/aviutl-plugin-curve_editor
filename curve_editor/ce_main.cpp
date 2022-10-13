@@ -17,9 +17,8 @@ ce::Curve_ID					g_curve_id[CE_CURVE_MAX];
 ce::Curve_ID					g_curve_id_previous;
 ce::Config						g_config;
 ce::Window						g_window_main,
-								g_window_footer,
+								g_window_header,
 								g_window_editor,
-								g_window_graph,
 								g_window_preset;
 ce::Graph_View_Info				g_view_info;
 FILTER*							g_fp;
