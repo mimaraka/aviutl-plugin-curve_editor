@@ -20,10 +20,8 @@
 #define CE_DEF_H					460
 #define CE_DEF_PRESET_SIZE			50
 #define CE_ROUND_RADIUS				4.0f
-#define CE_HEADER_H					92
 
 // セパレータ
-#define CE_SEPR_DEF					CE_DEF_H - 120
 #define CE_SEPR_W					8
 #define CE_SEPR_LINE_W				3.6f
 #define CE_SEPR_LINE_L				32
@@ -77,9 +75,12 @@
 #define CE_CT_ID_BACK				0x0405
 #define CE_CT_ID_NEXT				0x0406
 #define CE_CT_ID					0x0407
+#define CE_CT_SETSTATUS				0x0408
 
-#define CE_CT_UPSIDE_H				32
-#define CE_CT_DOWNSIDE_H			40
+#define CE_CT_UPPER_H				30
+#define CE_CT_LOWER_H				40
+#define CE_CT_FONT_H				16
+#define CE_HEADER_H					CE_CT_UPPER_H + CE_CT_LOWER_H + CE_MARGIN * 3
 
 
 
@@ -95,6 +96,7 @@
 #define CE_CM_REVERSE				0x0806
 #define CE_CM_SHOWHANDLE			0x0807
 #define CE_CM_CHANGEID				0x0808
+#define CE_CM_SELECTED				0x0809
 
 
 
@@ -135,7 +137,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.2.1"
+#define CE_PLUGIN_VERSION			"v0.3"
 #define CE_PLUGIN_AUTHOR			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR

@@ -32,6 +32,10 @@ const ce::Theme g_theme_dark = {
 	RGB(103, 103, 241),
 	RGB(57, 57, 57),
 	RGB(243, 243, 243),
+	RGB(176, 198, 203),
+	RGB(68, 68, 68),
+	RGB(240, 240, 240),
+	RGB(35, 35, 35),
 };
 //ライトテーマ
 const ce::Theme g_theme_light = {
@@ -40,6 +44,10 @@ const ce::Theme g_theme_light = {
 	RGB(70, 70, 70),
 	RGB(103, 103, 241),
 	RGB(205, 205, 205),
+	RGB(70, 70, 70),
+	RGB(176, 198, 203),
+	RGB(215, 215, 215),
+	RGB(70, 70, 70),
 	RGB(70, 70, 70)
 };
 

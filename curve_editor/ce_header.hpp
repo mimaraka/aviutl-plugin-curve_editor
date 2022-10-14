@@ -92,11 +92,10 @@ LRESULT				on_keydown(WPARAM wparam);
 void				d2d_init();
 void				d2d_setup(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, COLORREF cr);
 void				d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius);
-void				draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr);
-void				draw_footer(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
-void				draw_panel_library(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
+void				draw_panel_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr);
+void				draw_panel_header(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
+void				draw_panel_preset(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
 void				draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
-void				draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
 
 
 

@@ -39,7 +39,11 @@ namespace ce {
 			sepr,
 			curve,
 			curve_trace,
-			handle;
+			handle,
+			bt_selected,
+			bt_unselected,
+			bt_tx,
+			bt_tx_selected;
 	} Theme;
 
 

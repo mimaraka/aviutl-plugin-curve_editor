@@ -130,14 +130,17 @@ namespace ce {
 	//		ウィンドウ
 	//---------------------------------------------------------------------
 	class Window {
+	protected:
+		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
 	public:
 		HWND hwnd;
 
-		virtual BOOL			create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, LPRECT rect);
-		virtual void			move(LPRECT rect);
-		void					redraw();
-		virtual LRESULT			wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		virtual BOOL		create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, LPRECT rect);
+		virtual void		move(LPRECT rect);
+		void				redraw();
+		BOOL				close();
+		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -147,13 +150,13 @@ namespace ce {
 	//---------------------------------------------------------------------
 	class Preset : public Window {
 	public:
-		HWND hwnd;
-		LPTSTR name;
-		Curve_Value curve_value;
-		Curve_ID curve_id;
-		time_t unix_time;
-		const int val_or_id, def_or_user;
-		int index;
+		HWND				hwnd;
+		LPTSTR				name;
+		Curve_Value			curve_value;
+		Curve_ID			curve_id;
+		time_t				unix_time;
+		const int			val_or_id, def_or_user;
+		int					index;
 
 		Preset(int v_i, Curve_Value c_value, Curve_ID c_id, LPTSTR n, int d_u) : name(n), val_or_id(v_i), def_or_user(d_u)
 		{
@@ -172,38 +175,58 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
-	//		コントロールウィンドウ
+	//		ボタン
 	//---------------------------------------------------------------------
-	class Control : public Window {
-	private:
-		LPTSTR icon_res_dark;
-		LPTSTR icon_res_light;
-		Bitmap_Canvas canvas;
-		HWND hwnd_parent;
-		HWND hwnd_tooltip;
-		TOOLINFO tool_info;
-		BOOL hovered, clicked;
-		TRACKMOUSEEVENT	tme;
-		HICON icon_dark;
-		HICON icon_light;
-		LPTSTR description;
-		int edge_flag;
+	class Button : public Window {
+	protected:
+		LPTSTR				icon_res_dark;
+		LPTSTR				icon_res_light;
+		int					icon_or_str;			//0: アイコン, 1: 文字列
+		LPTSTR				label;
+		Bitmap_Canvas		canvas;
+		HWND				hwnd_parent;
+		HWND				hwnd_tooltip;
+		TOOLINFO			tool_info;
+		BOOL				hovered, clicked;
+		TRACKMOUSEEVENT		tme;
+		HICON				icon_dark;
+		HICON				icon_light;
+		HFONT				font;
+		LPTSTR				description;
+		int					edge_flag;
 		ID2D1SolidColorBrush* brush;
 
-	public:
-		int id;
+		void				draw(COLORREF bg, LPRECT rect_wnd);
 
-		BOOL				create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect, int flag);
+	public:
+		int					id;
+
+		BOOL				create(
+								HWND hwnd_p,
+								LPTSTR name,
+								LPTSTR desc,
+								int ic_or_str,
+								LPTSTR ico_res_dark,
+								LPTSTR ico_res_light,
+								LPTSTR lb,
+								int ct_id,
+								LPRECT rect,
+								int flag
+							);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
 
 	//---------------------------------------------------------------------
-	//		コントロールウィンドウ(スイッチ)
+	//		ボタン(スイッチ)
 	//---------------------------------------------------------------------
-	class Control_Switch : public Control {
+	class Button_Switch : public Button {
+	private:
+		BOOL				is_selected;
+
 	public:
+		void				set_status(BOOL bl);
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 

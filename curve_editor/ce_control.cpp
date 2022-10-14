@@ -11,14 +11,23 @@
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_dark, LPTSTR ico_res_light, int ct_id, LPRECT rect, int flag)
+BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LPTSTR ico_res_dark, LPTSTR ico_res_light, LPTSTR lb, int ct_id, LPRECT rect, int flag)
 {
 	WNDCLASSEX tmp;
 	id = ct_id;
-	icon_res_dark = ico_res_dark;
-	icon_res_light = ico_res_light;
 	description = desc;
 	edge_flag = flag;
+	hwnd_parent = hwnd_p;
+
+	icon_or_str = ic_or_str;
+	if (ic_or_str) {
+		label = lb;
+	}
+	else {
+		icon_res_dark = ico_res_dark;
+		icon_res_light = ico_res_light;
+	}
+
 
 	tmp.cbSize			= sizeof(tmp);
 	tmp.style			= CS_HREDRAW | CS_VREDRAW;
@@ -56,9 +65,53 @@ BOOL ce::Control::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, LPTSTR ico_res_d
 
 
 //---------------------------------------------------------------------
+//		コントロール描画用の関数
+//---------------------------------------------------------------------
+void ce::Button::draw(COLORREF bg, LPRECT rect_wnd)
+{
+	d2d_setup(&canvas, rect_wnd, TO_BGR(bg));
+
+	::SetBkColor(canvas.hdc_memory, bg);
+
+	// 文字列を描画
+	if (icon_or_str == 1) {
+		::SelectObject(canvas.hdc_memory, font);
+		::DrawText(
+			canvas.hdc_memory,
+			label,
+			strlen(label),
+			rect_wnd,
+			DT_CENTER | DT_VCENTER | DT_NOCLIP | DT_SINGLELINE
+		);
+		::DeleteObject(font);
+	}
+	// アイコンを描画
+	else {
+		::DrawIcon(
+			canvas.hdc_memory,
+			(rect_wnd->right - CE_ICON_SIZE) / 2,
+			(rect_wnd->bottom - CE_ICON_SIZE) / 2,
+			g_config.theme ? icon_light : icon_dark
+		);
+	}
+
+	if (g_render_target != NULL) {
+		g_render_target->BeginDraw();
+		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+		d2d_draw_rounded_edge(brush, rect_wnd, edge_flag, CE_ROUND_RADIUS);
+
+		g_render_target->EndDraw();
+	}
+
+	canvas.transfer(rect_wnd);
+}
+
+
+
+//---------------------------------------------------------------------
 //		ウィンドウプロシージャ(static変数使用不可)
 //---------------------------------------------------------------------
-LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
@@ -68,30 +121,44 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_CREATE:
 		canvas.init(hwnd);
 
-		hwnd_parent = ::GetParent(hwnd);
+		if (icon_or_str == 0) {
+			icon_dark = ::LoadIcon(g_fp->dll_hinst, icon_res_dark);
+			icon_light = ::LoadIcon(g_fp->dll_hinst, icon_res_light);
 
-		icon_dark = ::LoadIcon(g_fp->dll_hinst, icon_res_dark);
-		icon_light = ::LoadIcon(g_fp->dll_hinst, icon_res_light);
+			hwnd_tooltip = ::CreateWindowEx(
+				0, TOOLTIPS_CLASS,
+				NULL, TTS_ALWAYSTIP,
+				CW_USEDEFAULT, CW_USEDEFAULT,
+				CW_USEDEFAULT, CW_USEDEFAULT,
+				hwnd, NULL, g_fp->dll_hinst,
+				NULL
+			);
 
-		hwnd_tooltip = ::CreateWindowEx(
-			0, TOOLTIPS_CLASS,
-			NULL, TTS_ALWAYSTIP,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			hwnd, NULL, g_fp->dll_hinst,
-			NULL
-		);
-
-		tool_info.cbSize = sizeof(TOOLINFO);
-		tool_info.uFlags = TTF_SUBCLASS;
-		tool_info.hwnd = hwnd;
-		tool_info.uId = id;
-		tool_info.lpszText = description;
-		SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
+			tool_info.cbSize = sizeof(TOOLINFO);
+			tool_info.uFlags = TTF_SUBCLASS;
+			tool_info.hwnd = hwnd;
+			tool_info.uId = id;
+			tool_info.lpszText = description;
+			SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
+		}
 
 		tme.cbSize = sizeof(tme);
 		tme.dwFlags = TME_LEAVE;
 		tme.hwndTrack = hwnd;
+
+		// フォント
+		font = ::CreateFont(
+			CE_CT_FONT_H, 0,
+			0, 0,
+			FW_BOLD,
+			FALSE, FALSE, FALSE,
+			SHIFTJIS_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			CLIP_DEFAULT_PRECIS,
+			DEFAULT_QUALITY,
+			NULL,
+			NULL
+		);
 		return 0;
 
 	case WM_CLOSE:
@@ -99,39 +166,27 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_SIZE:
-		tool_info.rect = rect_wnd;
-		SendMessage(hwnd_tooltip, TTM_NEWTOOLRECT, 0, (LPARAM)&tool_info);
+		if (icon_or_str) {
+			tool_info.rect = rect_wnd;
+			SendMessage(hwnd_tooltip, TTM_NEWTOOLRECT, 0, (LPARAM)&tool_info);
+		}
 		return 0;
 
 	// 描画
 	case WM_PAINT:
 	{
 		COLORREF bg;
-
+		
 		if (clicked)
 			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
 		else if (hovered)
 			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
-		d2d_setup(&canvas, &rect_wnd, TO_BGR(bg));
 
-		::DrawIcon(
-			canvas.hdc_memory,
-			(int)(rect_wnd.right * 0.5f - CE_ICON_SIZE * 0.5f),
-			(int)(rect_wnd.bottom * 0.5f - CE_ICON_SIZE * 0.5f),
-			g_config.theme ? icon_light : icon_dark
-		);
+		::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		if (g_render_target != NULL) {
-			g_render_target->BeginDraw();
-			if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
-			d2d_draw_rounded_edge(brush, &rect_wnd, edge_flag, CE_ROUND_RADIUS);
-
-			g_render_target->EndDraw();
-		}
-		
-		canvas.transfer(&rect_wnd);
+		draw(bg, &rect_wnd);
 		return 0;
 	}
 
@@ -155,8 +210,8 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_LBUTTONUP:
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
 		clicked = FALSE;
+		::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
 		::InvalidateRect(hwnd, NULL, FALSE);
-		SendMessage(hwnd_parent, WM_COMMAND, id, 0);
 		return 0;
 
 	// マウスがウィンドウから離れたとき
@@ -185,10 +240,67 @@ LRESULT ce::Control::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(スイッチ)
 //---------------------------------------------------------------------
-LRESULT ce::Control_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	RECT rect_wnd;
+
+	::GetClientRect(hwnd, &rect_wnd);
+
 	switch (msg) {
-	default:
-		return ::DefWindowProc(hwnd, msg, wparam, lparam);
+	// 描画
+	case WM_PAINT:
+	{
+		COLORREF bg;
+		// 選択時
+		if (is_selected) {
+			if (clicked)
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CE_CT_BR_CLICKED);
+			else if (hovered)
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CE_CT_BR_HOVERED);
+			else
+				bg = g_theme[g_config.theme].bt_selected;
+
+			::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx_selected);
+		}
+		// 非選択時
+		else {
+			if (clicked)
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CE_CT_BR_CLICKED);
+			else if (hovered)
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CE_CT_BR_HOVERED);
+			else
+				bg = g_theme[g_config.theme].bt_unselected;
+
+			::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
+		}
+
+		draw(bg, &rect_wnd);
+		return 0;
 	}
+
+	// 左クリックが終わったとき
+	case WM_LBUTTONUP:
+		::SetCursor(LoadCursor(NULL, IDC_HAND));
+		clicked = FALSE;
+		if (!is_selected) {
+			is_selected = TRUE;
+			::SendMessage(hwnd_parent, WM_COMMAND, id, CE_CM_SELECTED);
+		}
+		::InvalidateRect(hwnd, NULL, FALSE);
+		return 0;
+
+	default:
+		return Button::wndproc(hwnd, msg, wparam, lparam);
+	}
+}
+
+
+
+//---------------------------------------------------------------------
+//		選択状態を変更(スイッチ)
+//---------------------------------------------------------------------
+void ce::Button_Switch::set_status(BOOL bl)
+{
+	is_selected = bl;
+	::InvalidateRect(hwnd, NULL, FALSE);
 }

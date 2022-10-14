@@ -23,9 +23,9 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	rect_sepr = {
 		0,
-		g_config.separator - CE_SEPR_W,
+		rect_wnd.bottom - g_config.separator - CE_SEPR_W,
 		rect_wnd.right,
-		g_config.separator + CE_SEPR_W
+		rect_wnd.bottom - g_config.separator + CE_SEPR_W
 	};
 
 	rect_header = {
@@ -39,13 +39,13 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		0,
 		CE_HEADER_H,
 		rect_wnd.right,
-		g_config.separator - CE_SEPR_W
+		rect_wnd.bottom - g_config.separator - CE_SEPR_W
 	};
 	rect_set_margin(&rect_editor, CE_MARGIN, 0, CE_MARGIN, CE_MARGIN);
 
 	rect_preset = {
 		0,
-		g_config.separator + CE_SEPR_W,
+		rect_wnd.bottom - g_config.separator + CE_SEPR_W,
 		rect_wnd.right,
 		rect_wnd.bottom
 	};
@@ -80,10 +80,11 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_PAINT:
-		draw_main(&canvas, &rect_wnd, &rect_sepr);
+		draw_panel_main(&canvas, &rect_wnd, &rect_sepr);
 		return 0;
 
 	case WM_SIZE:
+
 		g_window_header.move(&rect_header);
 		g_window_editor.move(&rect_editor);
 		g_window_preset.move(&rect_preset);
@@ -105,7 +106,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_MOUSEMOVE:
 		if (::PtInRect(&rect_sepr, cl_pt)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 		if (bSepr) {
-			g_config.separator = MINMAXLIM(cl_pt.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W);
+			g_config.separator = MINMAXLIM(rect_wnd.bottom - cl_pt.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W - CE_HEADER_H);
 			g_window_header.move(&rect_header);
 			g_window_editor.move(&rect_editor);
 			g_window_preset.move(&rect_preset);
@@ -130,7 +131,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ（グラフパネル）
+//		ウィンドウプロシージャ（エディタパネル）
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -204,7 +205,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(ウィンドウが描画されたとき)
 		///////////////////////////////////////////
 	case WM_PAINT:
-		draw_panel_graph(&canvas, &rect_wnd);
+		draw_panel_editor(&canvas, &rect_wnd);
 		return 0;
 
 		///////////////////////////////////////////
@@ -458,12 +459,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_MODE_VALUE:
 			g_config.mode = 0;
 			::InvalidateRect(hwnd, NULL, FALSE);
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CT_MODE_VALUE, CE_CM_SELECTED);
 			return 0;
 
 		// IDモードに変更
 		case ID_MENU_MODE_ID:
 			g_config.mode = 1;
 			::InvalidateRect(hwnd, NULL, FALSE);
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CT_MODE_ID, CE_CM_SELECTED);
 			return 0;
 
 		// グラフをフィット
@@ -599,10 +602,17 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
 	RECT rect_wnd;
 	static ce::Bitmap_Canvas canvas;
-	static ce::Control copy, read, save, clear, fit;
-	RECT rect_buttons_parent, rect_copy, rect_read, rect_save, rect_clear, rect_fit;
+	static ce::Button copy, read, save, clear, fit;
+	static ce::Button_Switch mode_value, mode_id;
+	RECT rect_lower_buttons, rect_mode_buttons,
+		rect_copy, rect_read, rect_save, rect_clear, rect_fit, rect_mode_value, rect_mode_id;
 
-	LPRECT lprect_buttons[] = {
+	LPRECT mode_buttons[] = {
+		&rect_mode_value,
+		&rect_mode_id
+	};
+
+	LPRECT lower_buttons[] = {
 		&rect_copy,
 		&rect_read,
 		&rect_save,
@@ -612,13 +622,21 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	::GetClientRect(hwnd, &rect_wnd);
 
-	rect_buttons_parent = {
+	rect_lower_buttons = {
 		CE_MARGIN,
-		CE_MARGIN * 2 + CE_CT_UPSIDE_H,
+		CE_MARGIN * 2 + CE_CT_UPPER_H,
 		rect_wnd.right - CE_MARGIN,
-		CE_MARGIN * 2 + CE_CT_DOWNSIDE_H + CE_CT_UPSIDE_H
+		CE_MARGIN * 2 + CE_CT_LOWER_H + CE_CT_UPPER_H
 	};
-	rect_divide(&rect_buttons_parent, lprect_buttons, 5);
+	rect_divide(&rect_lower_buttons, lower_buttons, 5);
+
+	rect_mode_buttons = {
+		CE_MARGIN,
+		CE_MARGIN,
+		(rect_wnd.right - CE_MARGIN) / 2,
+		CE_MARGIN + CE_CT_UPPER_H
+	};
+	rect_divide(&rect_mode_buttons, mode_buttons, 2);
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -628,59 +646,104 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_CREATE:
 		canvas.init(hwnd);
 
+		mode_value.create(
+			hwnd,
+			"CTRL_VALUE",
+			NULL,
+			1,
+			NULL, NULL,
+			"Value",
+			CE_CT_MODE_VALUE,
+			&rect_mode_value,
+			CE_EDGE_LT | CE_EDGE_LB
+		);
+
+		mode_id.create(
+			hwnd,
+			"CTRL_ID",
+			NULL,
+			1,
+			NULL, NULL,
+			"ID",
+			CE_CT_MODE_ID,
+			&rect_mode_id,
+			CE_EDGE_RT | CE_EDGE_RB
+		);
+
 		copy.create(
 			hwnd,
 			"CTRL_COPY",
 			"カーブの値をコピー",
+			0,
 			MAKEINTRESOURCE(IDI_COPY),
 			MAKEINTRESOURCE(IDI_COPY_LIGHT),
+			NULL,
 			CE_CM_COPY,
 			&rect_copy,
 			CE_EDGE_ALL
 		);
+
 		read.create(
 			hwnd,
 			"CTRL_READ",
 			"カーブの値を読み取り",
+			0,
 			MAKEINTRESOURCE(IDI_READ),
 			MAKEINTRESOURCE(IDI_READ_LIGHT),
+			NULL,
 			CE_CM_READ,
 			&rect_read,
 			CE_EDGE_ALL
 		);
+
 		save.create(
 			hwnd,
 			"CTRL_SAVE",
 			"カーブをプリセットとして保存",
+			0,
 			MAKEINTRESOURCE(IDI_SAVE),
 			MAKEINTRESOURCE(IDI_SAVE_LIGHT),
+			NULL,
 			CE_CM_SAVE,
 			&rect_save,
 			CE_EDGE_ALL
 		);
+
 		clear.create(
 			hwnd,
 			"CTRL_CLEAR",
 			"カーブを初期化",
+			0,
 			MAKEINTRESOURCE(IDI_CLEAR),
 			MAKEINTRESOURCE(IDI_CLEAR_LIGHT),
+			NULL,
 			CE_CM_CLEAR,
 			&rect_clear,
 			CE_EDGE_ALL
 		);
+
 		fit.create(
 			hwnd,
 			"CTRL_FIT",
 			"グラフをフィット",
+			0,
 			MAKEINTRESOURCE(IDI_FIT),
 			MAKEINTRESOURCE(IDI_FIT_LIGHT),
+			NULL,
 			CE_CM_FIT,
 			&rect_fit,
 			CE_EDGE_ALL
 		);
+
+		if (g_config.mode == 1)
+			mode_id.set_status(TRUE);
+		else
+			mode_value.set_status(TRUE);
 		return 0;
 
 	case WM_SIZE:
+		mode_value.move(&rect_mode_value);
+		mode_id.move(&rect_mode_id);
 		copy.move(&rect_copy);
 		read.move(&rect_read);
 		save.move(&rect_save);
@@ -689,18 +752,38 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_PAINT:
-		draw_footer(&canvas, &rect_wnd);
+		draw_panel_header(&canvas, &rect_wnd);
 		return 0;
 
 	case WM_COMMAND:
 		switch (wparam) {
 		case CE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
+			mode_value.redraw();
+			mode_id.redraw();
 			copy.redraw();
 			read.redraw();
 			save.redraw();
 			clear.redraw();
 			fit.redraw();
+			return 0;
+
+		case CE_CT_MODE_VALUE:
+			if (lparam == CE_CM_SELECTED) {
+				g_config.mode = 0;
+				mode_value.set_status(TRUE);
+				mode_id.set_status(FALSE);
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+			}
+			return 0;
+
+		case CE_CT_MODE_ID:
+			if (lparam == CE_CM_SELECTED) {
+				g_config.mode = 1;
+				mode_value.set_status(FALSE);
+				mode_id.set_status(TRUE);
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+			}
 			return 0;
 
 		case CE_CM_COPY:
@@ -755,17 +838,17 @@ LRESULT CALLBACK wndproc_preset(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_PAINT:
-		draw_panel_library(&canvas, &rect_wnd);
+		draw_panel_preset(&canvas, &rect_wnd);
 		return 0;
 
 	case WM_COMMAND:
-		/*switch (wparam) {
+		switch (wparam) {
 		case CE_CM_REDRAW:
 			InvalidateRect(hwnd, NULL, FALSE);
-			SendMessage(buttons.hDefault, WM_COMMAND, CE_CM_REDRAW, 0);
-			SendMessage(buttons.hUser, WM_COMMAND, CE_CM_REDRAW, 0);
+			/*SendMessage(buttons.hDefault, WM_COMMAND, CE_CM_REDRAW, 0);
+			SendMessage(buttons.hUser, WM_COMMAND, CE_CM_REDRAW, 0);*/
 			return 0;
-		}*/
+		}
 		return 0;
 
 	default:

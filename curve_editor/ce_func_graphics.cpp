@@ -225,19 +225,20 @@ void d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int fla
 			pt_1 = pts_1[i];
 			pt_2 = pts_2[i];
 			pt_3 = pts_3[i];
+
+			sink->BeginFigure(pt_1, D2D1_FIGURE_BEGIN_FILLED);
+			sink->AddLine(pt_2);
+			sink->AddArc(
+				D2D1::ArcSegment(
+					pt_3,
+					D2D1::SizeF(radius, radius),
+					0.0f,
+					D2D1_SWEEP_DIRECTION_CLOCKWISE,
+					D2D1_ARC_SIZE_SMALL
+				)
+			);
+			sink->EndFigure(D2D1_FIGURE_END_CLOSED);
 		}
-		sink->BeginFigure(pt_1, D2D1_FIGURE_BEGIN_FILLED);
-		sink->AddLine(pt_2);
-		sink->AddArc(
-			D2D1::ArcSegment(
-				pt_3,
-				D2D1::SizeF(radius, radius),
-				0.0f,
-				D2D1_SWEEP_DIRECTION_CLOCKWISE,
-				D2D1_ARC_SIZE_SMALL
-			)
-		);
-		sink->EndFigure(D2D1_FIGURE_END_CLOSED);
 	}
 	
 	sink->Close();
@@ -251,7 +252,7 @@ void d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int fla
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
+void draw_panel_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
@@ -292,9 +293,9 @@ void draw_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
 
 
 //---------------------------------------------------------------------
-//		フッタパネルを描画
+//		ヘッダパネルを描画
 //---------------------------------------------------------------------
-void draw_footer(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
+void draw_panel_header(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 
@@ -310,7 +311,7 @@ void draw_footer(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		ライブラリを描画
 //---------------------------------------------------------------------
-void draw_panel_library(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
+void draw_panel_preset(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 
@@ -327,22 +328,6 @@ void draw_panel_library(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 //		エディタパネルを描画
 //---------------------------------------------------------------------
 void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
-{
-	static ID2D1SolidColorBrush* brush = NULL;
-
-	//Direct2D初期化
-	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
-
-	//ビットマップをバッファから画面に転送
-	canvas->transfer(rect_wnd);
-}
-
-
-
-//---------------------------------------------------------------------
-//		グラフパネルを描画
-//---------------------------------------------------------------------
-void draw_panel_graph(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
