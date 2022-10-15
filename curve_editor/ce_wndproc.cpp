@@ -13,9 +13,13 @@
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	static BOOL bSepr = FALSE;
+	static BOOL is_separator_moving = FALSE;
 	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	RECT rect_wnd, rect_sepr, rect_editor, rect_header, rect_preset;
+	RECT	rect_wnd,
+			rect_sepr,
+			rect_editor,
+			rect_header,
+			rect_preset;
 
 	static ce::Bitmap_Canvas canvas;
 
@@ -59,13 +63,13 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_CREATE:
 		canvas.init(hwnd);
 
-		//ヘッダパネル
+		// ヘッダパネル
 		g_window_header.create(
 			hwnd, "WINDOW_FOOTER", wndproc_header, NULL,
 			&rect_header
 		);
 
-		// グラフパネル
+		// エディタパネル
 		g_window_editor.create(
 			hwnd, "WINDOW_GPATH", wndproc_editor, NULL,
 			&rect_editor
@@ -92,20 +96,20 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_LBUTTONDOWN:
 		if (::PtInRect(&rect_sepr, cl_pt)) {
-			bSepr = TRUE;
+			is_separator_moving = TRUE;
 			::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 			::SetCapture(hwnd);
 		}
 		return 0;
 
 	case WM_LBUTTONUP:
-		bSepr = FALSE;
+		is_separator_moving = FALSE;
 		::ReleaseCapture();
 		return 0;
 
 	case WM_MOUSEMOVE:
 		if (::PtInRect(&rect_sepr, cl_pt)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
-		if (bSepr) {
+		if (is_separator_moving) {
 			g_config.separator = MINMAXLIM(rect_wnd.bottom - cl_pt.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W - CE_HEADER_H);
 			g_window_header.move(&rect_header);
 			g_window_editor.move(&rect_editor);
@@ -274,6 +278,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			address.position = ce::CTPT_NULL;
 			is_dragging = FALSE;
 		}
+		// Aviutlを再描画
+		::SendMessage(g_fp->hwnd, WM_COMMAND, CE_CM_REDRAW_AVIUTL, 0);
 		::ReleaseCapture();
 		return 0;
 
@@ -897,6 +903,15 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			if (g_config.mode) {
 				g_config.current_id++;
 				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+				g_curve_id_previous = g_curve_id[g_config.current_id];
+				id_id.redraw();
+				g_window_editor.redraw();
+			}
+			return 0;
+
+		case CE_CM_CHANGE_ID:
+			if (g_config.mode) {
+				g_config.current_id = MINMAXLIM(lparam, 0, CE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
 				id_id.redraw();
 				g_window_editor.redraw();

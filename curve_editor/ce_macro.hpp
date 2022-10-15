@@ -20,7 +20,7 @@
 #define CE_DEF_H					460
 #define CE_DEF_PRESET_SIZE			50
 #define CE_ROUND_RADIUS				4.0f
-#define CE_NON_CLIENT_H				20
+#define CE_NON_CLIENT_H				32
 
 // セパレータ
 #define CE_SEPR_W					8
@@ -81,7 +81,7 @@
 #define CE_CT_UPPER_H				30
 #define CE_CT_LOWER_H				40
 #define CE_CT_FONT_H				20
-#define CE_HEADER_H					CE_CT_UPPER_H + CE_CT_LOWER_H + CE_MARGIN * 3
+#define CE_HEADER_H					(CE_CT_UPPER_H + CE_CT_LOWER_H + CE_MARGIN * 3)
 
 
 
@@ -96,10 +96,11 @@
 #define CE_CM_FIT					0x0805
 #define CE_CM_REVERSE				0x0806
 #define CE_CM_SHOWHANDLE			0x0807
-#define CE_CM_CHANGEID				0x0808
+#define CE_CM_CHANGE_ID				0x0808
 #define CE_CM_SELECTED				0x0809
 #define CE_CM_ID_NEXT				0x080a
 #define CE_CM_ID_BACK				0x080b
+#define CE_CM_REDRAW_AVIUTL			0x080c
 
 
 

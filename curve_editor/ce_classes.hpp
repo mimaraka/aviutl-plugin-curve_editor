@@ -98,7 +98,7 @@ namespace ce {
 		void				delete_point(POINT cl_pt);
 		void				clear();
 		POINT				get_point(Point_Address address);
-		void				move_point(Point_Address address, POINT gr_pt, BOOL bReset);
+		void				move_point(Point_Address address, POINT gr_pt, BOOL reset);
 		Point_Address		pt_in_ctpt(POINT cl_pt);
 		double				get_handle_angle(Point_Address address);
 		void				correct_handle(Point_Address address, double angle);
@@ -239,6 +239,7 @@ namespace ce {
 	private:
 		int					id_buffer;
 		POINT				pt_lock;
+		BOOL				is_scrolling = FALSE;
 
 	public:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);

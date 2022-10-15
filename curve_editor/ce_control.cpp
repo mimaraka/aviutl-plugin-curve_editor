@@ -351,18 +351,24 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	// ƒJ[ƒ\ƒ‹‚ª“®‚¢‚½‚Æ‚«
 	case WM_MOUSEMOVE:
 		if (clicked && g_config.mode == 1) {
+			is_scrolling = TRUE;
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 			g_config.current_id = MINMAXLIM(id_buffer + (cl_pt.x - pt_lock.x) / 9, 0, CE_CURVE_MAX - 1);
+			g_curve_id_previous = g_curve_id[g_config.current_id];
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 		}
 		else ::SetCursor(LoadCursor(NULL, IDC_HAND));
 
 		hovered = TRUE;
-		InvalidateRect(hwnd, NULL, FALSE);
-		TrackMouseEvent(&tme);
+		::InvalidateRect(hwnd, NULL, FALSE);
+		::TrackMouseEvent(&tme);
 		return 0;
 
 	case WM_LBUTTONUP:
+		if (!is_scrolling && clicked) {
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hwnd, dialogproc_id);
+		}
+		is_scrolling = FALSE;
 		clicked = FALSE;
 		::ReleaseCapture();
 		::InvalidateRect(hwnd, NULL, FALSE);

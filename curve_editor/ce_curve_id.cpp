@@ -129,17 +129,17 @@ void ce::Curve_ID::clear()
 //---------------------------------------------------------------------
 //		ポイント・ハンドルを移動
 //---------------------------------------------------------------------
-void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
+void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL reset)
 {
 	static POINT prevright, nextleft, hdleft, hdright;
 	Point_Address tmp;
 	double agl_tmp;
-	static double agl_prev, agl_next,
-		agl_left, agl_right,
-		len_left, len_right;
+	static double	agl_prev, agl_next,
+					agl_left, agl_right,
+					len_left, len_right;
 
 	//ハンドル位置&角度を記憶
-	if (bReset && ctpts[address.index].type > 1) {
+	if (reset && ctpts[address.index].type > 1) {
 		prevright = ctpts[address.index - 1].pt_right;
 		nextleft = ctpts[address.index + 1].pt_left;
 		hdleft = {
@@ -162,6 +162,7 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL bReset)
 		len_left = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_left);
 		len_right = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_right);
 	}
+
 	switch (address.position) {
 		//中央 ---[]---
 	case 1:

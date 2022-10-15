@@ -56,6 +56,8 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 	if (data) {
 		memcpy(g_curve_id, data, size);
 		g_curve_id_previous = g_curve_id[g_config.current_id];
+		if (g_window_editor.hwnd)
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 	}
 	return TRUE;
 }
@@ -113,6 +115,12 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 
 	case WM_KEYDOWN:
 		return on_keydown(wparam);
+
+	case WM_COMMAND:
+		switch (wparam) {
+		case CE_CM_REDRAW_AVIUTL:
+			return TRUE;
+		}
 	}
 	return 0;
 }

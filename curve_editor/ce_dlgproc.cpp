@@ -142,8 +142,9 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					if (g_config.alert) MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 					return 0;
 				}
-				if ((value < -2147483647 || 2122746761 < value) && g_config.alert) {
-					::MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+				if (!ISINRANGEEQ(value, -2147483647, 2122746761)) {
+					if (g_config.alert)
+						::MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 					return 0;
 				}
 				g_curve_value.read_value_1d(value);
@@ -200,6 +201,65 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 		return 0;
+	}
+	return 0;
+}
+
+
+
+//---------------------------------------------------------------------
+//		ダイアログプロシージャ（指定したIDに移動）
+//---------------------------------------------------------------------
+BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	// エディットコントロール
+	HWND edit;
+	TCHAR buffer[5];
+	int value;
+	std::string str;
+
+	switch (msg) {
+	case WM_INITDIALOG:
+		edit = ::GetDlgItem(hwnd, IDC_EDIT_ID);
+		::SendMessage(edit, EM_SETLIMITTEXT, 4, 0);
+		return 0;
+
+	case WM_CLOSE:
+		::EndDialog(hwnd, 1);
+		return 0;
+
+	case WM_KEYDOWN:
+		if (wparam == VK_RETURN)
+			::SendMessage(hwnd, WM_COMMAND, MAKEWPARAM(IDOK, 0), 0);
+		return 0;
+
+	case WM_COMMAND:
+		switch (LOWORD(wparam)) {
+		case IDOK:
+			::GetDlgItemText(hwnd, IDC_EDIT_ID, buffer, 5);
+
+			if (strlen(buffer) == 0) {
+				if (g_config.alert)
+					::MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+				return 0;
+			}
+
+			str = buffer;
+			value = std::stoi(str);
+
+			if (!ISINRANGEEQ(value, 0, CE_CURVE_MAX - 1)) {
+				if (g_config.alert)
+					::MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+				return 0;
+			}
+
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_CHANGE_ID, (LPARAM)value);
+			::EndDialog(hwnd, 1);
+			return 0;
+		case IDCANCEL:
+			::EndDialog(hwnd, 1);
+			return 0;
+		}
 	}
 	return 0;
 }

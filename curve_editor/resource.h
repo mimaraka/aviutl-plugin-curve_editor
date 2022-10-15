@@ -22,6 +22,7 @@
 #define IDI_NEXT                        130
 #define IDI_BACK_LIGHT                  131
 #define IDI_NEXT_LIGHT                  132
+#define IDD_ID                          133
 #define IDC_DRAGGING                    200
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
@@ -32,6 +33,7 @@
 #define IDC_AUTOCOPY                    1010
 #define IDC_MAXIMUMUNDO                 1011
 #define IDC_AUTOCOPY2                   1012
+#define IDC_EDIT_ID                     1012
 #define ID_MENU_ABOUT                   40011
 #define ID_MENU_CONFIG                  40012
 #define ID_MENU_SHOWHANDLE              40013
@@ -45,6 +47,7 @@
 #define ID_MENU_MODE_ID                 40031
 #define ID_MENU_DELETE                  40035
 #define ID_MENU_PROPERTY                40037
+#define ID_MENU_40038                   40038
 #define ID_MENU_READ                    40039
 #define ID_MENU_HELP                    40040
 
@@ -52,9 +55,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        133
+#define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40042
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

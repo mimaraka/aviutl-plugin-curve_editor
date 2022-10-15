@@ -52,8 +52,9 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 {
 	static POINT ptLock;
 	static BOOL bShiftKey, bCtrlKey, bAltKey;
+
 	// Altキーが押された瞬間
-	if (GetAsyncKeyState(VK_MENU) < 0 && !bAltKey) {
+	if (::GetAsyncKeyState(VK_MENU) < 0 && !bAltKey) {
 		ptLock.x = gr_pt.x;
 		ptLock.y = gr_pt.y;
 		bAltKey = TRUE;
@@ -61,7 +62,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		bShiftKey = FALSE;
 	}
 	// Altキーが押されている間
-	else if (GetAsyncKeyState(VK_MENU) < 0) {
+	else if (::GetAsyncKeyState(VK_MENU) < 0) {
 		//X
 		g_curve_value.ctpt[index].x = MINMAXLIM(gr_pt.x, 0, CE_GR_RESOLUTION);
 		//Y
@@ -81,7 +82,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		}
 	}
 	// 同時に動かす
-	else if (GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) < 0) {
+	else if (::GetAsyncKeyState(VK_SHIFT) < 0 && ::GetAsyncKeyState(VK_CONTROL) < 0) {
 		//X
 		g_curve_value.ctpt[index].x = gr_pt.x;
 		g_curve_value.ctpt[!index].x = MINMAXLIM(CE_GR_RESOLUTION - g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
@@ -92,16 +93,15 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
 	}
-
 	// Shiftキーが押された瞬間
-	else if (GetAsyncKeyState(VK_SHIFT) < 0 && !bShiftKey) {
+	else if (::GetAsyncKeyState(VK_SHIFT) < 0 && !bShiftKey) {
 		ptLock.y = gr_pt.y;
 		bShiftKey = TRUE;
 		bCtrlKey = FALSE;
 		bAltKey = FALSE;
 	}
 	// Shiftキーが押されている間
-	else if (GetAsyncKeyState(VK_SHIFT) < 0) {
+	else if (::GetAsyncKeyState(VK_SHIFT) < 0) {
 		g_curve_value.ctpt[index].x = gr_pt.x;
 		//if Y is larger than 500
 		if (ptLock.y < CE_GR_RESOLUTION / 2)
@@ -111,14 +111,14 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 			g_curve_value.ctpt[index].y = CE_GR_RESOLUTION;
 	}
 	// Ctrlキーが押された瞬間
-	else if (GetAsyncKeyState(VK_CONTROL) < 0 && !bCtrlKey) {
+	else if (::GetAsyncKeyState(VK_CONTROL) < 0 && !bCtrlKey) {
 		ptLock.x = gr_pt.x; ptLock.y = gr_pt.y;
 		bCtrlKey = TRUE;
 		bAltKey = FALSE;
 		bShiftKey = FALSE;
 	}
 	// Ctrlキーが押されている間
-	else if (GetAsyncKeyState(VK_CONTROL) < 0) {
+	else if (::GetAsyncKeyState(VK_CONTROL) < 0) {
 		float theta;
 		int intResult_x, intResult_y;
 		if (!index) {
@@ -160,6 +160,7 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 		bShiftKey = FALSE;
 	}
 
+	// 範囲制限
 	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
 	g_curve_value.ctpt[index].y = MINMAXLIM(g_curve_value.ctpt[index].y, (LONG)(-2.73 * CE_GR_RESOLUTION), (LONG)(3.73 * CE_GR_RESOLUTION));
 }

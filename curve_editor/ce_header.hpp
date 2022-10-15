@@ -116,6 +116,7 @@ BOOL CALLBACK		dialogproc_settings(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_value(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_read(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_save(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_id(HWND, UINT, WPARAM, LPARAM);
 
 
 
@@ -123,9 +124,6 @@ BOOL CALLBACK		dialogproc_save(HWND, UINT, WPARAM, LPARAM);
 //		コントロールプロシージャ
 //----------------------------------------------------------------------------------
 LRESULT CALLBACK	wndproc_control_value(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_control_mode_value(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_control_mode_id(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_control_id(HWND, UINT, WPARAM, LPARAM);
 
 
 
