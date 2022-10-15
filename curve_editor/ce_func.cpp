@@ -162,14 +162,40 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
 //---------------------------------------------------------------------
 //		RECTを横n個に分割する
 //---------------------------------------------------------------------
-void rect_divide(LPRECT rect_parent, LPRECT* rects_child, int n)
+void rect_divide(LPRECT rect_parent, LPRECT* rects_child, float* weights, int n)
 {
+	// 親要素の横幅
 	int width_parent = rect_parent->right - rect_parent->left;
+	// 等分する場合の子要素の横幅
 	int width_child = width_parent / n;
+	float weights_sum = 0;
+	// 0番目からk-1番目までの重みの総和がn個格納された配列
+	std::vector<float> list_weights_sum;
+	int left, right;
 
+	// 重みがある場合
+	if (weights) {
+		// 重みの総和を計算するとともに、0番目からk-1番目までの重みの総和をlist_weights_sum[k - 1]に代入する。
+		for (int i = 0; i < n; i++) {
+			weights_sum += weights[i];
+			list_weights_sum.emplace_back(weights_sum);
+		}
+	}
+
+	// それぞれのRECTの位置を設定
 	for (int i = 0; i < n; i++) {
-		rects_child[i]->left = rect_parent->left + i * width_child;
-		rects_child[i]->right = rect_parent->left + (i + 1) * width_child;
+		// 重みがある場合
+		if (weights) {
+			left = (int)(width_parent * ((i == 0) ? 0 : list_weights_sum[i - 1]) / weights_sum);
+			right = (int)(width_parent * list_weights_sum[i] / weights_sum);
+		}
+		// 重みがない(等分する)場合
+		else {
+			left = i * width_child;
+			right = (i + 1) * width_child;
+		}
+		rects_child[i]->left = rect_parent->left + left;
+		rects_child[i]->right = rect_parent->left + right;
 		rects_child[i]->top = rect_parent->top;
 		rects_child[i]->bottom = rect_parent->bottom;
 	}
@@ -219,25 +245,13 @@ LRESULT on_keydown(WPARAM wparam)
 		return 0;
 
 	case VK_LEFT: //[<]	
-		if (g_config.mode) {
-			g_config.current_id--;
-			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
-			g_curve_id_previous = g_curve_id[g_config.current_id];
-
-			if (g_window_editor.hwnd)
-				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
-		}
+		if (g_config.mode && g_window_header.hwnd)
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_BACK, 0);
 		return 0;
 
 	case VK_RIGHT: //[>]
-		if (g_config.mode) {
-			g_config.current_id++;
-			g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
-			g_curve_id_previous = g_curve_id[g_config.current_id];
-
-			if (g_window_editor.hwnd)
-				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
-		}
+		if (g_config.mode && g_window_header.hwnd)
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_NEXT, 0);
 		return 0;
 
 	case 70: //[F]

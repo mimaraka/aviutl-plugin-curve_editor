@@ -264,6 +264,14 @@ IDI_CLEAR_LIGHT         ICON                    "res/icon/light/clear.ico"
 
 IDI_FIT_LIGHT           ICON                    "res/icon/light/fit.ico"
 
+IDI_BACK                ICON                    "res\\icon\\dark\\back.ico"
+
+IDI_NEXT                ICON                    "res\\icon\\dark\\next.ico"
+
+IDI_BACK_LIGHT          ICON                    "res\\icon\\light\\back.ico"
+
+IDI_NEXT_LIGHT          ICON                    "res\\icon\\light\\next.ico"
+
 #endif    // “ú–{Œê (“ú–{) resources
 /////////////////////////////////////////////////////////////////////////////
 

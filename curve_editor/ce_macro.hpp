@@ -20,6 +20,7 @@
 #define CE_DEF_H					460
 #define CE_DEF_PRESET_SIZE			50
 #define CE_ROUND_RADIUS				4.0f
+#define CE_NON_CLIENT_H				20
 
 // セパレータ
 #define CE_SEPR_W					8
@@ -55,12 +56,12 @@
 #define CE_SUBTRACT_LENGTH_2		8.0f
 
 //フラグ
-#define BIT(num)				((UINT)1 << num)
-#define CE_EDGE_LT				BIT(0)
-#define CE_EDGE_LB				BIT(1)
-#define CE_EDGE_RT				BIT(2)
-#define CE_EDGE_RB				BIT(3)
-#define CE_EDGE_ALL				CE_EDGE_LT | CE_EDGE_LB | CE_EDGE_RT | CE_EDGE_RB
+#define BIT(num)					((UINT)1 << num)
+#define CE_EDGE_LT					BIT(0)
+#define CE_EDGE_LB					BIT(1)
+#define CE_EDGE_RT					BIT(2)
+#define CE_EDGE_RB					BIT(3)
+#define CE_EDGE_ALL					CE_EDGE_LT | CE_EDGE_LB | CE_EDGE_RT | CE_EDGE_RB
 
 
 
@@ -79,7 +80,7 @@
 
 #define CE_CT_UPPER_H				30
 #define CE_CT_LOWER_H				40
-#define CE_CT_FONT_H				16
+#define CE_CT_FONT_H				20
 #define CE_HEADER_H					CE_CT_UPPER_H + CE_CT_LOWER_H + CE_MARGIN * 3
 
 
@@ -97,6 +98,8 @@
 #define CE_CM_SHOWHANDLE			0x0807
 #define CE_CM_CHANGEID				0x0808
 #define CE_CM_SELECTED				0x0809
+#define CE_CM_ID_NEXT				0x080a
+#define CE_CM_ID_BACK				0x080b
 
 
 
@@ -111,6 +114,8 @@
 #define CE_CT_BR_SWITCH				-20					//選択していない状態
 // アイコン
 #define CE_ICON_SIZE				32
+// フォント
+#define CE_FONT_YU					"Yu Gothic UI Semibold"
 
 
 

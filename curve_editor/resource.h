@@ -18,6 +18,10 @@
 #define IDI_SAVE_LIGHT                  126
 #define IDI_CLEAR_LIGHT                 127
 #define IDI_FIT_LIGHT                   128
+#define IDI_BACK                        129
+#define IDI_NEXT                        130
+#define IDI_BACK_LIGHT                  131
+#define IDI_NEXT_LIGHT                  132
 #define IDC_DRAGGING                    200
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
@@ -41,7 +45,6 @@
 #define ID_MENU_MODE_ID                 40031
 #define ID_MENU_DELETE                  40035
 #define ID_MENU_PROPERTY                40037
-#define ID_MENU_40038                   40038
 #define ID_MENU_READ                    40039
 #define ID_MENU_HELP                    40040
 
@@ -49,7 +52,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        129
+#define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         40042
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101

@@ -602,10 +602,29 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
 	RECT rect_wnd;
 	static ce::Bitmap_Canvas canvas;
-	static ce::Button copy, read, save, clear, fit;
+	static ce::Button	copy,
+						read,
+						save,
+						clear,
+						fit,
+						id_back,
+						id_next;
 	static ce::Button_Switch mode_value, mode_id;
-	RECT rect_lower_buttons, rect_mode_buttons,
-		rect_copy, rect_read, rect_save, rect_clear, rect_fit, rect_mode_value, rect_mode_id;
+	static ce::Button_ID id_id;
+
+	RECT	rect_lower_buttons,
+			rect_mode_buttons,
+			rect_id_buttons,
+			rect_copy,
+			rect_read,
+			rect_save,
+			rect_clear,
+			rect_fit,
+			rect_mode_value,
+			rect_mode_id,
+			rect_id_back,
+			rect_id_id,
+			rect_id_next;
 
 	LPRECT mode_buttons[] = {
 		&rect_mode_value,
@@ -620,23 +639,40 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		&rect_fit
 	};
 
+	LPRECT id_buttons[] = {
+		&rect_id_back,
+		&rect_id_id,
+		&rect_id_next
+	};
+
 	::GetClientRect(hwnd, &rect_wnd);
 
+	// 下部のボタンが並んだRECT
 	rect_lower_buttons = {
 		CE_MARGIN,
 		CE_MARGIN * 2 + CE_CT_UPPER_H,
 		rect_wnd.right - CE_MARGIN,
 		CE_MARGIN * 2 + CE_CT_LOWER_H + CE_CT_UPPER_H
 	};
-	rect_divide(&rect_lower_buttons, lower_buttons, 5);
+	rect_divide(&rect_lower_buttons, lower_buttons, NULL, 5);
 
+	// Value/IDスイッチが並んだRECT
 	rect_mode_buttons = {
 		CE_MARGIN,
 		CE_MARGIN,
 		(rect_wnd.right - CE_MARGIN) / 2,
 		CE_MARGIN + CE_CT_UPPER_H
 	};
-	rect_divide(&rect_mode_buttons, mode_buttons, 2);
+	rect_divide(&rect_mode_buttons, mode_buttons, NULL, 2);
+
+	// IDのボタンが並んだRECT
+	rect_id_buttons = {
+		(rect_wnd.right + CE_MARGIN) / 2,
+		CE_MARGIN,
+		rect_wnd.right - CE_MARGIN,
+		CE_MARGIN + CE_CT_UPPER_H
+	};
+	rect_divide(&rect_id_buttons, id_buttons, NULL, 3);
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -645,7 +681,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	case WM_CREATE:
 		canvas.init(hwnd);
-
+		// モード(Value)スイッチ
 		mode_value.create(
 			hwnd,
 			"CTRL_VALUE",
@@ -658,6 +694,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_EDGE_LT | CE_EDGE_LB
 		);
 
+		// モード(ID)スイッチ
 		mode_id.create(
 			hwnd,
 			"CTRL_ID",
@@ -670,6 +707,48 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_EDGE_RT | CE_EDGE_RB
 		);
 
+		// 前のIDのカーブに移動
+		id_back.create(
+			hwnd,
+			"CTRL_ID_BACK",
+			"前のIDのカーブに移動",
+			0,
+			MAKEINTRESOURCE(IDI_BACK),
+			MAKEINTRESOURCE(IDI_BACK_LIGHT),
+			NULL,
+			CE_CM_ID_BACK,
+			&rect_id_back,
+			CE_EDGE_ALL
+		);
+
+		// ID表示ボタン
+		id_id.create(
+			hwnd,
+			"CTRL_ID_ID",
+			NULL,
+			1,
+			NULL, NULL,
+			NULL,
+			NULL,
+			&rect_id_id,
+			CE_EDGE_ALL
+		);
+
+		// 次のIDのカーブに移動
+		id_next.create(
+			hwnd,
+			"CTRL_ID_NEXT",
+			"次のIDのカーブに移動",
+			0,
+			MAKEINTRESOURCE(IDI_NEXT),
+			MAKEINTRESOURCE(IDI_NEXT_LIGHT),
+			NULL,
+			CE_CM_ID_NEXT,
+			&rect_id_next,
+			CE_EDGE_ALL
+		);
+
+		// コピー
 		copy.create(
 			hwnd,
 			"CTRL_COPY",
@@ -683,6 +762,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_EDGE_ALL
 		);
 
+		// 読み取り
 		read.create(
 			hwnd,
 			"CTRL_READ",
@@ -696,6 +776,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_EDGE_ALL
 		);
 
+		// 保存
 		save.create(
 			hwnd,
 			"CTRL_SAVE",
@@ -709,6 +790,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_EDGE_ALL
 		);
 
+		// 初期化
 		clear.create(
 			hwnd,
 			"CTRL_CLEAR",
@@ -722,6 +804,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_EDGE_ALL
 		);
 
+		// フィット
 		fit.create(
 			hwnd,
 			"CTRL_FIT",
@@ -744,6 +827,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_SIZE:
 		mode_value.move(&rect_mode_value);
 		mode_id.move(&rect_mode_id);
+
+		id_back.move(&rect_id_back);
+		id_id.move(&rect_id_id);
+		id_next.move(&rect_id_next);
+
 		copy.move(&rect_copy);
 		read.move(&rect_read);
 		save.move(&rect_save);
@@ -761,6 +849,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			::InvalidateRect(hwnd, NULL, FALSE);
 			mode_value.redraw();
 			mode_id.redraw();
+
+			id_back.redraw();
+			id_id.redraw();
+			id_next.redraw();
+
 			copy.redraw();
 			read.redraw();
 			save.redraw();
@@ -768,6 +861,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			fit.redraw();
 			return 0;
 
+		// モード(Value)スイッチ
 		case CE_CT_MODE_VALUE:
 			if (lparam == CE_CM_SELECTED) {
 				g_config.mode = 0;
@@ -777,12 +871,35 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			return 0;
 
+		// モード(ID)スイッチ
 		case CE_CT_MODE_ID:
 			if (lparam == CE_CM_SELECTED) {
 				g_config.mode = 1;
 				mode_value.set_status(FALSE);
 				mode_id.set_status(TRUE);
 				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+			}
+			return 0;
+
+		// 前のIDのカーブに移動
+		case CE_CM_ID_BACK:
+			if (g_config.mode) {
+				g_config.current_id--;
+				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+				g_curve_id_previous = g_curve_id[g_config.current_id];
+				id_id.redraw();
+				g_window_editor.redraw();
+			}
+			return 0;
+
+		// 次のIDのカーブに移動
+		case CE_CM_ID_NEXT:
+			if (g_config.mode) {
+				g_config.current_id++;
+				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+				g_curve_id_previous = g_curve_id[g_config.current_id];
+				id_id.redraw();
+				g_window_editor.redraw();
 			}
 			return 0;
 

@@ -122,5 +122,17 @@
     <Image Include="res\icon\light\fit.ico">
       <Filter>リソース ファイル</Filter>
     </Image>
+    <Image Include="res\icon\dark\back.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\dark\next.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\light\back.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="res\icon\light\next.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>

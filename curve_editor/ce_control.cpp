@@ -24,6 +24,7 @@ BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LP
 		label = lb;
 	}
 	else {
+		label = "";
 		icon_res_dark = ico_res_dark;
 		icon_res_light = ico_res_light;
 	}
@@ -67,7 +68,7 @@ BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LP
 //---------------------------------------------------------------------
 //		コントロール描画用の関数
 //---------------------------------------------------------------------
-void ce::Button::draw(COLORREF bg, LPRECT rect_wnd)
+void ce::Button::draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content)
 {
 	d2d_setup(&canvas, rect_wnd, TO_BGR(bg));
 
@@ -78,8 +79,8 @@ void ce::Button::draw(COLORREF bg, LPRECT rect_wnd)
 		::SelectObject(canvas.hdc_memory, font);
 		::DrawText(
 			canvas.hdc_memory,
-			label,
-			strlen(label),
+			content,
+			strlen(content),
 			rect_wnd,
 			DT_CENTER | DT_VCENTER | DT_NOCLIP | DT_SINGLELINE
 		);
@@ -139,7 +140,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			tool_info.hwnd = hwnd;
 			tool_info.uId = id;
 			tool_info.lpszText = description;
-			SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
+			::SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
 		}
 
 		tme.cbSize = sizeof(tme);
@@ -150,14 +151,14 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		font = ::CreateFont(
 			CE_CT_FONT_H, 0,
 			0, 0,
-			FW_BOLD,
+			FW_REGULAR,
 			FALSE, FALSE, FALSE,
-			SHIFTJIS_CHARSET,
+			ANSI_CHARSET,
 			OUT_DEFAULT_PRECIS,
 			CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY,
 			NULL,
-			NULL
+			CE_FONT_YU
 		);
 		return 0;
 
@@ -166,9 +167,9 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_SIZE:
-		if (icon_or_str) {
+		if (!icon_or_str) {
 			tool_info.rect = rect_wnd;
-			SendMessage(hwnd_tooltip, TTM_NEWTOOLRECT, 0, (LPARAM)&tool_info);
+			::SendMessage(hwnd_tooltip, TTM_NEWTOOLRECT, 0, (LPARAM)&tool_info);
 		}
 		return 0;
 
@@ -186,13 +187,13 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, &rect_wnd);
+		draw(bg, &rect_wnd, label);
 		return 0;
 	}
 
 	// マウスが動いたとき
 	case WM_MOUSEMOVE:
-		::SetCursor(LoadCursor(NULL, IDC_HAND));
+		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 		hovered = TRUE;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::TrackMouseEvent(&tme);
@@ -200,7 +201,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// 左クリックがされたとき
 	case WM_LBUTTONDOWN:
-		::SetCursor(LoadCursor(NULL, IDC_HAND));
+		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 		clicked = TRUE;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::TrackMouseEvent(&tme);
@@ -274,7 +275,7 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 			::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
 		}
 
-		draw(bg, &rect_wnd);
+		draw(bg, &rect_wnd, label);
 		return 0;
 	}
 
@@ -303,4 +304,71 @@ void ce::Button_Switch::set_status(BOOL bl)
 {
 	is_selected = bl;
 	::InvalidateRect(hwnd, NULL, FALSE);
+}
+
+
+
+//---------------------------------------------------------------------
+//		ウィンドウプロシージャ(ID)
+//---------------------------------------------------------------------
+LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	RECT rect_wnd;
+	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+
+	::GetClientRect(hwnd, &rect_wnd);
+
+	switch (msg) {
+	case WM_PAINT:
+	{
+		COLORREF bg;
+		std::string id_str = std::to_string(g_config.current_id);
+		LPCTSTR id_lps = id_str.c_str();
+
+		if (clicked)
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
+		else if (hovered)
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
+		else
+			bg = g_theme[g_config.theme].bg;
+
+		::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
+
+		draw(bg, &rect_wnd, const_cast<LPTSTR>(id_lps));
+		return 0;
+	}
+
+	// 左クリックがされたとき
+	case WM_LBUTTONDOWN:
+		pt_lock = cl_pt;
+		id_buffer = g_config.current_id;
+		::SetCursor(LoadCursor(NULL, IDC_HAND));
+		clicked = TRUE;
+		::InvalidateRect(hwnd, NULL, FALSE);
+		::SetCapture(hwnd);
+		return 0;
+
+	// カーソルが動いたとき
+	case WM_MOUSEMOVE:
+		if (clicked && g_config.mode == 1) {
+			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+			g_config.current_id = MINMAXLIM(id_buffer + (cl_pt.x - pt_lock.x) / 9, 0, CE_CURVE_MAX - 1);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+		}
+		else ::SetCursor(LoadCursor(NULL, IDC_HAND));
+
+		hovered = TRUE;
+		InvalidateRect(hwnd, NULL, FALSE);
+		TrackMouseEvent(&tme);
+		return 0;
+
+	case WM_LBUTTONUP:
+		clicked = FALSE;
+		::ReleaseCapture();
+		::InvalidateRect(hwnd, NULL, FALSE);
+		return 0;
+
+	default:
+		return Button::wndproc(hwnd, msg, wparam, lparam);
+	}
 }

@@ -175,7 +175,10 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ce_bitmap_canvas.cpp" />
-    <ClCompile Include="ce_control.cpp" />
+    <ClCompile Include="ce_control.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="ce_ctrlproc.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -237,14 +240,18 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
     <ResourceCompile Include="curve_editor.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\icon\dark\back.ico" />
     <Image Include="res\icon\dark\clear.ico" />
     <Image Include="res\icon\dark\copy.ico" />
     <Image Include="res\icon\dark\fit.ico" />
+    <Image Include="res\icon\dark\next.ico" />
     <Image Include="res\icon\dark\read.ico" />
     <Image Include="res\icon\dark\save.ico" />
+    <Image Include="res\icon\light\back.ico" />
     <Image Include="res\icon\light\clear.ico" />
     <Image Include="res\icon\light\copy.ico" />
     <Image Include="res\icon\light\fit.ico" />
+    <Image Include="res\icon\light\next.ico" />
     <Image Include="res\icon\light\read.ico" />
     <Image Include="res\icon\light\save.ico" />
   </ItemGroup>

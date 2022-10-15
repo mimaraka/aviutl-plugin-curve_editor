@@ -108,7 +108,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		mmi = (MINMAXINFO*)lparam;
 		mmi->ptMaxTrackSize.x = CE_MAX_W;
 		mmi->ptMaxTrackSize.y = CE_MAX_H;
-		mmi->ptMinTrackSize.y = g_config.separator + CE_SEPR_W + CE_HEADER_H;
+		mmi->ptMinTrackSize.y = g_config.separator + CE_SEPR_W + CE_HEADER_H + CE_NON_CLIENT_H;
 		return 0;
 
 	case WM_KEYDOWN:

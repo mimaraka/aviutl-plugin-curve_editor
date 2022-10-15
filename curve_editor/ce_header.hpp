@@ -76,7 +76,7 @@ ce::Float_Point		subtract_length(ce::Float_Point st, ce::Float_Point ed, float l
 void				apply_config_to_menu(HMENU menu, MENUITEMINFO minfo);
 
 // RECT‚ğ•ªŠ„
-void				rect_divide(LPRECT rect_parent, LPRECT* rects_child, int n);
+void				rect_divide(LPRECT rect_parent, LPRECT* rects_child, float* weights, int n);
 
 // RECT‚É—]”’‚ğİ’è
 void				rect_set_margin(LPRECT rect, int left, int top, int right, int bottom);

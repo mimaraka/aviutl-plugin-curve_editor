@@ -196,7 +196,7 @@ namespace ce {
 		int					edge_flag;
 		ID2D1SolidColorBrush* brush;
 
-		void				draw(COLORREF bg, LPRECT rect_wnd);
+		void				draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content);
 
 	public:
 		int					id;
@@ -227,6 +227,20 @@ namespace ce {
 
 	public:
 		void				set_status(BOOL bl);
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		ƒ{ƒ^ƒ“(ID)
+	//---------------------------------------------------------------------
+	class Button_ID : public Button {
+	private:
+		int					id_buffer;
+		POINT				pt_lock;
+
+	public:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
