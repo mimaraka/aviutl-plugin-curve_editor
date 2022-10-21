@@ -49,32 +49,17 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
-	//		ウィンドウの位置
-	//---------------------------------------------------------------------
-	typedef struct tagWindow_Position {
-		RECT
-			rect_wnd,
-			padding;
-	} Window_Position;
-
-
-
-	//---------------------------------------------------------------------
-	//		ポイントの位置
-	//---------------------------------------------------------------------
-	typedef enum tagPoint_Position {
-		CTPT_NULL,
-		CTPT_CENTER,
-		CTPT_LEFT,
-		CTPT_RIGHT
-	} Point_Position;
-
-
-
-	//---------------------------------------------------------------------
 	//		ポイントの場所
 	//---------------------------------------------------------------------
 	typedef struct tagPoint_Address {
+		// ポイントの位置
+		enum Point_Position {
+			Null,
+			Center,
+			Left,
+			Right
+		};
+
 		int index;
 		Point_Position position;
 	} Point_Address;
@@ -98,17 +83,23 @@ namespace ce {
 	//		設定
 	//---------------------------------------------------------------------
 	typedef struct tagConfig {
+		enum Mode {
+			Value,
+			ID
+		};
+
 		BOOL
 			alert,
 			trace,
 			auto_copy,
-			mode,
 			show_handle,
-			align_handle;
+			align_handle,
+			is_hooked;
 		int
 			theme,
 			separator,
 			current_id,
 			preset_size;
+		Mode mode;
 	} Config;
 }

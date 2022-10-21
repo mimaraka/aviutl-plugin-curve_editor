@@ -33,6 +33,11 @@ extern FILTER_DLL							g_filter;
 extern ID2D1Factory*						g_d2d1_factory;
 extern ID2D1DCRenderTarget*					g_render_target;
 
+//フック
+extern BOOL									(WINAPI* TrackPopupMenu_original)(HMENU, UINT, int, int, int, HWND, const RECT*);
+extern INT_PTR								(WINAPI* DialogBox_original)(HINSTANCE, LPCSTR, HWND, DLGPROC, LPARAM);
+extern INT_PTR								(WINAPI* dialogproc_original)(HWND, UINT, WPARAM, LPARAM);
+
 
 
 //----------------------------------------------------------------------------------
@@ -73,7 +78,7 @@ BOOL				copy_to_clipboard(HWND, LPCTSTR);
 ce::Float_Point		subtract_length(ce::Float_Point st, ce::Float_Point ed, float length);
 
 // 設定をメニューに反映
-void				apply_config_to_menu(HMENU menu, MENUITEMINFO minfo);
+void				apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
 
 // RECTを分割
 void				rect_divide(LPRECT rect_parent, LPRECT* rects_child, float* weights, int n);
@@ -83,6 +88,9 @@ void				rect_set_margin(LPRECT rect, int left, int top, int right, int bottom);
 
 // キー押下時の処理
 LRESULT				on_keydown(WPARAM wparam);
+
+// 
+int					point_to_id(HWND hwnd_p, POINT pt_sc);
 
 
 
@@ -112,7 +120,7 @@ LRESULT CALLBACK	wndproc_preset(HWND, UINT, WPARAM, LPARAM);
 //----------------------------------------------------------------------------------
 //		ダイアログプロシージャ
 //----------------------------------------------------------------------------------
-BOOL CALLBACK		dialogproc_settings(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_config(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_value(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_read(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_save(HWND, UINT, WPARAM, LPARAM);
@@ -121,9 +129,13 @@ BOOL CALLBACK		dialogproc_id(HWND, UINT, WPARAM, LPARAM);
 
 
 //----------------------------------------------------------------------------------
-//		コントロールプロシージャ
+//		フック
 //----------------------------------------------------------------------------------
-LRESULT CALLBACK	wndproc_control_value(HWND, UINT, WPARAM, LPARAM);
+BOOL WINAPI			TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int reserved, HWND hwnd, const RECT* rect);
+
+INT_PTR WINAPI		DialogBox_hooked(HINSTANCE hinstance, LPCSTR template_name, HWND hwnd_parent, DLGPROC dlgproc, LPARAM init_param);
+
+BOOL CALLBACK		dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 
 

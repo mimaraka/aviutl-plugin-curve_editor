@@ -14,7 +14,7 @@
 // ウィンドウ
 #define CE_MARGIN					6
 #define CE_MARGIN_PRESET			5
-#define CE_MAX_W					1440
+#define CE_MAX_W					1920
 #define CE_MAX_H					1080
 #define CE_DEF_W					360
 #define CE_DEF_H					460
@@ -83,6 +83,9 @@
 #define CE_CT_FONT_H				20
 #define CE_HEADER_H					(CE_CT_UPPER_H + CE_CT_LOWER_H + CE_MARGIN * 3)
 
+#define CE_COEF_MOVE_DEFAULT		9
+#define CE_COEF_MOVE_FAST			1
+
 
 
 //---------------------------------------------------------------------
@@ -116,7 +119,7 @@
 // アイコン
 #define CE_ICON_SIZE				32
 // フォント
-#define CE_FONT_YU					"Yu Gothic UI Semibold"
+#define CE_FONT_YU_GOTHIC			"Yu Gothic UI Semibold"
 
 
 
@@ -126,6 +129,7 @@
 #define CE_POINT_MAX				64					// 変更不可
 #define CE_CURVE_MAX				1024				// 変更不可
 #define MATH_PI						3.14159265
+#define EASING_QUICK_SETUP			"イージング設定時短プラグイン"
 
 
 
@@ -143,7 +147,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.3"
+#define CE_PLUGIN_VERSION			"v0.4"
 #define CE_PLUGIN_AUTHOR			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR
@@ -180,3 +184,5 @@
 #define BRIGHTEN(ref,num)					(RGB(MINMAXLIM(GetRValue(ref) + num, 0, 255), MINMAXLIM(GetGValue(ref) + num, 0, 255), MINMAXLIM(GetBValue(ref) + num, 0, 255)))
 #define INVERT(ref)							(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
 #define CONTRAST(ref,val)					(RGB(MINMAXLIM(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetBValue(ref) - 127) * val, 0, 255)))
+#define LARGER(val1, val2)					(((val1) > (val2))? (val1) : (val2))
+#define SMALLER(val1, val2)					(((val1) < (val2))? (val1) : (val2))

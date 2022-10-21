@@ -4,6 +4,7 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
+#include <yulib/extra.h>
 #include "ce_header.hpp"
 
 
@@ -25,6 +26,19 @@ BOOL filter_init(FILTER* fp)
 {
 	g_fp = fp;
 	ini_load_configs(fp);
+
+	// フックの準備
+	g_config.is_hooked = FALSE;
+	char exedit_path[1024];
+	FILTER* fp_exedit = auls::Exedit_GetFilter(fp);
+	::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));
+
+	// TrackPopupMenu()をフック
+	TrackPopupMenu_original = (decltype(TrackPopupMenu_original))yulib::RewriteFunction(exedit_path, "TrackPopupMenu", TrackPopupMenu_hooked);
+
+	// DialogBoxParamA()をフック
+	DialogBox_original = (decltype(DialogBox_original))yulib::RewriteFunction(exedit_path, "DialogBoxParamA", DialogBox_hooked);
+
 	d2d_init();
 	return TRUE;
 }

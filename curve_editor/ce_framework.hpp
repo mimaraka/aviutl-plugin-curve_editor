@@ -15,6 +15,9 @@
 #include <fstream>
 #include <regex>
 #include <filter.h>
+#include <aulslib/exedit.h>
+#include <aulslib/aviutl.h>
+#include <yulib/memory.h>
 #include "ce_macro.hpp"
 #include "resource.h"
 

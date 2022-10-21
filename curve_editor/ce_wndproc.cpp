@@ -159,11 +159,13 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	//ハンドル
 	static HMENU	menu;
+	static HWND		hwnd_obj;
+	static HWND		hwnd_exedit;
 
 	//その他
 	static ce::Point_Address address;
-	static MENUITEMINFO minfo = { 0 };
 	static ce::Bitmap_Canvas canvas;
+	static MENUITEMINFO minfo;
 
 
 	//クライアント領域の矩形を取得
@@ -182,6 +184,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(ウィンドウが作成されたとき)
 		///////////////////////////////////////////
 	case WM_CREATE:
+	{
 		canvas.init(hwnd);
 
 		// メニュー
@@ -189,12 +192,17 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		minfo.cbSize = sizeof(MENUITEMINFO);
 
+		// 拡張編集とオブジェクト設定ダイアログのウィンドウハンドルの取得
+		hwnd_exedit = auls::Exedit_GetWindow(g_fp);
+		hwnd_obj = auls::ObjDlg_GetWindow(hwnd_exedit);
+
 		g_curve_value_previous = g_curve_value;
 		g_curve_id_previous = g_curve_id[g_config.current_id];
 
 		g_view_info.fit(&rect_wnd);
 
 		return 0;
+	}
 
 		///////////////////////////////////////////
 		//		WM_SIZE
@@ -218,7 +226,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_LBUTTONDOWN:
 		// 値モード&制御点がクリックされたとき
-		if (g_config.mode == 0 && g_curve_value.point_in_ctpts(cl_pt) >= 1) {
+		if (g_config.mode == ce::Config::Value && g_curve_value.point_in_ctpts(cl_pt) >= 1) {
 			move_pt = g_curve_value.point_in_ctpts(cl_pt);
 			g_curve_value_previous = g_curve_value;
 			::SetCursor(LoadCursor(NULL, IDC_HAND));
@@ -229,7 +237,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// カーソルが制御点上にあるかどうか
 			address = g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt);
 			// カーソルが制御点上にあるとき，ハンドルの座標を記憶
-			if (address.position != 0) {
+			if (address.position != ce::Point_Address::Null) {
 				g_curve_id[g_config.current_id].move_point(address, gr_pt, TRUE);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
@@ -249,35 +257,34 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_LBUTTONUP:
 		// Valueモード
-		if (!g_config.mode) {
-			// 近くにある制御点をカーソルに移動
-			if (!move_pt) {
-				g_curve_value_previous = g_curve_value;
-				int d1 = (int)DISTANCE(to_client(g_curve_value.ctpt[0]), cl_pt);
-				int d2 = (int)DISTANCE(to_client(g_curve_value.ctpt[1]), cl_pt);
-				if (d1 < d2) {
-					g_curve_value.ctpt[0].x = to_graph(cl_pt).x;
-					g_curve_value.ctpt[0].y = to_graph(cl_pt).y;
-				}
-				else if (d1 >= d2) {
-					g_curve_value.ctpt[1].x = to_graph(cl_pt).x;
-					g_curve_value.ctpt[1].y = to_graph(cl_pt).y;
-				}
-				::InvalidateRect(hwnd, NULL, FALSE);
-				// オートコピー
-				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CM_COPY, 0);
-			}
+		if (g_config.mode == ce::Config::Value && move_pt) {
 			// 移動モード解除
-			if (move_pt) {
-				move_pt = 0;
-				if (g_config.auto_copy) SendMessage(hwnd, WM_COMMAND, CE_CM_COPY, 0);
-			}
+			move_pt = 0;
+			if (g_config.auto_copy)
+				::SendMessage(hwnd, WM_COMMAND, CE_CM_COPY, 0);
 		}
 		// IDモード・カーブのD&D処理
 		else {
-			address.position = ce::CTPT_NULL;
-			is_dragging = FALSE;
+			::ClientToScreen(hwnd, &cl_pt);
+			int id = point_to_id(hwnd_obj, cl_pt);
+			if (id) {
+				g_config.is_hooked = TRUE;
+				::SendMessage(hwnd_obj, WM_COMMAND, id, 0);
+
+				g_config.is_hooked = TRUE;
+
+				// 競合プラグイン対策
+				FILTER* fp_quick_easing_setup = auls::AviUtl_GetFilter(g_fp, EASING_QUICK_SETUP);
+
+				if (!fp_quick_easing_setup || g_fp->exfunc->ini_load_int(fp_quick_easing_setup, "auto_popup", 0) != 1)
+					::PostMessage(hwnd_obj, WM_COMMAND, 0x462, id - 4000);
+			}
+
+			address.position = ce::Point_Address::Null;
 		}
+
+		is_dragging = FALSE;
+
 		// Aviutlを再描画
 		::SendMessage(g_fp->hwnd, WM_COMMAND, CE_CM_REDRAW_AVIUTL, 0);
 		::ReleaseCapture();
@@ -289,11 +296,11 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_LBUTTONDBLCLK:
 		// IDモードのとき
-		if (g_config.mode == 1) {
+		if (g_config.mode == ce::Config::ID) {
 			//カーソルが制御点上にあるかどうか
 			address = g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt);
 
-			if (address.position == ce::CTPT_CENTER)
+			if (address.position == ce::Point_Address::Center)
 				g_curve_id[g_config.current_id].delete_point(cl_pt);
 			else if (ISINRANGEEQ(gr_pt.x, 0, CE_GR_RESOLUTION)) {
 				g_curve_id_previous = g_curve_id[g_config.current_id];
@@ -310,22 +317,23 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 		//右クリックメニュー
 	case WM_RBUTTONUP:
-		apply_config_to_menu(menu, minfo);
+		apply_config_to_menu(menu, &minfo);
 		::ClientToScreen(hwnd, &cl_pt);
 		::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN, cl_pt.x, cl_pt.y, 0, hwnd, NULL);
 		return 0;
+	
 
 		///////////////////////////////////////////
 		//		WM_MBUTTONDOWN
 		//		(マウスの中央ボタンが押されたとき)
 		///////////////////////////////////////////
 	case WM_MBUTTONDOWN:
-		move_view	= TRUE;
-		pt_view		= cl_pt;
-		prev_scale_x		= g_view_info.scale.x;
-		prev_scale_y		= g_view_info.scale.y;
-		prev_o_x			= g_view_info.origin.x;
-		prev_o_y			= g_view_info.origin.y;
+		move_view		= TRUE;
+		pt_view			= cl_pt;
+		prev_scale_x	= g_view_info.scale.x;
+		prev_scale_y	= g_view_info.scale.y;
+		prev_o_x		= g_view_info.origin.x;
+		prev_o_y		= g_view_info.origin.y;
 		SetCursor(LoadCursor(NULL, IDC_SIZEALL));
 		SetCapture(hwnd);
 		return 0;
@@ -349,11 +357,11 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//Valueモード
 		if (move_pt) {
 			g_curve_value.move_point(move_pt - 1, gr_pt);
-			InvalidateRect(hwnd, NULL, FALSE);
+			::InvalidateRect(hwnd, NULL, FALSE);
 		}
 		//IDモード
-		if (g_config.mode) {
-			if (address.position) {
+		if (g_config.mode == ce::Config::ID) {
+			if (address.position != ce::Point_Address::Null) {
 				g_curve_id[g_config.current_id].move_point(address, gr_pt, FALSE);
 				::InvalidateRect(hwnd, NULL, FALSE);
 			}
@@ -361,14 +369,22 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//制御点ホバー時にカーソルを変更
 		//Valueモード
-		if (!g_config.mode) {
-			if (g_curve_value.point_in_ctpts(cl_pt) > 0)
-				::SetCursor(LoadCursor(NULL, IDC_HAND));
+		if (!is_dragging) {
+			if (g_config.mode == ce::Config::Value) {
+				if (g_curve_value.point_in_ctpts(cl_pt) > 0)
+					::SetCursor(LoadCursor(NULL, IDC_HAND));
+			}
+			//IDモード
+			else {
+				if (g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt).position != ce::Point_Address::Null)
+					::SetCursor(LoadCursor(NULL, IDC_HAND));
+			}
 		}
-		//IDモード
+		// カーブのD&D処理
 		else {
-			if (g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt).position > 0)
-				::SetCursor(LoadCursor(NULL, IDC_HAND));
+
+			if (!::PtInRect(&rect_wnd, cl_pt))
+				::SetCursor(LoadCursor(g_fp->dll_hinst, MAKEINTRESOURCE(IDC_DRAGGING)));
 		}
 
 		// ビュー移動・拡大縮小
@@ -381,8 +397,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				coef_y = MINMAXLIM(std::pow(CE_GR_SCALE_INC, pt_view.y - cl_pt.y),
 					CE_GR_SCALE_MIN / prev_scale_y, CE_GR_SCALE_MAX / prev_scale_y);
 				if (::GetAsyncKeyState(VK_SHIFT) < 0) {
-					coef_x = coef_y = max(coef_x, coef_y);
-					prev_scale_x = prev_scale_y = max(prev_scale_x, prev_scale_y);
+					coef_x = coef_y = LARGER(coef_x, coef_y);
+					prev_scale_x = prev_scale_y = LARGER(prev_scale_x, prev_scale_y);
 				}
 				g_view_info.scale.x = prev_scale_x * coef_x;
 				g_view_info.scale.y = prev_scale_y * coef_y;
@@ -402,11 +418,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// 再描画
 			::InvalidateRect(hwnd, NULL, FALSE);
 		}
-
-		// カーブのD&D処理
-		/*if (is_dragging) {
-			SetCursor(LoadCursor(g_fp->dll_hinst, MAKEINTRESOURCE(IDC_DRAGGING)));
-		}*/
 
 		return 0;
 
@@ -429,11 +440,11 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			double coef = std::pow(CE_GR_SCALE_INC, GET_Y_LPARAM(wparam) * CE_GR_WHEEL_COEF_SCALE);
 			double scale_after_x, scale_after_y;
 
-			if (max(g_view_info.scale.x, g_view_info.scale.y) > CE_GR_SCALE_MAX / coef) {
-				coef = CE_GR_SCALE_MAX / max(g_view_info.scale.x, g_view_info.scale.y);
+			if (LARGER(g_view_info.scale.x, g_view_info.scale.y) > CE_GR_SCALE_MAX / coef) {
+				coef = CE_GR_SCALE_MAX / LARGER(g_view_info.scale.x, g_view_info.scale.y);
 			}
-			else if (min(g_view_info.scale.x, g_view_info.scale.y) < CE_GR_SCALE_MIN / coef) {
-				coef = CE_GR_SCALE_MIN / min(g_view_info.scale.x, g_view_info.scale.y);
+			else if (SMALLER(g_view_info.scale.x, g_view_info.scale.y) < CE_GR_SCALE_MIN / coef) {
+				coef = CE_GR_SCALE_MIN / SMALLER(g_view_info.scale.x, g_view_info.scale.y);
 			}
 
 			scale_after_x = g_view_info.scale.x * coef;
@@ -463,14 +474,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// Valueモードに変更
 		case ID_MENU_MODE_VALUE:
-			g_config.mode = 0;
+			g_config.mode = ce::Config::Value;
 			::InvalidateRect(hwnd, NULL, FALSE);
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CT_MODE_VALUE, CE_CM_SELECTED);
 			return 0;
 
 		// IDモードに変更
 		case ID_MENU_MODE_ID:
-			g_config.mode = 1;
+			g_config.mode = ce::Config::ID;
 			::InvalidateRect(hwnd, NULL, FALSE);
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CT_MODE_ID, CE_CM_SELECTED);
 			return 0;
@@ -492,7 +503,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_REVERSE:
 		case CE_CM_REVERSE:
 			// IDモード
-			if (g_config.mode == 1)
+			if (g_config.mode == ce::Config::ID)
 				g_curve_id[g_config.current_id].reverse_curve();
 			// Valueモード
 			else {
@@ -520,12 +531,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			if (g_config.alert)
 				response = MessageBox(hwnd, CE_STR_DELETE, CE_PLUGIN_NAME, MB_OKCANCEL | MB_ICONEXCLAMATION);
 			if (response == IDOK) {
-				if (g_config.mode)
+				if (g_config.mode == ce::Config::ID)
 					g_curve_id[g_config.current_id].clear();
 				else
 					g_curve_value.init();
 
 				::InvalidateRect(hwnd, NULL, FALSE);
+				// Aviutlを再描画
+				::SendMessage(g_fp->hwnd, WM_COMMAND, CE_CM_REDRAW_AVIUTL, 0);
 			}
 			return 0;
 		}
@@ -542,7 +555,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//設定
 		case ID_MENU_CONFIG:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, dialogproc_settings);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, dialogproc_config);
 			g_window_main.redraw();
 			return 0;
 
@@ -554,30 +567,32 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// 値をコピー
 		case ID_MENU_COPY:
 		case CE_CM_COPY:
-		{
-			TCHAR result_str[12];
-			int result = g_curve_value.create_value_1d();
-			//文字列へ変換
-			::_itoa_s(result, result_str, 12, 10);
-			//コピー
-			copy_to_clipboard(hwnd, result_str);
+			if (g_config.mode == ce::Config::Value) {
+				TCHAR result_str[12];
+				int result = g_curve_value.create_value_1d();
+				//文字列へ変換
+				::_itoa_s(result, result_str, 12, 10);
+				//コピー
+				copy_to_clipboard(hwnd, result_str);
+			}
 			return 0;
-		}
 
 		// 値をコピー(4次元)
 		case ID_MENU_COPY4D:
-		{
-			std::string buffer = g_curve_value.create_value_4d();
-			LPCTSTR result = buffer.c_str();
-			copy_to_clipboard(hwnd, result);
+			if (g_config.mode == ce::Config::Value) {
+				std::string buffer = g_curve_value.create_value_4d();
+				LPCTSTR result = buffer.c_str();
+				copy_to_clipboard(hwnd, result);
+			}
 			return 0;
-		}
 
 		// 値を読み取り
 		case CE_CM_READ:
 		case ID_MENU_READ:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
-			::InvalidateRect(hwnd, NULL, FALSE);
+			if (g_config.mode == ce::Config::Value) {
+				::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
+				::InvalidateRect(hwnd, NULL, FALSE);
+			}
 			return 0;
 
 		// 保存ボタン
@@ -824,7 +839,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CE_EDGE_ALL
 		);
 
-		if (g_config.mode == 1)
+		if (g_config.mode == ce::Config::ID)
 			mode_id.set_status(TRUE);
 		else
 			mode_value.set_status(TRUE);
@@ -870,7 +885,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// モード(Value)スイッチ
 		case CE_CT_MODE_VALUE:
 			if (lparam == CE_CM_SELECTED) {
-				g_config.mode = 0;
+				g_config.mode = ce::Config::Value;
 				mode_value.set_status(TRUE);
 				mode_id.set_status(FALSE);
 				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
@@ -880,7 +895,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// モード(ID)スイッチ
 		case CE_CT_MODE_ID:
 			if (lparam == CE_CM_SELECTED) {
-				g_config.mode = 1;
+				g_config.mode = ce::Config::ID;
 				mode_value.set_status(FALSE);
 				mode_id.set_status(TRUE);
 				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
@@ -889,7 +904,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// 前のIDのカーブに移動
 		case CE_CM_ID_BACK:
-			if (g_config.mode) {
+			if (g_config.mode == ce::Config::ID) {
 				g_config.current_id--;
 				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
@@ -900,7 +915,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// 次のIDのカーブに移動
 		case CE_CM_ID_NEXT:
-			if (g_config.mode) {
+			if (g_config.mode == ce::Config::ID) {
 				g_config.current_id++;
 				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
@@ -910,7 +925,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			return 0;
 
 		case CE_CM_CHANGE_ID:
-			if (g_config.mode) {
+			if (g_config.mode == ce::Config::ID) {
 				g_config.current_id = MINMAXLIM(lparam, 0, CE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
 				id_id.redraw();

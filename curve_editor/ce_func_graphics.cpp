@@ -408,7 +408,7 @@ void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 			g_render_target->FillRectangle(&rect_left, brush);
 			g_render_target->FillRectangle(&rect_right, brush);
 			// Valueモードのとき
-			if (g_config.mode == 0) {
+			if (g_config.mode == ce::Config::Value) {
 				g_render_target->FillRectangle(&rect_up, brush);
 				g_render_target->FillRectangle(&rect_down, brush);
 			}
@@ -417,7 +417,7 @@ void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 
 
 		//値モードのとき
-		if (g_config.mode == 0) {
+		if (g_config.mode == ce::Config::Value) {
 			// ベジェ(トレース)
 			if (g_config.trace) {
 				brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));

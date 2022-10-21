@@ -15,50 +15,12 @@ namespace ce {
 	//		”z—ñ
 	//---------------------------------------------------------------------
 	template <typename T, size_t N>
-	class Static_Array {
+	class Static_Array : public yulib::CStaticArray<T, N> {
 	public:
-		size_t size;
-		static const size_t max_size = N;
-		T elements[N];
-
-		Static_Array() : size(0) {}
-
-		template <typename U>
-		T& operator[] (U i) { return elements[MINMAXLIM(i, 0, N - 1)]; }
-
-		// ƒNƒŠƒA
-		void clear()
-		{
-			size = 0;
-		}
-
-		// ‘}“ü
-		void insert(size_t index, const T& v)
-		{
-			int max = size >= max_size ? max_size - 1 : size;
-			for (int i = max; i > (int)index;) {
-				i--;
-				elements[i + 1] = elements[i];
-			}
-			elements[index] = v;
-			if (size < max_size) size++;
-		}
-
-		// ‰Ÿ‚µž‚Ý
-		void push_back(const T& v)
-		{
-			if (size < max_size) {
-				size++;
-				elements[size - 1] = v;
-			}
-		}
-
-		// íœ
-		void erase(int index)
-		{
-			size--;
-			for (int i = index; i < (int)size; i++) {
-				elements[i] = elements[i + 1];
+		void PushBack(const T& v) {
+			if (this->size < this->max_size) {
+				this->size++;
+				this->buf[this->size - 1] = v;
 			}
 		}
 	};
@@ -89,7 +51,7 @@ namespace ce {
 	//---------------------------------------------------------------------
 	class Curve_ID {
 	public:
-		Static_Array <Points_ID, CE_POINT_MAX> ctpts;
+		ce::Static_Array<Points_ID, CE_POINT_MAX> ctpts;
 
 		Curve_ID() { init(); }
 
@@ -240,6 +202,7 @@ namespace ce {
 		int					id_buffer;
 		POINT				pt_lock;
 		BOOL				is_scrolling = FALSE;
+		int					coef_move;
 
 	public:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);

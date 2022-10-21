@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（設定ダイアログ）
 //---------------------------------------------------------------------
-BOOL CALLBACK dialogproc_settings(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HWND combo;
 

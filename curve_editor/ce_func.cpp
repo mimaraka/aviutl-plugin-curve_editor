@@ -23,7 +23,7 @@ void ini_load_configs(FILTER* fp)
 	g_curve_value.ctpt[1].x = fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * 0.6));
 	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * 0.6));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_W);
-	g_config.mode = fp->exfunc->ini_load_int(fp, "mode", 0);
+	g_config.mode = (ce::Config::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", 1);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CE_DEF_PRESET_SIZE);
@@ -121,40 +121,40 @@ ce::Float_Point subtract_length(ce::Float_Point st, ce::Float_Point ed, float le
 //---------------------------------------------------------------------
 //		g_configの内容をポップアップメニューに反映させる
 //---------------------------------------------------------------------
-void apply_config_to_menu(HMENU menu, MENUITEMINFO minfo) {
-	minfo.fMask = MIIM_STATE;
+void apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
+	mi->fMask = MIIM_STATE;
 
 	// Value/ID
-	minfo.fState = g_config.mode ? MFS_CHECKED : MFS_UNCHECKED;
-	SetMenuItemInfo(menu, ID_MENU_MODE_ID, FALSE, &minfo);
-	minfo.fState = g_config.mode ? MFS_UNCHECKED : MFS_CHECKED;
-	SetMenuItemInfo(menu, ID_MENU_MODE_VALUE, FALSE, &minfo);
+	mi->fState = g_config.mode == ce::Config::ID ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(menu, ID_MENU_MODE_ID, FALSE, mi);
+	mi->fState = g_config.mode == ce::Config::ID ? MFS_UNCHECKED : MFS_CHECKED;
+	SetMenuItemInfo(menu, ID_MENU_MODE_VALUE, FALSE, mi);
 
 	//その他
-	minfo.fState = g_config.show_handle ? MFS_CHECKED : MFS_UNCHECKED;
-	SetMenuItemInfo(menu, ID_MENU_SHOWHANDLE, FALSE, &minfo);
-	minfo.fState = g_config.align_handle ? MFS_CHECKED : MFS_UNCHECKED;
-	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, &minfo);
+	mi->fState = g_config.show_handle ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(menu, ID_MENU_SHOWHANDLE, FALSE, mi);
+	mi->fState = g_config.align_handle ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 
 	// ボタンを無効化/有効化
 	// IDモードで有効化
 	// チェックボックスが存在する場合
-	minfo.fState |= g_config.mode ? MFS_ENABLED : MFS_DISABLED;
-	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, &minfo);
+	mi->fState |= g_config.mode == ce::Config::ID ? MFS_ENABLED : MFS_DISABLED;
+	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 	// チェックボックスが存在しない場合
-	minfo.fState = g_config.mode ? MFS_ENABLED : MFS_DISABLED;
-	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, &minfo);
+	mi->fState = g_config.mode == ce::Config::ID ? MFS_ENABLED : MFS_DISABLED;
+	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
 
 	// Valueモードで有効化
-	minfo.fState = g_config.mode ? MFS_DISABLED : MFS_ENABLED;
-	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, &minfo);
-	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, &minfo);
-	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, &minfo);
+	mi->fState = g_config.mode == ce::Config::ID ? MFS_DISABLED : MFS_ENABLED;
+	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
+	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
+	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
 
 	//プラグイン名の反映
-	minfo.fMask = MIIM_TYPE;
-	minfo.dwTypeData = CE_PLUGIN_NAME "について";
-	SetMenuItemInfo(menu, ID_MENU_ABOUT, FALSE, &minfo);
+	mi->fMask = MIIM_TYPE;
+	mi->dwTypeData = CE_PLUGIN_NAME "について";
+	SetMenuItemInfo(menu, ID_MENU_ABOUT, FALSE, mi);
 }
 
 
@@ -245,12 +245,12 @@ LRESULT on_keydown(WPARAM wparam)
 		return 0;
 
 	case VK_LEFT: //[<]	
-		if (g_config.mode && g_window_header.hwnd)
+		if (g_config.mode == ce::Config::ID && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_BACK, 0);
 		return 0;
 
 	case VK_RIGHT: //[>]
-		if (g_config.mode && g_window_header.hwnd)
+		if (g_config.mode == ce::Config::ID && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_NEXT, 0);
 		return 0;
 
@@ -270,4 +270,22 @@ LRESULT on_keydown(WPARAM wparam)
 		return 0;
 	}
 	return 0;
+}
+
+
+
+//---------------------------------------------------------------------
+//		ボタンのスクリーン座標での矩形を取得
+//---------------------------------------------------------------------
+int point_to_id(HWND hwnd_p, POINT pt_sc)
+{
+	HWND hwnd_button;
+	RECT rect_button;
+	for (int i = 4000; i < 4000 + auls::EXEDIT_OBJECT::MAX_TRACK; i++) {
+		hwnd_button = ::GetDlgItem(hwnd_p, i);
+		::GetWindowRect(hwnd_button, &rect_button);
+		if (::PtInRect(&rect_button, pt_sc))
+			return i;
+	}
+	return NULL;
 }

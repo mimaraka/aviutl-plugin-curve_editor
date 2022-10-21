@@ -158,7 +158,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY,
 			NULL,
-			CE_FONT_YU
+			CE_FONT_YU_GOTHIC
 		);
 		return 0;
 
@@ -322,8 +322,8 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	case WM_PAINT:
 	{
 		COLORREF bg;
-		std::string id_str = std::to_string(g_config.current_id);
-		LPCTSTR id_lps = id_str.c_str();
+		TCHAR id_text[5];
+		::_itoa_s(g_config.current_id, id_text, 5, 10);
 
 		if (clicked)
 			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
@@ -334,7 +334,7 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, &rect_wnd, const_cast<LPTSTR>(id_lps));
+		draw(bg, &rect_wnd, id_text);
 		return 0;
 	}
 
@@ -343,6 +343,12 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		pt_lock = cl_pt;
 		id_buffer = g_config.current_id;
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
+
+		if (::GetAsyncKeyState(VK_CONTROL) < 0)
+			coef_move = CE_COEF_MOVE_FAST;
+		else
+			coef_move = CE_COEF_MOVE_DEFAULT;
+
 		clicked = TRUE;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::SetCapture(hwnd);
@@ -350,10 +356,10 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 	// ƒJ[ƒ\ƒ‹‚ª“®‚¢‚½‚Æ‚«
 	case WM_MOUSEMOVE:
-		if (clicked && g_config.mode == 1) {
+		if (clicked && g_config.mode == ce::Config::ID) {
 			is_scrolling = TRUE;
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-			g_config.current_id = MINMAXLIM(id_buffer + (cl_pt.x - pt_lock.x) / 9, 0, CE_CURVE_MAX - 1);
+			g_config.current_id = MINMAXLIM(id_buffer + (cl_pt.x - pt_lock.x) / coef_move, 0, CE_CURVE_MAX - 1);
 			g_curve_id_previous = g_curve_id[g_config.current_id];
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 		}
@@ -365,7 +371,7 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		return 0;
 
 	case WM_LBUTTONUP:
-		if (!is_scrolling && clicked) {
+		if (!is_scrolling && clicked && g_config.mode == ce::Config::ID) {
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hwnd, dialogproc_id);
 		}
 		is_scrolling = FALSE;
