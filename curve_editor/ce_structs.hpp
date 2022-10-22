@@ -94,7 +94,8 @@ namespace ce {
 			auto_copy,
 			show_handle,
 			align_handle,
-			is_hooked;
+			is_hooked_popup,
+			is_hooked_dialog;
 		int
 			theme,
 			separator,

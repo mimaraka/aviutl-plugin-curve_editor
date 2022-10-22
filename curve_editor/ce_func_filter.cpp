@@ -28,7 +28,8 @@ BOOL filter_init(FILTER* fp)
 	ini_load_configs(fp);
 
 	// ƒtƒbƒN‚Ì€”õ
-	g_config.is_hooked = FALSE;
+	g_config.is_hooked_popup = FALSE;
+	g_config.is_hooked_dialog = FALSE;
 	char exedit_path[1024];
 	FILTER* fp_exedit = auls::Exedit_GetFilter(fp);
 	::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));

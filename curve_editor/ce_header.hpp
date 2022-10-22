@@ -90,7 +90,11 @@ void				rect_set_margin(LPRECT rect, int left, int top, int right, int bottom);
 LRESULT				on_keydown(WPARAM wparam);
 
 // 
-int					point_to_id(HWND hwnd_p, POINT pt_sc);
+int					point_to_id(HWND hwnd_obj, POINT pt_sc);
+
+void				id_to_rect(HWND hwnd_p, int id, LPRECT rect);
+
+void				highlight_rect(LPRECT rect);
 
 
 

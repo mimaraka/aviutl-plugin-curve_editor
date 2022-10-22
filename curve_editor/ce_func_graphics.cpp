@@ -402,7 +402,7 @@ void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 		d2d_draw_grid(brush, rect_wnd);
 
 		brush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GR_INVALID)));
-		brush->SetOpacity(0.5);
+		brush->SetOpacity(0.5f);
 		if (brush) {
 			// X‚ª0–¢–ž1‚æ‚è‘å‚Ì•”•ª‚ðˆÃ‚­‚·‚é
 			g_render_target->FillRectangle(&rect_left, brush);

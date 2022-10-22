@@ -193,10 +193,13 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// マウスが動いたとき
 	case WM_MOUSEMOVE:
-		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 		hovered = TRUE;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::TrackMouseEvent(&tme);
+		return 0;
+
+	case WM_SETCURSOR:
+		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 		return 0;
 
 	// 左クリックがされたとき

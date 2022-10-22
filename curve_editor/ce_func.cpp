@@ -277,15 +277,88 @@ LRESULT on_keydown(WPARAM wparam)
 //---------------------------------------------------------------------
 //		ボタンのスクリーン座標での矩形を取得
 //---------------------------------------------------------------------
-int point_to_id(HWND hwnd_p, POINT pt_sc)
+int point_to_id(HWND hwnd_obj, POINT pt_sc)
 {
 	HWND hwnd_button;
 	RECT rect_button;
-	for (int i = 4000; i < 4000 + auls::EXEDIT_OBJECT::MAX_TRACK; i++) {
-		hwnd_button = ::GetDlgItem(hwnd_p, i);
-		::GetWindowRect(hwnd_button, &rect_button);
-		if (::PtInRect(&rect_button, pt_sc))
-			return i;
+	for (int i = 0; i < auls::EXEDIT_OBJECT::MAX_TRACK; i++) {
+		hwnd_button = ::GetDlgItem(hwnd_obj, 4000 + i);
+		if (::IsWindowVisible(hwnd_button)) {
+			::GetWindowRect(hwnd_button, &rect_button);
+			rect_set_margin(&rect_button, -2, -2, -2, -2);
+			if (::PtInRect(&rect_button, pt_sc))
+				return i;
+		}
 	}
-	return NULL;
+	return -1;
+}
+
+
+
+void id_to_rect(HWND hwnd_obj, int id, LPRECT rect)
+{
+	HWND hwnd_button = ::GetDlgItem(hwnd_obj, id + 4000);
+	::GetWindowRect(hwnd_button, rect);
+	rect_set_margin(rect, -2, -2, -2, -2);
+}
+
+
+
+void highlight_rect(LPRECT rect)
+{
+	RECT rect_screen = {
+		0, 0,
+		GetSystemMetrics(SM_CXFULLSCREEN),
+		GetSystemMetrics(SM_CYFULLSCREEN)
+	};
+
+	HDC hdc = ::CreateDC("DISPLAY", NULL, NULL, NULL);
+	static ID2D1SolidColorBrush* brush = NULL;
+
+	if (g_render_target != NULL && g_d2d1_factory != NULL) {
+		g_render_target->BindDC(hdc, &rect_screen);
+		g_render_target->BeginDraw();
+		g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
+
+		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+		brush->SetColor(D2D1::ColorF(TO_BGR(RGB(45, 140, 235))));
+
+		D2D1_ROUNDED_RECT d2d_rect = D2D1::RoundedRect(
+			D2D1::RectF(
+				(float)(rect->left),
+				(float)(rect->top),
+				(float)(rect->right),
+				(float)(rect->bottom)),
+			1.5f, 1.5f
+		);
+
+		brush->SetOpacity(0.3f);
+		g_render_target->FillRoundedRectangle(d2d_rect, brush);
+
+		brush->SetOpacity(0.7f);
+		g_render_target->DrawRoundedRectangle(d2d_rect, brush, 2.0f);
+
+		g_render_target->EndDraw();
+	}
+	::DeleteDC(hdc);
+}
+
+
+
+int get_x_param_id(HWND hwnd_obj)
+{
+	HWND hwnd_button;
+	RECT rect_button;
+	int least_y;
+	int least_id;
+
+	for (int i = 0; i < auls::EXEDIT_OBJECT::MAX_TRACK; i++) {
+		hwnd_button = ::GetDlgItem(hwnd_obj, i + 4000);
+		::GetWindowRect(hwnd_button, &rect_button);
+		if (i == 0 || rect_button.top < least_y) {
+			least_y = rect_button.top;
+			least_id = i;
+		}
+	}
+	return least_id;
 }

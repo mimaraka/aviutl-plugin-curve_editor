@@ -59,14 +59,14 @@ BEGIN
     PUSHBUTTON      "キャンセル",IDCANCEL,196,283,50,14
     COMBOBOX        IDC_THEME,172,23,74,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "テーマ",IDC_STATIC,15,25,20,8
-    GROUPBOX        "全般",IDC_STATIC,7,7,239,85
-    CONTROL         "アラートを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,41,61,10
-    GROUPBOX        "編集",IDC_STATIC,7,97,239,179
-    GROUPBOX        "IDモード",IDC_STATIC,13,191,228,78
-    GROUPBOX        "Valueモード",IDC_STATIC,13,110,228,78
-    CONTROL         "変更前のカーブをグラフに表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,54,110,10
-    CONTROL         "値を自動でコピー",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,123,71,10
-    CONTROL         "",IDC_AUTOCOPY2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,203,16,10
+    GROUPBOX        "全般",IDC_STATIC,7,7,239,165
+    CONTROL         "アラートを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,61,10
+    GROUPBOX        "編集",IDC_STATIC,7,181,239,95
+    GROUPBOX        "Valueモード",IDC_STATIC,13,193,228,78
+    CONTROL         "変更前のカーブをグラフに表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,87,110,10
+    CONTROL         "値を自動でコピー",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,206,71,10
+    LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
+    LTEXT           "D&&D時のボタンのハイライトの色",IDC_STATIC,15,57,98,8
 END
 
 IDD_SAVE DIALOGEX 0, 0, 228, 61
@@ -233,18 +233,18 @@ BEGIN
             MENUITEM "IDモード",                       ID_MENU_MODE_ID
         END
         MENUITEM SEPARATOR
-        MENUITEM "カーブの値をコピー (Ctrl+C)",          ID_MENU_COPY
+        MENUITEM "カーブの値をコピー\tCtrl+C",           ID_MENU_COPY
         MENUITEM "カーブの値を入力",                    ID_MENU_READ
-        MENUITEM "プリセットとして保存 (Ctrl+S)",         ID_MENU_SAVE
+        MENUITEM "プリセットとして保存\tCtrl+S",          ID_MENU_SAVE
         MENUITEM SEPARATOR
         MENUITEM "カーブの値をコピー(4次元)",              ID_MENU_COPY4D
-        MENUITEM "カーブを反転 (R)",                  ID_MENU_REVERSE
-        MENUITEM "カーブを初期化",                     ID_MENU_DELETE
+        MENUITEM "カーブを反転\tR",                   ID_MENU_REVERSE
+        MENUITEM "カーブを初期化\tDel",                ID_MENU_DELETE
         MENUITEM "カーブのプロパティ",                   ID_MENU_PROPERTY
         MENUITEM SEPARATOR
-        MENUITEM "ハンドルを連動させる (A)",              ID_MENU_ALIGNHANDLE
-        MENUITEM "ハンドルを表示 (S)",                 ID_MENU_SHOWHANDLE
-        MENUITEM "グラフをフィット (F)",                ID_MENU_FIT
+        MENUITEM "ハンドルを連動させる\tA",               ID_MENU_ALIGNHANDLE
+        MENUITEM "ハンドルを表示 \tS",                 ID_MENU_SHOWHANDLE
+        MENUITEM "グラフをフィット\tF",                 ID_MENU_FIT
         MENUITEM SEPARATOR
         MENUITEM "設定",                          ID_MENU_CONFIG
         MENUITEM "ヘルプ",                         ID_MENU_HELP

@@ -15,24 +15,24 @@ BOOL(WINAPI* TrackPopupMenu_original)(HMENU, UINT, int, int, int, HWND, const RE
 
 BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int reserved, HWND hwnd, const RECT* rect)
 {
-	if (g_config.is_hooked) {
+	if (g_config.is_hooked_popup) {
 		int count = 0;
 		int index_separator = -1;
 		int index_script;
 		int id_script;
 		LPCSTR script_name = "Value@" CE_PLUGIN_NAME;
-		TCHAR menu_label[256];
+		TCHAR menu_label[MAX_PATH];
 
 		static MENUITEMINFO minfo;
 		minfo.cbSize = sizeof(MENUITEMINFO);
 		minfo.fMask = MIIM_TYPE;
 
-		g_config.is_hooked = FALSE;
+		g_config.is_hooked_popup = FALSE;
 
 		// スクリプトのメニューIDを取得
 		while (true) {
 			BOOL result = ::GetMenuItemInfo(menu, count, MF_BYPOSITION, &minfo);
-			::GetMenuString(menu, count, menu_label, 256, MF_BYPOSITION);
+			::GetMenuString(menu, count, menu_label, MAX_PATH, MF_BYPOSITION);
 
 			if (!result)
 				return 0;
@@ -63,8 +63,8 @@ INT_PTR(WINAPI* DialogBox_original)(HINSTANCE, LPCSTR, HWND, DLGPROC, LPARAM) = 
 
 INT_PTR WINAPI DialogBox_hooked(HINSTANCE hinstance, LPCSTR template_name, HWND hwnd_parent, DLGPROC dlgproc, LPARAM init_param)
 {
-	if (g_config.is_hooked) {
-		g_config.is_hooked = FALSE;
+	if (g_config.is_hooked_dialog) {
+		g_config.is_hooked_dialog = FALSE;
 		dialogproc_original = dlgproc;
 		return DialogBox_original(hinstance, template_name, hwnd_parent, dialogproc_hooked, init_param);
 	}

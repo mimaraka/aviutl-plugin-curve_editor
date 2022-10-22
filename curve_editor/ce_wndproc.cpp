@@ -144,6 +144,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static BOOL		move_view		= 0;
 	static int		move_or_scale	= NULL;
 	static int		is_dragging		= FALSE;
+	static int		id_hoverred		= -1;
 
 	//double
 	static double	prev_scale_x, prev_scale_y;
@@ -265,19 +266,17 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 		// IDモード・カーブのD&D処理
 		else {
-			::ClientToScreen(hwnd, &cl_pt);
-			int id = point_to_id(hwnd_obj, cl_pt);
-			if (id) {
-				g_config.is_hooked = TRUE;
-				::SendMessage(hwnd_obj, WM_COMMAND, id, 0);
+			if (id_hoverred >= 0) {
+				g_config.is_hooked_popup = TRUE;
+				g_config.is_hooked_dialog = TRUE;
 
-				g_config.is_hooked = TRUE;
+				::SendMessage(hwnd_obj, WM_COMMAND, 4000 + id_hoverred, 0);
 
 				// 競合プラグイン対策
 				FILTER* fp_quick_easing_setup = auls::AviUtl_GetFilter(g_fp, EASING_QUICK_SETUP);
 
 				if (!fp_quick_easing_setup || g_fp->exfunc->ini_load_int(fp_quick_easing_setup, "auto_popup", 0) != 1)
-					::PostMessage(hwnd_obj, WM_COMMAND, 0x462, id - 4000);
+					::PostMessage(hwnd_obj, WM_COMMAND, 0x462, id_hoverred);
 			}
 
 			address.position = ce::Point_Address::Null;
@@ -382,9 +381,56 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 		// カーブのD&D処理
 		else {
-
+			// カーソル
 			if (!::PtInRect(&rect_wnd, cl_pt))
 				::SetCursor(LoadCursor(g_fp->dll_hinst, MAKEINTRESOURCE(IDC_DRAGGING)));
+
+			// 枠を描画
+			RECT rect_highlight;
+			::ClientToScreen(hwnd, &cl_pt);
+			
+			// 先ほどまでハイライトしていたRECTと現在ホバーしているRECTが異なる場合
+			if (id_hoverred != point_to_id(hwnd_obj, cl_pt)) {
+				// 先ほどまで何らかのRECTをハイライトしていた場合
+				if (id_hoverred >= 0) {
+					POINT pt_rect[2];
+					id_to_rect(hwnd_obj, id_hoverred, &rect_highlight);
+
+					pt_rect[0] = {
+						rect_highlight.left - 4,
+						rect_highlight.top - 4
+					};
+					pt_rect[1] = {
+						rect_highlight.right + 4,
+						rect_highlight.bottom + 4
+					};
+
+					for (int i = 0; i < 2; i++)
+						::ScreenToClient(hwnd_obj, &pt_rect[i]);
+
+					RECT rect;
+					::GetClientRect(hwnd_obj, &rect);
+
+					rect_highlight = {
+						pt_rect[0].x,
+						pt_rect[0].y,
+						pt_rect[1].x,
+						pt_rect[1].y
+					};
+					::InvalidateRect(hwnd_obj, &rect_highlight, TRUE);
+					::UpdateWindow(hwnd_obj);
+
+				}
+				// ハイライトするidを更新
+				id_hoverred = point_to_id(hwnd_obj, cl_pt);
+
+				// 現在何らかのRECTにホバーしている場合
+				if (id_hoverred >= 0) {
+					id_to_rect(hwnd_obj, id_hoverred, &rect_highlight);
+					Sleep(20);
+					highlight_rect(&rect_highlight);
+				}
+			}
 		}
 
 		// ビュー移動・拡大縮小
