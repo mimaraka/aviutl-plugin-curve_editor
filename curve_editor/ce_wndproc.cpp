@@ -265,7 +265,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 		// IDモード・カーブのD&D処理
 		else {
-			if (obj_buttons.is_hovered()) {
+			if (is_dragging && obj_buttons.is_hovered()) {
 				g_config.is_hooked_popup = TRUE;
 				g_config.is_hooked_dialog = TRUE;
 				

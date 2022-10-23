@@ -189,7 +189,7 @@ LRESULT on_keydown(WPARAM wparam)
 		return 0;
 
 	case 67: //[C]
-		if (::GetAsyncKeyState(VK_CONTROL) < 0)
+		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.mode == ce::Config::Value)
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_COPY, 0);
 		return 0;
 
