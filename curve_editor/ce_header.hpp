@@ -80,21 +80,8 @@ ce::Float_Point		subtract_length(ce::Float_Point st, ce::Float_Point ed, float l
 // 設定をメニューに反映
 void				apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
 
-// RECTを分割
-void				rect_divide(LPRECT rect_parent, LPRECT* rects_child, float* weights, int n);
-
-// RECTに余白を設定
-void				rect_set_margin(LPRECT rect, int left, int top, int right, int bottom);
-
 // キー押下時の処理
 LRESULT				on_keydown(WPARAM wparam);
-
-// 
-int					point_to_id(HWND hwnd_obj, POINT pt_sc);
-
-void				id_to_rect(HWND hwnd_p, int id, LPRECT rect);
-
-void				highlight_rect(LPRECT rect);
 
 
 
@@ -136,10 +123,8 @@ BOOL CALLBACK		dialogproc_id(HWND, UINT, WPARAM, LPARAM);
 //		フック
 //----------------------------------------------------------------------------------
 BOOL WINAPI			TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int reserved, HWND hwnd, const RECT* rect);
-
 INT_PTR WINAPI		DialogBox_hooked(HINSTANCE hinstance, LPCSTR template_name, HWND hwnd_parent, DLGPROC dlgproc, LPARAM init_param);
-
-BOOL CALLBACK		dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+BOOL CALLBACK		dialogproc_hooked(HWND, UINT, WPARAM, LPARAM);
 
 
 

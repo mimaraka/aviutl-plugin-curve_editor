@@ -211,6 +211,49 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
+	//		矩形
+	//---------------------------------------------------------------------
+	class Rectangle {
+	public:
+		RECT rect;
+
+		void				set(RECT rc);
+		void				set(int left, int top, int right, int bottom);
+		void				set_margin(int left, int top, int right, int bottom);
+		void				divide(LPRECT* rects_child, float* weights, int n);
+		void				client_to_screen(HWND hwnd);
+		void				screen_to_client(HWND hwnd);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		オブジェクト設定ダイアログのボタン
+	//---------------------------------------------------------------------
+	class Obj_Dialog_Buttons {
+	private:
+		HWND hwnd_obj;
+		HWND hwnd_button;
+
+		BOOL id_to_rect(int id_, Rectangle* rect);
+
+	public:
+		int id = -1;
+		// オブジェクト設定ダイアログのクライアント座標
+		Rectangle rect_button;
+
+		void				init(HWND hwnd) { hwnd_obj = hwnd; }
+		BOOL				is_hovered() { return id >= 0; }
+
+		int					update(POINT pt_sc, LPRECT old_rect);
+		void				click();
+		void				highlight();
+		void				invalidate(LPRECT rect);
+	};
+
+
+
+	//---------------------------------------------------------------------
 	//		グラフ表示
 	//---------------------------------------------------------------------
 	class Graph_View_Info {

@@ -15,44 +15,41 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static BOOL is_separator_moving = FALSE;
 	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	RECT	rect_wnd,
-			rect_sepr,
-			rect_editor,
-			rect_header,
-			rect_preset;
-
+	RECT	rect_wnd;
+	ce::Rectangle rect_sepr, rect_header, rect_editor, rect_preset;
 	static ce::Bitmap_Canvas canvas;
+
 
 	::GetClientRect(hwnd, &rect_wnd);
 
-	rect_sepr = {
+	rect_sepr.set(
 		0,
 		rect_wnd.bottom - g_config.separator - CE_SEPR_W,
 		rect_wnd.right,
 		rect_wnd.bottom - g_config.separator + CE_SEPR_W
-	};
+	);
 
-	rect_header = {
+	rect_header.set(
 		0,
 		0,
 		rect_wnd.right,
 		CE_HEADER_H
-	};
+	);
 
-	rect_editor = {
+	rect_editor.set(
 		0,
 		CE_HEADER_H,
 		rect_wnd.right,
 		rect_wnd.bottom - g_config.separator - CE_SEPR_W
-	};
-	rect_set_margin(&rect_editor, CE_MARGIN, 0, CE_MARGIN, CE_MARGIN);
+	);
+	rect_editor.set_margin(CE_MARGIN, 0, CE_MARGIN, CE_MARGIN);
 
-	rect_preset = {
+	rect_preset.set(
 		0,
 		rect_wnd.bottom - g_config.separator + CE_SEPR_W,
 		rect_wnd.right,
 		rect_wnd.bottom
-	};
+	);
 
 
 	switch (msg) {
@@ -66,36 +63,36 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		// ヘッダパネル
 		g_window_header.create(
 			hwnd, "WINDOW_FOOTER", wndproc_header, NULL,
-			&rect_header
+			&rect_header.rect
 		);
 
 		// エディタパネル
 		g_window_editor.create(
 			hwnd, "WINDOW_GPATH", wndproc_editor, NULL,
-			&rect_editor
+			&rect_editor.rect
 		);
 
 		// プリセットパネル
 		g_window_preset.create(
 			hwnd, "WINDOW_PRESET", wndproc_preset, NULL,
-			&rect_preset
+			&rect_preset.rect
 		);
 
 		return 0;
 
 	case WM_PAINT:
-		draw_panel_main(&canvas, &rect_wnd, &rect_sepr);
+		draw_panel_main(&canvas, &rect_wnd, &rect_sepr.rect);
 		return 0;
 
 	case WM_SIZE:
 
-		g_window_header.move(&rect_header);
-		g_window_editor.move(&rect_editor);
-		g_window_preset.move(&rect_preset);
+		g_window_header.move(&rect_header.rect);
+		g_window_editor.move(&rect_editor.rect);
+		g_window_preset.move(&rect_preset.rect);
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		if (::PtInRect(&rect_sepr, cl_pt)) {
+		if (::PtInRect(&rect_sepr.rect, cl_pt)) {
 			is_separator_moving = TRUE;
 			::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 			::SetCapture(hwnd);
@@ -108,12 +105,12 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_MOUSEMOVE:
-		if (::PtInRect(&rect_sepr, cl_pt)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
+		if (::PtInRect(&rect_sepr.rect, cl_pt)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 		if (is_separator_moving) {
 			g_config.separator = MINMAXLIM(rect_wnd.bottom - cl_pt.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W - CE_HEADER_H);
-			g_window_header.move(&rect_header);
-			g_window_editor.move(&rect_editor);
-			g_window_preset.move(&rect_preset);
+			g_window_header.move(&rect_header.rect);
+			g_window_editor.move(&rect_editor.rect);
+			g_window_preset.move(&rect_preset.rect);
 			::InvalidateRect(hwnd, NULL, FALSE);
 		}
 		return 0;
@@ -144,7 +141,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static BOOL		move_view		= 0;
 	static int		move_or_scale	= NULL;
 	static int		is_dragging		= FALSE;
-	static int		id_hoverred		= -1;
 
 	//double
 	static double	prev_scale_x, prev_scale_y;
@@ -167,6 +163,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static ce::Point_Address address;
 	static ce::Bitmap_Canvas canvas;
 	static MENUITEMINFO minfo;
+	static ce::Obj_Dialog_Buttons obj_buttons;
 
 
 	//クライアント領域の矩形を取得
@@ -196,6 +193,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// 拡張編集とオブジェクト設定ダイアログのウィンドウハンドルの取得
 		hwnd_exedit = auls::Exedit_GetWindow(g_fp);
 		hwnd_obj = auls::ObjDlg_GetWindow(hwnd_exedit);
+
+		obj_buttons.init(hwnd_obj);
 
 		g_curve_value_previous = g_curve_value;
 		g_curve_id_previous = g_curve_id[g_config.current_id];
@@ -266,22 +265,15 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 		// IDモード・カーブのD&D処理
 		else {
-			if (id_hoverred >= 0) {
+			if (obj_buttons.is_hovered()) {
 				g_config.is_hooked_popup = TRUE;
 				g_config.is_hooked_dialog = TRUE;
-
-				::SendMessage(hwnd_obj, WM_COMMAND, 4000 + id_hoverred, 0);
-
-				// 競合プラグイン対策
-				FILTER* fp_quick_easing_setup = auls::AviUtl_GetFilter(g_fp, EASING_QUICK_SETUP);
-
-				if (!fp_quick_easing_setup || g_fp->exfunc->ini_load_int(fp_quick_easing_setup, "auto_popup", 0) != 1)
-					::PostMessage(hwnd_obj, WM_COMMAND, 0x462, id_hoverred);
+				
+				obj_buttons.click();
+				obj_buttons.invalidate(NULL);
 			}
-
 			address.position = ce::Point_Address::Null;
 		}
-
 		is_dragging = FALSE;
 
 		// Aviutlを再描画
@@ -386,50 +378,22 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::SetCursor(LoadCursor(g_fp->dll_hinst, MAKEINTRESOURCE(IDC_DRAGGING)));
 
 			// 枠を描画
-			RECT rect_highlight;
-			::ClientToScreen(hwnd, &cl_pt);
+			POINT sc_pt = cl_pt;
+			::ClientToScreen(hwnd, &sc_pt);
+			ce::Rectangle old_rect;
+
+			// 更新
+			int old_id = obj_buttons.update(sc_pt, &old_rect.rect);
 			
 			// 先ほどまでハイライトしていたRECTと現在ホバーしているRECTが異なる場合
-			if (id_hoverred != point_to_id(hwnd_obj, cl_pt)) {
+			if (old_id != obj_buttons.id) {
 				// 先ほどまで何らかのRECTをハイライトしていた場合
-				if (id_hoverred >= 0) {
-					POINT pt_rect[2];
-					id_to_rect(hwnd_obj, id_hoverred, &rect_highlight);
-
-					pt_rect[0] = {
-						rect_highlight.left - 4,
-						rect_highlight.top - 4
-					};
-					pt_rect[1] = {
-						rect_highlight.right + 4,
-						rect_highlight.bottom + 4
-					};
-
-					for (int i = 0; i < 2; i++)
-						::ScreenToClient(hwnd_obj, &pt_rect[i]);
-
-					RECT rect;
-					::GetClientRect(hwnd_obj, &rect);
-
-					rect_highlight = {
-						pt_rect[0].x,
-						pt_rect[0].y,
-						pt_rect[1].x,
-						pt_rect[1].y
-					};
-					::InvalidateRect(hwnd_obj, &rect_highlight, TRUE);
-					::UpdateWindow(hwnd_obj);
-
-				}
-				// ハイライトするidを更新
-				id_hoverred = point_to_id(hwnd_obj, cl_pt);
+				if (old_id >= 0)
+					obj_buttons.invalidate(&old_rect.rect);
 
 				// 現在何らかのRECTにホバーしている場合
-				if (id_hoverred >= 0) {
-					id_to_rect(hwnd_obj, id_hoverred, &rect_highlight);
-					Sleep(20);
-					highlight_rect(&rect_highlight);
-				}
+				if (obj_buttons.is_hovered())
+					obj_buttons.highlight();
 			}
 		}
 
@@ -668,6 +632,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
+
 	static ce::Bitmap_Canvas canvas;
 	static ce::Button	copy,
 						read,
@@ -676,22 +641,51 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 						fit,
 						id_back,
 						id_next;
+
 	static ce::Button_Switch mode_value, mode_id;
 	static ce::Button_ID id_id;
 
-	RECT	rect_lower_buttons,
-			rect_mode_buttons,
-			rect_id_buttons,
-			rect_copy,
-			rect_read,
-			rect_save,
-			rect_clear,
-			rect_fit,
-			rect_mode_value,
-			rect_mode_id,
-			rect_id_back,
-			rect_id_id,
-			rect_id_next;
+	ce::Rectangle		rect_lower_buttons,
+						rect_mode_buttons,
+						rect_id_buttons;
+
+	RECT				rect_copy,
+						rect_read,
+						rect_save,
+						rect_clear,
+						rect_fit,
+						rect_mode_value,
+						rect_mode_id,
+						rect_id_back,
+						rect_id_id,
+						rect_id_next;
+
+
+	::GetClientRect(hwnd, &rect_wnd);
+
+	// 下部のボタンが並んだRECT
+	rect_lower_buttons.set(
+		CE_MARGIN,
+		CE_MARGIN * 2 + CE_CT_UPPER_H,
+		rect_wnd.right - CE_MARGIN,
+		CE_MARGIN * 2 + CE_CT_LOWER_H + CE_CT_UPPER_H
+	);
+
+	// Value/IDスイッチが並んだRECT
+	rect_mode_buttons.set(
+		CE_MARGIN,
+		CE_MARGIN,
+		(rect_wnd.right - CE_MARGIN) / 2,
+		CE_MARGIN + CE_CT_UPPER_H
+	);
+
+	// IDのボタンが並んだRECT
+	rect_id_buttons.set(
+		(rect_wnd.right + CE_MARGIN) / 2,
+		CE_MARGIN,
+		rect_wnd.right - CE_MARGIN,
+		CE_MARGIN + CE_CT_UPPER_H
+	);
 
 	LPRECT mode_buttons[] = {
 		&rect_mode_value,
@@ -712,34 +706,9 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		&rect_id_next
 	};
 
-	::GetClientRect(hwnd, &rect_wnd);
-
-	// 下部のボタンが並んだRECT
-	rect_lower_buttons = {
-		CE_MARGIN,
-		CE_MARGIN * 2 + CE_CT_UPPER_H,
-		rect_wnd.right - CE_MARGIN,
-		CE_MARGIN * 2 + CE_CT_LOWER_H + CE_CT_UPPER_H
-	};
-	rect_divide(&rect_lower_buttons, lower_buttons, NULL, 5);
-
-	// Value/IDスイッチが並んだRECT
-	rect_mode_buttons = {
-		CE_MARGIN,
-		CE_MARGIN,
-		(rect_wnd.right - CE_MARGIN) / 2,
-		CE_MARGIN + CE_CT_UPPER_H
-	};
-	rect_divide(&rect_mode_buttons, mode_buttons, NULL, 2);
-
-	// IDのボタンが並んだRECT
-	rect_id_buttons = {
-		(rect_wnd.right + CE_MARGIN) / 2,
-		CE_MARGIN,
-		rect_wnd.right - CE_MARGIN,
-		CE_MARGIN + CE_CT_UPPER_H
-	};
-	rect_divide(&rect_id_buttons, id_buttons, NULL, 3);
+	rect_lower_buttons.divide(lower_buttons, NULL, 5);
+	rect_mode_buttons.divide(mode_buttons, NULL, 2);
+	rect_id_buttons.divide(id_buttons, NULL, 3);
 
 	switch (msg) {
 	case WM_CLOSE:
