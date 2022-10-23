@@ -1,11 +1,11 @@
-# Curve Editor v0.3 for AviUtl
+# Curve Editor v0.4 for AviUtl
 ![graph](https://user-images.githubusercontent.com/106879397/195975459-356f0a5f-0433-4f10-b4e4-0fda20c2e2d6.png)  
 
 ベジェ曲線のイージングをウィンドウ上で編集できるAviUtlプラグインです。  
 
 ## ダウンロード
-**v0.3**(Alpha版)：https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v0.3    
-※カーブを編集するUIと、カーブの適用・プロジェクトファイルへの保存機能が実装されています。
+**v0.4**(Alpha版)：https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v0.4  
+※プリセット機能以外の機能が実装されています。
 
 ## インストール
 同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。
