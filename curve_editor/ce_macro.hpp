@@ -153,7 +153,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.4.1"
+#define CE_PLUGIN_VERSION			"v0.4.2"
 #define CE_PLUGIN_DEVELOPER			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_DEVELOPER
