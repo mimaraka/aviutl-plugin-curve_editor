@@ -74,7 +74,7 @@ namespace ce {
 	//---------------------------------------------------------------------
 	//		ビットマップキャンバス
 	//---------------------------------------------------------------------
-	class Bitmap_Canvas {
+	class Bitmap_Buffer {
 	private:
 		HBITMAP bitmap;
 		HWND hwnd;
@@ -102,6 +102,8 @@ namespace ce {
 		virtual void		move(LPRECT rect);
 		void				redraw();
 		BOOL				close();
+		BOOL				show();
+		BOOL				hide();
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
@@ -145,7 +147,7 @@ namespace ce {
 		LPTSTR				icon_res_light;
 		int					icon_or_str;			//0: アイコン, 1: 文字列
 		LPTSTR				label;
-		Bitmap_Canvas		canvas;
+		Bitmap_Buffer		bitmap_buffer;
 		HWND				hwnd_parent;
 		HWND				hwnd_tooltip;
 		TOOLINFO			tool_info;
@@ -159,6 +161,7 @@ namespace ce {
 		ID2D1SolidColorBrush* brush;
 
 		void				draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content);
+		void				set_font(LPRECT rect_wnd, LPTSTR font_name);
 
 	public:
 		int					id;
@@ -189,6 +192,16 @@ namespace ce {
 
 	public:
 		void				set_status(BOOL bl);
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		ボタン(Value)
+	//---------------------------------------------------------------------
+	class Button_Value : public Button {
+	public:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
@@ -265,11 +278,12 @@ namespace ce {
 		{
 			origin.x = CE_GR_PADDING;
 			scale.x = ((double)rect->right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+
 			if (rect->right <= rect->bottom) {
 				origin.y = (rect->bottom + rect->right) * 0.5f - CE_GR_PADDING;
 				scale.y = scale.x;
 			}
-			else {
+			else if (rect->bottom > CE_GR_PADDING * 2 + CE_GR_RESOLUTION * CE_GR_SCALE_MIN) {
 				origin.y = (float)(rect->bottom - CE_GR_PADDING);
 				scale.y = ((double)rect->bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 			}

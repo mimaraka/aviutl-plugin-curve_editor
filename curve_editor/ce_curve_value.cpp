@@ -13,8 +13,14 @@
 //---------------------------------------------------------------------
 void ce::Curve_Value::init()
 {
-	ctpt[0] = { (int)(CE_GR_RESOLUTION * 0.4), (int)(CE_GR_RESOLUTION * 0.4) };
-	ctpt[1] = { (int)(CE_GR_RESOLUTION * 0.6), (int)(CE_GR_RESOLUTION * 0.6) };
+	ctpt[0] = {
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1),
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)
+	};
+	ctpt[1] = {
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2),
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)
+	};
 }
 
 
@@ -77,8 +83,9 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 			if (ptLock.x > CE_GR_RESOLUTION)
 				g_curve_value.ctpt[1].y = gr_pt.y;
 			else
-				g_curve_value.ctpt[1].y
-				= CE_GR_RESOLUTION - (int)((CE_GR_RESOLUTION - (int)g_curve_value.ctpt[1].x) * (CE_GR_RESOLUTION - ptLock.y) / (double)(CE_GR_RESOLUTION - ptLock.x));
+				g_curve_value.ctpt[1].y =
+					CE_GR_RESOLUTION - (int)((CE_GR_RESOLUTION - (int)g_curve_value.ctpt[1].x) *
+					(CE_GR_RESOLUTION - ptLock.y) / (double)(CE_GR_RESOLUTION - ptLock.x));
 		}
 	}
 	// ìØéûÇ…ìÆÇ©Ç∑
@@ -162,7 +169,11 @@ void ce::Curve_Value::move_point(int index, POINT gr_pt)
 
 	// îÕàÕêßå¿
 	g_curve_value.ctpt[index].x = MINMAXLIM(g_curve_value.ctpt[index].x, 0, CE_GR_RESOLUTION);
-	g_curve_value.ctpt[index].y = MINMAXLIM(g_curve_value.ctpt[index].y, (LONG)(-2.73 * CE_GR_RESOLUTION), (LONG)(3.73 * CE_GR_RESOLUTION));
+	g_curve_value.ctpt[index].y = MINMAXLIM(
+		g_curve_value.ctpt[index].y,
+		(LONG)(CE_CURVE_VALUE_MIN_Y * CE_GR_RESOLUTION),
+		(LONG)(CE_CURVE_VALUE_MAX_Y * CE_GR_RESOLUTION)
+	);
 }
 
 

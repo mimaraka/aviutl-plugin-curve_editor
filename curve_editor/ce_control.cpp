@@ -70,15 +70,15 @@ BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LP
 //---------------------------------------------------------------------
 void ce::Button::draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content)
 {
-	d2d_setup(&canvas, rect_wnd, TO_BGR(bg));
+	d2d_setup(&bitmap_buffer, rect_wnd, TO_BGR(bg));
 
-	::SetBkColor(canvas.hdc_memory, bg);
+	::SetBkColor(bitmap_buffer.hdc_memory, bg);
 
 	// 文字列を描画
 	if (icon_or_str == 1) {
-		::SelectObject(canvas.hdc_memory, font);
+		::SelectObject(bitmap_buffer.hdc_memory, font);
 		::DrawText(
-			canvas.hdc_memory,
+			bitmap_buffer.hdc_memory,
 			content,
 			strlen(content),
 			rect_wnd,
@@ -89,7 +89,7 @@ void ce::Button::draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content)
 	// アイコンを描画
 	else {
 		::DrawIcon(
-			canvas.hdc_memory,
+			bitmap_buffer.hdc_memory,
 			(rect_wnd->right - CE_ICON_SIZE) / 2,
 			(rect_wnd->bottom - CE_ICON_SIZE) / 2,
 			g_config.theme ? icon_light : icon_dark
@@ -104,7 +104,7 @@ void ce::Button::draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content)
 		g_render_target->EndDraw();
 	}
 
-	canvas.transfer(rect_wnd);
+	bitmap_buffer.transfer(rect_wnd);
 }
 
 
@@ -120,7 +120,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	switch (msg) {
 	case WM_CREATE:
-		canvas.init(hwnd);
+		bitmap_buffer.init(hwnd);
 
 		if (icon_or_str == 0) {
 			icon_dark = ::LoadIcon(g_fp->dll_hinst, icon_res_dark);
@@ -163,7 +163,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_CLOSE:
-		canvas.exit();
+		bitmap_buffer.exit();
 		return 0;
 
 	case WM_SIZE:
@@ -185,7 +185,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		else
 			bg = g_theme[g_config.theme].bg;
 
-		::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
 		draw(bg, &rect_wnd, label);
 		return 0;
@@ -264,7 +264,7 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 			else
 				bg = g_theme[g_config.theme].bt_selected;
 
-			::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx_selected);
+			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx_selected);
 		}
 		// 非選択時
 		else {
@@ -275,7 +275,7 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 			else
 				bg = g_theme[g_config.theme].bt_unselected;
 
-			::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
+			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 		}
 
 		draw(bg, &rect_wnd, label);
@@ -312,6 +312,42 @@ void ce::Button_Switch::set_status(BOOL bl)
 
 
 //---------------------------------------------------------------------
+//		ウィンドウプロシージャ(Value)
+//---------------------------------------------------------------------
+LRESULT ce::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	RECT rect_wnd;
+
+	::GetClientRect(hwnd, &rect_wnd);
+
+	switch (msg) {
+	case WM_PAINT:
+	{
+		COLORREF bg;
+		std::string str_value_4d = g_curve_value.create_value_4d();
+		LPTSTR value_4d = const_cast<LPTSTR>(str_value_4d.c_str());
+
+		if (clicked)
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
+		else if (hovered)
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
+		else
+			bg = g_theme[g_config.theme].bg;
+
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
+
+		draw(bg, &rect_wnd, value_4d);
+		return 0;
+	}
+
+	default:
+		return Button::wndproc(hwnd, msg, wparam, lparam);
+	}
+}
+
+
+
+//---------------------------------------------------------------------
 //		ウィンドウプロシージャ(ID)
 //---------------------------------------------------------------------
 LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -335,7 +371,7 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		else
 			bg = g_theme[g_config.theme].bg;
 
-		::SetTextColor(canvas.hdc_memory, g_theme[g_config.theme].bt_tx);
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
 		draw(bg, &rect_wnd, id_text);
 		return 0;

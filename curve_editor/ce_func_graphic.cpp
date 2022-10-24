@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		Direct2Dを初期化
 //---------------------------------------------------------------------
-void d2d_init()
+void ce::d2d_init()
 {
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
 	D2D1_RENDER_TARGET_PROPERTIES prop;
@@ -32,10 +32,10 @@ void d2d_init()
 //---------------------------------------------------------------------
 //		Direct2Dの描画の準備
 //---------------------------------------------------------------------
-void d2d_setup(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, COLORREF cr)
+void ce::d2d_setup(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd, COLORREF cr)
 {
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {
-		g_render_target->BindDC(canvas->hdc_memory, rect_wnd);
+		g_render_target->BindDC(bitmap_buffer->hdc_memory, rect_wnd);
 		g_render_target->BeginDraw();
 		g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
 		g_render_target->Clear(D2D1::ColorF(cr));
@@ -191,7 +191,7 @@ void d2d_draw_handle(ID2D1SolidColorBrush* brush, ce::Float_Point st, ce::Float_
 //---------------------------------------------------------------------
 //		ラウンドエッジを描画
 //---------------------------------------------------------------------
-void d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius) {
+void ce::d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius) {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* edge;
 	D2D1_POINT_2F pt_1, pt_2, pt_3;
@@ -252,7 +252,7 @@ void d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int fla
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void draw_panel_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr)
+void ce::draw_panel_main(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd, LPRECT rect_sepr)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
@@ -271,7 +271,7 @@ void draw_panel_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sep
 	);
 
 	//Direct2D初期化
-	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	if (g_render_target != NULL) {
 		g_render_target->BeginDraw();
@@ -287,7 +287,7 @@ void draw_panel_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sep
 	}
 
 	//ビットマップをバッファから画面に転送
-	canvas->transfer(rect_wnd);
+	bitmap_buffer->transfer(rect_wnd);
 }
 
 
@@ -295,15 +295,15 @@ void draw_panel_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sep
 //---------------------------------------------------------------------
 //		ヘッダパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_header(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
+void ce::draw_panel_header(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 
 	//Direct2D初期化
-	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
-	canvas->transfer(rect_wnd);
+	bitmap_buffer->transfer(rect_wnd);
 }
 
 
@@ -311,15 +311,15 @@ void draw_panel_header(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		ライブラリを描画
 //---------------------------------------------------------------------
-void draw_panel_preset(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
+void ce::draw_panel_preset(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 
 	//Direct2D初期化
-	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
-	canvas->transfer(rect_wnd);
+	bitmap_buffer->transfer(rect_wnd);
 }
 
 
@@ -327,13 +327,13 @@ void draw_panel_preset(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
+void ce::draw_panel_editor(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd)
 {
 	static ID2D1SolidColorBrush* brush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
 	float dashes[] = { CE_GR_POINT_DASH, CE_GR_POINT_DASH };
 
-	ce::Float_Point ctpt_cl[] = {//クライアント
+	Float_Point ctpt_cl[] = {//クライアント
 		{
 			g_view_info.origin.x,
 			g_view_info.origin.y
@@ -351,7 +351,7 @@ void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 			g_view_info.origin.y - (float)(g_view_info.scale.y * CE_GR_RESOLUTION)
 		}
 	};
-	ce::Float_Point ctpt_trace_cl[] = {
+	Float_Point ctpt_trace_cl[] = {
 		ctpt_cl[0],
 		{
 			to_client(g_curve_value_previous.ctpt[0]).x,
@@ -380,18 +380,18 @@ void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 		ctpt_cl[0].x,
 		0,
 		ctpt_cl[3].x,
-		to_client(0, (int)(3.73 * CE_GR_RESOLUTION)).y
+		to_client(0, (int)(CE_CURVE_VALUE_MAX_Y * CE_GR_RESOLUTION)).y
 	};
 
 	D2D1_RECT_F rect_down = {
 		ctpt_cl[0].x,
-		to_client(0, (int)(-2.73 * CE_GR_RESOLUTION)).y,
+		to_client(0, (int)(CE_CURVE_VALUE_MIN_Y * CE_GR_RESOLUTION)).y,
 		ctpt_cl[3].x,
 		(float)rect_wnd->bottom
 	};
 
 	//Direct2D初期化
-	d2d_setup(canvas, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_graph));
+	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_graph));
 
 	//描画
 	if (g_render_target != NULL && g_d2d1_factory != NULL) {
@@ -510,5 +510,5 @@ void draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd)
 
 
 	//ビットマップをバッファから画面に転送
-	canvas->transfer(rect_wnd);
+	bitmap_buffer->transfer(rect_wnd);
 }

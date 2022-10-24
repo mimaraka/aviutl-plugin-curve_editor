@@ -17,36 +17,70 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	switch (msg) {
 	case WM_CLOSE:
-		EndDialog(hwnd, 1);
+		::EndDialog(hwnd, 1);
 		return 0;
 
 	case WM_INITDIALOG:
-		if (g_config.trace) SendMessage(GetDlgItem(hwnd, IDC_PREVIOUSCURVE), BM_SETCHECK, BST_CHECKED, 0);
-		if (g_config.alert) SendMessage(GetDlgItem(hwnd, IDC_ALERT), BM_SETCHECK, BST_CHECKED, 0);
-		if (g_config.auto_copy) SendMessage(GetDlgItem(hwnd, IDC_AUTOCOPY), BM_SETCHECK, BST_CHECKED, 0);
-		combo = GetDlgItem(hwnd, IDC_THEME);
-		SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ダーク");
-		SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ライト");
-		SendMessage(combo, CB_SETCURSEL, g_config.theme, 0);
+		if (g_config.trace)
+			::SendMessage(
+				::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
+				BM_SETCHECK,
+				BST_CHECKED, 0
+			);
+
+		if (g_config.alert)
+			::SendMessage(
+				::GetDlgItem(hwnd, IDC_ALERT),
+				BM_SETCHECK,
+				BST_CHECKED, 0
+			);
+
+		if (g_config.auto_copy)
+			::SendMessage(
+				::GetDlgItem(hwnd, IDC_AUTOCOPY),
+				BM_SETCHECK,
+				BST_CHECKED, 0
+			);
+
+		combo = ::GetDlgItem(hwnd, IDC_THEME);
+		::SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ダーク");
+		::SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ライト");
+		::SendMessage(combo, CB_SETCURSEL, g_config.theme, 0);
 
 		return 0;
 
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			g_config.trace = SendMessage(GetDlgItem(hwnd, IDC_PREVIOUSCURVE), BM_GETCHECK, 0, 0);
-			g_config.alert = SendMessage(GetDlgItem(hwnd, IDC_ALERT), BM_GETCHECK, 0, 0);
-			g_config.auto_copy = SendMessage(GetDlgItem(hwnd, IDC_AUTOCOPY), BM_GETCHECK, 0, 0);
-			g_config.theme = SendMessage(combo, CB_GETCURSEL, 0, 0);
+			g_config.trace = ::SendMessage(
+				::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
+				BM_GETCHECK, 0, 0
+			);
+			g_config.alert = ::SendMessage(
+				::GetDlgItem(hwnd, IDC_ALERT),
+				BM_GETCHECK, 0, 0
+			);
+			g_config.auto_copy = ::SendMessage(
+				::GetDlgItem(hwnd, IDC_AUTOCOPY),
+				BM_GETCHECK, 0, 0
+			);
+			g_config.theme = ::SendMessage(
+				combo,
+				CB_GETCURSEL, 0, 0
+			);
+
 			g_fp->exfunc->ini_save_int(g_fp, "theme", g_config.theme);
 			g_fp->exfunc->ini_save_int(g_fp, "show_previous_curve", g_config.trace);
 			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.alert);
 			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
-			EndDialog(hwnd, 1);
+
+			::EndDialog(hwnd, 1);
+
 			return 0;
 
 		case IDCANCEL:
-			EndDialog(hwnd, 1);
+			::EndDialog(hwnd, 1);
+
 			return 0;
 		}
 	}
@@ -65,34 +99,46 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 	switch (msg) {
 	case WM_CLOSE:
-		EndDialog(hwnd, 1);
+		::EndDialog(hwnd, 1);
 		return 0;
 
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			GetDlgItemText(hwnd, IDC_EDIT_VALUE, buffer, 30);
+			::GetDlgItemText(hwnd, IDC_EDIT_VALUE, buffer, 30);
 			if (std::regex_match(buffer, re)) {
 				std::string str = buffer;
-				std::vector<std::string> vec = split(buffer, ',');
+				std::vector<std::string> vec = ce::split(buffer, ',');
 
-				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * CE_GR_RESOLUTION);
-				g_curve_value.ctpt[0].x = (int)(std::stod(vec[0]) * CE_GR_RESOLUTION);
-				g_curve_value.ctpt[0].y = (int)(std::stod(vec[1]) * CE_GR_RESOLUTION);
-				g_curve_value.ctpt[1].x = (int)(std::stod(vec[2]) * CE_GR_RESOLUTION);
-				g_curve_value.ctpt[1].y = (int)(std::stod(vec[3]) * CE_GR_RESOLUTION);
+				float values[4];
 
-				for (int i = 0; i < 2; i++) {
-					if (g_curve_value.ctpt[i].y > 3.73 * CE_GR_RESOLUTION) g_curve_value.ctpt[i].y = (int)(3.73 * CE_GR_RESOLUTION);
-					else if (g_curve_value.ctpt[i].y < -2.73 * CE_GR_RESOLUTION) g_curve_value.ctpt[i].y = (int)(-2.73 * CE_GR_RESOLUTION);
-				}
-				EndDialog(hwnd, 1);
+				values[0] = MINMAXLIM(std::stof(vec[0]), 0, 1);
+				values[1] = MINMAXLIM(
+					std::stof(vec[1]),
+					CE_CURVE_VALUE_MIN_Y,
+					CE_CURVE_VALUE_MAX_Y
+				);
+				values[2] = MINMAXLIM(std::stof(vec[2]), 0, 1);
+				values[3] = MINMAXLIM(
+					std::stof(vec[3]),
+					CE_CURVE_VALUE_MIN_Y,
+					CE_CURVE_VALUE_MAX_Y
+				);
+
+				g_curve_value.ctpt[0].x = (int)(values[0] * CE_GR_RESOLUTION);
+				g_curve_value.ctpt[0].y = (int)(values[1] * CE_GR_RESOLUTION);
+				g_curve_value.ctpt[1].x = (int)(values[2] * CE_GR_RESOLUTION);
+				g_curve_value.ctpt[1].y = (int)(values[3] * CE_GR_RESOLUTION);
+
+				::EndDialog(hwnd, 1);
 			}
-			else if (g_config.alert)MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)
+				::MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+
 			return 0;
 
 		case IDCANCEL:
-			EndDialog(hwnd, 1);
+			::EndDialog(hwnd, 1);
 			return 0;
 		}
 	}
@@ -139,12 +185,15 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					value = std::stoi(str);
 				}
 				catch (std::out_of_range& e) {
-					if (g_config.alert) MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+					if (g_config.alert)
+						MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
 					return 0;
 				}
 				if (!ISINRANGEEQ(value, -2147483647, 2122746761)) {
 					if (g_config.alert)
 						::MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
 					return 0;
 				}
 				g_curve_value.read_value_1d(value);
@@ -152,6 +201,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			else if (g_config.alert)
 				::MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
 			return 0;
 		case IDCANCEL:
 			::EndDialog(hwnd, 1);
@@ -169,11 +219,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	HWND edit;
-	LPCTSTR result;
-	std::string buffer;
 	//TCHAR buffer[64];
-	buffer = g_curve_value.create_value_4d();
-	result = buffer.c_str();
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -241,6 +287,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if (strlen(buffer) == 0) {
 				if (g_config.alert)
 					::MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
 				return 0;
 			}
 
@@ -250,6 +297,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if (!ISINRANGEEQ(value, 0, CE_CURVE_MAX - 1)) {
 				if (g_config.alert)
 					::MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
 				return 0;
 			}
 

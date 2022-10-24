@@ -40,7 +40,7 @@ BOOL filter_init(FILTER* fp)
 	// DialogBoxParamA()をフック
 	DialogBox_original = (decltype(DialogBox_original))yulib::RewriteFunction(exedit_path, "DialogBoxParamA", DialogBox_hooked);
 
-	d2d_init();
+	ce::d2d_init();
 	return TRUE;
 }
 
@@ -97,6 +97,46 @@ BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 
 
 //---------------------------------------------------------------------
+//		aviutl.iniから設定を読み込み
+//---------------------------------------------------------------------
+void ini_load_configs(FILTER* fp)
+{
+	g_config.theme = fp->exfunc->ini_load_int(fp, "theme", 0);
+	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", 1);
+	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", 1);
+	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", 0);
+	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
+	g_curve_value.ctpt[0].x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)), 0, CE_GR_RESOLUTION);
+	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1));
+	g_curve_value.ctpt[1].x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)), 0, CE_GR_RESOLUTION);
+	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2));
+	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_W);
+	g_config.mode = (ce::Config::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
+	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", 1);
+	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
+	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CE_DEF_PRESET_SIZE);
+}
+
+
+
+//---------------------------------------------------------------------
+//		aviutl.iniから設定を書き込み
+//---------------------------------------------------------------------
+void ini_write_configs(FILTER* fp)
+{
+	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.ctpt[0].x);
+	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.ctpt[0].y);
+	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpt[1].x);
+	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpt[1].y);
+	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
+	fp->exfunc->ini_save_int(fp, "mode", g_config.mode);
+	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
+	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
+}
+
+
+
+//---------------------------------------------------------------------
 //		ウィンドウプロシージャ
 //---------------------------------------------------------------------
 BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* editp, FILTER* fp)
@@ -129,7 +169,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		return 0;
 
 	case WM_KEYDOWN:
-		return on_keydown(wparam);
+		return ce::on_keydown(wparam);
 
 	case WM_COMMAND:
 		switch (wparam) {

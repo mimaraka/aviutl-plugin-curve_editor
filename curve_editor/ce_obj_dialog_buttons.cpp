@@ -61,6 +61,8 @@ void ce::Obj_Dialog_Buttons::click()
 
 	if (!fp_quick_easing_setup || g_fp->exfunc->ini_load_int(fp_quick_easing_setup, "auto_popup", 0) != 1)
 		::PostMessage(hwnd_obj, WM_COMMAND, 0x462, id);
+
+	id = -1;
 }
 
 

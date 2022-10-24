@@ -68,33 +68,35 @@ BOOL				filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 //		その他の関数
 //----------------------------------------------------------------------------------
 
-//文字列の分割
-std::vector<std::string> split(const std::string& s, TCHAR c);
+namespace ce {
+	//文字列の分割
+	std::vector<std::string> split(const std::string& s, TCHAR c);
 
-//クリップボードにテキストをコピー
-BOOL				copy_to_clipboard(HWND, LPCTSTR);
+	//クリップボードにテキストをコピー
+	BOOL				copy_to_clipboard(HWND, LPCTSTR);
 
-// 長さを減算
-ce::Float_Point		subtract_length(ce::Float_Point st, ce::Float_Point ed, float length);
+	// 長さを減算
+	ce::Float_Point		subtract_length(ce::Float_Point st, ce::Float_Point ed, float length);
 
-// 設定をメニューに反映
-void				apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
+	// 設定をメニューに反映
+	void				apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
 
-// キー押下時の処理
-LRESULT				on_keydown(WPARAM wparam);
+	// キー押下時の処理
+	LRESULT				on_keydown(WPARAM wparam);
 
 
 
 //----------------------------------------------------------------------------------
 //		描画関数
 //----------------------------------------------------------------------------------
-void				d2d_init();
-void				d2d_setup(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, COLORREF cr);
-void				d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius);
-void				draw_panel_main(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd, LPRECT rect_sepr);
-void				draw_panel_header(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
-void				draw_panel_preset(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
-void				draw_panel_editor(ce::Bitmap_Canvas* canvas, LPRECT rect_wnd);
+	void				d2d_init();
+	void				d2d_setup(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd, COLORREF cr);
+	void				d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius);
+	void				draw_panel_main(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd, LPRECT rect_sepr);
+	void				draw_panel_header(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd);
+	void				draw_panel_preset(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd);
+	void				draw_panel_editor(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd);
+}
 
 
 

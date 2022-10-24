@@ -24,13 +24,10 @@
     <ClCompile Include="ce_dlgproc.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_ctrlproc.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="ce_func.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_func_graphics.cpp">
+    <ClCompile Include="ce_func_graphic.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ce_curve_id.cpp">
@@ -39,7 +36,7 @@
     <ClCompile Include="ce_curve_value.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_bitmap_canvas.cpp">
+    <ClCompile Include="ce_bitmap_buffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ce_control.cpp">

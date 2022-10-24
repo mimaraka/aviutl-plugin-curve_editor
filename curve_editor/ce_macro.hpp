@@ -54,6 +54,10 @@
 #define CE_CURVE_TH					1.2f
 #define CE_SUBTRACT_LENGTH			10.0f
 #define CE_SUBTRACT_LENGTH_2		8.0f
+#define CE_CURVE_VALUE_MIN_Y		-2.73f
+#define CE_CURVE_VALUE_MAX_Y		3.73f
+#define CE_CURVE_DEF_1				0.4f
+#define CE_CURVE_DEF_2				0.6f
 
 //フラグ
 #define BIT(num)					((UINT)1 << num)
@@ -104,6 +108,8 @@
 #define CE_CM_ID_NEXT				0x080a
 #define CE_CM_ID_BACK				0x080b
 #define CE_CM_REDRAW_AVIUTL			0x080c
+#define CE_CM_VALUE					0x080d
+#define CE_CM_VALUE_REDRAW			0x080e
 
 
 
@@ -147,10 +153,10 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.4"
-#define CE_PLUGIN_AUTHOR			"mimaraka"
+#define CE_PLUGIN_VERSION			"v0.4.1"
+#define CE_PLUGIN_DEVELOPER			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
-#define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_AUTHOR
+#define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_DEVELOPER
 #define CE_PLUGIN_LINK				"https://github.com/mimaraka/aviutl-plugin-curve_editor"
 #define CE_PLUGIN_LINK_HELP			CE_PLUGIN_LINK "#readme"
 
@@ -160,7 +166,7 @@
 //		文字列
 //---------------------------------------------------------------------
 #define CE_STR_DELETE				"編集中のカーブを初期化します。よろしいですか？"
-#define CE_STR_ABOUT				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION "\n" "Copyright : (C) " CE_PLUGIN_YEAR " " CE_PLUGIN_AUTHOR
+#define CE_STR_ABOUT				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION "\n" "Copyright : (C) " CE_PLUGIN_YEAR " " CE_PLUGIN_DEVELOPER
 #define CE_STR_INVALIDINPUT			"無効な入力値です。"
 #define CE_STR_INPUTANAME			"プリセット名を入力してください。"
 #define CE_STR_OUTOFRANGE			"値が範囲外です。"

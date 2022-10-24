@@ -9,49 +9,9 @@
 
 
 //---------------------------------------------------------------------
-//		aviutl.iniから設定を読み込み
-//---------------------------------------------------------------------
-void ini_load_configs(FILTER* fp)
-{
-	g_config.theme = fp->exfunc->ini_load_int(fp, "theme", 0);
-	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", 1);
-	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", 1);
-	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", 0);
-	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.ctpt[0].x = fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * 0.4));
-	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * 0.4));
-	g_curve_value.ctpt[1].x = fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * 0.6));
-	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * 0.6));
-	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_W);
-	g_config.mode = (ce::Config::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
-	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", 1);
-	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
-	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CE_DEF_PRESET_SIZE);
-}
-
-
-
-//---------------------------------------------------------------------
-//		aviutl.iniから設定を書き込み
-//---------------------------------------------------------------------
-void ini_write_configs(FILTER* fp)
-{
-	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.ctpt[0].x);
-	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.ctpt[0].y);
-	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpt[1].x);
-	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpt[1].y);
-	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
-	fp->exfunc->ini_save_int(fp, "mode", g_config.mode);
-	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
-	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
-}
-
-
-
-//---------------------------------------------------------------------
 //		split関数
 //---------------------------------------------------------------------
-std::vector<std::string> split(const std::string& s, TCHAR c)
+std::vector<std::string> ce::split(const std::string& s, TCHAR c)
 {
 	std::vector<std::string> elems;
 	std::string item;
@@ -75,7 +35,7 @@ std::vector<std::string> split(const std::string& s, TCHAR c)
 //---------------------------------------------------------------------
 //		クリップボードにテキストをコピー
 //---------------------------------------------------------------------
-BOOL copy_to_clipboard(HWND hwnd, LPCTSTR text)
+BOOL ce::copy_to_clipboard(HWND hwnd, LPCTSTR text)
 {
 	HGLOBAL memory;
 	LPTSTR buffer;
@@ -100,9 +60,9 @@ BOOL copy_to_clipboard(HWND hwnd, LPCTSTR text)
 //---------------------------------------------------------------------
 //		for UI
 //---------------------------------------------------------------------
-ce::Float_Point subtract_length(ce::Float_Point st, ce::Float_Point ed, float length)
+ce::Float_Point ce::subtract_length(Float_Point st, Float_Point ed, float length)
 {
-	ce::Float_Point result;
+	Float_Point result;
 	float old_length = (float)DISTANCE(st, ed);
 	if (old_length == 0)
 		return ed;
@@ -121,7 +81,7 @@ ce::Float_Point subtract_length(ce::Float_Point st, ce::Float_Point ed, float le
 //---------------------------------------------------------------------
 //		g_configの内容をポップアップメニューに反映させる
 //---------------------------------------------------------------------
-void apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
+void ce::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	mi->fMask = MIIM_STATE;
 
 	// Value/ID
@@ -160,27 +120,9 @@ void apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 
 
 //---------------------------------------------------------------------
-//		RECTに余白を設定
-//---------------------------------------------------------------------
-void rect_set_margin(LPRECT rect, int left, int top, int right, int bottom)
-{
-	rect->left += left;
-	rect->top += top;
-	rect->right -= right;
-	rect->bottom -= bottom;
-
-	if (rect->left > rect->right)
-		rect->left = rect->right = (rect->left + rect->right) / 2;
-	if (rect->top > rect->bottom)
-		rect->top = rect->bottom = (rect->top + rect->bottom) / 2;
-}
-
-
-
-//---------------------------------------------------------------------
 //		キー押下時の処理
 //---------------------------------------------------------------------
-LRESULT on_keydown(WPARAM wparam)
+LRESULT ce::on_keydown(WPARAM wparam)
 {
 	switch (wparam) {
 	case 82: //[R]
@@ -210,7 +152,7 @@ LRESULT on_keydown(WPARAM wparam)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_NEXT, 0);
 		return 0;
 
-	case 70: //[F]
+	case VK_HOME: //[Home]
 		if (g_window_editor.hwnd)
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_FIT, 0);
 		return 0;

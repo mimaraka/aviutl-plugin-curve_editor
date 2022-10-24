@@ -14,16 +14,35 @@
 void ce::Curve_ID::init()
 {
 	Points_ID pt_add[2];
+
 	pt_add[0].type = 0;
 	pt_add[0].pt_center = { 0, 0 };
-	pt_add[0].pt_right = { (int)(CE_GR_RESOLUTION * 0.4), (int)(CE_GR_RESOLUTION * 0.4) };
+	pt_add[0].pt_right = {
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1),
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)
+	};
 	pt_add[0].pt_left = { 0, 0 };
+
 	ctpts.PushBack(pt_add[0]);
 
+
 	pt_add[1].type = 1;
-	pt_add[1].pt_center = { CE_GR_RESOLUTION, CE_GR_RESOLUTION };
-	pt_add[1].pt_left = { (int)(CE_GR_RESOLUTION * 0.6), (int)(CE_GR_RESOLUTION * 0.6) };
-	pt_add[1].pt_right = { CE_GR_RESOLUTION, CE_GR_RESOLUTION };
+
+	pt_add[1].pt_center = {
+		CE_GR_RESOLUTION,
+		CE_GR_RESOLUTION
+	};
+
+	pt_add[1].pt_left = {
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2),
+		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)
+	};
+
+	pt_add[1].pt_right = {
+		CE_GR_RESOLUTION,
+		CE_GR_RESOLUTION
+	};
+
 	ctpts.PushBack(pt_add[1]);
 }
 
@@ -50,18 +69,25 @@ void ce::Curve_ID::add_point(POINT gr_pt)
 	ctpt_add.type = 2;
 	ctpt_add.pt_center = gr_pt;
 	//ビューの縮尺に合わせてハンドルのデフォルトの長さを変更
-	ctpt_add.pt_left = { gr_pt.x - (int)(CE_HANDLE_DEF_L / g_view_info.scale.x), gr_pt.y};
-	ctpt_add.pt_right = { gr_pt.x + (int)(CE_HANDLE_DEF_L / g_view_info.scale.x), gr_pt.y};
+	ctpt_add.pt_left = {
+		gr_pt.x - (int)(CE_HANDLE_DEF_L / g_view_info.scale.x),
+		gr_pt.y
+	};
+	ctpt_add.pt_right = {
+		gr_pt.x + (int)(CE_HANDLE_DEF_L / g_view_info.scale.x),
+		gr_pt.y
+	};
+
 	ctpts.Insert(ctpt_add, index);
 
 	//左右の点が両隣の中央の点より左/右に出ていたら修正
 	if (ctpts[index].pt_left.x < ctpts[index - 1].pt_center.x)
 		ctpts[index].pt_left.x = ctpts[index - 1].pt_center.x;
+
 	if (ctpts[index].pt_right.x > ctpts[index + 1].pt_center.x)
 		ctpts[index].pt_right.x = ctpts[index + 1].pt_center.x;
 
 	//両隣の左右の点が中央の点より右/左に出ていたら修正
-	
 	tmp = { index - 1, ce::Point_Address::Right };
 	correct_handle(tmp, get_handle_angle(tmp));
 	
@@ -160,8 +186,14 @@ void ce::Curve_ID::move_point(Point_Address address, POINT gr_pt, BOOL reset)
 		tmp = { address.index, ce::Point_Address::Right };
 		agl_right = get_handle_angle(tmp);
 
-		len_left = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_left);
-		len_right = DISTANCE(ctpts[address.index].pt_center, ctpts[address.index].pt_right);
+		len_left = DISTANCE(
+			ctpts[address.index].pt_center,
+			ctpts[address.index].pt_left
+		);
+		len_right = DISTANCE(
+			ctpts[address.index].pt_center,
+			ctpts[address.index].pt_right
+		);
 	}
 
 	switch (address.position) {
@@ -323,8 +355,11 @@ void ce::Curve_ID::set_handle_angle(Point_Address address, double angle, BOOL bL
 			ctpts[address.index].pt_center,
 			ctpts[address.index].pt_left);
 
-		ctpts[address.index].pt_left.x = (LONG)(ctpts[address.index].pt_center.x + std::cos(angle) * length);
-		ctpts[address.index].pt_left.y = (LONG)(ctpts[address.index].pt_center.y + std::sin(angle) * length);
+		ctpts[address.index].pt_left.x =
+			(LONG)(ctpts[address.index].pt_center.x + std::cos(angle) * length);
+		ctpts[address.index].pt_left.y =
+			(LONG)(ctpts[address.index].pt_center.y + std::sin(angle) * length);
+
 		correct_handle(address, angle);
 	}
 	//右-right
@@ -334,8 +369,11 @@ void ce::Curve_ID::set_handle_angle(Point_Address address, double angle, BOOL bL
 			ctpts[address.index].pt_center,
 			ctpts[address.index].pt_right);
 
-		ctpts[address.index].pt_right.x = (LONG)(ctpts[address.index].pt_center.x + std::cos(angle) * length);
-		ctpts[address.index].pt_right.y = (LONG)(ctpts[address.index].pt_center.y + std::sin(angle) * length);
+		ctpts[address.index].pt_right.x =
+			(LONG)(ctpts[address.index].pt_center.x + std::cos(angle) * length);
+		ctpts[address.index].pt_right.y =
+			(LONG)(ctpts[address.index].pt_center.y + std::sin(angle) * length);
+
 		correct_handle(address, angle);
 	}
 	else return;
