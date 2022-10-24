@@ -225,6 +225,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(左クリックがされたとき)
 		///////////////////////////////////////////
 	case WM_LBUTTONDOWN:
+		address = g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt);
 		// 値モード&制御点がクリックされたとき
 		if (g_config.mode == ce::Config::Value && g_curve_value.point_in_ctpts(cl_pt) >= 1) {
 			move_pt = g_curve_value.point_in_ctpts(cl_pt);
@@ -232,23 +233,20 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			::SetCursor(LoadCursor(NULL, IDC_HAND));
 			::SetCapture(hwnd);
 		}
-		// 値モードでないとき
-		else {
-			// カーソルが制御点上にあるかどうか
-			address = g_curve_id[g_config.current_id].pt_in_ctpt(cl_pt);
+		// IDモードのとき
+		else if (g_config.mode == ce::Config::ID && address.position != ce::Point_Address::Null) {	
 			// カーソルが制御点上にあるとき，ハンドルの座標を記憶
-			if (address.position != ce::Point_Address::Null) {
-				g_curve_id[g_config.current_id].move_point(address, gr_pt, TRUE);
-				g_curve_id_previous = g_curve_id[g_config.current_id];
-				::SetCursor(LoadCursor(NULL, IDC_HAND));
-				::SetCapture(hwnd);
-			}
-			// カーブのD&D処理
-			else {
-				is_dragging = TRUE;
-				::SetCapture(hwnd);
-			}
+			g_curve_id[g_config.current_id].move_point(address, gr_pt, TRUE);
+			g_curve_id_previous = g_curve_id[g_config.current_id];
+			::SetCursor(LoadCursor(NULL, IDC_HAND));
+			::SetCapture(hwnd);
 		}
+		// カーブのD&D処理
+		else {
+			is_dragging = TRUE;
+			::SetCapture(hwnd);
+		}
+
 		return 0;
 
 		///////////////////////////////////////////
