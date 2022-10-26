@@ -86,7 +86,7 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		HWND hwnd_edit = ::GetWindow(hwnd, GW_CHILD);
 		TCHAR text[MAX_PATH];
 		int data;
-		if (g_config.mode == ce::Config::ID)
+		if (g_config.mode == ce::Mode_ID)
 			data = g_config.current_id;
 		else
 			data = g_curve_value.create_value_1d();

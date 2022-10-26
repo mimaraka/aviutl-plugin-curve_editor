@@ -11,10 +11,10 @@
 //---------------------------------------------------------------------
 //		ÉOÉçÅ[ÉoÉãïœêî
 //---------------------------------------------------------------------
-ce::Curve_Value					g_curve_value;
-ce::Curve_Value					g_curve_value_previous;
-ce::Curve_ID					g_curve_id[CE_CURVE_MAX];
-ce::Curve_ID					g_curve_id_previous;
+ce::Curve						g_curve_value;
+ce::Curve						g_curve_value_previous;
+ce::Curve						g_curve_id[CE_CURVE_MAX];
+ce::Curve						g_curve_id_previous;
 ce::Config						g_config;
 ce::Window						g_window_main,
 								g_window_header,

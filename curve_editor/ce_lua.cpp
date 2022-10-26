@@ -23,7 +23,7 @@ int get_result(lua_State* L)
 	double	ed = lua_tonumber(L, 4);
 
 	if (index < 0 || index > CE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_curve_id[index].get_value(ratio, st, ed));
+	else lua_pushnumber(L, g_curve_id[index].id_create_result(ratio, st, ed));
 	return 1;
 }
 

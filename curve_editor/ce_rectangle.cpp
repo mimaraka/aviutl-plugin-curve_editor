@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		‰Šú‰»(1)
 //---------------------------------------------------------------------
-void ce::Rectangle::set(RECT rc)
+void ce::Rectangle::set(const RECT& rc)
 {
 	rect = rc;
 }
@@ -34,7 +34,7 @@ void ce::Rectangle::set(int left, int top, int right, int bottom)
 //---------------------------------------------------------------------
 //		‰¡nŒÂ‚É•ªŠ„‚·‚é
 //---------------------------------------------------------------------
-void ce::Rectangle::divide(LPRECT* rects_child, float* weights, int n)
+void ce::Rectangle::divide(LPRECT rects_child[], float weights[], int n) const
 {
 	// e—v‘f‚Ì‰¡•
 	int width_parent = rect.right - rect.left;

@@ -240,15 +240,26 @@ BEGIN
         MENUITEM "カーブの値をコピー(4次元)",              ID_MENU_COPY4D
         MENUITEM "カーブを反転\tR",                   ID_MENU_REVERSE
         MENUITEM "カーブを初期化\tDel",                ID_MENU_DELETE
+        MENUITEM "すべてのカーブを初期化",                 ID_MENU_DELETE_ALL
         MENUITEM "カーブのプロパティ",                   ID_MENU_PROPERTY
         MENUITEM SEPARATOR
         MENUITEM "ハンドルを連動させる\tA",               ID_MENU_ALIGNHANDLE
         MENUITEM "ハンドルを表示 \tS",                 ID_MENU_SHOWHANDLE
-        MENUITEM "グラフをフィット\tF",                 ID_MENU_FIT
+        MENUITEM "グラフをフィット\tHome",              ID_MENU_FIT
         MENUITEM SEPARATOR
         MENUITEM "設定",                          ID_MENU_CONFIG
         MENUITEM "ヘルプ",                         ID_MENU_HELP
         MENUITEM "About",                       ID_MENU_ABOUT
+    END
+END
+
+IDR_MENU2 MENU
+BEGIN
+    POPUP "PRESET"
+    BEGIN
+        MENUITEM "適用",                          ID_PRESET_APPLY
+        MENUITEM "名前を変更",                       ID_PRESET_RENAME
+        MENUITEM "プリセットを削除",                    ID_PRESET_REMOVE
     END
 END
 

@@ -23,6 +23,7 @@
 #define IDI_BACK_LIGHT                  131
 #define IDI_NEXT_LIGHT                  132
 #define IDD_ID                          133
+#define IDR_MENU2                       136
 #define IDC_DRAGGING                    200
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
@@ -51,13 +52,23 @@
 #define ID_MENU_READ                    40039
 #define ID_MENU_HELP                    40040
 #define ID_40042                        40042
+#define ID_PRESET_40043                 40043
+#define ID_PRESET_40044                 40044
+#define ID_PRESET_40045                 40045
+#define ID_PRESET_APPLY                 40046
+#define ID_PRESET_RENAME                40047
+#define ID_PRESET_CLEAR                 40048
+#define ID_PRESET_REMOVE                40049
+#define ID_MENU_40050                   40050
+#define ID_MENU_CLEAR_ALL               40051
+#define ID_MENU_DELETE_ALL              40052
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        136
-#define _APS_NEXT_COMMAND_VALUE         40043
+#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_COMMAND_VALUE         40053
 #define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

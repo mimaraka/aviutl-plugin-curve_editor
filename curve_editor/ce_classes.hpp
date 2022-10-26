@@ -28,45 +28,37 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
-	//		カーブ(Valueモード)
+	//		カーブ
 	//---------------------------------------------------------------------
-	class Curve_Value {
+	class Curve {
+	private:
+		void				set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle);
+		void				correct_handle(const Point_Address& pt_address, double angle);
+		double				get_handle_angle(const Point_Address& pt_address);
+		void				set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth);
+
 	public:
-		POINT ctpt[2];
+		ce::Static_Array<Curve_Points, CE_POINT_MAX> ctpts;
+		Mode mode;
 
-		Curve_Value() { init(); }
+		// 共通
+		void				initialize();
+		void				initialize(Mode md);
+		void				clear();
+		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
+		void				reverse_curve();
 
-		void				init();
-		int					point_in_ctpts(POINT cl_pt);
-		void				move_point(int index, POINT gr_pt);
+		// Valueモード用
 		int					create_value_1d();
 		std::string			create_value_4d();
 		void				read_value_1d(int value);
-	};
 
-
-
-	//---------------------------------------------------------------------
-	//		カーブ(IDモード)
-	//---------------------------------------------------------------------
-	class Curve_ID {
-	public:
-		ce::Static_Array<Points_ID, CE_POINT_MAX> ctpts;
-
-		Curve_ID() { init(); }
-
-		void				init();
-		void				add_point(POINT cl_pt);
-		void				delete_point(POINT cl_pt);
-		void				clear();
-		POINT				get_point(Point_Address address);
-		void				move_point(Point_Address address, POINT gr_pt, BOOL reset);
-		Point_Address		pt_in_ctpt(POINT cl_pt);
-		double				get_handle_angle(Point_Address address);
-		void				correct_handle(Point_Address address, double angle);
-		void				set_handle_angle(Point_Address address, double angle, BOOL bLength, double lgth);
-		void				reverse_curve();
-		double				get_value(double ratio, double st, double ed);
+		// IDモード用
+		void				add_point(const POINT& pt_client);
+		void				delete_point(const POINT& pt_client);
+		void				move_point(int index, const POINT& pt_graph, bool init);
+		void				move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
+		double				id_create_result(double ratio, double st, double ed);
 	};
 
 
@@ -82,8 +74,8 @@ namespace ce {
 		HDC hdc_memory;
 
 		void init(HWND hw);
-		void exit();
-		void transfer(LPRECT rect);
+		void exit() const;
+		void transfer(const RECT& rect) const;
 	};
 
 
@@ -98,12 +90,12 @@ namespace ce {
 	public:
 		HWND hwnd;
 
-		virtual BOOL		create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, LPRECT rect);
-		virtual void		move(LPRECT rect);
-		void				redraw();
-		BOOL				close();
-		BOOL				show();
-		BOOL				hide();
+		virtual BOOL		create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect);
+		virtual void		move(const RECT& rect) const;
+		void				redraw() const;
+		BOOL				close() const;
+		BOOL				show() const;
+		BOOL				hide() const;
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
@@ -116,23 +108,17 @@ namespace ce {
 	public:
 		HWND				hwnd;
 		LPTSTR				name;
-		Curve_Value			curve_value;
-		Curve_ID			curve_id;
+		Curve				curve;
 		time_t				unix_time;
-		const int			val_or_id, def_or_user;
-		int					index;
+		const int			val_or_id;
 
-		Preset(int v_i, Curve_Value c_value, Curve_ID c_id, LPTSTR n, int d_u) : name(n), val_or_id(v_i), def_or_user(d_u)
+		Preset(int v_i, Curve cv, LPTSTR n) : name(n), curve(cv), val_or_id(v_i)
 		{
-			if (v_i == 1)
-				curve_id = c_id;
-			else
-				curve_value = c_value;
-			time(&unix_time);
+			::time(&unix_time);
 		}
 
 		BOOL				create(HWND hwnd_parent);
-		void				move(int width);
+		void				move(int panel_width, int index);
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
@@ -160,8 +146,8 @@ namespace ce {
 		int					edge_flag;
 		ID2D1SolidColorBrush* brush;
 
-		void				draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content);
-		void				set_font(LPRECT rect_wnd, LPTSTR font_name);
+		void				draw(COLORREF bg, RECT& rect_wnd, LPTSTR content);
+		void				set_font(const RECT& rect_wnd, LPTSTR font_name);
 
 	public:
 		int					id;
@@ -175,7 +161,7 @@ namespace ce {
 								LPTSTR ico_res_light,
 								LPTSTR lb,
 								int ct_id,
-								LPRECT rect,
+								const RECT& rect,
 								int flag
 							);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -230,12 +216,12 @@ namespace ce {
 	public:
 		RECT rect;
 
-		void				set(RECT rc);
-		void				set(int left, int top, int right, int bottom);
-		void				set_margin(int left, int top, int right, int bottom);
-		void				divide(LPRECT* rects_child, float* weights, int n);
-		void				client_to_screen(HWND hwnd);
-		void				screen_to_client(HWND hwnd);
+		void set(const RECT& rc);
+		void set(int left, int top, int right, int bottom);
+		void set_margin(int left, int top, int right, int bottom);
+		void divide(LPRECT rects_child[], float weights[], int n) const;
+		void client_to_screen(HWND hwnd);
+		void screen_to_client(HWND hwnd);
 	};
 
 
@@ -255,13 +241,13 @@ namespace ce {
 		// オブジェクト設定ダイアログのクライアント座標
 		Rectangle rect_button;
 
-		void				init(HWND hwnd) { hwnd_obj = hwnd; }
-		BOOL				is_hovered() { return id >= 0; }
+		void	init(HWND hwnd) { hwnd_obj = hwnd; }
+		BOOL	is_hovered() const { return id >= 0; }
 
-		int					update(POINT pt_sc, LPRECT old_rect);
-		void				click();
-		void				highlight();
-		void				invalidate(LPRECT rect);
+		int		update(LPPOINT pt_sc, LPRECT old_rect);
+		void	click();
+		void	highlight() const;
+		void	invalidate(const LPRECT rect) const;
 	};
 
 
@@ -274,18 +260,18 @@ namespace ce {
 		Float_Point origin;
 		Double_Point scale;
 
-		void fit(LPRECT rect)
+		void fit(const RECT& rect)
 		{
 			origin.x = CE_GR_PADDING;
-			scale.x = ((double)rect->right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+			scale.x = ((double)rect.right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 
-			if (rect->right <= rect->bottom) {
-				origin.y = (rect->bottom + rect->right) * 0.5f - CE_GR_PADDING;
+			if (rect.right <= rect.bottom) {
+				origin.y = (rect.bottom + rect.right) * 0.5f - CE_GR_PADDING;
 				scale.y = scale.x;
 			}
-			else if (rect->bottom > CE_GR_PADDING * 2 + CE_GR_RESOLUTION * CE_GR_SCALE_MIN) {
-				origin.y = (float)(rect->bottom - CE_GR_PADDING);
-				scale.y = ((double)rect->bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+			else if (rect.bottom > CE_GR_PADDING * 2 + CE_GR_RESOLUTION * CE_GR_SCALE_MIN) {
+				origin.y = (float)(rect.bottom - CE_GR_PADDING);
+				scale.y = ((double)rect.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 			}
 		}
 	};

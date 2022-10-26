@@ -6,6 +6,11 @@
 
 #include "ce_header.hpp"
 
+#define CE_REGEX_VALUE				R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
+#define CE_REGEX_FLOW_1				R"()"
+#define CE_REGEX_FLOW_2				R"(^\s*\[\s*(\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\},)+\s*\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\}\s*\]\s*$)"
+#define CE_REGEX_CEP				R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
+
 
 
 //---------------------------------------------------------------------
@@ -125,10 +130,10 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 					CE_CURVE_VALUE_MAX_Y
 				);
 
-				g_curve_value.ctpt[0].x = (int)(values[0] * CE_GR_RESOLUTION);
-				g_curve_value.ctpt[0].y = (int)(values[1] * CE_GR_RESOLUTION);
-				g_curve_value.ctpt[1].x = (int)(values[2] * CE_GR_RESOLUTION);
-				g_curve_value.ctpt[1].y = (int)(values[3] * CE_GR_RESOLUTION);
+				g_curve_value.ctpts[0].pt_right.x = (int)(values[0] * CE_GR_RESOLUTION);
+				g_curve_value.ctpts[0].pt_right.y = (int)(values[1] * CE_GR_RESOLUTION);
+				g_curve_value.ctpts[1].pt_left.x = (int)(values[2] * CE_GR_RESOLUTION);
+				g_curve_value.ctpts[1].pt_left.y = (int)(values[3] * CE_GR_RESOLUTION);
 
 				::EndDialog(hwnd, 1);
 			}

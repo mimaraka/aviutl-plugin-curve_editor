@@ -13,13 +13,11 @@
 //----------------------------------------------------------------------------------
 //		externêÈåæ
 //----------------------------------------------------------------------------------
-extern ce::Curve_Value						g_curve_value;
-extern ce::Curve_Value						g_curve_value_previous;
-extern ce::Curve_ID							g_curve_id[CE_CURVE_MAX];
-extern ce::Curve_ID							g_curve_id_previous;
+extern ce::Curve							g_curve_value;
+extern ce::Curve							g_curve_value_previous;
+extern ce::Curve							g_curve_id[CE_CURVE_MAX];
+extern ce::Curve							g_curve_id_previous;
 extern std::vector<ce::Preset>				g_presets;
-extern const ce::Theme						g_theme_dark,
-											g_theme_light;
 extern const ce::Theme						g_theme[2];
 extern ce::Config							g_config;
 extern ce::Window							g_window_main,
@@ -76,7 +74,7 @@ namespace ce {
 	BOOL				copy_to_clipboard(HWND, LPCTSTR);
 
 	// í∑Ç≥Çå∏éZ
-	ce::Float_Point		subtract_length(ce::Float_Point st, ce::Float_Point ed, float length);
+	void				subtract_length(ce::Float_Point* pt, const ce::Float_Point& st, const ce::Float_Point& ed, float length);
 
 	// ê›íËÇÉÅÉjÉÖÅ[Ç…îΩâf
 	void				apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
@@ -89,13 +87,18 @@ namespace ce {
 //----------------------------------------------------------------------------------
 //		ï`âÊä÷êî
 //----------------------------------------------------------------------------------
-	void				d2d_init();
-	void				d2d_setup(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd, COLORREF cr);
-	void				d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, LPRECT rect_wnd, int flag, float radius);
-	void				draw_panel_main(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd, LPRECT rect_sepr);
-	void				draw_panel_header(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd);
-	void				draw_panel_preset(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd);
-	void				draw_panel_editor(Bitmap_Buffer* bitmap_buffer, LPRECT rect_wnd);
+	void		d2d_init();
+	void		d2d_setup(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd, COLORREF cr);
+	void		d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int flag, float radius);
+	void		draw_panel_main(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd, const RECT& rect_sepr);
+	void		draw_panel_header(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd);
+	void		draw_panel_preset(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd);
+	void		draw_panel_editor(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd);
+	void		draw_curve(
+					const Bitmap_Buffer& bitmap_buffer,
+					Mode mode,
+					Curve& curve
+				);
 }
 
 
@@ -143,11 +146,11 @@ inline ce::Float_Point to_client(int gr_x, int gr_y)
 	};
 }
 
-inline ce::Float_Point to_client(POINT gr_pt)
+inline ce::Float_Point to_client(const POINT& pt_graph)
 {
 	return {
-		to_client(gr_pt.x, gr_pt.y).x,
-		to_client(gr_pt.x, gr_pt.y).y
+		to_client(pt_graph.x, pt_graph.y).x,
+		to_client(pt_graph.x, pt_graph.y).y
 	};
 }
 
@@ -160,10 +163,10 @@ inline POINT to_graph(double cl_x, double cl_y)
 	};
 }
 
-inline POINT to_graph(POINT cl_pt)
+inline POINT to_graph(const POINT& pt_client)
 {
 	return {
-		to_graph(cl_pt.x, cl_pt.y).x,
-		to_graph(cl_pt.x, cl_pt.y).y
+		to_graph(pt_client.x, pt_client.y).x,
+		to_graph(pt_client.x, pt_client.y).y
 	};
 }

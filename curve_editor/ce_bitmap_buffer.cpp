@@ -26,7 +26,7 @@ void ce::Bitmap_Buffer::init(HWND hw)
 //---------------------------------------------------------------------
 //		終了
 //---------------------------------------------------------------------
-void ce::Bitmap_Buffer::exit()
+void ce::Bitmap_Buffer::exit() const
 {
 	DeleteDC(hdc_memory);
 	DeleteObject(bitmap);
@@ -37,11 +37,11 @@ void ce::Bitmap_Buffer::exit()
 //---------------------------------------------------------------------
 //		ビットマップをバッファから画面に転送
 //---------------------------------------------------------------------
-void ce::Bitmap_Buffer::transfer(LPRECT rect)
+void ce::Bitmap_Buffer::transfer(const RECT& rect) const
 {
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, rect->right, rect->bottom, hdc_memory, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdc_memory, 0, 0, SRCCOPY);
 	EndPaint(hwnd, &ps);
 	DeleteDC(hdc);
 }

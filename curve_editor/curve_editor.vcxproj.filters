@@ -30,12 +30,6 @@
     <ClCompile Include="ce_func_graphic.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_curve_id.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="ce_curve_value.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="ce_bitmap_buffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -61,6 +55,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="ce_obj_dialog_buttons.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="ce_curve.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

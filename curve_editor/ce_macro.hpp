@@ -135,17 +135,6 @@
 #define CE_POINT_MAX				64					// 変更不可
 #define CE_CURVE_MAX				1024				// 変更不可
 #define MATH_PI						3.14159265
-#define EASING_QUICK_SETUP			"イージング設定時短プラグイン"
-
-
-
-//---------------------------------------------------------------------
-//		正規表現
-//---------------------------------------------------------------------
-#define CE_REGEX_VALUE				R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
-#define CE_REGEX_FLOW_1				R"()"
-#define CE_REGEX_FLOW_2				R"(^\s*\[\s*(\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\},)+\s*\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\}\s*\]\s*$)"
-#define CE_REGEX_CEP				R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
 
 
 
@@ -166,6 +155,7 @@
 //		文字列
 //---------------------------------------------------------------------
 #define CE_STR_DELETE				"編集中のカーブを初期化します。よろしいですか？"
+#define CE_STR_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
 #define CE_STR_ABOUT				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION "\n" "Copyright : (C) " CE_PLUGIN_YEAR " " CE_PLUGIN_DEVELOPER
 #define CE_STR_INVALIDINPUT			"無効な入力値です。"
 #define CE_STR_INPUTANAME			"プリセット名を入力してください。"

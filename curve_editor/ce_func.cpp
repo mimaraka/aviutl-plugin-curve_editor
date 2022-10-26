@@ -58,22 +58,27 @@ BOOL ce::copy_to_clipboard(HWND hwnd, LPCTSTR text)
 
 
 //---------------------------------------------------------------------
-//		for UI
+//		長さを減算
 //---------------------------------------------------------------------
-ce::Float_Point ce::subtract_length(Float_Point st, Float_Point ed, float length)
+void ce::subtract_length(ce::Float_Point* pt, const ce::Float_Point& st, const ce::Float_Point& ed, float length)
 {
-	Float_Point result;
 	float old_length = (float)DISTANCE(st, ed);
-	if (old_length == 0)
-		return ed;
-	if (length > old_length)
-		return st;
+
+	if (old_length == 0) {
+		pt->x = ed.x;
+		pt->y = ed.y;
+	}
+	if (length > old_length) {
+		pt->x = st.x;
+		pt->y = st.y;
+	}
+
 	double length_ratio = (old_length - length) / old_length;
 	float after_x = (float)(st.x + (ed.x - st.x) * length_ratio);
 	float after_y = (float)(st.y + (ed.y - st.y) * length_ratio);
-	result = {after_x, after_y};
 
-	return result;
+	pt->x = after_x;
+	pt->y = after_y;
 }
 
 
@@ -85,9 +90,9 @@ void ce::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	mi->fMask = MIIM_STATE;
 
 	// Value/ID
-	mi->fState = g_config.mode == ce::Config::ID ? MFS_CHECKED : MFS_UNCHECKED;
+	mi->fState = g_config.mode == ce::Mode_ID ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo(menu, ID_MENU_MODE_ID, FALSE, mi);
-	mi->fState = g_config.mode == ce::Config::ID ? MFS_UNCHECKED : MFS_CHECKED;
+	mi->fState = g_config.mode == ce::Mode_ID ? MFS_UNCHECKED : MFS_CHECKED;
 	SetMenuItemInfo(menu, ID_MENU_MODE_VALUE, FALSE, mi);
 
 	//その他
@@ -99,14 +104,15 @@ void ce::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	// ボタンを無効化/有効化
 	// IDモードで有効化
 	// チェックボックスが存在する場合
-	mi->fState |= g_config.mode == ce::Config::ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState |= g_config.mode == ce::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 	// チェックボックスが存在しない場合
-	mi->fState = g_config.mode == ce::Config::ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState = g_config.mode == ce::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
+	SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
 
 	// Valueモードで有効化
-	mi->fState = g_config.mode == ce::Config::ID ? MFS_DISABLED : MFS_ENABLED;
+	mi->fState = g_config.mode == ce::Mode_ID ? MFS_DISABLED : MFS_ENABLED;
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
@@ -131,7 +137,7 @@ LRESULT ce::on_keydown(WPARAM wparam)
 		return 0;
 
 	case 67: //[C]
-		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.mode == ce::Config::Value)
+		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.mode == ce::Mode_Value)
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_COPY, 0);
 		return 0;
 
@@ -143,12 +149,12 @@ LRESULT ce::on_keydown(WPARAM wparam)
 		return 0;
 
 	case VK_LEFT: //[<]	
-		if (g_config.mode == ce::Config::ID && g_window_header.hwnd)
+		if (g_config.mode == ce::Mode_ID && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_BACK, 0);
 		return 0;
 
 	case VK_RIGHT: //[>]
-		if (g_config.mode == ce::Config::ID && g_window_header.hwnd)
+		if (g_config.mode == ce::Mode_ID && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_NEXT, 0);
 		return 0;
 

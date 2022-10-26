@@ -52,11 +52,12 @@ BOOL ce::Preset::create(HWND hwnd_parent)
 //---------------------------------------------------------------------
 //		プリセットを移動
 //---------------------------------------------------------------------
-void ce::Preset::move(int width)
+void ce::Preset::move(int panel_width, int index)
 {
 	const int w = 2 * CE_MARGIN_PRESET + g_config.preset_size;
-	int x_count = index % (width / w);
-	int y_count = index / (width / w);
+	int x_count = index % (panel_width / w);
+	int y_count = index / (panel_width / w);
+
 	::MoveWindow(
 		hwnd,
 		w * x_count,
@@ -64,7 +65,7 @@ void ce::Preset::move(int width)
 		g_config.preset_size,
 		g_config.preset_size + CE_MARGIN_PRESET,
 		TRUE
-		);
+	);
 }
 
 

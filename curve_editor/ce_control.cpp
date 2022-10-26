@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LPTSTR ico_res_dark, LPTSTR ico_res_light, LPTSTR lb, int ct_id, LPRECT rect, int flag)
+BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LPTSTR ico_res_dark, LPTSTR ico_res_light, LPTSTR lb, int ct_id, const RECT& rect, int flag)
 {
 	WNDCLASSEX tmp;
 	id = ct_id;
@@ -49,9 +49,9 @@ BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LP
 			name,
 			NULL,
 			WS_CHILD | WS_VISIBLE,
-			rect->left, rect->top,
-			rect->right - rect->left,
-			rect->bottom - rect->top,
+			rect.left, rect.top,
+			rect.right - rect.left,
+			rect.bottom - rect.top,
 			hwnd_p,
 			NULL,
 			g_fp->dll_hinst,
@@ -68,9 +68,9 @@ BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LP
 //---------------------------------------------------------------------
 //		コントロール描画用の関数
 //---------------------------------------------------------------------
-void ce::Button::draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content)
+void ce::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 {
-	d2d_setup(&bitmap_buffer, rect_wnd, TO_BGR(bg));
+	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(bg));
 
 	::SetBkColor(bitmap_buffer.hdc_memory, bg);
 
@@ -81,7 +81,7 @@ void ce::Button::draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content)
 			bitmap_buffer.hdc_memory,
 			content,
 			strlen(content),
-			rect_wnd,
+			&rect_wnd,
 			DT_CENTER | DT_VCENTER | DT_NOCLIP | DT_SINGLELINE
 		);
 		::DeleteObject(font);
@@ -90,8 +90,8 @@ void ce::Button::draw(COLORREF bg, LPRECT rect_wnd, LPTSTR content)
 	else {
 		::DrawIcon(
 			bitmap_buffer.hdc_memory,
-			(rect_wnd->right - CE_ICON_SIZE) / 2,
-			(rect_wnd->bottom - CE_ICON_SIZE) / 2,
+			(rect_wnd.right - CE_ICON_SIZE) / 2,
+			(rect_wnd.bottom - CE_ICON_SIZE) / 2,
 			g_config.theme ? icon_light : icon_dark
 		);
 	}
@@ -187,7 +187,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, &rect_wnd, label);
+		draw(bg, rect_wnd, label);
 		return 0;
 	}
 
@@ -278,7 +278,7 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 		}
 
-		draw(bg, &rect_wnd, label);
+		draw(bg, rect_wnd, label);
 		return 0;
 	}
 
@@ -336,7 +336,7 @@ LRESULT ce::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, &rect_wnd, value_4d);
+		draw(bg, rect_wnd, value_4d);
 		return 0;
 	}
 
@@ -353,7 +353,7 @@ LRESULT ce::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
-	POINT cl_pt = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 
 	::GetClientRect(hwnd, &rect_wnd);
 
@@ -373,13 +373,13 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, &rect_wnd, id_text);
+		draw(bg, rect_wnd, id_text);
 		return 0;
 	}
 
 	// 左クリックがされたとき
 	case WM_LBUTTONDOWN:
-		pt_lock = cl_pt;
+		pt_lock = pt_client;
 		id_buffer = g_config.current_id;
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
 
@@ -395,10 +395,10 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 	// カーソルが動いたとき
 	case WM_MOUSEMOVE:
-		if (clicked && g_config.mode == ce::Config::ID) {
+		if (clicked && g_config.mode == ce::Mode_ID) {
 			is_scrolling = TRUE;
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-			g_config.current_id = MINMAXLIM(id_buffer + (cl_pt.x - pt_lock.x) / coef_move, 0, CE_CURVE_MAX - 1);
+			g_config.current_id = MINMAXLIM(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CE_CURVE_MAX - 1);
 			g_curve_id_previous = g_curve_id[g_config.current_id];
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 		}
@@ -410,7 +410,7 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		return 0;
 
 	case WM_LBUTTONUP:
-		if (!is_scrolling && clicked && g_config.mode == ce::Config::ID) {
+		if (!is_scrolling && clicked && g_config.mode == ce::Mode_ID) {
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hwnd, dialogproc_id);
 		}
 		is_scrolling = FALSE;

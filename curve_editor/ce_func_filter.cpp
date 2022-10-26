@@ -25,8 +25,20 @@ EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void)
 BOOL filter_init(FILTER* fp)
 {
 	g_fp = fp;
-	ini_load_configs(fp);
 
+	// カーブの初期化
+	g_curve_value.initialize(ce::Mode_Value);
+	g_curve_value_previous.initialize(ce::Mode_Value);
+
+	for (int i = 0; i < CE_CURVE_MAX; i++) {
+		g_curve_id[i].initialize(ce::Mode_ID);
+	}
+	g_curve_id_previous.initialize(ce::Mode_ID);
+
+
+	// aviutl.iniから設定を読み込み
+	ini_load_configs(fp);
+	
 	// フックの準備
 	g_config.is_hooked_popup = FALSE;
 	g_config.is_hooked_dialog = FALSE;
@@ -35,11 +47,20 @@ BOOL filter_init(FILTER* fp)
 	::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));
 
 	// TrackPopupMenu()をフック
-	TrackPopupMenu_original = (decltype(TrackPopupMenu_original))yulib::RewriteFunction(exedit_path, "TrackPopupMenu", TrackPopupMenu_hooked);
+	TrackPopupMenu_original = (decltype(TrackPopupMenu_original))yulib::RewriteFunction(
+		exedit_path,
+		"TrackPopupMenu",
+		TrackPopupMenu_hooked
+	);
 
 	// DialogBoxParamA()をフック
-	DialogBox_original = (decltype(DialogBox_original))yulib::RewriteFunction(exedit_path, "DialogBoxParamA", DialogBox_hooked);
+	DialogBox_original = (decltype(DialogBox_original))yulib::RewriteFunction(
+		exedit_path,
+		"DialogBoxParamA",
+		DialogBox_hooked
+	);
 
+	// Direct2D初期化
 	ce::d2d_init();
 	return TRUE;
 }
@@ -84,7 +105,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 //---------------------------------------------------------------------
 BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 {
-	int size_curve_id = sizeof(ce::Points_ID) * CE_POINT_MAX * CE_CURVE_MAX;
+	int size_curve_id = sizeof(ce::Curve_Points) * CE_POINT_MAX * CE_CURVE_MAX;
 	if (!data) {
 		*size = sizeof(g_curve_id);
 	}
@@ -106,12 +127,12 @@ void ini_load_configs(FILTER* fp)
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", 1);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", 0);
 	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.ctpt[0].x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)), 0, CE_GR_RESOLUTION);
-	g_curve_value.ctpt[0].y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1));
-	g_curve_value.ctpt[1].x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)), 0, CE_GR_RESOLUTION);
-	g_curve_value.ctpt[1].y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2));
+	g_curve_value.ctpts[0].pt_right.x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)), 0, CE_GR_RESOLUTION);
+	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1));
+	g_curve_value.ctpts[1].pt_left.x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)), 0, CE_GR_RESOLUTION);
+	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_W);
-	g_config.mode = (ce::Config::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
+	g_config.mode = (ce::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", 1);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CE_DEF_PRESET_SIZE);
@@ -124,10 +145,10 @@ void ini_load_configs(FILTER* fp)
 //---------------------------------------------------------------------
 void ini_write_configs(FILTER* fp)
 {
-	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.ctpt[0].x);
-	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.ctpt[0].y);
-	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpt[1].x);
-	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpt[1].y);
+	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.ctpts[0].pt_right.x);
+	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.ctpts[0].pt_right.y);
+	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpts[1].pt_left.x);
+	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpts[1].pt_left.y);
 	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
 	fp->exfunc->ini_save_int(fp, "mode", g_config.mode);
 	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
@@ -152,12 +173,12 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 
 		g_window_main.create(
 			hwnd, "WINDOW_MAIN", wndproc_main, NULL,
-			&rect_wnd
+			rect_wnd
 		);
 		return 0;
 
 	case WM_SIZE:
-		g_window_main.move(&rect_wnd);
+		g_window_main.move(rect_wnd);
 		return 0;
 
 	case WM_GETMINMAXINFO:

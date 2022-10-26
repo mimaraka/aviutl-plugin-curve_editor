@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		ウィンドウ作成
 //---------------------------------------------------------------------
-BOOL ce::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, LPRECT rect)
+BOOL ce::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect)
 {
 	WNDCLASSEX tmp;
 	tmp.cbSize = sizeof(tmp);
@@ -33,10 +33,10 @@ BOOL ce::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LO
 			class_name,
 			NULL,
 			WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | style,
-			rect->left,
-			rect->top,
-			rect->right - rect->left,
-			rect->bottom - rect->top,
+			rect.left,
+			rect.top,
+			rect.right - rect.left,
+			rect.bottom - rect.top,
 			hwnd_parent,
 			NULL,
 			g_fp->dll_hinst,
@@ -52,13 +52,13 @@ BOOL ce::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LO
 //---------------------------------------------------------------------
 //		ウィンドウ移動
 //---------------------------------------------------------------------
-void ce::Window::move(LPRECT rect)
+void ce::Window::move(const RECT& rect) const
 {
 	::MoveWindow(
 		hwnd,
-		rect->left, rect->top,
-		rect->right - rect->left,
-		rect->bottom - rect->top,
+		rect.left, rect.top,
+		rect.right - rect.left,
+		rect.bottom - rect.top,
 		TRUE
 	);
 }
@@ -68,7 +68,7 @@ void ce::Window::move(LPRECT rect)
 //---------------------------------------------------------------------
 //		再描画
 //---------------------------------------------------------------------
-void ce::Window::redraw()
+void ce::Window::redraw() const
 {
 	::SendMessage(hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 }
@@ -78,7 +78,7 @@ void ce::Window::redraw()
 //---------------------------------------------------------------------
 //		表示
 //---------------------------------------------------------------------
-BOOL ce::Window::show()
+BOOL ce::Window::show() const
 {
 	return ::ShowWindow(hwnd, SW_SHOW);
 }
@@ -88,7 +88,7 @@ BOOL ce::Window::show()
 //---------------------------------------------------------------------
 //		非表示
 //---------------------------------------------------------------------
-BOOL ce::Window::hide()
+BOOL ce::Window::hide() const
 {
 	return ::ShowWindow(hwnd, SW_HIDE);
 }
@@ -98,7 +98,7 @@ BOOL ce::Window::hide()
 //---------------------------------------------------------------------
 //		ウィンドウを閉じる
 //---------------------------------------------------------------------
-BOOL ce::Window::close()
+BOOL ce::Window::close() const
 {
 	return ::DestroyWindow(hwnd);
 }

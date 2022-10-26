@@ -6,6 +6,8 @@
 
 #include "ce_header.hpp"
 
+#define EASING_QUICK_SETUP			"イージング設定時短プラグイン"
+
 
 
 //---------------------------------------------------------------------
@@ -28,12 +30,12 @@ BOOL ce::Obj_Dialog_Buttons::id_to_rect(int id_, Rectangle* rect)
 //---------------------------------------------------------------------
 //		更新
 //---------------------------------------------------------------------
-int ce::Obj_Dialog_Buttons::update(POINT pt_sc, LPRECT old_rect)
+int ce::Obj_Dialog_Buttons::update(LPPOINT pt_sc, LPRECT old_rect)
 {
 	Rectangle rect_bt;
-	::ScreenToClient(hwnd_obj, &pt_sc);
+	::ScreenToClient(hwnd_obj, pt_sc);
 	for (int i = 0; i < auls::EXEDIT_OBJECT::MAX_TRACK; i++) {
-		if (id_to_rect(i, &rect_bt) && ::PtInRect(&rect_bt.rect, pt_sc)) {
+		if (id_to_rect(i, &rect_bt) && ::PtInRect(&rect_bt.rect, *pt_sc)) {
 			int old_id = id;
 			*old_rect = rect_button.rect;
 			id = i;
@@ -70,7 +72,7 @@ void ce::Obj_Dialog_Buttons::click()
 //---------------------------------------------------------------------
 //		ハイライト
 //---------------------------------------------------------------------
-void ce::Obj_Dialog_Buttons::highlight()
+void ce::Obj_Dialog_Buttons::highlight() const
 {
 	if (id >= 0) {
 		RECT rect_wnd;
@@ -113,7 +115,7 @@ void ce::Obj_Dialog_Buttons::highlight()
 //---------------------------------------------------------------------
 //		無効化
 //---------------------------------------------------------------------
-void ce::Obj_Dialog_Buttons::invalidate(LPRECT rect)
+void ce::Obj_Dialog_Buttons::invalidate(const LPRECT rect) const
 {
 	Rectangle rc;
 
