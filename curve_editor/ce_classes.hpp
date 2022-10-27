@@ -28,7 +28,7 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
-	//		カーブ
+	//		カーブ(2048バイト)
 	//---------------------------------------------------------------------
 	class Curve {
 	private:
@@ -36,17 +36,30 @@ namespace ce {
 		void				correct_handle(const Point_Address& pt_address, double angle);
 		double				get_handle_angle(const Point_Address& pt_address);
 		void				set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth);
+		void				draw_bezier(
+								ID2D1SolidColorBrush* brush,
+								const ce::Float_Point& stpt,
+								const ce::Float_Point& ctpt1,
+								const ce::Float_Point& ctpt2,
+								const ce::Float_Point& edpt,
+								float thickness
+							);
+		void				draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, const ce::Float_Point& ed);
 
 	public:
 		ce::Static_Array<Curve_Points, CE_POINT_MAX> ctpts;
-		Mode mode;
+		Mode mode = Mode_Value;
+
+		Curve() { initialize(); }
 
 		// 共通
 		void				initialize();
-		void				initialize(Mode md);
+		void				set_mode(Mode md);
 		void				clear();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				reverse_curve();
+		void				draw_curve(ID2D1SolidColorBrush* brush);
+		bool				is_data_valid();
 
 		// Valueモード用
 		int					create_value_1d();
@@ -64,18 +77,30 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
-	//		ビットマップキャンバス
+	//		ビットマップバッファ
 	//---------------------------------------------------------------------
 	class Bitmap_Buffer {
 	private:
 		HBITMAP bitmap;
 		HWND hwnd;
+		RECT rect;
+		ID2D1SolidColorBrush* brush = nullptr;
+
 	public:
 		HDC hdc_memory;
 
 		void init(HWND hw);
 		void exit() const;
-		void transfer(const RECT& rect) const;
+		void transfer() const;
+		bool d2d_setup(COLORREF cr);
+		void set_size(const RECT& rect_wnd);
+
+		void draw_panel_main(const RECT& rect_sepr);
+		void draw_panel_header();
+		void draw_panel_preset();
+		void draw_panel_editor();
+
+		void draw_rounded_edge(int flag, float radius);
 	};
 
 
@@ -265,13 +290,13 @@ namespace ce {
 			origin.x = CE_GR_PADDING;
 			scale.x = ((double)rect.right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
 
-			if (rect.right <= rect.bottom) {
-				origin.y = (rect.bottom + rect.right) * 0.5f - CE_GR_PADDING;
-				scale.y = scale.x;
-			}
-			else if (rect.bottom > CE_GR_PADDING * 2 + CE_GR_RESOLUTION * CE_GR_SCALE_MIN) {
+			if (rect.right > rect.bottom && rect.bottom > CE_GR_PADDING * 2 + CE_GR_RESOLUTION * CE_GR_SCALE_MIN) {
 				origin.y = (float)(rect.bottom - CE_GR_PADDING);
 				scale.y = ((double)rect.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+			}
+			else {
+				origin.y = (rect.bottom + rect.right) * 0.5f - CE_GR_PADDING;
+				scale.y = scale.x;
 			}
 		}
 	};

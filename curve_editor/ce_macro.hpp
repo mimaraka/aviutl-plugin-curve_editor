@@ -34,12 +34,6 @@
 #define CE_GR_WHEEL_COEF_POS		0.2
 #define CE_GR_GRID_N				2
 #define CE_GR_RESOLUTION			10000				// 変更不可
-#define CE_GR_GRID_MIN				36
-#define CE_GR_GRID_TH_L				0.5f
-#define CE_GR_GRID_TH_B				1.0f
-#define CE_GR_POINT_TH				0.2f
-#define CE_GR_POINT_DASH			30
-#define CE_GR_POINT_CONTRAST		3
 #define CE_GR_SCALE_INC				1.01
 #define CE_GR_SCALE_MAX				512
 #define CE_GR_SCALE_MIN				0.001
@@ -160,6 +154,7 @@
 #define CE_STR_INVALIDINPUT			"無効な入力値です。"
 #define CE_STR_INPUTANAME			"プリセット名を入力してください。"
 #define CE_STR_OUTOFRANGE			"値が範囲外です。"
+#define CE_STR_DATA_INVALID			"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
 
 
 

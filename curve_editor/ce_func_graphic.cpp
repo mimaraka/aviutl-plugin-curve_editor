@@ -6,6 +6,14 @@
 
 #include "ce_header.hpp"
 
+#define CE_GR_POINT_TH				0.2f
+#define CE_GR_POINT_DASH			42
+#define CE_GR_POINT_DASH_BLANK		24
+#define CE_GR_GRID_TH_L				0.5f
+#define CE_GR_GRID_TH_B				1.0f
+#define CE_GR_GRID_MIN				36
+#define CE_GR_POINT_CONTRAST		3
+
 
 
 //---------------------------------------------------------------------
@@ -25,22 +33,6 @@ void ce::d2d_init()
 		D2D1_FEATURE_LEVEL_DEFAULT
 	);
 	g_d2d1_factory->CreateDCRenderTarget(&prop, &g_render_target);
-}
-
-
-
-//---------------------------------------------------------------------
-//		Direct2Dの描画の準備
-//---------------------------------------------------------------------
-void ce::d2d_setup(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd, COLORREF cr)
-{
-	if (g_render_target != NULL && g_d2d1_factory != NULL) {
-		g_render_target->BindDC(bitmap_buffer.hdc_memory, &rect_wnd);
-		g_render_target->BeginDraw();
-		g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
-		g_render_target->Clear(D2D1::ColorF(cr));
-		g_render_target->EndDraw();
-	}
 }
 
 
@@ -191,32 +183,108 @@ void d2d_draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, con
 
 
 //---------------------------------------------------------------------
+//		カーブを描画
+//---------------------------------------------------------------------
+//void ce::draw_curve(ID2D1SolidColorBrush* brush, const Curve& curve)
+//{
+//
+//
+//
+//	// ベジェ曲線(トレース)を描画
+//	if (g_config.trace) {
+//		for (int i = 0; i < (int)g_curve_id_previous.ctpts.size - 1; i++) {
+//			brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve_trace)));
+//			d2d_draw_bezier(brush,
+//				to_client(g_curve_id_previous.ctpts[i].pt_center),
+//				to_client(g_curve_id_previous.ctpts[i].pt_right),
+//				to_client(g_curve_id_previous.ctpts[i + 1].pt_left),
+//				to_client(g_curve_id_previous.ctpts[i + 1].pt_center),
+//				CE_CURVE_TH
+//			);
+//		}
+//	}
+//
+//	for (int i = 0; i < (int)g_curve_id[g_config.current_id].ctpts.size - 1; i++)
+//	{
+//		//色を指定
+//		brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));
+//		g_d2d1_factory->CreateStrokeStyle(
+//			D2D1::StrokeStyleProperties(
+//				D2D1_CAP_STYLE_FLAT,
+//				D2D1_CAP_STYLE_FLAT,
+//				D2D1_CAP_STYLE_ROUND,
+//				D2D1_LINE_JOIN_MITER,
+//				10.0f,
+//				D2D1_DASH_STYLE_CUSTOM,
+//				0.0f),
+//			dashes,
+//			ARRAYSIZE(dashes),
+//			&pStyle
+//		);
+//
+//		// 端点以外の制御点に引かれる点線
+//		if (i > 0)
+//			g_render_target->DrawLine(
+//				D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, 0),
+//				D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, (float)rect_wnd.bottom),
+//				brush, CE_GR_POINT_TH, pStyle
+//			);
+//
+//
+//		// ベジェ曲線を描画
+//		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].curve)));
+//		d2d_draw_bezier(brush,
+//			to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center),
+//			to_client(g_curve_id[g_config.current_id].ctpts[i].pt_right),
+//			to_client(g_curve_id[g_config.current_id].ctpts[i + 1].pt_left),
+//			to_client(g_curve_id[g_config.current_id].ctpts[i + 1].pt_center),
+//			CE_CURVE_TH
+//		);
+//
+//		//ハンドルの描画
+//		if (g_config.show_handle) {
+//			brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].handle)));
+//			d2d_draw_handle(brush,
+//				to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center),
+//				to_client(g_curve_id[g_config.current_id].ctpts[i].pt_right)
+//			);
+//			d2d_draw_handle(brush,
+//				to_client(g_curve_id[g_config.current_id].ctpts[i + 1].pt_center),
+//				to_client(g_curve_id[g_config.current_id].ctpts[i + 1].pt_left)
+//			);
+//		}
+//	}
+//}
+
+
+
+//---------------------------------------------------------------------
 //		ラウンドエッジを描画
 //---------------------------------------------------------------------
-void ce::d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int flag, float radius) {
+void ce::Bitmap_Buffer::draw_rounded_edge(int flag, float radius) {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* edge;
 	D2D1_POINT_2F pt_1, pt_2, pt_3;
 
 	D2D1_POINT_2F pts_1[] = {
-		D2D1::Point2F((float)rect_wnd.left, (float)rect_wnd.top),
-		D2D1::Point2F((float)rect_wnd.left, (float)rect_wnd.bottom),
-		D2D1::Point2F((float)rect_wnd.right, (float)rect_wnd.top),
-		D2D1::Point2F((float)rect_wnd.right, (float)rect_wnd.bottom)
+		D2D1::Point2F((float)rect.left, (float)rect.top),
+		D2D1::Point2F((float)rect.left, (float)rect.bottom),
+		D2D1::Point2F((float)rect.right, (float)rect.top),
+		D2D1::Point2F((float)rect.right, (float)rect.bottom)
 	};
 
 	D2D1_POINT_2F pts_2[] = {
-		D2D1::Point2F((float)rect_wnd.left, (float)rect_wnd.top + radius),
-		D2D1::Point2F((float)rect_wnd.left + radius, (float)rect_wnd.bottom),
-		D2D1::Point2F((float)rect_wnd.right - radius, (float)rect_wnd.top),
-		D2D1::Point2F((float)rect_wnd.right, (float)rect_wnd.bottom - radius)
+		D2D1::Point2F((float)rect.left, (float)rect.top + radius),
+		D2D1::Point2F((float)rect.left + radius, (float)rect.bottom),
+		D2D1::Point2F((float)rect.right - radius, (float)rect.top),
+		D2D1::Point2F((float)rect.right, (float)rect.bottom - radius)
 	};
 
 	D2D1_POINT_2F pts_3[] = {
-		D2D1::Point2F((float)rect_wnd.left + radius, (float)rect_wnd.top),
-		D2D1::Point2F((float)rect_wnd.left, (float)rect_wnd.bottom - radius),
-		D2D1::Point2F((float)rect_wnd.right, (float)rect_wnd.top + radius),
-		D2D1::Point2F((float)rect_wnd.right - radius, (float)rect_wnd.bottom)
+		D2D1::Point2F((float)rect.left + radius, (float)rect.top),
+		D2D1::Point2F((float)rect.left, (float)rect.bottom - radius),
+		D2D1::Point2F((float)rect.right, (float)rect.top + radius),
+		D2D1::Point2F((float)rect.right - radius, (float)rect.bottom)
 	};
 
 	g_d2d1_factory->CreatePathGeometry(&edge);
@@ -254,10 +322,9 @@ void ce::d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, const RECT& rect_wnd
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void ce::draw_panel_main(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd, const RECT& rect_sepr)
+void ce::Bitmap_Buffer::draw_panel_main(const RECT& rect_sepr)
 {
-	static ID2D1SolidColorBrush* brush = NULL;
-	ID2D1StrokeStyle* pStyle = NULL;
+	ID2D1StrokeStyle* pStyle = nullptr;
 
 	g_d2d1_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
@@ -273,11 +340,11 @@ void ce::draw_panel_main(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wn
 	);
 
 	//Direct2D初期化
-	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
 
-	if (g_render_target != NULL) {
+	if (g_render_target != nullptr) {
 		g_render_target->BeginDraw();
-		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+
 		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
 
 		if (brush) g_render_target->DrawLine(
@@ -285,11 +352,14 @@ void ce::draw_panel_main(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wn
 			D2D1::Point2F((rect_sepr.right + rect_sepr.left) * 0.5f + CE_SEPR_LINE_L, (float)(rect_sepr.top + CE_SEPR_W)),
 			brush, CE_SEPR_LINE_W, pStyle
 		);
+
+		// brush->Release();
+
 		g_render_target->EndDraw();
 	}
 
 	//ビットマップをバッファから画面に転送
-	bitmap_buffer.transfer(rect_wnd);
+	transfer();
 }
 
 
@@ -297,31 +367,27 @@ void ce::draw_panel_main(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wn
 //---------------------------------------------------------------------
 //		ヘッダパネルを描画
 //---------------------------------------------------------------------
-void ce::draw_panel_header(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd)
+void ce::Bitmap_Buffer::draw_panel_header()
 {
-	static ID2D1SolidColorBrush* brush = NULL;
-
 	//Direct2D初期化
-	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
-	bitmap_buffer.transfer(rect_wnd);
+	transfer();
 }
 
 
 
 //---------------------------------------------------------------------
-//		ライブラリを描画
+//		プリセットパネルを描画
 //---------------------------------------------------------------------
-void ce::draw_panel_preset(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd)
+void ce::Bitmap_Buffer::draw_panel_preset()
 {
-	static ID2D1SolidColorBrush* brush = NULL;
-
 	//Direct2D初期化
-	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
 
 	//ビットマップをバッファから画面に転送
-	bitmap_buffer.transfer(rect_wnd);
+	transfer();
 }
 
 
@@ -329,11 +395,10 @@ void ce::draw_panel_preset(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void ce::draw_panel_editor(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd)
+void ce::Bitmap_Buffer::draw_panel_editor()
 {
-	static ID2D1SolidColorBrush* brush = NULL;
 	ID2D1StrokeStyle* pStyle = NULL;
-	float dashes[] = { CE_GR_POINT_DASH, CE_GR_POINT_DASH };
+	float dashes[] = { CE_GR_POINT_DASH, CE_GR_POINT_DASH_BLANK };
 
 	Float_Point ctpt_cl[] = {//クライアント
 		{
@@ -369,13 +434,13 @@ void ce::draw_panel_editor(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_
 	D2D1_RECT_F rect_left = {
 		0, 0,
 		ctpt_cl[0].x,
-		(float)rect_wnd.bottom
+		(float)rect.bottom
 	};
 
 	D2D1_RECT_F rect_right = {
 		ctpt_cl[3].x, 0,
-		(float)rect_wnd.right,
-		(float)rect_wnd.bottom,
+		(float)rect.right,
+		(float)rect.bottom,
 	};
 
 	D2D1_RECT_F rect_up = {
@@ -389,19 +454,18 @@ void ce::draw_panel_editor(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_
 		ctpt_cl[0].x,
 		to_client(0, (int)(CE_CURVE_VALUE_MIN_Y * CE_GR_RESOLUTION)).y,
 		ctpt_cl[3].x,
-		(float)rect_wnd.bottom
+		(float)rect.bottom
 	};
 
 	//Direct2D初期化
-	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(g_theme[g_config.theme].bg_graph));
+	d2d_setup(TO_BGR(g_theme[g_config.theme].bg_graph));
 
 	//描画
-	if (g_render_target != NULL && g_d2d1_factory != NULL) {
+	if (g_render_target != nullptr && g_d2d1_factory != nullptr) {
 		g_render_target->BeginDraw();
-		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
 
 		//グリッド
-		d2d_draw_grid(brush, rect_wnd);
+		d2d_draw_grid(brush, rect);
 
 		brush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CE_BR_GR_INVALID)));
 		brush->SetOpacity(0.5f);
@@ -477,7 +541,7 @@ void ce::draw_panel_editor(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_
 				if (i > 0)
 					g_render_target->DrawLine(
 						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, 0),
-						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, (float)rect_wnd.bottom),
+						D2D1::Point2F(to_client(g_curve_id[g_config.current_id].ctpts[i].pt_center).x, (float)rect.bottom),
 						brush, CE_GR_POINT_TH, pStyle
 					);
 
@@ -512,5 +576,5 @@ void ce::draw_panel_editor(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_
 
 
 	//ビットマップをバッファから画面に転送
-	bitmap_buffer.transfer(rect_wnd);
+	transfer();
 }

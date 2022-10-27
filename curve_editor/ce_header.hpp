@@ -13,10 +13,10 @@
 //----------------------------------------------------------------------------------
 //		externêÈåæ
 //----------------------------------------------------------------------------------
-extern ce::Curve							g_curve_value;
-extern ce::Curve							g_curve_value_previous;
-extern ce::Curve							g_curve_id[CE_CURVE_MAX];
-extern ce::Curve							g_curve_id_previous;
+extern ce::Curve							g_curve_value,
+											g_curve_value_previous,
+											g_curve_id[CE_CURVE_MAX],
+											g_curve_id_previous;
 extern std::vector<ce::Preset>				g_presets;
 extern const ce::Theme						g_theme[2];
 extern ce::Config							g_config;
@@ -88,17 +88,6 @@ namespace ce {
 //		ï`âÊä÷êî
 //----------------------------------------------------------------------------------
 	void		d2d_init();
-	void		d2d_setup(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd, COLORREF cr);
-	void		d2d_draw_rounded_edge(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int flag, float radius);
-	void		draw_panel_main(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd, const RECT& rect_sepr);
-	void		draw_panel_header(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd);
-	void		draw_panel_preset(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd);
-	void		draw_panel_editor(const Bitmap_Buffer& bitmap_buffer, const RECT& rect_wnd);
-	void		draw_curve(
-					const Bitmap_Buffer& bitmap_buffer,
-					Mode mode,
-					Curve& curve
-				);
 }
 
 

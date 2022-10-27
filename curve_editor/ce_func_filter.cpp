@@ -26,14 +26,10 @@ BOOL filter_init(FILTER* fp)
 {
 	g_fp = fp;
 
-	// ÉJÅ[ÉuÇÃèâä˙âª
-	g_curve_value.initialize(ce::Mode_Value);
-	g_curve_value_previous.initialize(ce::Mode_Value);
-
 	for (int i = 0; i < CE_CURVE_MAX; i++) {
-		g_curve_id[i].initialize(ce::Mode_ID);
+		g_curve_id[i].set_mode(ce::Mode_ID);
 	}
-	g_curve_id_previous.initialize(ce::Mode_ID);
+	g_curve_id_previous.set_mode(ce::Mode_ID);
 
 
 	// aviutl.iniÇ©ÇÁê›íËÇì«Ç›çûÇ›
@@ -89,11 +85,40 @@ BOOL filter_exit(FILTER* fp)
 //---------------------------------------------------------------------
 BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 {
+	static ce::Static_Array<ce::Curve_Points, CE_POINT_MAX> point_data[CE_CURVE_MAX];
+
 	if (data) {
-		memcpy(g_curve_id, data, size);
+		memcpy(point_data, data, size);
+
+		for (int i = 0; i < CE_CURVE_MAX; i++)
+			g_curve_id[i].ctpts = point_data[i];
+
 		g_curve_id_previous = g_curve_id[g_config.current_id];
-		if (g_window_editor.hwnd)
+
+		if (g_window_editor.hwnd) {
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+
+			for (int i = 0; i < CE_CURVE_MAX; i++) {
+				if (!g_curve_id[i].is_data_valid()) {
+					int response = IDOK;
+
+					response = ::MessageBox(
+						g_window_editor.hwnd,
+						CE_STR_DATA_INVALID,
+						CE_PLUGIN_NAME,
+						MB_OKCANCEL | MB_ICONEXCLAMATION
+					);
+
+					if (response == IDOK)
+						::PostMessage(g_window_editor.hwnd, WM_COMMAND, ID_MENU_DELETE_ALL, TRUE);
+
+					break;
+				}
+			}
+		}
+
+
+		
 	}
 	return TRUE;
 }
@@ -105,12 +130,16 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 //---------------------------------------------------------------------
 BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 {
-	int size_curve_id = sizeof(ce::Curve_Points) * CE_POINT_MAX * CE_CURVE_MAX;
+	static ce::Static_Array<ce::Curve_Points, CE_POINT_MAX> point_data[CE_CURVE_MAX] = {};
+
+	for (int i = 0; i < CE_CURVE_MAX; i++)
+		point_data[i] = g_curve_id[i].ctpts;
+
 	if (!data) {
-		*size = sizeof(g_curve_id);
+		*size = sizeof(point_data);
 	}
 	else {
-		memcpy(data, g_curve_id, sizeof(g_curve_id));
+		memcpy(data, point_data, sizeof(point_data));
 	}
 	return TRUE;
 }

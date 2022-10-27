@@ -52,10 +52,9 @@ void ce::Curve::initialize()
 //---------------------------------------------------------------------
 //		初期化2
 //---------------------------------------------------------------------
-void ce::Curve::initialize(Mode md)
+void ce::Curve::set_mode(Mode md)
 {
 	mode = md;
-	initialize();
 }
 
 
@@ -872,6 +871,103 @@ void ce::Curve::reverse_curve()
 			CE_GR_RESOLUTION - ctpts_old[i].pt_left.y
 		};
 	}
+}
+
+
+
+void ce::Curve::draw_bezier(ID2D1SolidColorBrush* brush,
+	const ce::Float_Point& stpt, const ce::Float_Point& ctpt1, const ce::Float_Point& ctpt2, const ce::Float_Point& edpt, float thickness)
+{
+	ID2D1GeometrySink* sink;
+	ID2D1PathGeometry* bezier;
+	ID2D1StrokeStyle* pStyle = nullptr;
+	g_d2d1_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.0f,
+			D2D1_DASH_STYLE_SOLID,
+			0.0f),
+		NULL, NULL,
+		&pStyle
+	);
+	g_d2d1_factory->CreatePathGeometry(&bezier);
+	bezier->Open(&sink);
+	sink->BeginFigure(D2D1::Point2F(stpt.x, stpt.y), D2D1_FIGURE_BEGIN_HOLLOW);
+	sink->AddBezier(D2D1::BezierSegment(
+		D2D1::Point2F(ctpt1.x, ctpt1.y),
+		D2D1::Point2F(ctpt2.x, ctpt2.y),
+		D2D1::Point2F(edpt.x, edpt.y)
+	));
+	sink->EndFigure(D2D1_FIGURE_END_OPEN);
+	sink->Close();
+
+	if (bezier)
+		g_render_target->DrawGeometry(bezier, brush, thickness, pStyle);
+}
+
+
+
+void ce::Curve::draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, const ce::Float_Point& ed)
+{
+	ce::Float_Point st_new, ed_new;
+
+	subtract_length(&st_new, ed, st, CE_SUBTRACT_LENGTH_2);
+	subtract_length(&ed_new, st, ed, CE_SUBTRACT_LENGTH);
+
+	ID2D1StrokeStyle* pStyle = NULL;
+
+	g_d2d1_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.0f,
+			D2D1_DASH_STYLE_SOLID,
+			0.0f),
+		NULL, NULL,
+		&pStyle
+	);
+
+	g_render_target->DrawLine(
+		D2D1::Point2F(st_new.x, st_new.y),
+		D2D1::Point2F(ed_new.x, ed_new.y),
+		brush, CE_HANDLE_TH
+	);
+
+	g_render_target->DrawEllipse(
+		D2D1::Ellipse(
+			D2D1::Point2F(ed.x, ed.y),
+			(float)CE_HANDLE_SIZE, (float)CE_HANDLE_SIZE),
+		brush, (float)CE_HANDLE_SIRCLE_LINE
+	);
+
+	g_render_target->FillEllipse(
+		D2D1::Ellipse(
+			D2D1::Point2F(st.x, st.y),
+			(float)CE_POINT_SIZE, (float)CE_POINT_SIZE),
+		brush
+	);
+}
+
+
+
+void ce::Curve::draw_curve(ID2D1SolidColorBrush* brush)
+{
+
+}
+
+
+
+//---------------------------------------------------------------------
+//		データが有効かどうか
+//---------------------------------------------------------------------
+bool ce::Curve::is_data_valid()
+{
+	return ISINRANGEEQ(ctpts.size, 2, CE_POINT_MAX);
 }
 
 

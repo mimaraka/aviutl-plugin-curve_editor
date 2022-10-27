@@ -22,6 +22,8 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	::GetClientRect(hwnd, &rect_wnd);
 
+	g_config.separator = MINMAXLIM(g_config.separator, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W - CE_HEADER_H);
+
 	rect_sepr.set(
 		0,
 		rect_wnd.bottom - g_config.separator - CE_SEPR_W,
@@ -59,6 +61,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
+		bitmap_buffer.set_size(rect_wnd);
 
 		// ヘッダパネル
 		g_window_header.create(
@@ -81,11 +84,11 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_PAINT:
-		ce::draw_panel_main(bitmap_buffer, rect_wnd, rect_sepr.rect);
+		bitmap_buffer.draw_panel_main(rect_sepr.rect);
 		return 0;
 
 	case WM_SIZE:
-
+		bitmap_buffer.set_size(rect_wnd);
 		g_window_header.move(rect_header.rect);
 		g_window_editor.move(rect_editor.rect);
 		g_window_preset.move(rect_preset.rect);
@@ -191,6 +194,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_CREATE:
 	{
 		bitmap_buffer.init(hwnd);
+		bitmap_buffer.set_size(rect_wnd);
 
 		// メニュー
 		menu = ::GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU1)), 0);
@@ -216,7 +220,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(ウィンドウのサイズが変更されたとき)
 		///////////////////////////////////////////
 	case WM_SIZE:
-
+		bitmap_buffer.set_size(rect_wnd);
 		return 0;
 
 		///////////////////////////////////////////
@@ -224,7 +228,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(ウィンドウが描画されたとき)
 		///////////////////////////////////////////
 	case WM_PAINT:
-		ce::draw_panel_editor(bitmap_buffer, rect_wnd);
+		bitmap_buffer.draw_panel_editor();
 		return 0;
 
 		///////////////////////////////////////////
@@ -603,7 +607,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_DELETE_ALL:
 			if (g_config.mode == ce::Mode_ID) {
 				int response = IDOK;
-				if (g_config.alert)
+				if (g_config.alert && !lparam)
 					response = ::MessageBox(
 						hwnd,
 						CE_STR_DELETE_ALL,
@@ -611,9 +615,11 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 						MB_OKCANCEL | MB_ICONEXCLAMATION
 					);
 
-				if (response == IDOK) {
-					for (int i = 0; i < CE_CURVE_MAX; i++)
+				if (response == IDOK || lparam) {
+					for (int i = 0; i < CE_CURVE_MAX; i++) {
 						g_curve_id[i].clear();
+						g_curve_id[i].set_mode(ce::Mode_ID);
+					}
 
 					::InvalidateRect(hwnd, NULL, FALSE);
 					// Aviutlを再描画
@@ -794,6 +800,8 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
+		bitmap_buffer.set_size(rect_wnd);
+
 		// モード(Value)スイッチ
 		mode_value.create(
 			hwnd,
@@ -957,6 +965,8 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_SIZE:
+		bitmap_buffer.set_size(rect_wnd);
+
 		mode_value.move(rect_mode_value);
 		mode_id.move(rect_mode_id);
 
@@ -974,7 +984,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_PAINT:
-		ce::draw_panel_header(bitmap_buffer, rect_wnd);
+		bitmap_buffer.draw_panel_header();
 		return 0;
 
 	case WM_COMMAND:
@@ -1110,10 +1120,15 @@ LRESULT CALLBACK wndproc_preset(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
+		bitmap_buffer.set_size(rect_wnd);
+		return 0;
+
+	case WM_SIZE:
+		bitmap_buffer.set_size(rect_wnd);
 		return 0;
 
 	case WM_PAINT:
-		ce::draw_panel_preset(bitmap_buffer, rect_wnd);
+		bitmap_buffer.draw_panel_preset();
 		return 0;
 
 	case WM_COMMAND:

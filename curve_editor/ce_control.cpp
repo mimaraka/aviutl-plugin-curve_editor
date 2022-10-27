@@ -70,7 +70,7 @@ BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LP
 //---------------------------------------------------------------------
 void ce::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 {
-	d2d_setup(bitmap_buffer, rect_wnd, TO_BGR(bg));
+	bitmap_buffer.d2d_setup(TO_BGR(bg));
 
 	::SetBkColor(bitmap_buffer.hdc_memory, bg);
 
@@ -99,12 +99,12 @@ void ce::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 	if (g_render_target != NULL) {
 		g_render_target->BeginDraw();
 		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
-		d2d_draw_rounded_edge(brush, rect_wnd, edge_flag, CE_ROUND_RADIUS);
+		bitmap_buffer.draw_rounded_edge(edge_flag, CE_ROUND_RADIUS);
 
 		g_render_target->EndDraw();
 	}
 
-	bitmap_buffer.transfer(rect_wnd);
+	bitmap_buffer.transfer();
 }
 
 
@@ -121,6 +121,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg) {
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
+		bitmap_buffer.set_size(rect_wnd);
 
 		if (icon_or_str == 0) {
 			icon_dark = ::LoadIcon(g_fp->dll_hinst, icon_res_dark);
@@ -167,6 +168,8 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_SIZE:
+		bitmap_buffer.set_size(rect_wnd);
+
 		if (!icon_or_str) {
 			tool_info.rect = rect_wnd;
 			::SendMessage(hwnd_tooltip, TTM_NEWTOOLRECT, 0, (LPARAM)&tool_info);
