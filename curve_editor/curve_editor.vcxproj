@@ -105,7 +105,7 @@
     <PostBuildEvent>
       <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
 copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110 (1)\Plugins"
+copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
 copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -131,7 +131,7 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
     <PostBuildEvent>
       <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
 copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110 (1)\Plugins"
+copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
 copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -150,7 +150,10 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) C:\Program_Files_Portable\AviUtl\1.10_0.92</Command>
+      <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
+copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
+copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
+copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -172,7 +175,10 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) C:\Program_Files_Portable\AviUtl\1.10_0.92</Command>
+      <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
+copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
+copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
+copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

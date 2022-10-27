@@ -4,7 +4,7 @@
 ベジェ曲線のイージングをウィンドウ上で編集できるAviUtlプラグインです。  
 
 ## ダウンロード
-**v0.4.2**(Alpha版)：https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v0.4.2  
+**v0.4.3**(Alpha版)：https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v0.4.3  
 ※プリセット機能以外の機能が実装されています。
 
 ## インストール

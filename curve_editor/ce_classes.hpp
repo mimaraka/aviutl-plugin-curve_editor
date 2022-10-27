@@ -28,7 +28,7 @@ namespace ce {
 
 
 	//---------------------------------------------------------------------
-	//		カーブ(2048バイト)
+	//		カーブ
 	//---------------------------------------------------------------------
 	class Curve {
 	private:
@@ -47,6 +47,7 @@ namespace ce {
 		void				draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, const ce::Float_Point& ed);
 
 	public:
+		// サイズ固定
 		ce::Static_Array<Curve_Points, CE_POINT_MAX> ctpts;
 		Mode mode = Mode_Value;
 

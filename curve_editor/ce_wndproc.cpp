@@ -22,7 +22,6 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	::GetClientRect(hwnd, &rect_wnd);
 
-	g_config.separator = MINMAXLIM(g_config.separator, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W - CE_HEADER_H);
 
 	rect_sepr.set(
 		0,
@@ -122,9 +121,9 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (wparam) {
 		case CE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
-			g_window_header.redraw();
-			g_window_editor.redraw();
-			g_window_preset.redraw();
+			g_window_header.move(rect_header.rect);
+			g_window_editor.move(rect_editor.rect);
+			g_window_preset.move(rect_preset.rect);
 		}
 
 	default:
@@ -696,6 +695,11 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// ƒwƒ‹ƒv
 		case ID_MENU_HELP:
 			::ShellExecute(0, "open", CE_PLUGIN_LINK_HELP, NULL, NULL, SW_SHOWNORMAL);
+			return 0;
+
+		case ID_MENU_RESET_SEPARATOR:
+			g_config.separator = CE_SEPR_W;
+			::SendMessage(g_window_main.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 			return 0;
 		}
 		return 0;

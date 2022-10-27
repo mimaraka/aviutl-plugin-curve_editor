@@ -20,7 +20,7 @@
 #define CE_DEF_H					460
 #define CE_DEF_PRESET_SIZE			50
 #define CE_ROUND_RADIUS				4.0f
-#define CE_NON_CLIENT_H				32
+#define CE_NON_CLIENT_H				36
 
 // セパレータ
 #define CE_SEPR_W					8
@@ -136,7 +136,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME				"Curve Editor"
-#define CE_PLUGIN_VERSION			"v0.4.2"
+#define CE_PLUGIN_VERSION			"v0.4.3"
 #define CE_PLUGIN_DEVELOPER			"mimaraka"
 #define CE_PLUGIN_YEAR				"2022"
 #define CE_PLUGIN_INFO				CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_DEVELOPER

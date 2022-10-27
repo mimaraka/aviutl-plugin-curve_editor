@@ -56,9 +56,10 @@ void ce::Window::move(const RECT& rect) const
 {
 	::MoveWindow(
 		hwnd,
-		rect.left, rect.top,
-		rect.right - rect.left,
-		rect.bottom - rect.top,
+		SMALLER(rect.left, rect.right),
+		SMALLER(rect.top, rect.bottom),
+		std::abs(rect.right - rect.left),
+		std::abs(rect.bottom - rect.top),
 		TRUE
 	);
 }

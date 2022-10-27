@@ -246,6 +246,7 @@ BEGIN
         MENUITEM "ハンドルを連動させる\tA",               ID_MENU_ALIGNHANDLE
         MENUITEM "ハンドルを表示 \tS",                 ID_MENU_SHOWHANDLE
         MENUITEM "グラフをフィット\tHome",              ID_MENU_FIT
+        MENUITEM "セパレータの位置を初期化",                ID_MENU_RESET_SEPARATOR
         MENUITEM SEPARATOR
         MENUITEM "設定",                          ID_MENU_CONFIG
         MENUITEM "ヘルプ",                         ID_MENU_HELP
