@@ -46,7 +46,7 @@ extern INT_PTR								(WINAPI* dialogproc_original)(HWND, UINT, WPARAM, LPARAM);
 EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void);
 
 //‰Šú‰»EI—¹
-BOOL				filter_init(FILTER*);
+BOOL				filter_initialize(FILTER*);
 BOOL				filter_exit(FILTER*);
 
 // aviutl.ini‚ğ—p‚¢‚Äİ’è‚ğ“Ç‚İ‘‚«
@@ -87,7 +87,7 @@ namespace ce {
 //----------------------------------------------------------------------------------
 //		•`‰æŠÖ”
 //----------------------------------------------------------------------------------
-	void		d2d_init();
+	void				d2d_init();
 }
 
 

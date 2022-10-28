@@ -581,7 +581,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			if (g_config.alert)
 				response = ::MessageBox(
 					hwnd,
-					CE_STR_DELETE,
+					CE_STR_WARNING_DELETE,
 					CE_PLUGIN_NAME,
 					MB_OKCANCEL | MB_ICONEXCLAMATION
 				);
@@ -609,7 +609,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				if (g_config.alert && !lparam)
 					response = ::MessageBox(
 						hwnd,
-						CE_STR_DELETE_ALL,
+						CE_STR_WARNING_DELETE_ALL,
 						CE_PLUGIN_NAME,
 						MB_OKCANCEL | MB_ICONEXCLAMATION
 					);
@@ -680,10 +680,9 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// ’l‚ð“Ç‚ÝŽæ‚è
 		case CE_CM_READ:
 		case ID_MENU_READ:
-			if (g_config.mode == ce::Mode_Value) {
-				::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
-				::InvalidateRect(hwnd, NULL, FALSE);
-			}
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
+			::InvalidateRect(hwnd, NULL, FALSE);
+			
 			return 0;
 
 		// •Û‘¶ƒ{ƒ^ƒ“

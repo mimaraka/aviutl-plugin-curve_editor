@@ -138,7 +138,7 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 				::EndDialog(hwnd, 1);
 			}
 			else if (g_config.alert)
-				::MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+				::MessageBox(hwnd, CE_STR_ERROR_INPUT_INVALID, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 
 			return 0;
 
@@ -191,21 +191,25 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				}
 				catch (std::out_of_range& e) {
 					if (g_config.alert)
-						MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+						MessageBox(hwnd, CE_STR_ERROR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 					return 0;
 				}
 				if (!ISINRANGEEQ(value, -2147483647, 2122746761)) {
 					if (g_config.alert)
-						::MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+						::MessageBox(hwnd, CE_STR_ERROR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 					return 0;
 				}
-				g_curve_value.read_value_1d(value);
+				if (g_config.mode == ce::Mode_Value)
+					g_curve_value.read_value_1d(value);
+				else
+					g_curve_id[g_config.current_id].read_value_1d(value);
+
 				::EndDialog(hwnd, 1);
 			}
 			else if (g_config.alert)
-				::MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+				::MessageBox(hwnd, CE_STR_ERROR_INPUT_INVALID, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 			return 0;
 		case IDCANCEL:
@@ -291,7 +295,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if (strlen(buffer) == 0) {
 				if (g_config.alert)
-					::MessageBox(hwnd, CE_STR_INVALIDINPUT, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+					::MessageBox(hwnd, CE_STR_ERROR_INPUT_INVALID, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
 			}
@@ -301,7 +305,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if (!ISINRANGEEQ(value, 0, CE_CURVE_MAX - 1)) {
 				if (g_config.alert)
-					::MessageBox(hwnd, CE_STR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+					::MessageBox(hwnd, CE_STR_ERROR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
 			}

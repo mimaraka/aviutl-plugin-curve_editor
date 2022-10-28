@@ -27,7 +27,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		minfo.cbSize = sizeof(MENUITEMINFO);
 		minfo.fMask = MIIM_TYPE;
 
-		g_config.is_hooked_popup = FALSE;
+		g_config.is_hooked_popup = false;
 
 		// スクリプトのメニューIDを取得
 		while (true) {
@@ -64,7 +64,7 @@ INT_PTR(WINAPI* DialogBox_original)(HINSTANCE, LPCSTR, HWND, DLGPROC, LPARAM) = 
 INT_PTR WINAPI DialogBox_hooked(HINSTANCE hinstance, LPCSTR template_name, HWND hwnd_parent, DLGPROC dlgproc, LPARAM init_param)
 {
 	if (g_config.is_hooked_dialog) {
-		g_config.is_hooked_dialog = FALSE;
+		g_config.is_hooked_dialog = false;
 		dialogproc_original = dlgproc;
 		return DialogBox_original(hinstance, template_name, hwnd_parent, dialogproc_hooked, init_param);
 	}

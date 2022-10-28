@@ -147,6 +147,10 @@ Windows 11
 AviUtl 1.00, 1.10  
 拡張編集 0.92  
 
+※[patch.aul](https://github.com/ePi5131/patch.aul)、
+[イージング設定時短プラグイン](https://github.com/kumrnm/aviutl-easing-quick-setup)、
+[イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)との共存を確認。
+
 ## 免責事項
 当プラグイン・スクリプトを使用したことによっていかなる損害が生じても，製作者は一切の責任を負わないものとします。  
 

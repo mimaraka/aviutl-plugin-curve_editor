@@ -22,7 +22,7 @@ EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void)
 //---------------------------------------------------------------------
 //		初期化時に実行される関数
 //---------------------------------------------------------------------
-BOOL filter_init(FILTER* fp)
+BOOL filter_initialize(FILTER* fp)
 {
 	g_fp = fp;
 
@@ -36,25 +36,30 @@ BOOL filter_init(FILTER* fp)
 	ini_load_configs(fp);
 	
 	// フックの準備
-	g_config.is_hooked_popup = FALSE;
-	g_config.is_hooked_dialog = FALSE;
+	g_config.is_hooked_popup = false;
+	g_config.is_hooked_dialog = false;
 	char exedit_path[1024];
 	FILTER* fp_exedit = auls::Exedit_GetFilter(fp);
-	::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));
+	if (fp_exedit) {
+		::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));
 
-	// TrackPopupMenu()をフック
-	TrackPopupMenu_original = (decltype(TrackPopupMenu_original))yulib::RewriteFunction(
-		exedit_path,
-		"TrackPopupMenu",
-		TrackPopupMenu_hooked
-	);
+		// TrackPopupMenu()をフック
+		TrackPopupMenu_original = (decltype(TrackPopupMenu_original))yulib::RewriteFunction(
+			exedit_path,
+			"TrackPopupMenu",
+			TrackPopupMenu_hooked
+		);
 
-	// DialogBoxParamA()をフック
-	DialogBox_original = (decltype(DialogBox_original))yulib::RewriteFunction(
-		exedit_path,
-		"DialogBoxParamA",
-		DialogBox_hooked
-	);
+		// DialogBoxParamA()をフック
+		DialogBox_original = (decltype(DialogBox_original))yulib::RewriteFunction(
+			exedit_path,
+			"DialogBoxParamA",
+			DialogBox_hooked
+		);
+	}
+	else
+		::MessageBox(fp->hwnd, CE_STR_ERROR_EXEDIT_NOT_FOUND, CE_PLUGIN_NAME, MB_OK);
+
 
 	// Direct2D初期化
 	ce::d2d_init();
@@ -103,8 +108,8 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 					int response = IDOK;
 
 					response = ::MessageBox(
-						g_window_editor.hwnd,
-						CE_STR_DATA_INVALID,
+						fp->hwnd,
+						CE_STR_ERROR_DATA_INVALID,
 						CE_PLUGIN_NAME,
 						MB_OKCANCEL | MB_ICONEXCLAMATION
 					);
@@ -152,9 +157,9 @@ BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 void ini_load_configs(FILTER* fp)
 {
 	g_config.theme = fp->exfunc->ini_load_int(fp, "theme", 0);
-	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", 1);
-	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", 1);
-	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", 0);
+	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", true);
+	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
+	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
 	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
 	g_curve_value.ctpts[0].pt_right.x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)), 0, CE_GR_RESOLUTION);
 	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1));
@@ -162,8 +167,8 @@ void ini_load_configs(FILTER* fp)
 	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_W);
 	g_config.mode = (ce::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
-	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", 1);
-	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", 1);
+	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", true);
+	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", true);
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CE_DEF_PRESET_SIZE);
 }
 

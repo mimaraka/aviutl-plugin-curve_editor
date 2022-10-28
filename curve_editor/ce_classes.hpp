@@ -44,7 +44,7 @@ namespace ce {
 								const ce::Float_Point& edpt,
 								float thickness
 							);
-		void				draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, const ce::Float_Point& ed);
+		void				draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, const ce::Float_Point& ed, int drawing_mode);
 
 	public:
 		// サイズ固定
@@ -59,13 +59,14 @@ namespace ce {
 		void				clear();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				reverse_curve();
-		void				draw_curve(ID2D1SolidColorBrush* brush);
+		void				draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int drawing_mode);
 		bool				is_data_valid();
 
 		// Valueモード用
 		int					create_value_1d();
 		std::string			create_value_4d();
 		void				read_value_1d(int value);
+		void				read_ease(int value);
 
 		// IDモード用
 		void				add_point(const POINT& pt_client);

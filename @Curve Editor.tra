@@ -1,10 +1,10 @@
 @Value
 --param:320896157
-local index,ratio = math.modf(obj.getpoint"index")
+local index,ratio=math.modf(obj.getpoint"index")
 local st=obj.getpoint(index)
 local ed=obj.getpoint(index+1)
 local par=obj.getpoint"param"+2147483647
-if (par < 0 or par > 4270230409) then
+if (par<0 or par>4270230409) then
 	return obj.getpoint"default"
 end
 local y2=math.floor(par/6600047)
@@ -30,16 +30,16 @@ return ta^3*(ed-st-3*y2+3*y1)+3*ta^2*(y2-2*y1+st)+3*ta*(y1-st)+st
 
 @ID
 --param:0
-local module_name = "curve_editor"
+local module_name="curve_editor"
 if not package.loaded[module_name] then
-	package.preload[module_name] = package.loadlib(module_name .. ".auf", "luaopen_" .. module_name)
+	package.preload[module_name]=package.loadlib(module_name .. ".auf","luaopen_" .. module_name)
 	require(module_name)
-	package.preload[module_name] = nil
+	package.preload[module_name]=nil
 end
 
-local index,ratio = math.modf(obj.getpoint"index")
-local st = obj.getpoint(index)
-local ed = obj.getpoint(index + 1)
-local par = obj.getpoint"param"
+local index,ratio=math.modf(obj.getpoint"index")
+local st=obj.getpoint(index)
+local ed=obj.getpoint(index+1)
+local par=obj.getpoint"param"
 
-return curve_editor.get_result(par, ratio, st, ed)
+return curve_editor.get_result(par,ratio,st,ed)

@@ -100,7 +100,7 @@ namespace ce {
 	//		ê›íË
 	//---------------------------------------------------------------------
 	typedef struct tagConfig {
-		BOOL
+		bool
 			alert,
 			trace,
 			auto_copy,
