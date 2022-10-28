@@ -161,9 +161,9 @@ void ini_load_configs(FILTER* fp)
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
 	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.ctpts[0].pt_right.x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)), 0, CE_GR_RESOLUTION);
+	g_curve_value.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)), 0, CE_GR_RESOLUTION);
 	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1));
-	g_curve_value.ctpts[1].pt_left.x = MINMAXLIM(fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)), 0, CE_GR_RESOLUTION);
+	g_curve_value.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)), 0, CE_GR_RESOLUTION);
 	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_W);
 	g_config.mode = (ce::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);

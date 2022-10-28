@@ -401,7 +401,7 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		if (clicked && g_config.mode == ce::Mode_ID) {
 			is_scrolling = TRUE;
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-			g_config.current_id = MINMAXLIM(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CE_CURVE_MAX - 1);
+			g_config.current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CE_CURVE_MAX - 1);
 			g_curve_id_previous = g_curve_id[g_config.current_id];
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
 		}

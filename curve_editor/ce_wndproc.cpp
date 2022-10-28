@@ -109,7 +109,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_MOUSEMOVE:
 		if (::PtInRect(&rect_sepr.rect, pt_client)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 		if (is_separator_moving) {
-			g_config.separator = MINMAXLIM(rect_wnd.bottom - pt_client.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W - CE_HEADER_H);
+			g_config.separator = MINMAX_LIMIT(rect_wnd.bottom - pt_client.y, CE_SEPR_W, rect_wnd.bottom - CE_SEPR_W - CE_HEADER_H);
 			g_window_header.move(rect_header.rect);
 			g_window_editor.move(rect_editor.rect);
 			g_window_preset.move(rect_preset.rect);
@@ -414,9 +414,9 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				// ägëÂèkè¨
 				if ((::GetAsyncKeyState(VK_CONTROL) < 0 && move_or_scale == 0) || move_or_scale == 2) {
 					double coef_x, coef_y;
-					coef_x = MINMAXLIM(std::pow(CE_GR_SCALE_INC, pt_client.x - pt_view.x),
+					coef_x = MINMAX_LIMIT(std::pow(CE_GR_SCALE_INC, pt_client.x - pt_view.x),
 						CE_GR_SCALE_MIN / prev_scale_x, CE_GR_SCALE_MAX / prev_scale_x);
-					coef_y = MINMAXLIM(std::pow(CE_GR_SCALE_INC, pt_view.y - pt_client.y),
+					coef_y = MINMAX_LIMIT(std::pow(CE_GR_SCALE_INC, pt_view.y - pt_client.y),
 						CE_GR_SCALE_MIN / prev_scale_y, CE_GR_SCALE_MAX / prev_scale_y);
 					if (::GetAsyncKeyState(VK_SHIFT) < 0) {
 						coef_x = coef_y = LARGER(coef_x, coef_y);
@@ -1038,7 +1038,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case CE_CM_ID_BACK:
 			if (g_config.mode == ce::Mode_ID) {
 				g_config.current_id--;
-				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+				g_config.current_id = MINMAX_LIMIT(g_config.current_id, 0, CE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
 				id_id.redraw();
 				g_window_editor.redraw();
@@ -1049,7 +1049,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case CE_CM_ID_NEXT:
 			if (g_config.mode == ce::Mode_ID) {
 				g_config.current_id++;
-				g_config.current_id = MINMAXLIM(g_config.current_id, 0, CE_CURVE_MAX - 1);
+				g_config.current_id = MINMAX_LIMIT(g_config.current_id, 0, CE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
 				id_id.redraw();
 				g_window_editor.redraw();
@@ -1058,7 +1058,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		case CE_CM_CHANGE_ID:
 			if (g_config.mode == ce::Mode_ID) {
-				g_config.current_id = MINMAXLIM(lparam, 0, CE_CURVE_MAX - 1);
+				g_config.current_id = MINMAX_LIMIT(lparam, 0, CE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
 				id_id.redraw();
 				g_window_editor.redraw();

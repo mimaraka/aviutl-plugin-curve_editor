@@ -9,6 +9,27 @@
 
 
 //---------------------------------------------------------------------
+//		Direct2D‚ğ‰Šú‰»
+//---------------------------------------------------------------------
+void ce::d2d_init()
+{
+	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
+	D2D1_RENDER_TARGET_PROPERTIES prop;
+	prop = D2D1::RenderTargetProperties(
+		D2D1_RENDER_TARGET_TYPE_DEFAULT,
+		D2D1::PixelFormat(
+			DXGI_FORMAT_B8G8R8A8_UNORM,
+			D2D1_ALPHA_MODE_IGNORE),
+		0, 0,
+		D2D1_RENDER_TARGET_USAGE_NONE,
+		D2D1_FEATURE_LEVEL_DEFAULT
+	);
+	g_d2d1_factory->CreateDCRenderTarget(&prop, &g_render_target);
+}
+
+
+
+//---------------------------------------------------------------------
 //		splitŠÖ”
 //---------------------------------------------------------------------
 std::vector<std::string> ce::split(const std::string& s, TCHAR c)

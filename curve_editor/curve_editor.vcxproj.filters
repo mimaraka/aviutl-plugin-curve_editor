@@ -27,9 +27,6 @@
     <ClCompile Include="ce_func.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_func_graphic.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="ce_bitmap_buffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>

@@ -117,14 +117,14 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 				float values[4];
 
-				values[0] = MINMAXLIM(std::stof(vec[0]), 0, 1);
-				values[1] = MINMAXLIM(
+				values[0] = MINMAX_LIMIT(std::stof(vec[0]), 0, 1);
+				values[1] = MINMAX_LIMIT(
 					std::stof(vec[1]),
 					CE_CURVE_VALUE_MIN_Y,
 					CE_CURVE_VALUE_MAX_Y
 				);
-				values[2] = MINMAXLIM(std::stof(vec[2]), 0, 1);
-				values[3] = MINMAXLIM(
+				values[2] = MINMAX_LIMIT(std::stof(vec[2]), 0, 1);
+				values[3] = MINMAX_LIMIT(
 					std::stof(vec[3]),
 					CE_CURVE_VALUE_MIN_Y,
 					CE_CURVE_VALUE_MAX_Y
@@ -242,14 +242,15 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			/*ce::Preset additem;
+			ce::Curve* curve_ptr = (g_config.mode == ce::Mode_Value) ? &g_curve_value : &g_curve_id[g_config.current_id];
+			ce::Preset preset(curve_ptr, g_config.mode);
 			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, 64);
 			if (strlen(buffer) < 64 && strlen(buffer) != 0) {
 				additem = { buffer, g_curve_value.ctpt[0].x, g_curve_value.ctpt[0].y, g_curve_value.ctpt[1].x, g_curve_value.ctpt[1].y };
 				g_presets.emplace_back(additem);
 				::EndDialog(hwnd, 1);
 			}
-			else if (strlen(buffer) == 0 && g_config.alert) MessageBox(hwnd, CE_STR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);*/
+			else if (strlen(buffer) == 0 && g_config.alert) MessageBox(hwnd, CE_STR_ERROR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 			return 0;
 		case IDCANCEL:
 			::EndDialog(hwnd, 1);

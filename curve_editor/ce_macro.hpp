@@ -144,7 +144,7 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CE_PLUGIN_NAME						"Curve Editor"
-#define CE_PLUGIN_VERSION					"v0.4.3"
+#define CE_PLUGIN_VERSION					"v0.5"
 #define CE_PLUGIN_DEVELOPER					"mimaraka"
 #define CE_PLUGIN_YEAR						"2022"
 #define CE_PLUGIN_INFO						CE_PLUGIN_NAME " " CE_PLUGIN_VERSION " by " CE_PLUGIN_DEVELOPER
@@ -159,7 +159,7 @@
 #define CE_STR_WARNING_DELETE				"編集中のカーブを初期化します。よろしいですか？"
 #define CE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
 #define CE_STR_ABOUT						CE_PLUGIN_NAME " " CE_PLUGIN_VERSION "\n" "Copyright : (C) " CE_PLUGIN_YEAR " " CE_PLUGIN_DEVELOPER
-#define CE_STR_INPUTANAME					"プリセット名を入力してください。"
+#define CE_STR_ERROR_INPUTANAME				"プリセット名を入力してください。"
 #define CE_STR_ERROR_OUTOFRANGE				"値が範囲外です。"
 #define CE_STR_ERROR_INPUT_INVALID			"無効な入力値です。"
 #define CE_STR_ERROR_DATA_INVALID			"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
@@ -171,18 +171,14 @@
 //		マクロ関数
 //---------------------------------------------------------------------
 #define TO_BGR(ref)							(RGB(GetBValue(ref), GetGValue(ref), GetRValue(ref)))
-#define DISTANCE2(pt1,pt2x, pt2y)			(std::sqrt(std::pow((pt2x) - pt1.x, 2) + std::pow((pt2y) - pt1.y, 2)))
 #define DISTANCE(pt1,pt2)					(std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2)))
-#define DISTANCE1(pt)						(std::sqrt(std::pow(pt.x, 2) + std::pow(pt.y, 2)))
-#define MAXLIM(value,maxv)					(((value) > (maxv))? (maxv): (value))
-#define MINLIM(value,minv)					(((value) < (minv))? (minv): (value))
-#define MINMAXLIM(value,minv,maxv)			(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
+#define MAX_LIMIT(value,maxv)				(((value) > (maxv))? (maxv): (value))
+#define MIN_LIMIT(value,minv)				(((value) < (minv))? (minv): (value))
+#define MINMAX_LIMIT(value,minv,maxv)		(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
 #define ISINRANGE(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
 #define ISINRANGEEQ(value,minv,maxv)		(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
-#define ISMORETHAN(value,vl)				(((value) >= (vl))? 1 : 0)
-#define ISLESSTHAN(value,vl)				(((value) <= (vl))? 1 : 0)
-#define BRIGHTEN(ref,num)					(RGB(MINMAXLIM(GetRValue(ref) + num, 0, 255), MINMAXLIM(GetGValue(ref) + num, 0, 255), MINMAXLIM(GetBValue(ref) + num, 0, 255)))
+#define BRIGHTEN(ref,num)					(RGB(MINMAX_LIMIT(GetRValue(ref) + num, 0, 255), MINMAX_LIMIT(GetGValue(ref) + num, 0, 255), MINMAX_LIMIT(GetBValue(ref) + num, 0, 255)))
 #define INVERT(ref)							(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
-#define CONTRAST(ref,val)					(RGB(MINMAXLIM(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAXLIM(127 + (GetBValue(ref) - 127) * val, 0, 255)))
+#define CONTRAST(ref,val)					(RGB(MINMAX_LIMIT(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAX_LIMIT(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAX_LIMIT(127 + (GetBValue(ref) - 127) * val, 0, 255)))
 #define LARGER(val1, val2)					(((val1) > (val2))? (val1) : (val2))
 #define SMALLER(val1, val2)					(((val1) < (val2))? (val1) : (val2))

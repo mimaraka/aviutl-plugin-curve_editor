@@ -127,7 +127,7 @@ void ce::Curve::move_point(int index, const POINT& pt_graph, bool init)
 
 
 	// 中央    ---o---
-	ctpts[index].pt_center.x = MINMAXLIM(
+	ctpts[index].pt_center.x = MINMAX_LIMIT(
 		pt_graph.x,
 		ctpts[index - 1].pt_center.x + 1,
 		ctpts[index + 1].pt_center.x - 1
@@ -238,7 +238,7 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 			pt_lock = pt_graph;
 		}
 
-		pt_result.x = MINMAXLIM(
+		pt_result.x = MINMAX_LIMIT(
 			pt_graph.x,
 			left_side,
 			right_side
@@ -412,7 +412,7 @@ void ce::Curve::set_handle_position(const Point_Address& pt_address, const POINT
 			return;
 
 		// ハンドルを動かす
-		ctpts[pt_address.index].pt_left.x = MINMAXLIM(
+		ctpts[pt_address.index].pt_left.x = MINMAX_LIMIT(
 			pt_graph.x,
 			ctpts[pt_address.index - 1].pt_center.x,
 			ctpts[pt_address.index].pt_center.x
@@ -434,7 +434,7 @@ void ce::Curve::set_handle_position(const Point_Address& pt_address, const POINT
 			return;
 
 		// ハンドルを動かす
-		ctpts[pt_address.index].pt_right.x = MINMAXLIM(
+		ctpts[pt_address.index].pt_right.x = MINMAX_LIMIT(
 			pt_graph.x,
 			ctpts[pt_address.index].pt_center.x,
 			ctpts[pt_address.index + 1].pt_center.x
@@ -463,23 +463,23 @@ int ce::Curve::create_value_1d()
 	Float_Point ptf[2];
 	POINT pt[2];
 
-	ptf[0].x = MINMAXLIM(
+	ptf[0].x = MINMAX_LIMIT(
 		ctpts[0].pt_right.x / (float)CE_GR_RESOLUTION,
 		0, 1
 	);
 
-	ptf[0].y = MINMAXLIM(
+	ptf[0].y = MINMAX_LIMIT(
 		ctpts[0].pt_right.y / (float)CE_GR_RESOLUTION,
 		CE_CURVE_VALUE_MIN_Y,
 		CE_CURVE_VALUE_MAX_Y
 	);
 
-	ptf[1].x = MINMAXLIM(
+	ptf[1].x = MINMAX_LIMIT(
 		ctpts[1].pt_left.x / (float)CE_GR_RESOLUTION,
 		0, 1
 	);
 
-	ptf[1].y = MINMAXLIM(
+	ptf[1].y = MINMAX_LIMIT(
 		ctpts[1].pt_left.y / (float)CE_GR_RESOLUTION,
 		CE_CURVE_VALUE_MIN_Y,
 		CE_CURVE_VALUE_MAX_Y
@@ -504,11 +504,11 @@ std::string ce::Curve::create_value_4d()
 	Float_Point pt;
 	std::string strx, stry, result;
 
-	pt.x = MINMAXLIM(
+	pt.x = MINMAX_LIMIT(
 		(float)(std::round(ctpts[0].pt_right.x * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
 		0, 1
 	);
-	pt.y = MINMAXLIM(
+	pt.y = MINMAX_LIMIT(
 		(float)(std::round(ctpts[0].pt_right.y * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
 		CE_CURVE_VALUE_MIN_Y,
 		CE_CURVE_VALUE_MAX_Y
@@ -524,11 +524,11 @@ std::string ce::Curve::create_value_4d()
 		stry.erase(4);
 	result += strx + ", " + stry + ", ";
 
-	pt.x = MINMAXLIM(
+	pt.x = MINMAX_LIMIT(
 		(float)(std::round(ctpts[1].pt_left.x * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
 		0, 1
 	);
-	pt.y = MINMAXLIM(
+	pt.y = MINMAX_LIMIT(
 		(float)(std::round(ctpts[1].pt_left.y * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
 		CE_CURVE_VALUE_MIN_Y,
 		CE_CURVE_VALUE_MAX_Y

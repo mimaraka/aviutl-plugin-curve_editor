@@ -67,27 +67,23 @@ BOOL				filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 //----------------------------------------------------------------------------------
 
 namespace ce {
+	// Direct2D初期化
+	void						d2d_init();
+
 	//文字列の分割
-	std::vector<std::string> split(const std::string& s, TCHAR c);
+	std::vector<std::string>	split(const std::string& s, TCHAR c);
 
 	//クリップボードにテキストをコピー
-	BOOL				copy_to_clipboard(HWND, LPCTSTR);
+	BOOL						copy_to_clipboard(HWND, LPCTSTR);
 
 	// 長さを減算
-	void				subtract_length(ce::Float_Point* pt, const ce::Float_Point& st, const ce::Float_Point& ed, float length);
+	void						subtract_length(ce::Float_Point* pt, const ce::Float_Point& st, const ce::Float_Point& ed, float length);
 
 	// 設定をメニューに反映
-	void				apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
+	void						apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
 
 	// キー押下時の処理
-	LRESULT				on_keydown(WPARAM wparam);
-
-
-
-//----------------------------------------------------------------------------------
-//		描画関数
-//----------------------------------------------------------------------------------
-	void				d2d_init();
+	LRESULT						on_keydown(WPARAM wparam);
 }
 
 

@@ -88,6 +88,8 @@ namespace ce {
 		RECT rect;
 		ID2D1SolidColorBrush* brush = nullptr;
 
+		void draw_grid();
+
 	public:
 		HDC hdc_memory;
 
@@ -137,14 +139,14 @@ namespace ce {
 		LPTSTR				name;
 		Curve				curve;
 		time_t				unix_time;
-		const int			val_or_id;
+		const Mode			mode;
 
-		Preset(int v_i, Curve cv, LPTSTR n) : name(n), curve(cv), val_or_id(v_i)
+		Preset(const Curve* cv, Mode md) : curve(*cv), mode(md)
 		{
 			::time(&unix_time);
 		}
 
-		BOOL				create(HWND hwnd_parent);
+		BOOL				create(HWND hwnd_parent, LPTSTR nm);
 		void				move(int panel_width, int index);
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};

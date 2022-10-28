@@ -11,8 +11,13 @@
 //---------------------------------------------------------------------
 //		プリセットを作成
 //---------------------------------------------------------------------
-BOOL ce::Preset::create(HWND hwnd_parent)
+BOOL ce::Preset::create(HWND hwnd_parent, LPTSTR nm)
 {
+	strcpy_s(name, strlen(nm), nm);
+	char unix_str[12];
+
+	_itoa_s(unix_time, unix_str, 10);
+
 	WNDCLASSEX tmp;
 	tmp.cbSize = sizeof(tmp);
 	tmp.style = CS_HREDRAW | CS_VREDRAW;
@@ -25,12 +30,12 @@ BOOL ce::Preset::create(HWND hwnd_parent)
 	tmp.hCursor = LoadCursor(NULL, IDC_ARROW);
 	tmp.hbrBackground = NULL;
 	tmp.lpszMenuName = NULL;
-	tmp.lpszClassName = name;
+	tmp.lpszClassName = unix_str;
 
 	if (RegisterClassEx(&tmp)) {
 		hwnd = ::CreateWindowEx(
 			NULL,
-			name,
+			unix_str,
 			NULL,
 			WS_CHILD | WS_VISIBLE,
 			0, 0,
