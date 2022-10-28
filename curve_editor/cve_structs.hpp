@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "ce_framework.hpp"
+#include "cve_framework.hpp"
 
 
 
-namespace ce {
+namespace cve {
 	//---------------------------------------------------------------------
 	//		Float Point (floatÇÃì_)
 	//---------------------------------------------------------------------
@@ -100,19 +100,19 @@ namespace ce {
 	//		ê›íË
 	//---------------------------------------------------------------------
 	typedef struct tagConfig {
-		bool
-			alert,
-			trace,
-			auto_copy,
-			show_handle,
-			align_handle,
-			is_hooked_popup,
-			is_hooked_dialog;
-		int
-			theme,
-			separator,
-			current_id,
-			preset_size;
+		bool	alert,
+				trace,
+				auto_copy,
+				show_handle,
+				align_handle,
+				is_hooked_popup,
+				is_hooked_dialog;
+
+		int		theme,
+				separator,
+				current_id,
+				preset_size;
+
 		Mode mode;
 	} Config;
 }

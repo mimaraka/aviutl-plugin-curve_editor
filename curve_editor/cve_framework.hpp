@@ -18,7 +18,7 @@
 #include <aulslib/exedit.h>
 #include <aulslib/aviutl.h>
 #include <yulib/memory.h>
-#include "ce_macro.hpp"
+#include "cve_macro.hpp"
 #include "resource.h"
 
 #pragma comment(lib, "d2d1.lib")

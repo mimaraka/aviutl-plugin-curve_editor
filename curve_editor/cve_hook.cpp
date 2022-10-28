@@ -4,7 +4,7 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 
 
@@ -20,7 +20,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		int index_separator = -1;
 		int index_script;
 		int id_script;
-		LPCSTR script_name = "Value@" CE_PLUGIN_NAME;
+		LPCSTR script_name = "Value@" CVE_PLUGIN_NAME;
 		TCHAR menu_label[MAX_PATH];
 
 		static MENUITEMINFO minfo;
@@ -86,7 +86,7 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		HWND hwnd_edit = ::GetWindow(hwnd, GW_CHILD);
 		TCHAR text[MAX_PATH];
 		int data;
-		if (g_config.mode == ce::Mode_ID)
+		if (g_config.mode == cve::Mode_ID)
 			data = g_config.current_id;
 		else
 			data = g_curve_value.create_value_1d();

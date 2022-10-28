@@ -4,14 +4,14 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 
 
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LPTSTR ico_res_dark, LPTSTR ico_res_light, LPTSTR lb, int ct_id, const RECT& rect, int flag)
+BOOL cve::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LPTSTR ico_res_dark, LPTSTR ico_res_light, LPTSTR lb, int ct_id, const RECT& rect, int flag)
 {
 	WNDCLASSEX tmp;
 	id = ct_id;
@@ -68,7 +68,7 @@ BOOL ce::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LP
 //---------------------------------------------------------------------
 //		コントロール描画用の関数
 //---------------------------------------------------------------------
-void ce::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
+void cve::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 {
 	bitmap_buffer.d2d_setup(TO_BGR(bg));
 
@@ -90,8 +90,8 @@ void ce::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 	else {
 		::DrawIcon(
 			bitmap_buffer.hdc_memory,
-			(rect_wnd.right - CE_ICON_SIZE) / 2,
-			(rect_wnd.bottom - CE_ICON_SIZE) / 2,
+			(rect_wnd.right - CVE_ICON_SIZE) / 2,
+			(rect_wnd.bottom - CVE_ICON_SIZE) / 2,
 			g_config.theme ? icon_light : icon_dark
 		);
 	}
@@ -99,7 +99,7 @@ void ce::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 	if (g_render_target != NULL) {
 		g_render_target->BeginDraw();
 		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
-		bitmap_buffer.draw_rounded_edge(edge_flag, CE_ROUND_RADIUS);
+		bitmap_buffer.draw_rounded_edge(edge_flag, CVE_ROUND_RADIUS);
 
 		g_render_target->EndDraw();
 	}
@@ -112,7 +112,7 @@ void ce::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(static変数使用不可)
 //---------------------------------------------------------------------
-LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
@@ -150,7 +150,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		// フォント
 		font = ::CreateFont(
-			CE_CT_FONT_H, 0,
+			CVE_CT_FONT_H, 0,
 			0, 0,
 			FW_REGULAR,
 			FALSE, FALSE, FALSE,
@@ -159,7 +159,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			CLIP_DEFAULT_PRECIS,
 			DEFAULT_QUALITY,
 			NULL,
-			CE_FONT_YU_GOTHIC
+			CVE_FONT_YU_GOTHIC
 		);
 		return 0;
 
@@ -182,9 +182,9 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		COLORREF bg;
 		
 		if (clicked)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
 
@@ -196,7 +196,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// マウスが動いたとき
 	case WM_MOUSEMOVE:
-		hovered = TRUE;
+		hovered = true;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::TrackMouseEvent(&tme);
 		return 0;
@@ -208,7 +208,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	// 左クリックがされたとき
 	case WM_LBUTTONDOWN:
 		::SetCursor(::LoadCursor(NULL, IDC_HAND));
-		clicked = TRUE;
+		clicked = true;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::TrackMouseEvent(&tme);
 		return 0;
@@ -216,22 +216,22 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	// 左クリックが終わったとき
 	case WM_LBUTTONUP:
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
-		clicked = FALSE;
+		clicked = false;
 		::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
 		::InvalidateRect(hwnd, NULL, FALSE);
 		return 0;
 
 	// マウスがウィンドウから離れたとき
 	case WM_MOUSELEAVE:
-		clicked = FALSE;
-		hovered = FALSE;
+		clicked = false;
+		hovered = false;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		return 0;
 
 	// コマンド
 	case WM_COMMAND:
 		switch (wparam) {
-		case CE_CM_REDRAW:
+		case CVE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 		}
@@ -247,7 +247,7 @@ LRESULT ce::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(スイッチ)
 //---------------------------------------------------------------------
-LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
@@ -261,9 +261,9 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 		// 選択時
 		if (is_selected) {
 			if (clicked)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CE_CT_BR_CLICKED);
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CVE_CT_BR_CLICKED);
 			else if (hovered)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CE_CT_BR_HOVERED);
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CVE_CT_BR_HOVERED);
 			else
 				bg = g_theme[g_config.theme].bt_selected;
 
@@ -272,9 +272,9 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 		// 非選択時
 		else {
 			if (clicked)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CE_CT_BR_CLICKED);
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_CLICKED);
 			else if (hovered)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CE_CT_BR_HOVERED);
+				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_HOVERED);
 			else
 				bg = g_theme[g_config.theme].bt_unselected;
 
@@ -288,10 +288,10 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 	// 左クリックが終わったとき
 	case WM_LBUTTONUP:
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
-		clicked = FALSE;
+		clicked = false;
 		if (!is_selected) {
-			is_selected = TRUE;
-			::SendMessage(hwnd_parent, WM_COMMAND, id, CE_CM_SELECTED);
+			is_selected = true;
+			::SendMessage(hwnd_parent, WM_COMMAND, id, CVE_CM_SELECTED);
 		}
 		::InvalidateRect(hwnd, NULL, FALSE);
 		return 0;
@@ -306,7 +306,7 @@ LRESULT ce::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 //---------------------------------------------------------------------
 //		選択状態を変更(スイッチ)
 //---------------------------------------------------------------------
-void ce::Button_Switch::set_status(BOOL bl)
+void cve::Button_Switch::set_status(BOOL bl)
 {
 	is_selected = bl;
 	::InvalidateRect(hwnd, NULL, FALSE);
@@ -317,7 +317,7 @@ void ce::Button_Switch::set_status(BOOL bl)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(Value)
 //---------------------------------------------------------------------
-LRESULT ce::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
@@ -331,9 +331,9 @@ LRESULT ce::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 		LPTSTR value_4d = const_cast<LPTSTR>(str_value_4d.c_str());
 
 		if (clicked)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
 
@@ -353,7 +353,7 @@ LRESULT ce::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(ID)
 //---------------------------------------------------------------------
-LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
@@ -368,9 +368,9 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		::_itoa_s(g_config.current_id, id_text, 5, 10);
 
 		if (clicked)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_CLICKED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CE_CT_BR_HOVERED);
+			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
 
@@ -387,37 +387,37 @@ LRESULT ce::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
 
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
-			coef_move = CE_COEF_MOVE_FAST;
+			coef_move = CVE_COEF_MOVE_FAST;
 		else
-			coef_move = CE_COEF_MOVE_DEFAULT;
+			coef_move = CVE_COEF_MOVE_DEFAULT;
 
-		clicked = TRUE;
+		clicked = true;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::SetCapture(hwnd);
 		return 0;
 
 	// カーソルが動いたとき
 	case WM_MOUSEMOVE:
-		if (clicked && g_config.mode == ce::Mode_ID) {
-			is_scrolling = TRUE;
+		if (clicked && g_config.mode == Mode_ID) {
+			is_scrolling = true;
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
-			g_config.current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CE_CURVE_MAX - 1);
+			g_config.current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CVE_CURVE_MAX - 1);
 			g_curve_id_previous = g_curve_id[g_config.current_id];
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 		}
 		else ::SetCursor(LoadCursor(NULL, IDC_HAND));
 
-		hovered = TRUE;
+		hovered = true;
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::TrackMouseEvent(&tme);
 		return 0;
 
 	case WM_LBUTTONUP:
-		if (!is_scrolling && clicked && g_config.mode == ce::Mode_ID) {
+		if (!is_scrolling && clicked && g_config.mode == Mode_ID) {
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hwnd, dialogproc_id);
 		}
-		is_scrolling = FALSE;
-		clicked = FALSE;
+		is_scrolling = false;
+		clicked = false;
 		::ReleaseCapture();
 		::InvalidateRect(hwnd, NULL, FALSE);
 		return 0;

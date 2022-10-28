@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "ce_structs.hpp"
+#include "cve_structs.hpp"
 
 
 
-namespace ce {
+namespace cve {
 	//---------------------------------------------------------------------
 	//		配列
 	//---------------------------------------------------------------------
@@ -38,17 +38,17 @@ namespace ce {
 		void				set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth);
 		void				draw_bezier(
 								ID2D1SolidColorBrush* brush,
-								const ce::Float_Point& stpt,
-								const ce::Float_Point& ctpt1,
-								const ce::Float_Point& ctpt2,
-								const ce::Float_Point& edpt,
+								const Float_Point& stpt,
+								const Float_Point& ctpt1,
+								const Float_Point& ctpt2,
+								const Float_Point& edpt,
 								float thickness
 							);
-		void				draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, const ce::Float_Point& ed, int drawing_mode);
+		void				draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st, const Float_Point& ed, int drawing_mode);
 
 	public:
 		// サイズ固定
-		ce::Static_Array<Curve_Points, CE_POINT_MAX> ctpts;
+		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
 		Mode mode = Mode_Value;
 
 		Curve() { initialize(); }
@@ -115,6 +115,7 @@ namespace ce {
 	class Window {
 	protected:
 		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	public:
 		HWND hwnd;
@@ -125,7 +126,6 @@ namespace ce {
 		BOOL				close() const;
 		BOOL				show() const;
 		BOOL				hide() const;
-		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -134,21 +134,19 @@ namespace ce {
 	//		プリセット
 	//---------------------------------------------------------------------
 	class Preset : public Window {
+	private:
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
 	public:
-		HWND				hwnd;
-		LPTSTR				name;
+		char				name[CVE_PRESET_NAME_MAX];
+		int					id;
 		Curve				curve;
 		time_t				unix_time;
-		const Mode			mode;
 
-		Preset(const Curve* cv, Mode md) : curve(*cv), mode(md)
-		{
-			::time(&unix_time);
-		}
+		Preset(const Curve* cv);
 
 		BOOL				create(HWND hwnd_parent, LPTSTR nm);
 		void				move(int panel_width, int index);
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -166,7 +164,7 @@ namespace ce {
 		HWND				hwnd_parent;
 		HWND				hwnd_tooltip;
 		TOOLINFO			tool_info;
-		BOOL				hovered, clicked;
+		bool				hovered, clicked;
 		TRACKMOUSEEVENT		tme;
 		HICON				icon_dark;
 		HICON				icon_light;
@@ -177,6 +175,7 @@ namespace ce {
 
 		void				draw(COLORREF bg, RECT& rect_wnd, LPTSTR content);
 		void				set_font(const RECT& rect_wnd, LPTSTR font_name);
+		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	public:
 		int					id;
@@ -193,7 +192,6 @@ namespace ce {
 								const RECT& rect,
 								int flag
 							);
-		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -203,11 +201,12 @@ namespace ce {
 	//---------------------------------------------------------------------
 	class Button_Switch : public Button {
 	private:
-		BOOL				is_selected;
+		bool				is_selected;
+
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	public:
 		void				set_status(BOOL bl);
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -216,7 +215,7 @@ namespace ce {
 	//		ボタン(Value)
 	//---------------------------------------------------------------------
 	class Button_Value : public Button {
-	public:
+	private:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
@@ -229,10 +228,9 @@ namespace ce {
 	private:
 		int					id_buffer;
 		POINT				pt_lock;
-		BOOL				is_scrolling = FALSE;
+		bool				is_scrolling = false;
 		int					coef_move;
 
-	public:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
@@ -291,15 +289,15 @@ namespace ce {
 
 		void fit(const RECT& rect)
 		{
-			origin.x = CE_GR_PADDING;
-			scale.x = ((double)rect.right - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+			origin.x = CVE_GRAPH_PADDING;
+			scale.x = ((double)rect.right - (int)(2 * CVE_GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
 
-			if (rect.right > rect.bottom && rect.bottom > CE_GR_PADDING * 2 + CE_GR_RESOLUTION * CE_GR_SCALE_MIN) {
-				origin.y = (float)(rect.bottom - CE_GR_PADDING);
-				scale.y = ((double)rect.bottom - (int)(2 * CE_GR_PADDING)) / (double)CE_GR_RESOLUTION;
+			if (rect.right > rect.bottom && rect.bottom > CVE_GRAPH_PADDING * 2 + CVE_GRAPH_RESOLUTION * CVE_GRAPH_SCALE_MIN) {
+				origin.y = (float)(rect.bottom - CVE_GRAPH_PADDING);
+				scale.y = ((double)rect.bottom - (int)(2 * CVE_GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
 			}
 			else {
-				origin.y = (rect.bottom + rect.right) * 0.5f - CE_GR_PADDING;
+				origin.y = (rect.bottom + rect.right) * 0.5f - CVE_GRAPH_PADDING;
 				scale.y = scale.x;
 			}
 		}

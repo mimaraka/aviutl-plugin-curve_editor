@@ -15,66 +15,66 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ce_main.cpp">
+    <ClCompile Include="cve_main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_wndproc.cpp">
+    <ClCompile Include="cve_wndproc.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_dlgproc.cpp">
+    <ClCompile Include="cve_dialogproc.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_func.cpp">
+    <ClCompile Include="cve_func.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_bitmap_buffer.cpp">
+    <ClCompile Include="cve_bitmap_buffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_control.cpp">
+    <ClCompile Include="cve_control.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_preset.cpp">
+    <ClCompile Include="cve_preset.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_func_filter.cpp">
+    <ClCompile Include="cve_func_filter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_lua.cpp">
+    <ClCompile Include="cve_lua.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_window.cpp">
+    <ClCompile Include="cve_window.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_hook.cpp">
+    <ClCompile Include="cve_hook.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_rectangle.cpp">
+    <ClCompile Include="cve_rectangle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_obj_dialog_buttons.cpp">
+    <ClCompile Include="cve_obj_dialog_buttons.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="ce_curve.cpp">
+    <ClCompile Include="cve_curve.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ce_header.hpp">
+    <ClInclude Include="cve_header.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ce_macro.hpp">
+    <ClInclude Include="cve_macro.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ce_framework.hpp">
+    <ClInclude Include="cve_framework.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ce_classes.hpp">
+    <ClInclude Include="cve_classes.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="ce_structs.hpp">
+    <ClInclude Include="cve_structs.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

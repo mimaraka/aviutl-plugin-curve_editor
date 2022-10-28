@@ -4,19 +4,20 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
-#define CE_GR_POINT_TH				0.2f
-#define CE_GR_POINT_CONTRAST		3
-#define CE_GR_POINT_DASH			42
-#define CE_GR_POINT_DASH_BLANK		24
+#define CVE_GR_POINT_LINE_THICKNESS		0.2f
+#define CVE_GRAPH_POINT_CONTRAST		3
+#define CVE_GRAPH_POINT_DASH			42
+#define CVE_GRAPH_POINT_DASH_BLANK		24
+#define CVE_MATH_PI						3.14159265
 
 
 
 //---------------------------------------------------------------------
 //		初期化1
 //---------------------------------------------------------------------
-void ce::Curve::initialize()
+void cve::Curve::initialize()
 {
 	// 追加する制御点
 	Curve_Points pt_add[2];
@@ -24,8 +25,8 @@ void ce::Curve::initialize()
 	pt_add[0].type = Curve_Points::Default_Left;
 	pt_add[0].pt_center = { 0, 0 };
 	pt_add[0].pt_right = {
-		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1),
-		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)
+		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1),
+		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1)
 	};
 	pt_add[0].pt_left = { 0, 0 };
 
@@ -35,18 +36,18 @@ void ce::Curve::initialize()
 	pt_add[1].type = Curve_Points::Default_Right;
 
 	pt_add[1].pt_center = {
-		CE_GR_RESOLUTION,
-		CE_GR_RESOLUTION
+		CVE_GRAPH_RESOLUTION,
+		CVE_GRAPH_RESOLUTION
 	};
 
 	pt_add[1].pt_left = {
-		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2),
-		(int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)
+		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2),
+		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2)
 	};
 
 	pt_add[1].pt_right = {
-		CE_GR_RESOLUTION,
-		CE_GR_RESOLUTION
+		CVE_GRAPH_RESOLUTION,
+		CVE_GRAPH_RESOLUTION
 	};
 
 	ctpts.PushBack(pt_add[1]);
@@ -57,7 +58,7 @@ void ce::Curve::initialize()
 //---------------------------------------------------------------------
 //		初期化2
 //---------------------------------------------------------------------
-void ce::Curve::set_mode(Mode md)
+void cve::Curve::set_mode(Mode md)
 {
 	mode = md;
 }
@@ -67,7 +68,7 @@ void ce::Curve::set_mode(Mode md)
 //---------------------------------------------------------------------
 //		ポイントを移動
 //---------------------------------------------------------------------
-void ce::Curve::move_point(int index, const POINT& pt_graph, bool init)
+void cve::Curve::move_point(int index, const POINT& pt_graph, bool init)
 {
 	static POINT		handle_prev_right,
 						handle_next_left,
@@ -81,7 +82,7 @@ void ce::Curve::move_point(int index, const POINT& pt_graph, bool init)
 
 
 	// 拡張制御点でない場合弾く
-	if (ctpts[index].type != ce::Curve_Points::Extended)
+	if (ctpts[index].type != Curve_Points::Extended)
 		return;
 						
 
@@ -102,25 +103,25 @@ void ce::Curve::move_point(int index, const POINT& pt_graph, bool init)
 
 		// 左隣のポイントの右ハンドルの角度を取得
 		tmp.index = index - 1;
-		tmp.position = ce::Point_Address::Right;
+		tmp.position = Point_Address::Right;
 
 		agl_prev = get_handle_angle(tmp);
 
 		// 右隣のポイントの左ハンドルの角度を取得
 		tmp.index = index + 1;
-		tmp.position = ce::Point_Address::Left;
+		tmp.position = Point_Address::Left;
 
 		agl_next = get_handle_angle(tmp);
 
 		// 左のハンドルの角度を取得
 		tmp.index = index;
-		tmp.position = ce::Point_Address::Left;
+		tmp.position = Point_Address::Left;
 
 		agl_left = get_handle_angle(tmp);
 
 		// 右のハンドルの角度を取得
 		tmp.index = index;
-		tmp.position = ce::Point_Address::Right;
+		tmp.position = Point_Address::Right;
 
 		agl_right = get_handle_angle(tmp);
 	}
@@ -147,12 +148,12 @@ void ce::Curve::move_point(int index, const POINT& pt_graph, bool init)
 	// 左右両端のハンドル補正
 	//左   O-----o--
 	tmp.index = index;
-	tmp.position = ce::Point_Address::Left;
+	tmp.position = Point_Address::Left;
 	correct_handle(tmp, agl_left);
 
 	// 右       --o-----O
 	tmp.index = index;
-	tmp.position = ce::Point_Address::Right;
+	tmp.position = Point_Address::Right;
 	correct_handle(tmp, agl_right);
 
 	ctpts[index - 1].pt_right = handle_prev_right;
@@ -161,14 +162,14 @@ void ce::Curve::move_point(int index, const POINT& pt_graph, bool init)
 	// 右       --o-----O
 	// (前の制御点群)
 	tmp.index = index - 1;
-	tmp.position = ce::Point_Address::Right;
+	tmp.position = Point_Address::Right;
 
 	correct_handle(tmp, agl_prev);
 
 	// 左   O-----o--
 	// (次の制御点群)
 	tmp.index = index + 1;
-	tmp.position = ce::Point_Address::Left;
+	tmp.position = Point_Address::Left;
 
 	correct_handle(tmp, agl_next);
 }
@@ -178,7 +179,7 @@ void ce::Curve::move_point(int index, const POINT& pt_graph, bool init)
 //---------------------------------------------------------------------
 //		ハンドルを移動
 //---------------------------------------------------------------------
-void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init)
+void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init)
 {
 	static bool shift_key, alt_key, ctrl_key, ctrl_shift_key;
 	static POINT pt_lock;
@@ -201,25 +202,25 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 
 	// 記録
 	if (init) {
-		if (pt_address.position == ce::Point_Address::Left)
+		if (pt_address.position == Point_Address::Left)
 			length = DISTANCE(
 				ctpts[pt_address.index].pt_center,
 				ctpts[pt_address.index].pt_right
 			);
-		else if (pt_address.position == ce::Point_Address::Right)
+		else if (pt_address.position == Point_Address::Right)
 			length = DISTANCE(
 				ctpts[pt_address.index].pt_center,
 				ctpts[pt_address.index].pt_left
 			);
 	}
 
-	if (pt_address.position == ce::Point_Address::Left) {
+	if (pt_address.position == Point_Address::Left) {
 		left_side = ctpts[pt_address.index - 1].pt_center.x;
 		right_side = ctpts[pt_address.index].pt_center.x;
 		top = ctpts[pt_address.index].pt_center.y;
 		bottom = ctpts[pt_address.index - 1].pt_center.y;
 	}
-	else if (pt_address.position == ce::Point_Address::Right) {
+	else if (pt_address.position == Point_Address::Right) {
 		left_side = ctpts[pt_address.index].pt_center.x;
 		right_side = ctpts[pt_address.index + 1].pt_center.x;
 		top = ctpts[pt_address.index + 1].pt_center.y;
@@ -244,14 +245,14 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 			right_side
 		);
 
-		if (pt_address.position == ce::Point_Address::Left) {
+		if (pt_address.position == Point_Address::Left) {
 			if (pt_lock.x <= left_side)
 				pt_result.y = pt_graph.y;
 			else
 				pt_result.y = top - (int)((right_side - pt_result.x) *
 					(top - pt_lock.y) / (double)(right_side - pt_lock.x));
 		}
-		else if (pt_address.position == ce::Point_Address::Right) {
+		else if (pt_address.position == Point_Address::Right) {
 			if (pt_lock.x >= right_side)
 				pt_result.y = pt_graph.y;
 			else
@@ -272,33 +273,33 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 		int result_y;
 		const double handle_len = DISTANCE(pt_lock, ctpts[pt_address.index].pt_center);
 
-		if (pt_address.position == ce::Point_Address::Left) {
+		if (pt_address.position == Point_Address::Left) {
 			angle = (float)std::atan2(top - pt_graph.y, right_side - pt_graph.x);
 
 			pt_result.x = right_side - (int)(handle_len * std::cos(angle));
 
 			result_y = top - (int)(handle_len * std::sin(angle));
 
-			if (angle > MATH_PI * 0.5)
+			if (angle > CVE_MATH_PI * 0.5)
 				pt_result.y = top - (int)(handle_len);
 
-			else if (angle < -MATH_PI * 0.5)
+			else if (angle < -CVE_MATH_PI * 0.5)
 				pt_result.y = top + (int)(handle_len);
 
 			else
 				pt_result.y = result_y;
 		}
-		else if (pt_address.position == ce::Point_Address::Right) {
+		else if (pt_address.position == Point_Address::Right) {
 			angle = (float)std::atan2(pt_graph.y - bottom, pt_graph.x - left_side);
 
 			pt_result.x = left_side + (int)(handle_len * std::cos(angle));
 
 			result_y = bottom + (int)(handle_len * std::sin(angle));
 
-			if (angle > MATH_PI * 0.5)
+			if (angle > CVE_MATH_PI * 0.5)
 				pt_result.y = bottom + (int)(handle_len);
 
-			else if (angle < -MATH_PI * 0.5)
+			else if (angle < -CVE_MATH_PI * 0.5)
 				pt_result.y = bottom - (int)(handle_len);
 
 			else
@@ -341,7 +342,7 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 		POINT pt_opposite;
 
 		// 左   O-----o--
-		if (pt_address.position == ce::Point_Address::Left) {
+		if (pt_address.position == Point_Address::Left) {
 			pt_opposite = {
 				ctpts[pt_address.index - 1].pt_center.x + ctpts[pt_address.index].pt_center.x - pt_result.x,
 				ctpts[pt_address.index - 1].pt_center.y + ctpts[pt_address.index].pt_center.y - pt_result.y,
@@ -359,10 +360,10 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 			};
 
 			tmp.index = pt_address.index - 1;
-			tmp.position = ce::Point_Address::Right;
+			tmp.position = Point_Address::Right;
 		}
 		// 右       --o-----O
-		else if (pt_address.position == ce::Point_Address::Right) {
+		else if (pt_address.position == Point_Address::Right) {
 			pt_opposite = {
 				ctpts[pt_address.index + 1].pt_center.x - (pt_result.x - ctpts[pt_address.index].pt_center.x),
 				ctpts[pt_address.index + 1].pt_center.y - (pt_result.y - ctpts[pt_address.index].pt_center.y),
@@ -380,7 +381,7 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 			};
 
 			tmp.index = pt_address.index + 1;
-			tmp.position = ce::Point_Address::Left;
+			tmp.position = Point_Address::Left;
 		}
 
 		// 向かい側のハンドルの位置を設定
@@ -395,7 +396,7 @@ void ce::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gra
 //---------------------------------------------------------------------
 //		ハンドルを実際に動かしているところ
 //---------------------------------------------------------------------
-void ce::Curve::set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle)
+void cve::Curve::set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle)
 {
 	Point_Address		tmp;
 	double				agl_tmp = use_angle ? angle : get_handle_angle(pt_address);
@@ -407,8 +408,8 @@ void ce::Curve::set_handle_position(const Point_Address& pt_address, const POINT
 
 	switch (pt_address.position) {
 		//左   O-----o--
-	case ce::Point_Address::Left:
-		if (ctpts[pt_address.index].type == ce::Curve_Points::Default_Left)
+	case Point_Address::Left:
+		if (ctpts[pt_address.index].type == Curve_Points::Default_Left)
 			return;
 
 		// ハンドルを動かす
@@ -422,15 +423,15 @@ void ce::Curve::set_handle_position(const Point_Address& pt_address, const POINT
 		//整列(角度)
 		if (g_config.align_handle && ctpts[pt_address.index].type == Curve_Points::Extended) {
 			tmp.index = pt_address.index;
-			tmp.position = ce::Point_Address::Right;
+			tmp.position = Point_Address::Right;
 
-			set_handle_angle(tmp, agl_tmp + MATH_PI, TRUE, length);
+			set_handle_angle(tmp, agl_tmp + CVE_MATH_PI, TRUE, length);
 		}
 		break;
 
 		//右       --o-----O
-	case ce::Point_Address::Right:
-		if (ctpts[pt_address.index].type == ce::Curve_Points::Default_Right)
+	case Point_Address::Right:
+		if (ctpts[pt_address.index].type == Curve_Points::Default_Right)
 			return;
 
 		// ハンドルを動かす
@@ -444,9 +445,9 @@ void ce::Curve::set_handle_position(const Point_Address& pt_address, const POINT
 		//整列(角度)
 		if (g_config.align_handle && ctpts[pt_address.index].type == Curve_Points::Extended) {
 			tmp.index = pt_address.index;
-			tmp.position = ce::Point_Address::Left;
+			tmp.position = Point_Address::Left;
 
-			set_handle_angle(tmp, agl_tmp + MATH_PI, TRUE, length);
+			set_handle_angle(tmp, agl_tmp + CVE_MATH_PI, TRUE, length);
 		}
 		break;
 	}
@@ -457,32 +458,32 @@ void ce::Curve::set_handle_position(const Point_Address& pt_address, const POINT
 //---------------------------------------------------------------------
 //		値を生成(1次元)
 //---------------------------------------------------------------------
-int ce::Curve::create_value_1d()
+int cve::Curve::create_value_1d()
 {
 	int result;
 	Float_Point ptf[2];
 	POINT pt[2];
 
 	ptf[0].x = MINMAX_LIMIT(
-		ctpts[0].pt_right.x / (float)CE_GR_RESOLUTION,
+		ctpts[0].pt_right.x / (float)CVE_GRAPH_RESOLUTION,
 		0, 1
 	);
 
 	ptf[0].y = MINMAX_LIMIT(
-		ctpts[0].pt_right.y / (float)CE_GR_RESOLUTION,
-		CE_CURVE_VALUE_MIN_Y,
-		CE_CURVE_VALUE_MAX_Y
+		ctpts[0].pt_right.y / (float)CVE_GRAPH_RESOLUTION,
+		CVE_CURVE_VALUE_MIN_Y,
+		CVE_CURVE_VALUE_MAX_Y
 	);
 
 	ptf[1].x = MINMAX_LIMIT(
-		ctpts[1].pt_left.x / (float)CE_GR_RESOLUTION,
+		ctpts[1].pt_left.x / (float)CVE_GRAPH_RESOLUTION,
 		0, 1
 	);
 
 	ptf[1].y = MINMAX_LIMIT(
-		ctpts[1].pt_left.y / (float)CE_GR_RESOLUTION,
-		CE_CURVE_VALUE_MIN_Y,
-		CE_CURVE_VALUE_MAX_Y
+		ctpts[1].pt_left.y / (float)CVE_GRAPH_RESOLUTION,
+		CVE_CURVE_VALUE_MIN_Y,
+		CVE_CURVE_VALUE_MAX_Y
 	);
 
 	for (int i = 0; i < 2; i++) {
@@ -499,19 +500,19 @@ int ce::Curve::create_value_1d()
 //---------------------------------------------------------------------
 //		値を生成(4次元)
 //---------------------------------------------------------------------
-std::string ce::Curve::create_value_4d()
+std::string cve::Curve::create_value_4d()
 {
 	Float_Point pt;
 	std::string strx, stry, result;
 
 	pt.x = MINMAX_LIMIT(
-		(float)(std::round(ctpts[0].pt_right.x * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
+		(float)(std::round(ctpts[0].pt_right.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
 		0, 1
 	);
 	pt.y = MINMAX_LIMIT(
-		(float)(std::round(ctpts[0].pt_right.y * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
-		CE_CURVE_VALUE_MIN_Y,
-		CE_CURVE_VALUE_MAX_Y
+		(float)(std::round(ctpts[0].pt_right.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
+		CVE_CURVE_VALUE_MIN_Y,
+		CVE_CURVE_VALUE_MAX_Y
 	);
 
 	strx = std::to_string(pt.x);
@@ -525,13 +526,13 @@ std::string ce::Curve::create_value_4d()
 	result += strx + ", " + stry + ", ";
 
 	pt.x = MINMAX_LIMIT(
-		(float)(std::round(ctpts[1].pt_left.x * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
+		(float)(std::round(ctpts[1].pt_left.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
 		0, 1
 	);
 	pt.y = MINMAX_LIMIT(
-		(float)(std::round(ctpts[1].pt_left.y * 100 / (double)CE_GR_RESOLUTION) * 0.01f),
-		CE_CURVE_VALUE_MIN_Y,
-		CE_CURVE_VALUE_MAX_Y
+		(float)(std::round(ctpts[1].pt_left.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
+		CVE_CURVE_VALUE_MIN_Y,
+		CVE_CURVE_VALUE_MAX_Y
 	);
 
 	strx = std::to_string(pt.x);
@@ -552,7 +553,7 @@ std::string ce::Curve::create_value_4d()
 //---------------------------------------------------------------------
 //		1次元値を読み取る
 //---------------------------------------------------------------------
-void ce::Curve::read_value_1d(int value)
+void cve::Curve::read_value_1d(int value)
 {
 	int64_t int64;
 	int64 = (int64_t)value + (int64_t)2147483647;
@@ -563,12 +564,12 @@ void ce::Curve::read_value_1d(int value)
 	ctpts[1].pt_left.x = (LONG)((int64 - (int64_t)ctpts[1].pt_left.y * 6600047) / 65347);
 	ctpts[0].pt_right.y = (LONG)((int64 - ((int64_t)ctpts[1].pt_left.y * 6600047 + (int64_t)ctpts[1].pt_left.x * 65347)) / 101);
 	ctpts[0].pt_right.x = (LONG)((int64 - ((int64_t)ctpts[1].pt_left.y * 6600047 + (int64_t)ctpts[1].pt_left.x * 65347)) % 101);
-	ctpts[0].pt_right.x *= CE_GR_RESOLUTION / 100;
-	ctpts[0].pt_right.y *= CE_GR_RESOLUTION / 100;
-	ctpts[1].pt_left.x *= CE_GR_RESOLUTION / 100;
-	ctpts[1].pt_left.y *= CE_GR_RESOLUTION / 100;
-	ctpts[0].pt_right.y -= (LONG)(2.73 * CE_GR_RESOLUTION);
-	ctpts[1].pt_left.y -= (LONG)(2.73 * CE_GR_RESOLUTION);
+	ctpts[0].pt_right.x *= CVE_GRAPH_RESOLUTION / 100;
+	ctpts[0].pt_right.y *= CVE_GRAPH_RESOLUTION / 100;
+	ctpts[1].pt_left.x *= CVE_GRAPH_RESOLUTION / 100;
+	ctpts[1].pt_left.y *= CVE_GRAPH_RESOLUTION / 100;
+	ctpts[0].pt_right.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
+	ctpts[1].pt_left.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
 }
 
 
@@ -576,7 +577,7 @@ void ce::Curve::read_value_1d(int value)
 //---------------------------------------------------------------------
 //		easeの値を読み取る
 //---------------------------------------------------------------------
-void ce::Curve::read_ease(int value)
+void cve::Curve::read_ease(int value)
 {
 
 }
@@ -586,7 +587,7 @@ void ce::Curve::read_ease(int value)
 //---------------------------------------------------------------------
 //		ポイント・ハンドルを追加
 //---------------------------------------------------------------------
-void ce::Curve::add_point(const POINT& pt_graph)
+void cve::Curve::add_point(const POINT& pt_graph)
 {
 	int index = 0;
 
@@ -595,8 +596,8 @@ void ce::Curve::add_point(const POINT& pt_graph)
 	// ・追加するポイントのX座標が範囲外
 	// のいずれかの場合
 	if (mode == Mode_Value ||
-		ctpts.size >= CE_POINT_MAX ||
-		!ISINRANGE(pt_graph.x, 0, CE_GR_RESOLUTION))
+		ctpts.size >= CVE_POINT_MAX ||
+		!ISINRANGE(pt_graph.x, 0, CVE_GRAPH_RESOLUTION))
 		return;
 
 	// 追加するポイントが左から何番目になるか
@@ -612,16 +613,16 @@ void ce::Curve::add_point(const POINT& pt_graph)
 	}
 
 	Curve_Points pt_add;
-	pt_add.type = ce::Curve_Points::Extended;
+	pt_add.type = Curve_Points::Extended;
 	pt_add.pt_center = pt_graph;
 
 	//ビューの縮尺に合わせてハンドルのデフォルトの長さを変更
 	pt_add.pt_left = {
-		pt_graph.x - (int)(CE_HANDLE_DEF_L / g_view_info.scale.x),
+		pt_graph.x - (int)(CVE_HANDLE_LENGTH_DEFAULT / g_view_info.scale.x),
 		pt_graph.y
 	};
 	pt_add.pt_right = {
-		pt_graph.x + (int)(CE_HANDLE_DEF_L / g_view_info.scale.x),
+		pt_graph.x + (int)(CVE_HANDLE_LENGTH_DEFAULT / g_view_info.scale.x),
 		pt_graph.y
 	};
 
@@ -638,12 +639,12 @@ void ce::Curve::add_point(const POINT& pt_graph)
 	Point_Address tmp;
 	//両隣の左右の点が中央の点より右/左に出ていたら修正
 	tmp.index = index - 1;
-	tmp.position = ce::Point_Address::Right;
+	tmp.position = Point_Address::Right;
 
 	correct_handle(tmp, get_handle_angle(tmp));
 
 	tmp.index = index + 1;
-	tmp.position = ce::Point_Address::Left;
+	tmp.position = Point_Address::Left;
 
 	correct_handle(tmp, get_handle_angle(tmp));
 
@@ -654,11 +655,11 @@ void ce::Curve::add_point(const POINT& pt_graph)
 //---------------------------------------------------------------------
 //		ポイントを削除
 //---------------------------------------------------------------------
-void ce::Curve::delete_point(const POINT& pt_client)
+void cve::Curve::delete_point(const POINT& pt_client)
 {
 	Point_Address pt_address;
 	pt_in_ctpt(pt_client, &pt_address);
-	if (pt_address.position == ce::Point_Address::Null)
+	if (pt_address.position == Point_Address::Null)
 		return;
 	for (int i = 1; i < (int)ctpts.size - 1; i++) {
 		if (pt_address.index == i) {
@@ -673,7 +674,7 @@ void ce::Curve::delete_point(const POINT& pt_client)
 //---------------------------------------------------------------------
 //		ポイントをクリア
 //---------------------------------------------------------------------
-void ce::Curve::clear()
+void cve::Curve::clear()
 {
 	ctpts.Clear();
 	initialize();
@@ -684,48 +685,48 @@ void ce::Curve::clear()
 //---------------------------------------------------------------------
 //		指定した座標がポイント・ハンドルの内部に存在しているか
 //---------------------------------------------------------------------
-void ce::Curve::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
+void cve::Curve::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
 {
 	RECT center, left, right;
 
 	for (int i = 0; i < (int)ctpts.size; i++) {
 		center = {
-			(LONG)to_client(ctpts[i].pt_center).x - CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_center).y - CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_center).x + CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_center).y + CE_POINT_RANGE
+			(LONG)to_client(ctpts[i].pt_center).x - CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_center).y - CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_center).x + CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_center).y + CVE_POINT_RANGE
 		};
 		left = {
-			(LONG)to_client(ctpts[i].pt_left).x - CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_left).y - CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_left).x + CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_left).y + CE_POINT_RANGE
+			(LONG)to_client(ctpts[i].pt_left).x - CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_left).y - CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_left).x + CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_left).y + CVE_POINT_RANGE
 		};
 		right = {
-			(LONG)to_client(ctpts[i].pt_right).x - CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_right).y - CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_right).x + CE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_right).y + CE_POINT_RANGE
+			(LONG)to_client(ctpts[i].pt_right).x - CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_right).y - CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_right).x + CVE_POINT_RANGE,
+			(LONG)to_client(ctpts[i].pt_right).y + CVE_POINT_RANGE
 		};
 
 		if (PtInRect(&left, pt_client) && ctpts[i].type != 0) {
 			pt_address->index = i;
-			pt_address->position = ce::Point_Address::Left;
+			pt_address->position = Point_Address::Left;
 			return;
 		}
 		else if (PtInRect(&right, pt_client) && ctpts[i].type != 1) {
 			pt_address->index = i;
-			pt_address->position = ce::Point_Address::Right;
+			pt_address->position = Point_Address::Right;
 			return;
 		}
 		else if (PtInRect(&center, pt_client) && ctpts[i].type > 1) {
 			pt_address->index = i;
-			pt_address->position = ce::Point_Address::Center;
+			pt_address->position = Point_Address::Center;
 			return;
 		}
 	}
 	pt_address->index = NULL;
-	pt_address->position = ce::Point_Address::Null;
+	pt_address->position = Point_Address::Null;
 }
 
 
@@ -733,20 +734,20 @@ void ce::Curve::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
 //---------------------------------------------------------------------
 //		ハンドルの角度を取得
 //---------------------------------------------------------------------
-double ce::Curve::get_handle_angle(const Point_Address& pt_address)
+double cve::Curve::get_handle_angle(const Point_Address& pt_address)
 {
 	double angle;
 	int dstx, dsty;
 
 	switch (pt_address.position) {
 		// 左
-	case ce::Point_Address::Left:
+	case Point_Address::Left:
 		dstx = ctpts[pt_address.index].pt_left.x - ctpts[pt_address.index].pt_center.x;
 		dsty = ctpts[pt_address.index].pt_left.y - ctpts[pt_address.index].pt_center.y;
 		break;
 
 		// 右
-	case ce::Point_Address::Right:
+	case Point_Address::Right:
 		dstx = ctpts[pt_address.index].pt_right.x - ctpts[pt_address.index].pt_center.x;
 		dsty = ctpts[pt_address.index].pt_right.y - ctpts[pt_address.index].pt_center.y;
 		break;
@@ -758,10 +759,10 @@ double ce::Curve::get_handle_angle(const Point_Address& pt_address)
 	// x, yがともに0のとき
 	if (dstx == 0 && dsty == 0) {
 		// 左
-		if (pt_address.position == ce::Point_Address::Left)
-			return MATH_PI;
+		if (pt_address.position == Point_Address::Left)
+			return CVE_MATH_PI;
 		// 右
-		else if (pt_address.position == ce::Point_Address::Right)
+		else if (pt_address.position == Point_Address::Right)
 			return 0;
 	}
 
@@ -774,12 +775,12 @@ double ce::Curve::get_handle_angle(const Point_Address& pt_address)
 //---------------------------------------------------------------------
 //		ハンドルの角度を設定
 //---------------------------------------------------------------------
-void ce::Curve::set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth)
+void cve::Curve::set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth)
 {
 	double length;
 
 	//左
-	if (pt_address.position == ce::Point_Address::Left &&
+	if (pt_address.position == Point_Address::Left &&
 		ctpts[pt_address.index].type != 0) {
 		length = use_length ? lgth : DISTANCE(
 			ctpts[pt_address.index].pt_center,
@@ -794,7 +795,7 @@ void ce::Curve::set_handle_angle(const Point_Address& pt_address, double angle, 
 		correct_handle(pt_address, angle);
 	}
 	//右
-	else if (pt_address.position == ce::Point_Address::Right &&
+	else if (pt_address.position == Point_Address::Right &&
 		ctpts[pt_address.index].type != 1) {
 		length = use_length ? lgth : DISTANCE(
 			ctpts[pt_address.index].pt_center,
@@ -819,10 +820,10 @@ void ce::Curve::set_handle_angle(const Point_Address& pt_address, double angle, 
 //		pt_address:	指定する制御点のアドレス
 //		angle:		設定する角度
 //---------------------------------------------------------------------
-void ce::Curve::correct_handle(const Point_Address& pt_address, double angle)
+void cve::Curve::correct_handle(const Point_Address& pt_address, double angle)
 {
 
-	if (pt_address.position == ce::Point_Address::Left) {
+	if (pt_address.position == Point_Address::Left) {
 		//左の制御点が前の制御点群の中央の点より左側にあったとき
 		if (ctpts[pt_address.index].pt_left.x < ctpts[pt_address.index - 1].pt_center.x) {
 			ctpts[pt_address.index].pt_left.x = ctpts[pt_address.index - 1].pt_center.x;
@@ -834,7 +835,7 @@ void ce::Curve::correct_handle(const Point_Address& pt_address, double angle)
 					(ctpts[pt_address.index].pt_left.x - ctpts[pt_address.index].pt_center.x));
 		}
 	}
-	else if (pt_address.position == ce::Point_Address::Right) {
+	else if (pt_address.position == Point_Address::Right) {
 		if (ctpts[pt_address.index].pt_right.x > ctpts[pt_address.index + 1].pt_center.x) {
 			ctpts[pt_address.index].pt_right.x = ctpts[pt_address.index + 1].pt_center.x;
 
@@ -851,41 +852,41 @@ void ce::Curve::correct_handle(const Point_Address& pt_address, double angle)
 //---------------------------------------------------------------------
 //		カーブを反転
 //---------------------------------------------------------------------
-void ce::Curve::reverse_curve()
+void cve::Curve::reverse_curve()
 {
-	Static_Array<Curve_Points, CE_POINT_MAX> ctpts_old;
+	Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_old;
 	for (int i = 0; i < ctpts.size / 2.0f; i++) {
 		ctpts_old.PushBack(ctpts[i]);
 
 		ctpts[i].pt_center = {
-			CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_center.x,
-			CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_center.y
+			CVE_GRAPH_RESOLUTION - ctpts[ctpts.size - i - 1].pt_center.x,
+			CVE_GRAPH_RESOLUTION - ctpts[ctpts.size - i - 1].pt_center.y
 		};
 
 		ctpts[i].pt_left = {
-			CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_right.x,
-			CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_right.y
+			CVE_GRAPH_RESOLUTION - ctpts[ctpts.size - i - 1].pt_right.x,
+			CVE_GRAPH_RESOLUTION - ctpts[ctpts.size - i - 1].pt_right.y
 		};
 
 		ctpts[i].pt_right = {
-			CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_left.x,
-			CE_GR_RESOLUTION - ctpts[ctpts.size - i - 1].pt_left.y
+			CVE_GRAPH_RESOLUTION - ctpts[ctpts.size - i - 1].pt_left.x,
+			CVE_GRAPH_RESOLUTION - ctpts[ctpts.size - i - 1].pt_left.y
 		};
 
 
 		ctpts[ctpts.size - i - 1].pt_center = {
-			CE_GR_RESOLUTION - ctpts_old[i].pt_center.x,
-			CE_GR_RESOLUTION - ctpts_old[i].pt_center.y
+			CVE_GRAPH_RESOLUTION - ctpts_old[i].pt_center.x,
+			CVE_GRAPH_RESOLUTION - ctpts_old[i].pt_center.y
 		};
 
 		ctpts[ctpts.size - i - 1].pt_left = {
-			CE_GR_RESOLUTION - ctpts_old[i].pt_right.x,
-			CE_GR_RESOLUTION - ctpts_old[i].pt_right.y
+			CVE_GRAPH_RESOLUTION - ctpts_old[i].pt_right.x,
+			CVE_GRAPH_RESOLUTION - ctpts_old[i].pt_right.y
 		};
 
 		ctpts[ctpts.size - i - 1].pt_right = {
-			CE_GR_RESOLUTION - ctpts_old[i].pt_left.x,
-			CE_GR_RESOLUTION - ctpts_old[i].pt_left.y
+			CVE_GRAPH_RESOLUTION - ctpts_old[i].pt_left.x,
+			CVE_GRAPH_RESOLUTION - ctpts_old[i].pt_left.y
 		};
 	}
 }
@@ -895,8 +896,8 @@ void ce::Curve::reverse_curve()
 //---------------------------------------------------------------------
 //		ベジェ曲線を描画
 //---------------------------------------------------------------------
-void ce::Curve::draw_bezier(ID2D1SolidColorBrush* brush,
-	const ce::Float_Point& stpt, const ce::Float_Point& ctpt1, const ce::Float_Point& ctpt2, const ce::Float_Point& edpt, float thickness)
+void cve::Curve::draw_bezier(ID2D1SolidColorBrush* brush,
+	const Float_Point& stpt, const Float_Point& ctpt1, const Float_Point& ctpt2, const Float_Point& edpt, float thickness)
 {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* bezier;
@@ -937,21 +938,21 @@ void ce::Curve::draw_bezier(ID2D1SolidColorBrush* brush,
 //---------------------------------------------------------------------
 //		ハンドルを描画
 //---------------------------------------------------------------------
-void ce::Curve::draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& st, const ce::Float_Point& ed, int drawing_mode)
+void cve::Curve::draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st, const Float_Point& ed, int drawing_mode)
 {
 	static ID2D1StrokeStyle* style = nullptr;
 
-	ce::Float_Point st_new = st;
-	ce::Float_Point ed_new = ed;
+	Float_Point st_new = st;
+	Float_Point ed_new = ed;
 
-	const float handle_thickness = (drawing_mode == CE_DRAW_CURVE_REGULAR) ? CE_HANDLE_TH : CE_HANDLE_TH_PRESET;
-	const float point_size = (drawing_mode == CE_DRAW_CURVE_REGULAR) ? CE_POINT_SIZE : CE_PONINT_SIZE_PRESET;
-	const float handle_size = (drawing_mode == CE_DRAW_CURVE_REGULAR) ? CE_HANDLE_SIZE : CE_HANDLE_SIZE_PRESET;
-	const float handle_circle_line = (drawing_mode == CE_DRAW_CURVE_REGULAR) ? CE_HANDLE_CIRCLE_LINE : CE_HANDLE_CIRCLE_LINE_PRESET;
+	const float handle_thickness = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_HANDLE_THICKNESS : CVE_HANDLE_THICKNESS_PRESET;
+	const float point_size = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_POINT_SIZE : CVE_PONINT_SIZE_PRESET;
+	const float handle_size = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_HANDLE_SIZE : CVE_HANDLE_SIZE_PRESET;
+	const float handle_circle_line = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_HANDLE_CIRCLE_LINE : CVE_HANDLE_CIRCLE_LINE_PRESET;
 
-	if (drawing_mode == CE_DRAW_CURVE_REGULAR) {
-		subtract_length(&st_new, ed, st, CE_SUBTRACT_LENGTH_2);
-		subtract_length(&ed_new, st, ed, CE_SUBTRACT_LENGTH);
+	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
+		subtract_length(&st_new, ed, st, CVE_SUBTRACT_LENGTH_2);
+		subtract_length(&ed_new, st, ed, CVE_SUBTRACT_LENGTH);
 	}
 
 	g_d2d1_factory->CreateStrokeStyle(
@@ -967,7 +968,7 @@ void ce::Curve::draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& 
 		&style
 	);
 
-	if (drawing_mode != CE_DRAW_CURVE_TRACE) {
+	if (drawing_mode != CVE_DRAW_CURVE_TRACE) {
 		g_render_target->DrawLine(
 			D2D1::Point2F(st_new.x, st_new.y),
 			D2D1::Point2F(ed_new.x, ed_new.y),
@@ -979,7 +980,7 @@ void ce::Curve::draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& 
 			D2D1::Ellipse(
 				D2D1::Point2F(ed.x, ed.y),
 				handle_size, handle_size),
-			brush, CE_HANDLE_CIRCLE_LINE
+			brush, CVE_HANDLE_CIRCLE_LINE
 		);
 
 		// ハンドルの根元
@@ -997,13 +998,13 @@ void ce::Curve::draw_handle(ID2D1SolidColorBrush* brush, const ce::Float_Point& 
 //---------------------------------------------------------------------
 //		カーブを描画
 //---------------------------------------------------------------------
-void ce::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int drawing_mode)
+void cve::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int drawing_mode)
 {
 	COLORREF handle_color;
 	COLORREF curve_color;
 
 	static ID2D1StrokeStyle* style_dash;
-	const float dashes[] = { CE_GR_POINT_DASH, CE_GR_POINT_DASH_BLANK };
+	const float dashes[] = { CVE_GRAPH_POINT_DASH, CVE_GRAPH_POINT_DASH_BLANK };
 
 	if (style_dash == nullptr) {
 		g_d2d1_factory->CreateStrokeStyle(
@@ -1039,13 +1040,13 @@ void ce::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, in
 	{
 		// 端点以外の制御点に引かれる点線
 		if (drawing_mode == 0) {
-			brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CE_GR_POINT_CONTRAST))));
+			brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
 			
 			if (i > 0) {
 				g_render_target->DrawLine(
 					D2D1::Point2F(to_client(ctpts[i].pt_center).x, 0),
 					D2D1::Point2F(to_client(ctpts[i].pt_center).x, (float)rect_wnd.bottom),
-					brush, CE_GR_POINT_TH, style_dash
+					brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
 				);
 			}
 		}
@@ -1057,7 +1058,7 @@ void ce::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, in
 			to_client(ctpts[i].pt_right),
 			to_client(ctpts[i + 1].pt_left),
 			to_client(ctpts[i + 1].pt_center),
-			CE_CURVE_TH
+			CVE_CURVE_THICKNESS
 		);
 
 		//ハンドルの描画
@@ -1082,9 +1083,9 @@ void ce::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, in
 //---------------------------------------------------------------------
 //		データが有効かどうか
 //---------------------------------------------------------------------
-bool ce::Curve::is_data_valid()
+bool cve::Curve::is_data_valid()
 {
-	return ISINRANGEEQ(ctpts.size, 2, CE_POINT_MAX);
+	return ISINRANGEEQ(ctpts.size, 2, CVE_POINT_MAX);
 }
 
 
@@ -1092,17 +1093,17 @@ bool ce::Curve::is_data_valid()
 //---------------------------------------------------------------------
 //		スクリプトに渡す値を生成
 //---------------------------------------------------------------------
-double ce::Curve::id_create_result(double ratio, double st, double ed)
+double cve::Curve::id_create_result(double ratio, double st, double ed)
 {
 	// 進捗が0~1の範囲外であった場合
 	if (!ISINRANGEEQ(ratio, 0, 1))
 		return 0;
 	// 進捗に相当する区間を調べる
 	for (int i = 0; i < (int)ctpts.size - 1; i++) {
-		if (ISINRANGEEQ(ratio, ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CE_GR_RESOLUTION)) {
-			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CE_GR_RESOLUTION;
+		if (ISINRANGEEQ(ratio, ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
+			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CVE_GRAPH_RESOLUTION;
 			// 区間ごとの進捗の相対値(0~1)
-			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CE_GR_RESOLUTION) / range;
+			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION) / range;
 			// 区間ごとの制御点1のX座標(相対値、0~1)
 			double x1 = (ctpts[i].pt_right.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
 			// 区間ごとの制御点1のY座標(相対値)
@@ -1113,8 +1114,8 @@ double ce::Curve::id_create_result(double ratio, double st, double ed)
 			double y2 = (ctpts[i + 1].pt_left.y - ctpts[i].pt_center.y) / (double)(ctpts[i + 1].pt_center.y - ctpts[i].pt_center.y);
 
 			// 区間ごとの始値、終値(相対値ではなく、実際の値)
-			double st2 = st + ctpts[i].pt_center.y / (double)CE_GR_RESOLUTION * (ed - st);
-			double ed2 = st + ctpts[i + 1].pt_center.y / (double)CE_GR_RESOLUTION * (ed - st);
+			double st2 = st + ctpts[i].pt_center.y / (double)CVE_GRAPH_RESOLUTION * (ed - st);
+			double ed2 = st + ctpts[i + 1].pt_center.y / (double)CVE_GRAPH_RESOLUTION * (ed - st);
 			// y1,y2を相対値から実際の値に修正
 			y1 = st2 + (ed2 - st2) * y1;
 			y2 = st2 + (ed2 - st2) * y2;

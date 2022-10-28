@@ -6,25 +6,25 @@
 
 #pragma once
 
-#include "ce_classes.hpp"
+#include "cve_classes.hpp"
 
 
 
 //----------------------------------------------------------------------------------
 //		extern宣言
 //----------------------------------------------------------------------------------
-extern ce::Curve							g_curve_value,
+extern cve::Curve							g_curve_value,
 											g_curve_value_previous,
-											g_curve_id[CE_CURVE_MAX],
+											g_curve_id[CVE_CURVE_MAX],
 											g_curve_id_previous;
-extern std::vector<ce::Preset>				g_presets;
-extern const ce::Theme						g_theme[2];
-extern ce::Config							g_config;
-extern ce::Window							g_window_main,
+extern std::vector<cve::Preset>				g_presets;
+extern const cve::Theme						g_theme[2];
+extern cve::Config							g_config;
+extern cve::Window							g_window_main,
 											g_window_header,
 											g_window_editor,
 											g_window_preset;
-extern ce::Graph_View_Info					g_view_info;
+extern cve::Graph_View_Info					g_view_info;
 extern FILTER*								g_fp;
 extern FILTER_DLL							g_filter;
 //Direct2D
@@ -66,7 +66,7 @@ BOOL				filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 //		その他の関数
 //----------------------------------------------------------------------------------
 
-namespace ce {
+namespace cve {
 	// Direct2D初期化
 	void						d2d_init();
 
@@ -77,7 +77,7 @@ namespace ce {
 	BOOL						copy_to_clipboard(HWND, LPCTSTR);
 
 	// 長さを減算
-	void						subtract_length(ce::Float_Point* pt, const ce::Float_Point& st, const ce::Float_Point& ed, float length);
+	void						subtract_length(cve::Float_Point* pt, const cve::Float_Point& st, const cve::Float_Point& ed, float length);
 
 	// 設定をメニューに反映
 	void						apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
@@ -123,7 +123,7 @@ BOOL CALLBACK		dialogproc_hooked(HWND, UINT, WPARAM, LPARAM);
 //----------------------------------------------------------------------------------
 
 //グラフ -> クライアント
-inline ce::Float_Point to_client(int gr_x, int gr_y)
+inline cve::Float_Point to_client(int gr_x, int gr_y)
 {
 	return {
 		g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
@@ -131,7 +131,7 @@ inline ce::Float_Point to_client(int gr_x, int gr_y)
 	};
 }
 
-inline ce::Float_Point to_client(const POINT& pt_graph)
+inline cve::Float_Point to_client(const POINT& pt_graph)
 {
 	return {
 		to_client(pt_graph.x, pt_graph.y).x,

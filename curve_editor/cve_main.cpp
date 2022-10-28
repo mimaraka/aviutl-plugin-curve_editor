@@ -4,28 +4,28 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 
 
 //---------------------------------------------------------------------
 //		グローバル変数
 //---------------------------------------------------------------------
-ce::Curve						g_curve_value;
-ce::Curve						g_curve_value_previous;
-ce::Curve						g_curve_id[CE_CURVE_MAX];
-ce::Curve						g_curve_id_previous;
-ce::Config						g_config;
-ce::Window						g_window_main,
+cve::Curve						g_curve_value;
+cve::Curve						g_curve_value_previous;
+cve::Curve						g_curve_id[CVE_CURVE_MAX];
+cve::Curve						g_curve_id_previous;
+cve::Config						g_config;
+cve::Window						g_window_main,
 								g_window_header,
 								g_window_editor,
 								g_window_preset;
-ce::Graph_View_Info				g_view_info;
+cve::Graph_View_Info				g_view_info;
 FILTER*							g_fp;
-std::vector<ce::Preset>			g_presets;
+std::vector<cve::Preset>			g_presets;
 
 //ダークテーマ
-const ce::Theme g_theme_dark = {
+const cve::Theme g_theme_dark = {
 	RGB(27, 27, 27),
 	RGB(27, 27, 27),
 	RGB(240, 240, 240),
@@ -38,7 +38,7 @@ const ce::Theme g_theme_dark = {
 	RGB(35, 35, 35),
 };
 //ライトテーマ
-const ce::Theme g_theme_light = {
+const cve::Theme g_theme_light = {
 	RGB(244, 244, 244),
 	RGB(230, 230, 230),
 	RGB(70, 70, 70),
@@ -51,7 +51,7 @@ const ce::Theme g_theme_light = {
 	RGB(70, 70, 70)
 };
 
-const ce::Theme g_theme[2] = {
+const cve::Theme g_theme[2] = {
 	g_theme_dark,
 	g_theme_light,
 };
@@ -71,9 +71,9 @@ FILTER_DLL g_filter = {
 	FILTER_FLAG_WINDOW_THICKFRAME |
 	FILTER_FLAG_DISP_FILTER |
 	FILTER_FLAG_EX_INFORMATION,
-	CE_DEF_W,
-	CE_DEF_H,
-	CE_PLUGIN_NAME,
+	CVE_DEF_W,
+	CVE_DEF_H,
+	CVE_PLUGIN_NAME,
 	NULL,NULL,NULL,
 	NULL,NULL,
 	NULL,NULL,NULL,
@@ -85,7 +85,7 @@ FILTER_DLL g_filter = {
 	NULL,NULL,
 	NULL,
 	NULL,
-	CE_PLUGIN_INFO,
+	CVE_PLUGIN_INFO,
 	NULL,NULL,
 	NULL,NULL,NULL,NULL,
 	NULL,

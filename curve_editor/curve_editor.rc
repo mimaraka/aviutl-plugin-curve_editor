@@ -243,6 +243,9 @@ BEGIN
         MENUITEM "すべてのカーブを初期化",                 ID_MENU_DELETE_ALL
         MENUITEM "カーブのプロパティ",                   ID_MENU_PROPERTY
         MENUITEM SEPARATOR
+        MENUITEM "前のIDに移動\t<",                  ID_MENU_ID_BACK
+        MENUITEM "次のIDに移動\t>",                  ID_MENU_ID_NEXT
+        MENUITEM SEPARATOR
         MENUITEM "ハンドルを連動させる\tA",               ID_MENU_ALIGNHANDLE
         MENUITEM "ハンドルを表示 \tS",                 ID_MENU_SHOWHANDLE
         MENUITEM "グラフをフィット\tHome",              ID_MENU_FIT

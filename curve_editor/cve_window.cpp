@@ -4,14 +4,14 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 
 
 //---------------------------------------------------------------------
 //		ウィンドウ作成
 //---------------------------------------------------------------------
-BOOL ce::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect)
+BOOL cve::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect)
 {
 	WNDCLASSEX tmp;
 	tmp.cbSize = sizeof(tmp);
@@ -42,9 +42,10 @@ BOOL ce::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LO
 			g_fp->dll_hinst,
 			NULL
 		);
-		return TRUE;
+		if (hwnd != nullptr)
+			return TRUE;
 	}
-	return 0;
+	return FALSE;
 }
 
 
@@ -52,7 +53,7 @@ BOOL ce::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LO
 //---------------------------------------------------------------------
 //		ウィンドウ移動
 //---------------------------------------------------------------------
-void ce::Window::move(const RECT& rect) const
+void cve::Window::move(const RECT& rect) const
 {
 	::MoveWindow(
 		hwnd,
@@ -69,9 +70,9 @@ void ce::Window::move(const RECT& rect) const
 //---------------------------------------------------------------------
 //		再描画
 //---------------------------------------------------------------------
-void ce::Window::redraw() const
+void cve::Window::redraw() const
 {
-	::SendMessage(hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+	::SendMessage(hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 }
 
 
@@ -79,7 +80,7 @@ void ce::Window::redraw() const
 //---------------------------------------------------------------------
 //		表示
 //---------------------------------------------------------------------
-BOOL ce::Window::show() const
+BOOL cve::Window::show() const
 {
 	return ::ShowWindow(hwnd, SW_SHOW);
 }
@@ -89,7 +90,7 @@ BOOL ce::Window::show() const
 //---------------------------------------------------------------------
 //		非表示
 //---------------------------------------------------------------------
-BOOL ce::Window::hide() const
+BOOL cve::Window::hide() const
 {
 	return ::ShowWindow(hwnd, SW_HIDE);
 }
@@ -99,7 +100,7 @@ BOOL ce::Window::hide() const
 //---------------------------------------------------------------------
 //		ウィンドウを閉じる
 //---------------------------------------------------------------------
-BOOL ce::Window::close() const
+BOOL cve::Window::close() const
 {
 	return ::DestroyWindow(hwnd);
 }
@@ -109,22 +110,26 @@ BOOL ce::Window::close() const
 //---------------------------------------------------------------------
 //		静的ウィンドウプロシージャ
 //---------------------------------------------------------------------
-LRESULT CALLBACK ce::Window::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK cve::Window::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	Window* app = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-	if (!app) {//取得できなかった(ウィンドウ生成中)場合
+	Window* app = (Window*)::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+	// 取得できなかった(ウィンドウ生成中)場合
+	if (!app) {
 		if (msg == WM_CREATE) {
 			app = (Window*)((LPCREATESTRUCT)lparam)->lpCreateParams;
+
 			if (app) {
-				SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)app);
+				::SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)app);
 				return app->wndproc(hwnd, msg, wparam, lparam);
 			}
 		}
+		return ::DefWindowProc(hwnd, msg, wparam, lparam);
 	}
-	else {//取得できた場合(ウィンドウ生成後)
+	// 取得できた場合(ウィンドウ生成後)
+	else {
 		return app->wndproc(hwnd, msg, wparam, lparam);
 	}
-	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
 
@@ -132,7 +137,7 @@ LRESULT CALLBACK ce::Window::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, 
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ
 //---------------------------------------------------------------------
-LRESULT ce::Window::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Window::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	return DefWindowProc(hwnd, msg, wparam, lparam);
+	return ::DefWindowProc(hwnd, msg, wparam, lparam);
 }

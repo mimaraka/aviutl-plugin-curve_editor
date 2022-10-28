@@ -5,7 +5,7 @@
 //----------------------------------------------------------------------------------
 
 #include <yulib/extra.h>
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 
 
@@ -26,10 +26,10 @@ BOOL filter_initialize(FILTER* fp)
 {
 	g_fp = fp;
 
-	for (int i = 0; i < CE_CURVE_MAX; i++) {
-		g_curve_id[i].set_mode(ce::Mode_ID);
+	for (int i = 0; i < CVE_CURVE_MAX; i++) {
+		g_curve_id[i].set_mode(cve::Mode_ID);
 	}
-	g_curve_id_previous.set_mode(ce::Mode_ID);
+	g_curve_id_previous.set_mode(cve::Mode_ID);
 
 
 	// aviutl.iniÇ©ÇÁê›íËÇì«Ç›çûÇ›
@@ -38,8 +38,10 @@ BOOL filter_initialize(FILTER* fp)
 	// ÉtÉbÉNÇÃèÄîı
 	g_config.is_hooked_popup = false;
 	g_config.is_hooked_dialog = false;
+
 	char exedit_path[1024];
 	FILTER* fp_exedit = auls::Exedit_GetFilter(fp);
+
 	if (fp_exedit) {
 		::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));
 
@@ -58,11 +60,11 @@ BOOL filter_initialize(FILTER* fp)
 		);
 	}
 	else
-		::MessageBox(fp->hwnd, CE_STR_ERROR_EXEDIT_NOT_FOUND, CE_PLUGIN_NAME, MB_OK);
+		::MessageBox(fp->hwnd, CVE_STR_ERROR_EXEDIT_NOT_FOUND, CVE_PLUGIN_NAME, MB_OK);
 
 
 	// Direct2Dèâä˙âª
-	ce::d2d_init();
+	cve::d2d_init();
 	return TRUE;
 }
 
@@ -90,27 +92,27 @@ BOOL filter_exit(FILTER* fp)
 //---------------------------------------------------------------------
 BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 {
-	static ce::Static_Array<ce::Curve_Points, CE_POINT_MAX> point_data[CE_CURVE_MAX];
+	static cve::Static_Array<cve::Curve_Points, CVE_POINT_MAX> point_data[CVE_CURVE_MAX];
 
 	if (data) {
 		memcpy(point_data, data, size);
 
-		for (int i = 0; i < CE_CURVE_MAX; i++)
+		for (int i = 0; i < CVE_CURVE_MAX; i++)
 			g_curve_id[i].ctpts = point_data[i];
 
 		g_curve_id_previous = g_curve_id[g_config.current_id];
 
 		if (g_window_editor.hwnd) {
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REDRAW, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 
-			for (int i = 0; i < CE_CURVE_MAX; i++) {
+			for (int i = 0; i < CVE_CURVE_MAX; i++) {
 				if (!g_curve_id[i].is_data_valid()) {
 					int response = IDOK;
 
 					response = ::MessageBox(
 						fp->hwnd,
-						CE_STR_ERROR_DATA_INVALID,
-						CE_PLUGIN_NAME,
+						CVE_STR_ERROR_DATA_INVALID,
+						CVE_PLUGIN_NAME,
 						MB_OKCANCEL | MB_ICONEXCLAMATION
 					);
 
@@ -135,9 +137,9 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 //---------------------------------------------------------------------
 BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 {
-	static ce::Static_Array<ce::Curve_Points, CE_POINT_MAX> point_data[CE_CURVE_MAX] = {};
+	static cve::Static_Array<cve::Curve_Points, CVE_POINT_MAX> point_data[CVE_CURVE_MAX] = {};
 
-	for (int i = 0; i < CE_CURVE_MAX; i++)
+	for (int i = 0; i < CVE_CURVE_MAX; i++)
 		point_data[i] = g_curve_id[i].ctpts;
 
 	if (!data) {
@@ -161,15 +163,15 @@ void ini_load_configs(FILTER* fp)
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
 	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1)), 0, CE_GR_RESOLUTION);
-	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_1));
-	g_curve_value.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2)), 0, CE_GR_RESOLUTION);
-	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CE_GR_RESOLUTION * CE_CURVE_DEF_2));
-	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CE_SEPR_W);
-	g_config.mode = (ce::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
+	g_curve_value.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1)), 0, CVE_GRAPH_RESOLUTION);
+	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1));
+	g_curve_value.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2)), 0, CVE_GRAPH_RESOLUTION);
+	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2));
+	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CVE_SEPARATOR_W);
+	g_config.mode = (cve::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", true);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", true);
-	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CE_DEF_PRESET_SIZE);
+	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CVE_DEF_PRESET_SIZE);
 }
 
 
@@ -218,17 +220,17 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 	case WM_GETMINMAXINFO:
 		MINMAXINFO* mmi;
 		mmi = (MINMAXINFO*)lparam;
-		mmi->ptMaxTrackSize.x = CE_MAX_W;
-		mmi->ptMaxTrackSize.y = CE_MAX_H;
-		mmi->ptMinTrackSize.y = g_config.separator + CE_SEPR_W + CE_HEADER_H + CE_NON_CLIENT_H;
+		mmi->ptMaxTrackSize.x = CVE_MAX_W;
+		mmi->ptMaxTrackSize.y = CVE_MAX_H;
+		mmi->ptMinTrackSize.y = g_config.separator + CVE_SEPARATOR_W + CVE_HEADER_H + CVE_NON_CLIENT_H;
 		return 0;
 
 	case WM_KEYDOWN:
-		return ce::on_keydown(wparam);
+		return cve::on_keydown(wparam);
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CE_CM_REDRAW_AVIUTL:
+		case CVE_CM_REDRAW_AVIUTL:
 			return TRUE;
 		}
 	}

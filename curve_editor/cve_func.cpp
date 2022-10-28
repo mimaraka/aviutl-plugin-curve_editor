@@ -4,14 +4,14 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 
 
 //---------------------------------------------------------------------
 //		Direct2Dを初期化
 //---------------------------------------------------------------------
-void ce::d2d_init()
+void cve::d2d_init()
 {
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
 	D2D1_RENDER_TARGET_PROPERTIES prop;
@@ -32,7 +32,7 @@ void ce::d2d_init()
 //---------------------------------------------------------------------
 //		split関数
 //---------------------------------------------------------------------
-std::vector<std::string> ce::split(const std::string& s, TCHAR c)
+std::vector<std::string> cve::split(const std::string& s, TCHAR c)
 {
 	std::vector<std::string> elems;
 	std::string item;
@@ -56,7 +56,7 @@ std::vector<std::string> ce::split(const std::string& s, TCHAR c)
 //---------------------------------------------------------------------
 //		クリップボードにテキストをコピー
 //---------------------------------------------------------------------
-BOOL ce::copy_to_clipboard(HWND hwnd, LPCTSTR text)
+BOOL cve::copy_to_clipboard(HWND hwnd, LPCTSTR text)
 {
 	HGLOBAL memory;
 	LPTSTR buffer;
@@ -81,7 +81,7 @@ BOOL ce::copy_to_clipboard(HWND hwnd, LPCTSTR text)
 //---------------------------------------------------------------------
 //		長さを減算
 //---------------------------------------------------------------------
-void ce::subtract_length(ce::Float_Point* pt, const ce::Float_Point& st, const ce::Float_Point& ed, float length)
+void cve::subtract_length(cve::Float_Point* pt, const cve::Float_Point& st, const cve::Float_Point& ed, float length)
 {
 	float old_length = (float)DISTANCE(st, ed);
 
@@ -107,13 +107,13 @@ void ce::subtract_length(ce::Float_Point* pt, const ce::Float_Point& st, const c
 //---------------------------------------------------------------------
 //		g_configの内容をポップアップメニューに反映させる
 //---------------------------------------------------------------------
-void ce::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
+void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	mi->fMask = MIIM_STATE;
 
 	// Value/ID
-	mi->fState = g_config.mode == ce::Mode_ID ? MFS_CHECKED : MFS_UNCHECKED;
+	mi->fState = g_config.mode == cve::Mode_ID ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo(menu, ID_MENU_MODE_ID, FALSE, mi);
-	mi->fState = g_config.mode == ce::Mode_ID ? MFS_UNCHECKED : MFS_CHECKED;
+	mi->fState = g_config.mode == cve::Mode_ID ? MFS_UNCHECKED : MFS_CHECKED;
 	SetMenuItemInfo(menu, ID_MENU_MODE_VALUE, FALSE, mi);
 
 	//その他
@@ -125,22 +125,22 @@ void ce::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	// ボタンを無効化/有効化
 	// IDモードで有効化
 	// チェックボックスが存在する場合
-	mi->fState |= g_config.mode == ce::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState |= g_config.mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 	// チェックボックスが存在しない場合
-	mi->fState = g_config.mode == ce::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState = g_config.mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
 
 	// Valueモードで有効化
-	mi->fState = g_config.mode == ce::Mode_ID ? MFS_DISABLED : MFS_ENABLED;
+	mi->fState = g_config.mode == cve::Mode_ID ? MFS_DISABLED : MFS_ENABLED;
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
 
 	//プラグイン名の反映
 	mi->fMask = MIIM_TYPE;
-	mi->dwTypeData = CE_PLUGIN_NAME "について";
+	mi->dwTypeData = CVE_PLUGIN_NAME "について";
 	SetMenuItemInfo(menu, ID_MENU_ABOUT, FALSE, mi);
 }
 
@@ -149,49 +149,56 @@ void ce::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 //---------------------------------------------------------------------
 //		キー押下時の処理
 //---------------------------------------------------------------------
-LRESULT ce::on_keydown(WPARAM wparam)
+LRESULT cve::on_keydown(WPARAM wparam)
 {
 	switch (wparam) {
-	case 82: //[R]
+		//[R]
+	case 82:
 		if (g_window_editor.hwnd)
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_REVERSE, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REVERSE, 0);
 		return 0;
 
-	case 67: //[C]
-		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.mode == ce::Mode_Value)
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_COPY, 0);
+		//[C]
+	case 67:
+		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.mode == cve::Mode_Value)
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_COPY, 0);
 		return 0;
 
-	case 83: //[S]
+		//[S]
+	case 83:
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_SAVE, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_SAVE, 0);
 		else
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_SHOWHANDLE, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_SHOWHANDLE, 0);
 		return 0;
 
-	case VK_LEFT: //[<]	
-		if (g_config.mode == ce::Mode_ID && g_window_header.hwnd)
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_BACK, 0);
+		//[<]
+	case VK_LEFT:
+		if (g_config.mode == cve::Mode_ID && g_window_header.hwnd)
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_BACK, 0);
 		return 0;
 
-	case VK_RIGHT: //[>]
-		if (g_config.mode == ce::Mode_ID && g_window_header.hwnd)
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_ID_NEXT, 0);
+		//[>]
+	case VK_RIGHT:
+		if (g_config.mode == cve::Mode_ID && g_window_header.hwnd)
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_NEXT, 0);
 		return 0;
 
-	case VK_HOME: //[Home]
+		//[Home]
+	case VK_HOME:
 		if (g_window_editor.hwnd)
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_FIT, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
 		return 0;
 
-	case 65: //[A]
+		//[A]
+	case 65:
 		if (g_window_editor.hwnd)
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CT_ALIGN, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CT_ALIGN, 0);
 		return 0;
 
 	case VK_DELETE:
 		if (g_window_editor.hwnd)
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CE_CM_CLEAR, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_CLEAR, 0);
 		return 0;
 	}
 	return 0;

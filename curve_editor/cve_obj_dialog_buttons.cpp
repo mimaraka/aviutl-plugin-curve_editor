@@ -4,7 +4,7 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 #define EASING_QUICK_SETUP			"イージング設定時短プラグイン"
 
@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------
 //		IDからRECT
 //---------------------------------------------------------------------
-BOOL ce::Obj_Dialog_Buttons::id_to_rect(int id_, Rectangle* rect)
+BOOL cve::Obj_Dialog_Buttons::id_to_rect(int id_, Rectangle* rect)
 {
 	HWND hwnd_bt = ::GetDlgItem(hwnd_obj, 4000 + id_);
 	if (::IsWindowVisible(hwnd_bt)) {
@@ -30,7 +30,7 @@ BOOL ce::Obj_Dialog_Buttons::id_to_rect(int id_, Rectangle* rect)
 //---------------------------------------------------------------------
 //		更新
 //---------------------------------------------------------------------
-int ce::Obj_Dialog_Buttons::update(LPPOINT pt_sc, LPRECT old_rect)
+int cve::Obj_Dialog_Buttons::update(LPPOINT pt_sc, LPRECT old_rect)
 {
 	Rectangle rect_bt;
 	::ScreenToClient(hwnd_obj, pt_sc);
@@ -54,7 +54,7 @@ int ce::Obj_Dialog_Buttons::update(LPPOINT pt_sc, LPRECT old_rect)
 //---------------------------------------------------------------------
 //		クリック
 //---------------------------------------------------------------------
-void ce::Obj_Dialog_Buttons::click()
+void cve::Obj_Dialog_Buttons::click()
 {
 	::SendMessage(hwnd_obj, WM_COMMAND, 4000 + id, 0);
 
@@ -72,7 +72,7 @@ void ce::Obj_Dialog_Buttons::click()
 //---------------------------------------------------------------------
 //		ハイライト
 //---------------------------------------------------------------------
-void ce::Obj_Dialog_Buttons::highlight() const
+void cve::Obj_Dialog_Buttons::highlight() const
 {
 	if (id >= 0) {
 		RECT rect_wnd;
@@ -115,7 +115,7 @@ void ce::Obj_Dialog_Buttons::highlight() const
 //---------------------------------------------------------------------
 //		無効化
 //---------------------------------------------------------------------
-void ce::Obj_Dialog_Buttons::invalidate(const LPRECT rect) const
+void cve::Obj_Dialog_Buttons::invalidate(const LPRECT rect) const
 {
 	Rectangle rc;
 

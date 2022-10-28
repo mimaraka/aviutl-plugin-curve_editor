@@ -4,14 +4,14 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
 
 
 //---------------------------------------------------------------------
 //		初期化(1)
 //---------------------------------------------------------------------
-void ce::Rectangle::set(const RECT& rc)
+void cve::Rectangle::set(const RECT& rc)
 {
 	rect = rc;
 }
@@ -21,7 +21,7 @@ void ce::Rectangle::set(const RECT& rc)
 //---------------------------------------------------------------------
 //		初期化(2)
 //---------------------------------------------------------------------
-void ce::Rectangle::set(int left, int top, int right, int bottom)
+void cve::Rectangle::set(int left, int top, int right, int bottom)
 {
 	rect = {
 		left, top,
@@ -34,7 +34,7 @@ void ce::Rectangle::set(int left, int top, int right, int bottom)
 //---------------------------------------------------------------------
 //		横n個に分割する
 //---------------------------------------------------------------------
-void ce::Rectangle::divide(LPRECT rects_child[], float weights[], int n) const
+void cve::Rectangle::divide(LPRECT rects_child[], float weights[], int n) const
 {
 	// 親要素の横幅
 	int width_parent = rect.right - rect.left;
@@ -78,7 +78,7 @@ void ce::Rectangle::divide(LPRECT rects_child[], float weights[], int n) const
 //---------------------------------------------------------------------
 //		余白を設定する
 //---------------------------------------------------------------------
-void ce::Rectangle::set_margin(int left, int top, int right, int bottom)
+void cve::Rectangle::set_margin(int left, int top, int right, int bottom)
 {
 	rect.left += left;
 	rect.top += top;
@@ -96,7 +96,7 @@ void ce::Rectangle::set_margin(int left, int top, int right, int bottom)
 //---------------------------------------------------------------------
 //		クライアントからスクリーン
 //---------------------------------------------------------------------
-void ce::Rectangle::client_to_screen(HWND hwnd)
+void cve::Rectangle::client_to_screen(HWND hwnd)
 {
 	POINT pt[2];
 	pt[0] = {
@@ -120,7 +120,7 @@ void ce::Rectangle::client_to_screen(HWND hwnd)
 //---------------------------------------------------------------------
 //		スクリーンからクライアント
 //---------------------------------------------------------------------
-void ce::Rectangle::screen_to_client(HWND hwnd)
+void cve::Rectangle::screen_to_client(HWND hwnd)
 {
 	POINT pt[2];
 	pt[0] = {

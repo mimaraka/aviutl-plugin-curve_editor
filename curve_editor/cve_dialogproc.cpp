@@ -4,12 +4,12 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
-#include "ce_header.hpp"
+#include "cve_header.hpp"
 
-#define CE_REGEX_VALUE				R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
-#define CE_REGEX_FLOW_1				R"()"
-#define CE_REGEX_FLOW_2				R"(^\s*\[\s*(\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\},)+\s*\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\}\s*\]\s*$)"
-#define CE_REGEX_CEP				R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
+#define CVE_REGEX_VALUE				R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
+#define CVE_REGEX_FLOW_1				R"()"
+#define CVE_REGEX_FLOW_2				R"(^\s*\[\s*(\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\},)+\s*\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\}\s*\]\s*$)"
+#define CVE_REGEX_CEP				R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
 
 
 
@@ -100,7 +100,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	TCHAR buffer[30];
-	std::regex re(CE_REGEX_VALUE);
+	std::regex re(CVE_REGEX_VALUE);
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -113,32 +113,32 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			::GetDlgItemText(hwnd, IDC_EDIT_VALUE, buffer, 30);
 			if (std::regex_match(buffer, re)) {
 				std::string str = buffer;
-				std::vector<std::string> vec = ce::split(buffer, ',');
+				std::vector<std::string> vec = cve::split(buffer, ',');
 
 				float values[4];
 
 				values[0] = MINMAX_LIMIT(std::stof(vec[0]), 0, 1);
 				values[1] = MINMAX_LIMIT(
 					std::stof(vec[1]),
-					CE_CURVE_VALUE_MIN_Y,
-					CE_CURVE_VALUE_MAX_Y
+					CVE_CURVE_VALUE_MIN_Y,
+					CVE_CURVE_VALUE_MAX_Y
 				);
 				values[2] = MINMAX_LIMIT(std::stof(vec[2]), 0, 1);
 				values[3] = MINMAX_LIMIT(
 					std::stof(vec[3]),
-					CE_CURVE_VALUE_MIN_Y,
-					CE_CURVE_VALUE_MAX_Y
+					CVE_CURVE_VALUE_MIN_Y,
+					CVE_CURVE_VALUE_MAX_Y
 				);
 
-				g_curve_value.ctpts[0].pt_right.x = (int)(values[0] * CE_GR_RESOLUTION);
-				g_curve_value.ctpts[0].pt_right.y = (int)(values[1] * CE_GR_RESOLUTION);
-				g_curve_value.ctpts[1].pt_left.x = (int)(values[2] * CE_GR_RESOLUTION);
-				g_curve_value.ctpts[1].pt_left.y = (int)(values[3] * CE_GR_RESOLUTION);
+				g_curve_value.ctpts[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
+				g_curve_value.ctpts[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);
+				g_curve_value.ctpts[1].pt_left.x = (int)(values[2] * CVE_GRAPH_RESOLUTION);
+				g_curve_value.ctpts[1].pt_left.y = (int)(values[3] * CVE_GRAPH_RESOLUTION);
 
 				::EndDialog(hwnd, 1);
 			}
 			else if (g_config.alert)
-				::MessageBox(hwnd, CE_STR_ERROR_INPUT_INVALID, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 
 			return 0;
 
@@ -191,17 +191,17 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				}
 				catch (std::out_of_range& e) {
 					if (g_config.alert)
-						MessageBox(hwnd, CE_STR_ERROR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+						MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 					return 0;
 				}
 				if (!ISINRANGEEQ(value, -2147483647, 2122746761)) {
 					if (g_config.alert)
-						::MessageBox(hwnd, CE_STR_ERROR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+						::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 					return 0;
 				}
-				if (g_config.mode == ce::Mode_Value)
+				if (g_config.mode == cve::Mode_Value)
 					g_curve_value.read_value_1d(value);
 				else
 					g_curve_id[g_config.current_id].read_value_1d(value);
@@ -209,7 +209,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				::EndDialog(hwnd, 1);
 			}
 			else if (g_config.alert)
-				::MessageBox(hwnd, CE_STR_ERROR_INPUT_INVALID, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 			return 0;
 		case IDCANCEL:
@@ -228,7 +228,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	HWND edit;
-	//TCHAR buffer[64];
+	char buffer[CVE_PRESET_NAME_MAX];
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -236,24 +236,33 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 	case WM_INITDIALOG:
 		edit = ::GetDlgItem(hwnd, IDC_EDIT_SAVE);
-		::SendMessage(edit, EM_SETLIMITTEXT, 128, 0);
+		::SendMessage(edit, EM_SETLIMITTEXT, CVE_PRESET_NAME_MAX, 0);
 		return 0;
 
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			ce::Curve* curve_ptr = (g_config.mode == ce::Mode_Value) ? &g_curve_value : &g_curve_id[g_config.current_id];
-			ce::Preset preset(curve_ptr, g_config.mode);
-			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, 64);
-			if (strlen(buffer) < 64 && strlen(buffer) != 0) {
-				additem = { buffer, g_curve_value.ctpt[0].x, g_curve_value.ctpt[0].y, g_curve_value.ctpt[1].x, g_curve_value.ctpt[1].y };
-				g_presets.emplace_back(additem);
+		{
+			cve::Curve* curve_ptr = (g_config.mode == cve::Mode_Value) ? &g_curve_value : &g_curve_id[g_config.current_id];
+			cve::Preset preset(curve_ptr);
+
+			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, CVE_PRESET_NAME_MAX);
+
+			if (strlen(buffer) > 0) {
+				g_presets.emplace_back(preset);
+				g_presets[g_presets.size() - 1].create(g_window_preset.hwnd, buffer);
+
 				::EndDialog(hwnd, 1);
 			}
-			else if (strlen(buffer) == 0 && g_config.alert) MessageBox(hwnd, CE_STR_ERROR_INPUTANAME, CE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			else if (g_config.alert)
+				::MessageBox(hwnd, CVE_STR_ERROR_INPUTANAME, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+
 			return 0;
+		}
+
 		case IDCANCEL:
 			::EndDialog(hwnd, 1);
+
 			return 0;
 		}
 		return 0;
@@ -296,7 +305,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if (strlen(buffer) == 0) {
 				if (g_config.alert)
-					::MessageBox(hwnd, CE_STR_ERROR_INPUT_INVALID, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+					::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
 			}
@@ -304,14 +313,14 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			str = buffer;
 			value = std::stoi(str);
 
-			if (!ISINRANGEEQ(value, 0, CE_CURVE_MAX - 1)) {
+			if (!ISINRANGEEQ(value, 0, CVE_CURVE_MAX - 1)) {
 				if (g_config.alert)
-					::MessageBox(hwnd, CE_STR_ERROR_OUTOFRANGE, CE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+					::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
 			}
 
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CE_CM_CHANGE_ID, (LPARAM)value);
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_CHANGE_ID, (LPARAM)value);
 			::EndDialog(hwnd, 1);
 			return 0;
 		case IDCANCEL:
