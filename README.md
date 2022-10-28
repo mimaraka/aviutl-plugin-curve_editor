@@ -6,7 +6,7 @@
 ## ダウンロード
 最新バージョン: **v0.4.3**(Alpha版)
 
-<a href="https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/download/v0.4.3/curve_editor-v0.4.3.zip">![Download](https://user-images.githubusercontent.com/106879397/198502236-bd2dbd26-a45a-4c48-847a-6f56aa9d4e19.png)</a>
+<a href="https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/download/v0.4.3/curve_editor-v0.4.3.zip">![Download](https://user-images.githubusercontent.com/106879397/198503637-3f0ca637-08cf-47b0-afdc-10f9974c7b37.png)</a>
 
 ※プリセット機能以外の機能が実装されています。
 
