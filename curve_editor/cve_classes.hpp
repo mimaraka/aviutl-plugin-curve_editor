@@ -143,9 +143,9 @@ namespace cve {
 		Curve				curve;
 		time_t				unix_time;
 
-		Preset(const Curve* cv);
+		Preset();
 
-		BOOL				create(HWND hwnd_parent, LPTSTR nm);
+		BOOL				create(HWND hwnd_parent, const Curve* cv, LPTSTR nm);
 		void				move(int panel_width, int index);
 	};
 

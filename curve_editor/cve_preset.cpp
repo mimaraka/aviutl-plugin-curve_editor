@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		コンストラクタ
 //---------------------------------------------------------------------
-cve::Preset::Preset(const Curve* cv) : curve(*cv)
+cve::Preset::Preset()
 {
 	::time(&unix_time);
 
@@ -45,10 +45,12 @@ cve::Preset::Preset(const Curve* cv) : curve(*cv)
 //---------------------------------------------------------------------
 //		プリセット(ウィンドウ)を作成
 //---------------------------------------------------------------------
-BOOL cve::Preset::create(HWND hwnd_parent, LPTSTR nm)
+BOOL cve::Preset::create(HWND hwnd_parent, const Curve* cv, LPTSTR nm)
 {
 	strcpy_s(name, CVE_PRESET_NAME_MAX, nm);
 	std::string class_name = "cve_preset_" + std::to_string(id);
+	curve = *cv;
+	
 
 	WNDCLASSEX tmp;
 	tmp.cbSize = sizeof(tmp);
@@ -70,7 +72,7 @@ BOOL cve::Preset::create(HWND hwnd_parent, LPTSTR nm)
 			class_name.c_str(),
 			NULL,
 			WS_CHILD | WS_VISIBLE,
-			g_config.preset_size * id, 0,
+			(g_config.preset_size + CVE_MARGIN_PRESET) * id, 0,
 			g_config.preset_size,
 			g_config.preset_size,
 			hwnd_parent,

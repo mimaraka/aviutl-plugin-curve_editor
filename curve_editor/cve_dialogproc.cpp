@@ -244,13 +244,13 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case IDOK:
 		{
 			cve::Curve* curve_ptr = (g_config.mode == cve::Mode_Value) ? &g_curve_value : &g_curve_id[g_config.current_id];
-			cve::Preset preset(curve_ptr);
+			const cve::Preset preset;
 
 			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, CVE_PRESET_NAME_MAX);
 
 			if (strlen(buffer) > 0) {
-				g_presets.emplace_back(preset);
-				g_presets[g_presets.size() - 1].create(g_window_preset.hwnd, buffer);
+				g_presets.push_back(preset);
+				g_presets[g_presets.size() - 1].create(g_window_preset.hwnd, curve_ptr, buffer);
 
 				::EndDialog(hwnd, 1);
 			}

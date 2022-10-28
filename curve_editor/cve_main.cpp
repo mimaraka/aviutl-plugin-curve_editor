@@ -20,9 +20,10 @@ cve::Window						g_window_main,
 								g_window_header,
 								g_window_editor,
 								g_window_preset;
-cve::Graph_View_Info				g_view_info;
+cve::Graph_View_Info			g_view_info;
 FILTER*							g_fp;
-std::vector<cve::Preset>			g_presets;
+std::vector<cve::Preset>		g_presets;
+
 
 //ダークテーマ
 const cve::Theme g_theme_dark = {

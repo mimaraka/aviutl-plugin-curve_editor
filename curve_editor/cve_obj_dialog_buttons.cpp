@@ -79,14 +79,14 @@ void cve::Obj_Dialog_Buttons::highlight() const
 		::GetClientRect(hwnd_obj, &rect_wnd);
 
 		HDC hdc = ::GetDC(hwnd_obj);
-		static ID2D1SolidColorBrush* brush = NULL;
+		static ID2D1SolidColorBrush* brush = nullptr;
 
-		if (g_render_target != NULL && g_d2d1_factory != NULL) {
+		if (g_render_target != nullptr && g_d2d1_factory != nullptr) {
 			g_render_target->BindDC(hdc, &rect_wnd);
 			g_render_target->BeginDraw();
 			g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
 
-			if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+			if (brush == nullptr) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
 			brush->SetColor(D2D1::ColorF(TO_BGR(RGB(45, 140, 235))));
 
 			D2D1_ROUNDED_RECT d2d_rect = D2D1::RoundedRect(
