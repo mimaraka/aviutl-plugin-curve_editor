@@ -39,7 +39,15 @@ BOOL cve::Button::initialize(
 		icon_res_light = (LPTSTR)ico_res_light;
 	}
 
-	return create(hwnd_p, name, wndproc_static, NULL, rect, this);
+	return create(
+		hwnd_p,
+		name,
+		wndproc_static,
+		NULL,
+		NULL,
+		rect,
+		this
+	);
 }
 
 
@@ -93,15 +101,15 @@ void cve::Button::draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(static変数使用不可)
 //---------------------------------------------------------------------
-LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
-	::GetClientRect(hwnd, &rect_wnd);
+	::GetClientRect(hw, &rect_wnd);
 
 	switch (msg) {
 	case WM_CREATE:
-		bitmap_buffer.init(hwnd);
+		bitmap_buffer.init(hw);
 		bitmap_buffer.set_size(rect_wnd);
 
 		// アイコンだった場合
@@ -114,13 +122,13 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				NULL, TTS_ALWAYSTIP,
 				CW_USEDEFAULT, CW_USEDEFAULT,
 				CW_USEDEFAULT, CW_USEDEFAULT,
-				hwnd, NULL, g_fp->dll_hinst,
+				hw, NULL, g_fp->dll_hinst,
 				NULL
 			);
 
 			tool_info.cbSize = sizeof(TOOLINFO);
 			tool_info.uFlags = TTF_SUBCLASS;
-			tool_info.hwnd = hwnd;
+			tool_info.hwnd = hw;
 			tool_info.uId = id;
 			tool_info.lpszText = (LPTSTR)description;
 			::SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
@@ -128,7 +136,7 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		tme.cbSize = sizeof(tme);
 		tme.dwFlags = TME_LEAVE;
-		tme.hwndTrack = hwnd;
+		tme.hwndTrack = hw;
 
 		// フォント
 		font = ::CreateFont(
@@ -179,7 +187,7 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	// マウスが動いたとき
 	case WM_MOUSEMOVE:
 		hovered = true;
-		::InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hw, NULL, FALSE);
 		::TrackMouseEvent(&tme);
 		return 0;
 
@@ -191,7 +199,7 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_LBUTTONDOWN:
 		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 		clicked = true;
-		::InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hw, NULL, FALSE);
 		::TrackMouseEvent(&tme);
 		return 0;
 
@@ -200,27 +208,27 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 		clicked = false;
 		::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
-		::InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hw, NULL, FALSE);
 		return 0;
 
 	// マウスがウィンドウから離れたとき
 	case WM_MOUSELEAVE:
 		clicked = false;
 		hovered = false;
-		::InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hw, NULL, FALSE);
 		return 0;
 
 	// コマンド
 	case WM_COMMAND:
 		switch (wparam) {
 		case CVE_CM_REDRAW:
-			::InvalidateRect(hwnd, NULL, FALSE);
+			::InvalidateRect(hw, NULL, FALSE);
 			return 0;
 		}
 		return 0;
 
 	default:
-		return ::DefWindowProc(hwnd, msg, wparam, lparam);
+		return ::DefWindowProc(hw, msg, wparam, lparam);
 	}
 }
 
@@ -229,11 +237,11 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(スイッチ)
 //---------------------------------------------------------------------
-LRESULT cve::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button_Switch::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
-	::GetClientRect(hwnd, &rect_wnd);
+	::GetClientRect(hw, &rect_wnd);
 
 	switch (msg) {
 	// 描画
@@ -275,11 +283,11 @@ LRESULT cve::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 			is_selected = true;
 			::SendMessage(hwnd_parent, WM_COMMAND, id, CVE_CM_SELECTED);
 		}
-		::InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hw, NULL, FALSE);
 		return 0;
 
 	default:
-		return Button::wndproc(hwnd, msg, wparam, lparam);
+		return Button::wndproc(hw, msg, wparam, lparam);
 	}
 }
 
@@ -299,11 +307,11 @@ void cve::Button_Switch::set_status(BOOL bl)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(Value)
 //---------------------------------------------------------------------
-LRESULT cve::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button_Value::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
-	::GetClientRect(hwnd, &rect_wnd);
+	::GetClientRect(hw, &rect_wnd);
 
 	switch (msg) {
 	case WM_PAINT:
@@ -326,7 +334,7 @@ LRESULT cve::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 	}
 
 	default:
-		return Button::wndproc(hwnd, msg, wparam, lparam);
+		return Button::wndproc(hw, msg, wparam, lparam);
 	}
 }
 
@@ -335,12 +343,12 @@ LRESULT cve::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(ID)
 //---------------------------------------------------------------------
-LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 
-	::GetClientRect(hwnd, &rect_wnd);
+	::GetClientRect(hw, &rect_wnd);
 
 	switch (msg) {
 	case WM_PAINT:
@@ -377,8 +385,8 @@ LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		clicked = true;
 
-		::InvalidateRect(hwnd, NULL, FALSE);
-		::SetCapture(hwnd);
+		::InvalidateRect(hw, NULL, FALSE);
+		::SetCapture(hw);
 
 		return 0;
 
@@ -398,24 +406,24 @@ LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		hovered = true;
 
-		::InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hw, NULL, FALSE);
 		::TrackMouseEvent(&tme);
 
 		return 0;
 
 	case WM_LBUTTONUP:
 		if (!is_scrolling && clicked && g_config.mode == Mode_ID)
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hwnd, dialogproc_id);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hw, dialogproc_id);
 		
 		is_scrolling = false;
 		clicked = false;
 
 		::ReleaseCapture();
-		::InvalidateRect(hwnd, NULL, FALSE);
+		::InvalidateRect(hw, NULL, FALSE);
 
 		return 0;
 
 	default:
-		return Button::wndproc(hwnd, msg, wparam, lparam);
+		return Button::wndproc(hw, msg, wparam, lparam);
 	}
 }

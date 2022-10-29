@@ -128,6 +128,8 @@
 #define CVE_DRAW_CURVE_TRACE			1
 #define CVE_DRAW_CURVE_PRESET			2
 
+#define CVE_CURVE_COLOR_DEFAULT			RGB(103, 103, 241)
+
 
 
 //---------------------------------------------------------------------

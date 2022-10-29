@@ -172,6 +172,7 @@ void ini_load_configs(FILTER* fp)
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", true);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", true);
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CVE_DEF_PRESET_SIZE);
+	g_config.curve_color = fp->exfunc->ini_load_int(fp, "curve_color", CVE_CURVE_COLOR_DEFAULT);
 }
 
 
@@ -208,8 +209,13 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
 
 		g_window_main.create(
-			hwnd, "WINDOW_MAIN", wndproc_main, NULL,
-			rect_wnd, NULL
+			hwnd,
+			"WINDOW_MAIN",
+			wndproc_main,
+			NULL,
+			NULL,
+			rect_wnd,
+			NULL
 		);
 		return 0;
 

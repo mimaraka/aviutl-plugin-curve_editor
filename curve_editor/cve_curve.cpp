@@ -1024,7 +1024,7 @@ void cve::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, i
 
 	if (drawing_mode == 0) {
 		handle_color = g_theme[g_config.theme].handle;
-		curve_color = g_theme[g_config.theme].curve;
+		curve_color = g_config.curve_color;
 	}
 	else if (drawing_mode == 1) {
 		handle_color = g_theme[g_config.theme].handle;

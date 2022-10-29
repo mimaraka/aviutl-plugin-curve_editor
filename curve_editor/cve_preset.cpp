@@ -63,7 +63,15 @@ BOOL cve::Preset::initialize(HWND hwnd_p, const Curve* cv, LPTSTR nm)
 	edge_flag = CVE_EDGE_ALL;
 
 
-	return create(hwnd_p, (LPTSTR)class_name.c_str(), wndproc_static, NULL, rect, this);
+	return create(
+		hwnd_p,
+		(LPTSTR)class_name.c_str(),
+		wndproc_static,
+		NULL,
+		NULL,
+		rect,
+		this
+	);
 }
 
 
@@ -92,12 +100,12 @@ void cve::Preset::move(int panel_width, int index)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(static変数使用不可)
 //---------------------------------------------------------------------
-LRESULT cve::Preset::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Preset::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 
 	switch (msg) {
 
 	default:
-		return Button::wndproc(hwnd, msg, wparam, lparam);
+		return Button::wndproc(hw, msg, wparam, lparam);
 	}
 }

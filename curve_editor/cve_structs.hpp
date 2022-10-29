@@ -46,7 +46,6 @@ namespace cve {
 		COLORREF	bg,
 					bg_graph,
 					sepr,
-					curve,
 					curve_trace,
 					handle,
 					bt_selected,
@@ -111,6 +110,8 @@ namespace cve {
 				current_id,
 				preset_size;
 
-		Mode mode;
+		Mode	mode;
+
+		COLORREF curve_color;
 	} Config;
 }

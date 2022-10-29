@@ -11,11 +11,19 @@
 //---------------------------------------------------------------------
 //		ウィンドウ作成
 //---------------------------------------------------------------------
-BOOL cve::Window::create(HWND hwnd_parent, LPCTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect, LPVOID lp_param)
+BOOL cve::Window::create(
+	HWND		hwnd_parent,
+	LPCTSTR		class_name,
+	WNDPROC		wndproc,
+	LONG		window_style,
+	LONG		class_style,
+	const RECT&	rect,
+	LPVOID		lp_param
+)
 {
 	WNDCLASSEX tmp;
 	tmp.cbSize = sizeof(tmp);
-	tmp.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+	tmp.style = CS_HREDRAW | CS_VREDRAW | class_style;
 	tmp.lpfnWndProc = wndproc;
 	tmp.cbClsExtra = 0;
 	tmp.cbWndExtra = 0;
@@ -32,7 +40,7 @@ BOOL cve::Window::create(HWND hwnd_parent, LPCTSTR class_name, WNDPROC wndproc, 
 			NULL,
 			class_name,
 			NULL,
-			WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | style,
+			WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | window_style,
 			rect.left,
 			rect.top,
 			rect.right - rect.left,
@@ -137,7 +145,7 @@ LRESULT CALLBACK cve::Window::wndproc_static(HWND hwnd, UINT msg, WPARAM wparam,
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ
 //---------------------------------------------------------------------
-LRESULT cve::Window::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Window::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	return ::DefWindowProc(hwnd, msg, wparam, lparam);
+	return ::DefWindowProc(hw, msg, wparam, lparam);
 }

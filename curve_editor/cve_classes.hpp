@@ -120,7 +120,16 @@ namespace cve {
 	public:
 		HWND hwnd;
 
-		BOOL				create(HWND hwnd_parent, LPCTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect, LPVOID lp_param);
+		BOOL				create(
+			HWND		hwnd_parent,
+			LPCTSTR		class_name,
+			WNDPROC		wndproc,
+			LONG		window_style,
+			LONG		class_style,
+			const RECT& rect,
+			LPVOID		lp_param
+		);
+
 		virtual void		move(const RECT& rect) const;
 		void				redraw() const;
 		BOOL				close() const;

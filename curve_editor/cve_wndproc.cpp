@@ -64,19 +64,33 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		// ヘッダパネル
 		g_window_header.create(
-			hwnd, "WINDOW_FOOTER", wndproc_header, NULL,
-			rect_header.rect, NULL
+			hwnd,
+			"WINDOW_HEADER",
+			wndproc_header,
+			NULL,
+			NULL,
+			rect_header.rect,
+			NULL
 		);
 
 		// エディタパネル
 		g_window_editor.create(
-			hwnd, "WINDOW_GPATH", wndproc_editor, NULL,
-			rect_editor.rect, NULL
+			hwnd,
+			"WINDOW_EDITOR",
+			wndproc_editor,
+			NULL,
+			CS_DBLCLKS,
+			rect_editor.rect, 
+			NULL
 		);
 
 		// プリセットパネル
 		g_window_preset.create(
-			hwnd, "WINDOW_PRESET", wndproc_preset, NULL,
+			hwnd,
+			"WINDOW_PRESET",
+			wndproc_preset,
+			NULL,
+			NULL,
 			rect_preset.rect, NULL
 		);
 

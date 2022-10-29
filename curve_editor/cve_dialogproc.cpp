@@ -19,6 +19,20 @@
 BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	static HWND combo;
+	static COLORREF cust_colors[16];
+	static bool click = false;
+
+	RECT color_curve = {
+		306,
+		63,
+		363,
+		86
+	};
+
+	POINT			pt_client = {
+		GET_X_LPARAM(lparam),
+		GET_Y_LPARAM(lparam)
+	};
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -54,6 +68,57 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		return 0;
 
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+
+		HBRUSH brush = ::CreateSolidBrush(g_config.curve_color);
+		HPEN pen = ::CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+
+		HDC hdc = ::BeginPaint(hwnd, &ps);
+
+		::SelectObject(hdc, brush);
+		::SelectObject(hdc, pen);
+
+		::Rectangle(hdc, color_curve.left, color_curve.top, color_curve.right, color_curve.bottom);
+
+		::DeleteObject(brush);
+		::DeleteObject(pen);
+
+		::EndPaint(hwnd, &ps);
+	}
+		return 0;
+
+	case WM_MOUSEMOVE:
+		if (::PtInRect(&color_curve, pt_client))
+			::SetCursor(::LoadCursor(NULL, IDC_HAND));
+
+		return 0;
+
+	case WM_LBUTTONDOWN:
+		if (::PtInRect(&color_curve, pt_client))
+			click = true;
+		
+		return 0;
+
+	case WM_LBUTTONUP:
+		if (::PtInRect(&color_curve, pt_client) && click) {
+			CHOOSECOLOR cc;
+
+			cc.lStructSize = sizeof(CHOOSECOLOR);
+			cc.hwndOwner = hwnd;
+			cc.rgbResult = g_config.curve_color;
+			cc.lpCustColors = cust_colors;
+			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+
+			::ChooseColor(&cc);
+
+			g_config.curve_color = cc.rgbResult;
+
+			::InvalidateRect(hwnd, NULL, FALSE);
+		}
+		return 0;
+
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
@@ -78,6 +143,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_fp->exfunc->ini_save_int(g_fp, "show_previous_curve", g_config.trace);
 			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.alert);
 			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
+			g_fp->exfunc->ini_save_int(g_fp, "curve_color", g_config.curve_color);
 
 			::EndDialog(hwnd, 1);
 
