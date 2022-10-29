@@ -120,7 +120,7 @@ namespace cve {
 	public:
 		HWND hwnd;
 
-		virtual BOOL		create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect);
+		BOOL				create(HWND hwnd_parent, LPCTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect, LPVOID lp_param);
 		virtual void		move(const RECT& rect) const;
 		void				redraw() const;
 		BOOL				close() const;
@@ -131,34 +131,35 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		プリセット
-	//---------------------------------------------------------------------
-	class Preset : public Window {
-	private:
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-	public:
-		char				name[CVE_PRESET_NAME_MAX];
-		int					id;
-		Curve				curve;
-		time_t				unix_time;
-
-		Preset();
-
-		BOOL				create(HWND hwnd_parent, const Curve* cv, LPTSTR nm);
-		void				move(int panel_width, int index);
-	};
-
-
-
-	//---------------------------------------------------------------------
 	//		ボタン
 	//---------------------------------------------------------------------
 	class Button : public Window {
+	public:
+		enum Content_Type {
+			Null,
+			Icon,
+			String
+		};
+
+		int					id;
+
+		virtual BOOL		initialize(
+			HWND hwnd_p,
+			LPCTSTR name,
+			LPCTSTR desc,
+			Content_Type cont_type,
+			LPCTSTR ico_res_dark,
+			LPCTSTR ico_res_light,
+			LPCTSTR lb,
+			int ct_id,
+			const RECT& rect,
+			int flag
+		);
+		
 	protected:
 		LPTSTR				icon_res_dark;
 		LPTSTR				icon_res_light;
-		int					icon_or_str;			//0: アイコン, 1: 文字列
+		Content_Type		content_type;
 		LPTSTR				label;
 		Bitmap_Buffer		bitmap_buffer;
 		HWND				hwnd_parent;
@@ -171,27 +172,10 @@ namespace cve {
 		HFONT				font;
 		LPTSTR				description;
 		int					edge_flag;
-		ID2D1SolidColorBrush* brush;
 
-		void				draw(COLORREF bg, RECT& rect_wnd, LPTSTR content);
-		void				set_font(const RECT& rect_wnd, LPTSTR font_name);
+		void				draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content);
+		//void				set_font(const RECT& rect_wnd, LPTSTR font_name);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-	public:
-		int					id;
-
-		BOOL				create(
-								HWND hwnd_p,
-								LPTSTR name,
-								LPTSTR desc,
-								int ic_or_str,
-								LPTSTR ico_res_dark,
-								LPTSTR ico_res_light,
-								LPTSTR lb,
-								int ct_id,
-								const RECT& rect,
-								int flag
-							);
 	};
 
 
@@ -232,6 +216,26 @@ namespace cve {
 		int					coef_move;
 
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		プリセット
+	//---------------------------------------------------------------------
+	class Preset : public Button {
+	private:
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+	public:
+		char				name[CVE_PRESET_NAME_MAX];
+		Curve				curve;
+		time_t				unix_time;
+
+		Preset();
+
+		BOOL				initialize(HWND hwnd_p, const Curve* cv, LPTSTR nm);
+		void				move(int panel_width, int index);
 	};
 
 

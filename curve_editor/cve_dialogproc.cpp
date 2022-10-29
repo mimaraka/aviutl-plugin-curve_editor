@@ -249,8 +249,8 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, CVE_PRESET_NAME_MAX);
 
 			if (strlen(buffer) > 0) {
-				g_presets.push_back(preset);
-				g_presets[g_presets.size() - 1].create(g_window_preset.hwnd, curve_ptr, buffer);
+				g_presets.PushBack(preset);
+				g_presets[g_presets.size - 1].initialize(g_window_preset.hwnd, curve_ptr, buffer);
 
 				::EndDialog(hwnd, 1);
 			}

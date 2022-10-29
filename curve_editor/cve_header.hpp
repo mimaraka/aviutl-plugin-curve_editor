@@ -17,7 +17,7 @@ extern cve::Curve							g_curve_value,
 											g_curve_value_previous,
 											g_curve_id[CVE_CURVE_MAX],
 											g_curve_id_previous;
-extern std::vector<cve::Preset>				g_presets;
+extern cve::Static_Array<cve::Preset, CVE_PRESET_MAX> g_presets;
 extern const cve::Theme						g_theme[2];
 extern cve::Config							g_config;
 extern cve::Window							g_window_main,

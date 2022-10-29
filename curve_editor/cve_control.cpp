@@ -11,56 +11,35 @@
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL cve::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, LPTSTR ico_res_dark, LPTSTR ico_res_light, LPTSTR lb, int ct_id, const RECT& rect, int flag)
+BOOL cve::Button::initialize(
+	HWND			hwnd_p,
+	LPCTSTR			name,
+	LPCTSTR			desc,
+	Content_Type	cont_type,
+	LPCTSTR			ico_res_dark,
+	LPCTSTR			ico_res_light,
+	LPCTSTR			lb,
+	int				ct_id,
+	const RECT&		rect,
+	int				flag
+)
 {
-	WNDCLASSEX tmp;
 	id = ct_id;
-	description = desc;
+	description = (LPTSTR)desc;
 	edge_flag = flag;
 	hwnd_parent = hwnd_p;
 
-	icon_or_str = ic_or_str;
-	if (ic_or_str) {
-		label = lb;
+	content_type = cont_type;
+
+	if (content_type == Button::String) {
+		label = (LPTSTR)lb;
 	}
-	else {
-		label = "";
-		icon_res_dark = ico_res_dark;
-		icon_res_light = ico_res_light;
+	else if (content_type == Button::Icon) {
+		icon_res_dark = (LPTSTR)ico_res_dark;
+		icon_res_light = (LPTSTR)ico_res_light;
 	}
 
-
-	tmp.cbSize			= sizeof(tmp);
-	tmp.style			= CS_HREDRAW | CS_VREDRAW;
-	tmp.lpfnWndProc		= wndproc_static;
-	tmp.cbClsExtra		= 0;
-	tmp.cbWndExtra		= 0;
-	tmp.hInstance		= g_fp->dll_hinst;
-	tmp.hIcon			= NULL;
-	tmp.hIconSm			= NULL;
-	tmp.hCursor			= LoadCursor(NULL, IDC_ARROW);
-	tmp.hbrBackground	= NULL;
-	tmp.lpszMenuName	= NULL;
-	tmp.lpszClassName	= name;
-
-	if (RegisterClassEx(&tmp)) {
-		hwnd = ::CreateWindowEx(
-			NULL,
-			name,
-			NULL,
-			WS_CHILD | WS_VISIBLE,
-			rect.left, rect.top,
-			rect.right - rect.left,
-			rect.bottom - rect.top,
-			hwnd_p,
-			NULL,
-			g_fp->dll_hinst,
-			this
-		);
-		if (hwnd != nullptr)
-			return 1;
-	}
-	return 0;
+	return create(hwnd_p, name, wndproc_static, NULL, rect, this);
 }
 
 
@@ -68,15 +47,16 @@ BOOL cve::Button::create(HWND hwnd_p, LPTSTR name, LPTSTR desc, int ic_or_str, L
 //---------------------------------------------------------------------
 //		コントロール描画用の関数
 //---------------------------------------------------------------------
-void cve::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
+void cve::Button::draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content)
 {
 	bitmap_buffer.d2d_setup(TO_BGR(bg));
 
 	::SetBkColor(bitmap_buffer.hdc_memory, bg);
 
 	// 文字列を描画
-	if (icon_or_str == 1) {
+	if (content_type == Button::String && content != nullptr) {
 		::SelectObject(bitmap_buffer.hdc_memory, font);
+
 		::DrawText(
 			bitmap_buffer.hdc_memory,
 			content,
@@ -84,10 +64,11 @@ void cve::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 			&rect_wnd,
 			DT_CENTER | DT_VCENTER | DT_NOCLIP | DT_SINGLELINE
 		);
+
 		::DeleteObject(font);
 	}
 	// アイコンを描画
-	else {
+	else if (content_type == Button::Icon) {
 		::DrawIcon(
 			bitmap_buffer.hdc_memory,
 			(rect_wnd.right - CVE_ICON_SIZE) / 2,
@@ -96,9 +77,9 @@ void cve::Button::draw(COLORREF bg, RECT& rect_wnd, LPTSTR content)
 		);
 	}
 
-	if (g_render_target != NULL) {
+	if (g_render_target != nullptr) {
 		g_render_target->BeginDraw();
-		if (brush == NULL) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+
 		bitmap_buffer.draw_rounded_edge(edge_flag, CVE_ROUND_RADIUS);
 
 		g_render_target->EndDraw();
@@ -123,7 +104,8 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);
 
-		if (icon_or_str == 0) {
+		// アイコンだった場合
+		if (content_type == Button::Icon) {
 			icon_dark = ::LoadIcon(g_fp->dll_hinst, icon_res_dark);
 			icon_light = ::LoadIcon(g_fp->dll_hinst, icon_res_light);
 
@@ -140,7 +122,7 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			tool_info.uFlags = TTF_SUBCLASS;
 			tool_info.hwnd = hwnd;
 			tool_info.uId = id;
-			tool_info.lpszText = description;
+			tool_info.lpszText = (LPTSTR)description;
 			::SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
 		}
 
@@ -170,7 +152,7 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_SIZE:
 		bitmap_buffer.set_size(rect_wnd);
 
-		if (!icon_or_str) {
+		if (content_type == Button::Icon) {
 			tool_info.rect = rect_wnd;
 			::SendMessage(hwnd_tooltip, TTM_NEWTOOLRECT, 0, (LPARAM)&tool_info);
 		}
@@ -190,7 +172,7 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, rect_wnd, label);
+		draw_content(bg, rect_wnd, label);
 		return 0;
 	}
 
@@ -215,7 +197,7 @@ LRESULT cve::Button::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// 左クリックが終わったとき
 	case WM_LBUTTONUP:
-		::SetCursor(LoadCursor(NULL, IDC_HAND));
+		::SetCursor(::LoadCursor(NULL, IDC_HAND));
 		clicked = false;
 		::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
 		::InvalidateRect(hwnd, NULL, FALSE);
@@ -281,7 +263,7 @@ LRESULT cve::Button_Switch::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 		}
 
-		draw(bg, rect_wnd, label);
+		draw_content(bg, rect_wnd, label);
 		return 0;
 	}
 
@@ -339,7 +321,7 @@ LRESULT cve::Button_Value::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, rect_wnd, value_4d);
+		draw_content(bg, rect_wnd, value_4d);
 		return 0;
 	}
 
@@ -365,6 +347,7 @@ LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	{
 		COLORREF bg;
 		TCHAR id_text[5];
+
 		::_itoa_s(g_config.current_id, id_text, 5, 10);
 
 		if (clicked)
@@ -376,7 +359,7 @@ LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw(bg, rect_wnd, id_text);
+		draw_content(bg, rect_wnd, id_text);
 		return 0;
 	}
 
@@ -384,6 +367,7 @@ LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_LBUTTONDOWN:
 		pt_lock = pt_client;
 		id_buffer = g_config.current_id;
+
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
 
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
@@ -392,34 +376,43 @@ LRESULT cve::Button_ID::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			coef_move = CVE_COEF_MOVE_DEFAULT;
 
 		clicked = true;
+
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::SetCapture(hwnd);
+
 		return 0;
 
 	// カーソルが動いたとき
 	case WM_MOUSEMOVE:
 		if (clicked && g_config.mode == Mode_ID) {
 			is_scrolling = true;
+
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+
 			g_config.current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CVE_CURVE_MAX - 1);
 			g_curve_id_previous = g_curve_id[g_config.current_id];
+
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 		}
-		else ::SetCursor(LoadCursor(NULL, IDC_HAND));
+		else ::SetCursor(::LoadCursor(NULL, IDC_HAND));
 
 		hovered = true;
+
 		::InvalidateRect(hwnd, NULL, FALSE);
 		::TrackMouseEvent(&tme);
+
 		return 0;
 
 	case WM_LBUTTONUP:
-		if (!is_scrolling && clicked && g_config.mode == Mode_ID) {
+		if (!is_scrolling && clicked && g_config.mode == Mode_ID)
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hwnd, dialogproc_id);
-		}
+		
 		is_scrolling = false;
 		clicked = false;
+
 		::ReleaseCapture();
 		::InvalidateRect(hwnd, NULL, FALSE);
+
 		return 0;
 
 	default:

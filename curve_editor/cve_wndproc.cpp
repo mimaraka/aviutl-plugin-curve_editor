@@ -65,19 +65,19 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		// ヘッダパネル
 		g_window_header.create(
 			hwnd, "WINDOW_FOOTER", wndproc_header, NULL,
-			rect_header.rect
+			rect_header.rect, NULL
 		);
 
 		// エディタパネル
 		g_window_editor.create(
 			hwnd, "WINDOW_GPATH", wndproc_editor, NULL,
-			rect_editor.rect
+			rect_editor.rect, NULL
 		);
 
 		// プリセットパネル
 		g_window_preset.create(
 			hwnd, "WINDOW_PRESET", wndproc_preset, NULL,
-			rect_preset.rect
+			rect_preset.rect, NULL
 		);
 
 		return 0;
@@ -821,11 +821,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		bitmap_buffer.set_size(rect_wnd);
 
 		// モード(Value)スイッチ
-		mode_value.create(
+		mode_value.initialize(
 			hwnd,
 			"CTRL_MODE_VALUE",
 			NULL,
-			1,
+			cve::Button::String,
 			NULL, NULL,
 			"Value",
 			CVE_CT_MODE_VALUE,
@@ -834,11 +834,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// モード(ID)スイッチ
-		mode_id.create(
+		mode_id.initialize(
 			hwnd,
 			"CTRL_MODE_ID",
 			NULL,
-			1,
+			cve::Button::String,
 			NULL, NULL,
 			"ID",
 			CVE_CT_MODE_ID,
@@ -847,11 +847,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// 値
-		value.create(
+		value.initialize(
 			hwnd,
 			"CTRL_VALUE",
 			NULL,
-			1,
+			cve::Button::String,
 			NULL, NULL,
 			NULL,
 			CVE_CM_VALUE,
@@ -860,11 +860,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// 前のIDのカーブに移動
-		id_back.create(
+		id_back.initialize(
 			hwnd,
 			"CTRL_ID_BACK",
 			"前のIDのカーブに移動",
-			0,
+			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_BACK),
 			MAKEINTRESOURCE(IDI_BACK_LIGHT),
 			NULL,
@@ -874,11 +874,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// ID表示ボタン
-		id_id.create(
+		id_id.initialize(
 			hwnd,
 			"CTRL_ID_ID",
 			NULL,
-			1,
+			cve::Button::String,
 			NULL, NULL,
 			NULL,
 			NULL,
@@ -887,11 +887,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// 次のIDのカーブに移動
-		id_next.create(
+		id_next.initialize(
 			hwnd,
 			"CTRL_ID_NEXT",
 			"次のIDのカーブに移動",
-			0,
+			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_NEXT),
 			MAKEINTRESOURCE(IDI_NEXT_LIGHT),
 			NULL,
@@ -901,11 +901,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// コピー
-		copy.create(
+		copy.initialize(
 			hwnd,
 			"CTRL_COPY",
 			"カーブの値をコピー",
-			0,
+			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_COPY),
 			MAKEINTRESOURCE(IDI_COPY_LIGHT),
 			NULL,
@@ -915,11 +915,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// 読み取り
-		read.create(
+		read.initialize(
 			hwnd,
 			"CTRL_READ",
 			"カーブの値を読み取り",
-			0,
+			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_READ),
 			MAKEINTRESOURCE(IDI_READ_LIGHT),
 			NULL,
@@ -929,11 +929,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// 保存
-		save.create(
+		save.initialize(
 			hwnd,
 			"CTRL_SAVE",
 			"カーブをプリセットとして保存",
-			0,
+			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_SAVE),
 			MAKEINTRESOURCE(IDI_SAVE_LIGHT),
 			NULL,
@@ -943,11 +943,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// 初期化
-		clear.create(
+		clear.initialize(
 			hwnd,
 			"CTRL_CLEAR",
 			"カーブを初期化",
-			0,
+			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_CLEAR),
 			MAKEINTRESOURCE(IDI_CLEAR_LIGHT),
 			NULL,
@@ -957,11 +957,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		);
 
 		// フィット
-		fit.create(
+		fit.initialize(
 			hwnd,
 			"CTRL_FIT",
 			"グラフをフィット",
-			0,
+			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_FIT),
 			MAKEINTRESOURCE(IDI_FIT_LIGHT),
 			NULL,

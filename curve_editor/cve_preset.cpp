@@ -24,7 +24,7 @@ cve::Preset::Preset()
 		is_id_available = true;
 
 		// 既存のプリセットのIDを検索
-		for (int i = 0; i < (int)g_presets.size(); i++) {
+		for (int i = 0; i < (int)g_presets.size; i++) {
 			if (count == g_presets[i].id) {
 				is_id_available = false;
 				break;
@@ -45,45 +45,25 @@ cve::Preset::Preset()
 //---------------------------------------------------------------------
 //		プリセット(ウィンドウ)を作成
 //---------------------------------------------------------------------
-BOOL cve::Preset::create(HWND hwnd_parent, const Curve* cv, LPTSTR nm)
+BOOL cve::Preset::initialize(HWND hwnd_p, const Curve* cv, LPTSTR nm)
 {
 	strcpy_s(name, CVE_PRESET_NAME_MAX, nm);
 	std::string class_name = "cve_preset_" + std::to_string(id);
 	curve = *cv;
-	
+	hwnd_parent = hwnd_p;
+	content_type = Button::Null;
 
-	WNDCLASSEX tmp;
-	tmp.cbSize = sizeof(tmp);
-	tmp.style = CS_HREDRAW | CS_VREDRAW;
-	tmp.lpfnWndProc = wndproc_static;
-	tmp.cbClsExtra = 0;
-	tmp.cbWndExtra = 0;
-	tmp.hInstance = g_fp->dll_hinst;
-	tmp.hIcon = NULL;
-	tmp.hIconSm = NULL;
-	tmp.hCursor = ::LoadCursor(NULL, IDC_ARROW);
-	tmp.hbrBackground = (HBRUSH)::GetStockObject(WHITE_BRUSH);
-	tmp.lpszMenuName = NULL;
-	tmp.lpszClassName = class_name.c_str();
+	RECT rect = {
+		g_config.preset_size * id,
+		0,
+		g_config.preset_size * (id + 1),
+		g_config.preset_size
+	};
 
-	if (RegisterClassEx(&tmp)) {
-		hwnd = ::CreateWindowEx(
-			NULL,
-			class_name.c_str(),
-			NULL,
-			WS_CHILD | WS_VISIBLE,
-			(g_config.preset_size + CVE_MARGIN_PRESET) * id, 0,
-			g_config.preset_size,
-			g_config.preset_size,
-			hwnd_parent,
-			NULL,
-			g_fp->dll_hinst,
-			this
-		);
-		if (hwnd != nullptr)
-			return TRUE;
-	}
-	return FALSE;
+	edge_flag = CVE_EDGE_ALL;
+
+
+	return create(hwnd_p, (LPTSTR)class_name.c_str(), wndproc_static, NULL, rect, this);
 }
 
 
@@ -118,6 +98,6 @@ LRESULT cve::Preset::wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg) {
 
 	default:
-		return ::DefWindowProc(hwnd, msg, wparam, lparam);
+		return Button::wndproc(hwnd, msg, wparam, lparam);
 	}
 }

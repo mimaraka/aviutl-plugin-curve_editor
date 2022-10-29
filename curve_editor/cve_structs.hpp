@@ -43,17 +43,16 @@ namespace cve {
 	//		テーマ
 	//---------------------------------------------------------------------
 	typedef struct tagTheme {
-		COLORREF
-			bg,
-			bg_graph,
-			sepr,
-			curve,
-			curve_trace,
-			handle,
-			bt_selected,
-			bt_unselected,
-			bt_tx,
-			bt_tx_selected;
+		COLORREF	bg,
+					bg_graph,
+					sepr,
+					curve,
+					curve_trace,
+					handle,
+					bt_selected,
+					bt_unselected,
+					bt_tx,
+					bt_tx_selected;
 	} Theme;
 
 
@@ -68,10 +67,9 @@ namespace cve {
 			Extended			// 拡張制御点
 		};
 
-		POINT
-			pt_center,
-			pt_left,
-			pt_right;
+		POINT	pt_center,
+				pt_left,
+				pt_right;
 
 		Type type;
 	} Curve_Points;

@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		ウィンドウ作成
 //---------------------------------------------------------------------
-BOOL cve::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect)
+BOOL cve::Window::create(HWND hwnd_parent, LPCTSTR class_name, WNDPROC wndproc, LONG style, const RECT& rect, LPVOID lp_param)
 {
 	WNDCLASSEX tmp;
 	tmp.cbSize = sizeof(tmp);
@@ -40,7 +40,7 @@ BOOL cve::Window::create(HWND hwnd_parent, LPTSTR class_name, WNDPROC wndproc, L
 			hwnd_parent,
 			NULL,
 			g_fp->dll_hinst,
-			NULL
+			lp_param
 		);
 		if (hwnd != nullptr)
 			return TRUE;
@@ -72,7 +72,7 @@ void cve::Window::move(const RECT& rect) const
 //---------------------------------------------------------------------
 void cve::Window::redraw() const
 {
-	::SendMessage(hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+	::PostMessage(hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 }
 
 

@@ -209,7 +209,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 
 		g_window_main.create(
 			hwnd, "WINDOW_MAIN", wndproc_main, NULL,
-			rect_wnd
+			rect_wnd, NULL
 		);
 		return 0;
 

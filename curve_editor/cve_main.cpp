@@ -22,7 +22,7 @@ cve::Window						g_window_main,
 								g_window_preset;
 cve::Graph_View_Info			g_view_info;
 FILTER*							g_fp;
-std::vector<cve::Preset>		g_presets;
+cve::Static_Array<cve::Preset, CVE_PRESET_MAX> g_presets;
 
 
 //ダークテーマ
