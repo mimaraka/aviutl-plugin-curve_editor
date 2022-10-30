@@ -30,9 +30,9 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		モード
+	//		エディットモード
 	//---------------------------------------------------------------------
-	enum Mode {
+	enum Edit_Mode {
 		Mode_Value,
 		Mode_ID
 	};
@@ -97,6 +97,11 @@ namespace cve {
 	//		設定
 	//---------------------------------------------------------------------
 	typedef struct tagConfig {
+		enum Layout_Mode {
+			Vertical,
+			Horizontal
+		};
+
 		bool	alert,
 				trace,
 				auto_copy,
@@ -110,8 +115,8 @@ namespace cve {
 				current_id,
 				preset_size;
 
-		Mode	mode;
-
-		COLORREF curve_color;
+		Edit_Mode	edit_mode;
+		Layout_Mode	layout_mode;
+		COLORREF	curve_color;
 	} Config;
 }

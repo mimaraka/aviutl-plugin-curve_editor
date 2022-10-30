@@ -59,13 +59,15 @@
 #define ID_MENU_RESET_SEPARATOR         40032
 #define ID_MENU_ID_NEXT                 40033
 #define ID_MENU_ID_BACK                 40034
+#define ID_MENU_VERTICAL                40063
+#define ID_MENU_HORIZONTAL              40064
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        137
-#define _APS_NEXT_COMMAND_VALUE         40060
+#define _APS_NEXT_COMMAND_VALUE         40065
 #define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

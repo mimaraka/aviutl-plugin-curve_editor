@@ -91,7 +91,7 @@ void cve::Bitmap_Buffer::set_size(const RECT& rect_wnd)
 //---------------------------------------------------------------------
 void cve::Bitmap_Buffer::draw_grid()
 {
-	brush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GRID)));
+	brush->SetColor(D2D1::ColorF(CHANGE_BRIGHTNESS(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GRID)));
 	// 
 	int kx = (int)std::floor(std::log(CVE_GRAPH_RESOLUTION * g_view_info.scale.x / (double)CVE_GR_GRID_MIN) / std::log(CVE_GRAPH_GRID_NUM));
 	int ky = (int)std::floor(std::log(CVE_GRAPH_RESOLUTION * g_view_info.scale.y / (double)CVE_GR_GRID_MIN) / std::log(CVE_GRAPH_GRID_NUM));
@@ -227,6 +227,24 @@ void cve::Bitmap_Buffer::draw_panel_main(const RECT& rect_sepr)
 		&style
 	);
 
+	const D2D1_POINT_2F line_start = {
+		g_config.layout_mode == cve::Config::Vertical ?
+			(rect_sepr.right + rect_sepr.left) * 0.5f - CVE_SEPARATOR_LINE_LENGTH : 
+			(float)(rect_sepr.left + CVE_SEPARATOR_WIDTH),
+		g_config.layout_mode == cve::Config::Vertical ?
+			(float)(rect_sepr.top + CVE_SEPARATOR_WIDTH) :
+			(rect_sepr.top + rect_sepr.bottom) * 0.5f - CVE_SEPARATOR_LINE_LENGTH
+	};
+
+	const D2D1_POINT_2F line_end = {
+		g_config.layout_mode == cve::Config::Vertical ?
+			(rect_sepr.right + rect_sepr.left) * 0.5f + CVE_SEPARATOR_LINE_LENGTH :
+			(float)(rect_sepr.left + CVE_SEPARATOR_WIDTH),
+		g_config.layout_mode == cve::Config::Vertical ?
+			(float)(rect_sepr.top + CVE_SEPARATOR_WIDTH) :
+			(rect_sepr.top + rect_sepr.bottom) * 0.5f + CVE_SEPARATOR_LINE_LENGTH
+	};
+
 	//Direct2D初期化
 	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
 
@@ -236,9 +254,9 @@ void cve::Bitmap_Buffer::draw_panel_main(const RECT& rect_sepr)
 		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
 
 		if (brush) g_render_target->DrawLine(
-			D2D1::Point2F((rect_sepr.right + rect_sepr.left) * 0.5f - CVE_SEPARATOR_LINE_LENGTH, (float)(rect_sepr.top + CVE_SEPARATOR_W)),
-			D2D1::Point2F((rect_sepr.right + rect_sepr.left) * 0.5f + CVE_SEPARATOR_LINE_LENGTH, (float)(rect_sepr.top + CVE_SEPARATOR_W)),
-			brush, CVE_SEPARATOR_LINE_W, style
+			line_start,
+			line_end,
+			brush, CVE_SEPARATOR_LINE_WIDTH, style
 		);
 
 		// brush->Release();
@@ -318,7 +336,7 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 
 
 	// Valueモードのとき
-	if (g_config.mode == Mode_Value) {
+	if (g_config.edit_mode == Mode_Value) {
 		curve_ptr = &g_curve_value;
 		curve_trace_ptr = &g_curve_value_previous;
 	}
@@ -338,21 +356,23 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 		//グリッド
 		draw_grid();
 
-		brush->SetColor(D2D1::ColorF(BRIGHTEN(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GR_INVALID)));
+		brush->SetColor(D2D1::ColorF(CHANGE_BRIGHTNESS(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GR_INVALID)));
 		brush->SetOpacity(0.5f);
 		if (brush) {
 			// Xが0未満1より大の部分を暗くする
 			g_render_target->FillRectangle(&rect_left, brush);
 			g_render_target->FillRectangle(&rect_right, brush);
 			// Valueモードのとき
-			if (g_config.mode == cve::Mode_Value) {
+			if (g_config.edit_mode == cve::Mode_Value) {
 				g_render_target->FillRectangle(&rect_up, brush);
 				g_render_target->FillRectangle(&rect_down, brush);
 			}
 		}
 		brush->SetOpacity(1);
 
-		curve_trace_ptr->draw_curve(brush, rect, CVE_DRAW_CURVE_TRACE);
+		if (g_config.trace)
+			curve_trace_ptr->draw_curve(brush, rect, CVE_DRAW_CURVE_TRACE);
+
 		curve_ptr->draw_curve(brush, rect, CVE_DRAW_CURVE_REGULAR);
 
 		g_render_target->EndDraw();

@@ -172,9 +172,9 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		COLORREF bg;
 		
 		if (clicked)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
+			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
+			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
 
@@ -251,9 +251,9 @@ LRESULT cve::Button_Switch::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpa
 		// 選択時
 		if (is_selected) {
 			if (clicked)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CVE_CT_BR_CLICKED);
+				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_selected, CVE_CT_BR_CLICKED);
 			else if (hovered)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_selected, CVE_CT_BR_HOVERED);
+				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_selected, CVE_CT_BR_HOVERED);
 			else
 				bg = g_theme[g_config.theme].bt_selected;
 
@@ -262,9 +262,9 @@ LRESULT cve::Button_Switch::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpa
 		// 非選択時
 		else {
 			if (clicked)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_CLICKED);
+				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_CLICKED);
 			else if (hovered)
-				bg = BRIGHTEN(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_HOVERED);
+				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_HOVERED);
 			else
 				bg = g_theme[g_config.theme].bt_unselected;
 
@@ -321,9 +321,9 @@ LRESULT cve::Button_Value::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 		LPTSTR value_4d = const_cast<LPTSTR>(str_value_4d.c_str());
 
 		if (clicked)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
+			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
+			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
 
@@ -359,9 +359,9 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		::_itoa_s(g_config.current_id, id_text, 5, 10);
 
 		if (clicked)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
+			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = BRIGHTEN(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
+			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
 		else
 			bg = g_theme[g_config.theme].bg;
 
@@ -392,7 +392,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// カーソルが動いたとき
 	case WM_MOUSEMOVE:
-		if (clicked && g_config.mode == Mode_ID) {
+		if (clicked && g_config.edit_mode == Mode_ID) {
 			is_scrolling = true;
 
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
@@ -412,7 +412,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_LBUTTONUP:
-		if (!is_scrolling && clicked && g_config.mode == Mode_ID)
+		if (!is_scrolling && clicked && g_config.edit_mode == Mode_ID)
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hw, dialogproc_id);
 		
 		is_scrolling = false;

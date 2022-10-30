@@ -45,7 +45,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 			count++;
 		}
 
-		index_script = count - index_separator - 10 + g_config.mode;
+		index_script = count - index_separator - 10 + g_config.edit_mode;
 
 		id_script = 16 + 65536 * index_script;
 		
@@ -86,7 +86,7 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		HWND hwnd_edit = ::GetWindow(hwnd, GW_CHILD);
 		TCHAR text[MAX_PATH];
 		int data;
-		if (g_config.mode == cve::Mode_ID)
+		if (g_config.edit_mode == cve::Mode_ID)
 			data = g_config.current_id;
 		else
 			data = g_curve_value.create_value_1d();

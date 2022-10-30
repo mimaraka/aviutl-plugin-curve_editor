@@ -49,13 +49,13 @@ namespace cve {
 	public:
 		// ÉTÉCÉYå≈íË
 		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
-		Mode mode = Mode_Value;
+		Edit_Mode edit_mode = Mode_Value;
 
 		Curve() { initialize(); }
 
 		// ã§í 
 		void				initialize();
-		void				set_mode(Mode md);
+		void				set_mode(Edit_Mode md);
 		void				clear();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				reverse_curve();

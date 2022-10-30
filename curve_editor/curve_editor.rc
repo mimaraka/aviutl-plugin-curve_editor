@@ -70,13 +70,13 @@ END
 
 IDD_SAVE DIALOGEX 0, 0, 228, 61
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "カーブを保存"
+CAPTION "プリセットとして保存"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,119,40,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,171,40,50,14
     EDITTEXT        IDC_EDIT_SAVE,7,20,214,14,ES_AUTOHSCROLL
-    LTEXT           "カーブ名を入力してください。(最大127文字)",IDC_STATIC,7,7,147,8
+    LTEXT           "プリセット名を入力してください。(最大127文字)",IDC_STATIC,7,7,147,8
 END
 
 IDD_VALUE DIALOGEX 0, 0, 207, 65
@@ -245,6 +245,11 @@ BEGIN
         MENUITEM "前のIDに移動\t<",                  ID_MENU_ID_BACK
         MENUITEM "次のIDに移動\t>",                  ID_MENU_ID_NEXT
         MENUITEM SEPARATOR
+        POPUP "ウィンドウのレイアウト"
+        BEGIN
+            MENUITEM "縦",                           ID_MENU_VERTICAL
+            MENUITEM "横",                           ID_MENU_HORIZONTAL
+        END
         MENUITEM "ハンドルを連動させる\tA",               ID_MENU_ALIGNHANDLE
         MENUITEM "ハンドルを表示 \tS",                 ID_MENU_SHOWHANDLE
         MENUITEM "グラフをフィット\tHome",              ID_MENU_FIT

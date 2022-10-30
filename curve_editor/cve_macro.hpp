@@ -23,8 +23,8 @@
 #define CVE_NON_CLIENT_H				36
 
 // セパレータ
-#define CVE_SEPARATOR_W					8
-#define CVE_SEPARATOR_LINE_W			3.6f
+#define CVE_SEPARATOR_WIDTH				8
+#define CVE_SEPARATOR_LINE_WIDTH		3.6f
 #define CVE_SEPARATOR_LINE_LENGTH		32
 
 // グラフ
@@ -40,21 +40,21 @@
 // ハンドル・カーブ・制御点
 #define CVE_HANDLE_LENGTH_DEFAULT		50
 #define CVE_HANDLE_THICKNESS			2.0f
-#define CVE_HANDLE_THICKNESS_PRESET		1.0f
-#define CVE_HANDLE_SIZE					5.8f
-#define CVE_HANDLE_SIZE_PRESET			2.0f
-#define CVE_HANDLE_CIRCLE_LINE			2.6f
-#define CVE_HANDLE_CIRCLE_LINE_PRESET	1.0f
+#define CVE_HANDLE_THICKNESS_PRESET		0.8f
+#define CVE_HANDLE_SIZE					5.0f
+#define CVE_HANDLE_SIZE_PRESET			0.7f
+#define CVE_HANDLE_CIRCLE_LINE			2.2f
+#define CVE_HANDLE_CIRCLE_LINE_PRESET	0.5f
 #define CVE_POINT_RANGE					10
-#define CVE_POINT_SIZE					5.0f
+#define CVE_POINT_SIZE					4.4f
 #define CVE_PONINT_SIZE_PRESET			2.0f
 #define CVE_CURVE_THICKNESS				1.2f
 #define CVE_SUBTRACT_LENGTH				10.0f
 #define CVE_SUBTRACT_LENGTH_2			8.0f
 #define CVE_CURVE_VALUE_MIN_Y			-2.73f
 #define CVE_CURVE_VALUE_MAX_Y			3.73f
-#define CVE_CURVE_DEF_1					0.4f
-#define CVE_CURVE_DEF_2					0.6f
+#define CVE_POINT_DEFAULT_1				0.4f
+#define CVE_POINT_DEFAULT_2				0.6f
 
 //フラグ
 #define BIT(num)						((UINT)1 << num)
@@ -151,7 +151,7 @@
 #define CVE_PLUGIN_YEAR						"2022"
 #define CVE_PLUGIN_INFO						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION " by " CVE_PLUGIN_DEVELOPER
 #define CVE_PLUGIN_LINK						"https://github.com/mimaraka/aviutl-plugin-curve_editor"
-#define CVE_PLUGIN_LINK_HELP				CVE_PLUGIN_LINK "#readme"
+#define CVE_PLUGIN_LINK_HELP				CVE_PLUGIN_LINK "/wiki"
 
 
 
@@ -160,12 +160,11 @@
 //---------------------------------------------------------------------
 #define CVE_STR_WARNING_DELETE				"編集中のカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
+#define CVE_STR_WARNING_DATA_INVALID		"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
 #define CVE_STR_ABOUT						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION "\n" "Copyright : (C) " CVE_PLUGIN_YEAR " " CVE_PLUGIN_DEVELOPER
-#define CVE_STR_ERROR_INPUTANAME			"プリセット名を入力してください。"
 #define CVE_STR_ERROR_OUTOFRANGE			"値が範囲外です。"
 #define CVE_STR_ERROR_INPUT_INVALID			"無効な入力値です。"
-#define CVE_STR_ERROR_DATA_INVALID			"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
-#define CVE_STR_ERROR_EXEDIT_NOT_FOUND		"拡張編集(exedit.auf)が見つかりません。"
+#define CVE_STR_ERROR_EXEDIT_NOT_FOUND		"拡張編集プラグイン(exedit.auf)が見つかりません。"
 
 
 
@@ -179,7 +178,7 @@
 #define MINMAX_LIMIT(value,minv,maxv)		(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
 #define ISINRANGE(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
 #define ISINRANGEEQ(value,minv,maxv)		(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
-#define BRIGHTEN(ref,num)					(RGB(MINMAX_LIMIT(GetRValue(ref) + num, 0, 255), MINMAX_LIMIT(GetGValue(ref) + num, 0, 255), MINMAX_LIMIT(GetBValue(ref) + num, 0, 255)))
+#define CHANGE_BRIGHTNESS(ref,num)			(RGB(MINMAX_LIMIT(GetRValue(ref) + num, 0, 255), MINMAX_LIMIT(GetGValue(ref) + num, 0, 255), MINMAX_LIMIT(GetBValue(ref) + num, 0, 255)))
 #define INVERT(ref)							(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
 #define CONTRAST(ref,val)					(RGB(MINMAX_LIMIT(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAX_LIMIT(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAX_LIMIT(127 + (GetBValue(ref) - 127) * val, 0, 255)))
 #define LARGER(val1, val2)					(((val1) > (val2))? (val1) : (val2))

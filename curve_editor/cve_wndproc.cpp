@@ -13,41 +13,42 @@
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	static BOOL is_separator_moving = FALSE;
+	static bool is_separator_moving = false;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT	rect_wnd;
 	cve::Rectangle rect_sepr, rect_header, rect_editor, rect_preset;
 	static cve::Bitmap_Buffer bitmap_buffer;
+	const bool is_vertical = g_config.layout_mode == cve::Config::Vertical;
 
 
 	::GetClientRect(hwnd, &rect_wnd);
 
 
 	rect_sepr.set(
-		0,
-		rect_wnd.bottom - g_config.separator - CVE_SEPARATOR_W,
-		rect_wnd.right,
-		rect_wnd.bottom - g_config.separator + CVE_SEPARATOR_W
+		is_vertical ? 0 : rect_wnd.right - g_config.separator - CVE_SEPARATOR_WIDTH,
+		is_vertical ? rect_wnd.bottom - g_config.separator - CVE_SEPARATOR_WIDTH : 0,
+		is_vertical? rect_wnd.right : rect_wnd.right - g_config.separator + CVE_SEPARATOR_WIDTH,
+		is_vertical ? rect_wnd.bottom - g_config.separator + CVE_SEPARATOR_WIDTH : rect_wnd.bottom
 	);
 
 	rect_header.set(
 		0,
 		0,
-		rect_wnd.right,
+		is_vertical ? rect_wnd.right : rect_wnd.right - g_config.separator - CVE_SEPARATOR_WIDTH,
 		CVE_HEADER_H
 	);
 
 	rect_editor.set(
 		0,
 		CVE_HEADER_H,
-		rect_wnd.right,
-		rect_wnd.bottom - g_config.separator - CVE_SEPARATOR_W
+		is_vertical ? rect_wnd.right : rect_wnd.right - g_config.separator - CVE_SEPARATOR_WIDTH,
+		is_vertical ? rect_wnd.bottom - g_config.separator - CVE_SEPARATOR_WIDTH : rect_wnd.bottom
 	);
 	rect_editor.set_margin(CVE_MARGIN, 0, CVE_MARGIN, CVE_MARGIN);
 
 	rect_preset.set(
-		0,
-		rect_wnd.bottom - g_config.separator + CVE_SEPARATOR_W,
+		is_vertical ? 0 : rect_wnd.right - g_config.separator + CVE_SEPARATOR_WIDTH,
+		is_vertical ? rect_wnd.bottom - g_config.separator + CVE_SEPARATOR_WIDTH : 0,
 		rect_wnd.right,
 		rect_wnd.bottom
 	);
@@ -109,21 +110,34 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_LBUTTONDOWN:
 		if (::PtInRect(&rect_sepr.rect, pt_client)) {
-			is_separator_moving = TRUE;
-			::SetCursor(LoadCursor(NULL, IDC_SIZENS));
+			is_separator_moving = true;
+			if (g_config.layout_mode == cve::Config::Vertical)
+				::SetCursor(LoadCursor(NULL, IDC_SIZENS));
+			else
+				::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 			::SetCapture(hwnd);
 		}
 		return 0;
 
 	case WM_LBUTTONUP:
-		is_separator_moving = FALSE;
+		is_separator_moving = false;
 		::ReleaseCapture();
 		return 0;
 
 	case WM_MOUSEMOVE:
-		if (::PtInRect(&rect_sepr.rect, pt_client)) ::SetCursor(LoadCursor(NULL, IDC_SIZENS));
+		if (::PtInRect(&rect_sepr.rect, pt_client)) {
+			if (g_config.layout_mode == cve::Config::Vertical)
+				::SetCursor(LoadCursor(NULL, IDC_SIZENS));
+			else
+				::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
+		}
 		if (is_separator_moving) {
-			g_config.separator = MINMAX_LIMIT(rect_wnd.bottom - pt_client.y, CVE_SEPARATOR_W, rect_wnd.bottom - CVE_SEPARATOR_W - CVE_HEADER_H);
+			if (g_config.layout_mode == cve::Config::Vertical)
+				g_config.separator = MINMAX_LIMIT(rect_wnd.bottom - pt_client.y, CVE_SEPARATOR_WIDTH, rect_wnd.bottom - CVE_SEPARATOR_WIDTH - CVE_HEADER_H);
+			
+			else
+				g_config.separator = MINMAX_LIMIT(rect_wnd.right - pt_client.x, CVE_SEPARATOR_WIDTH, rect_wnd.right - CVE_SEPARATOR_WIDTH);
+			
 			g_window_header.move(rect_header.rect);
 			g_window_editor.move(rect_editor.rect);
 			g_window_preset.move(rect_preset.rect);
@@ -253,7 +267,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_LBUTTONDOWN:
 		// Valueモードのとき
-		if (g_config.mode == cve::Mode_Value) {
+		if (g_config.edit_mode == cve::Mode_Value) {
 			g_curve_value.pt_in_ctpt(pt_client, &pt_address);
 
 			// 何らかの制御点をクリックしていた場合
@@ -298,7 +312,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_LBUTTONUP:
 		// Valueモード
-		if (g_config.mode == cve::Mode_Value) {
+		if (g_config.edit_mode == cve::Mode_Value) {
 			// 移動モード解除
 			if (g_config.auto_copy && pt_address.position != cve::Point_Address::Null)
 				::SendMessage(hwnd, WM_COMMAND, CVE_CM_COPY, 0);
@@ -330,7 +344,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_LBUTTONDBLCLK:
 		// IDモードのとき
-		if (g_config.mode == cve::Mode_ID) {
+		if (g_config.edit_mode == cve::Mode_ID) {
 			//カーソルが制御点上にあるかどうか
 			g_curve_id[g_config.current_id].pt_in_ctpt(pt_client, &pt_address);
 
@@ -394,7 +408,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//制御点移動
 		if (pt_address.position != cve::Point_Address::Null) {
 			//Valueモード
-			if (g_config.mode == cve::Mode_Value) {
+			if (g_config.edit_mode == cve::Mode_Value) {
 				g_curve_value.move_handle(pt_address, pt_graph, false);
 
 				::InvalidateRect(hwnd, NULL, FALSE);
@@ -416,7 +430,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			cve::Point_Address tmp;
 
 			//Valueモード
-			if (g_config.mode == cve::Mode_Value)
+			if (g_config.edit_mode == cve::Mode_Value)
 				g_curve_value.pt_in_ctpt(pt_client, &tmp);
 			//IDモード
 			else
@@ -544,14 +558,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// Valueモードに変更
 		case ID_MENU_MODE_VALUE:
-			g_config.mode = cve::Mode_Value;
+			g_config.edit_mode = cve::Mode_Value;
 			::InvalidateRect(hwnd, NULL, FALSE);
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CT_MODE_VALUE, 0);
 			return 0;
 
 		// IDモードに変更
 		case ID_MENU_MODE_ID:
-			g_config.mode = cve::Mode_ID;
+			g_config.edit_mode = cve::Mode_ID;
 			::InvalidateRect(hwnd, NULL, FALSE);
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CT_MODE_ID, 0);
 			return 0;
@@ -573,7 +587,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_REVERSE:
 		case CVE_CM_REVERSE:
 			// Valueモード
-			if (g_config.mode == cve::Mode_Value)
+			if (g_config.edit_mode == cve::Mode_Value)
 				g_curve_value.reverse_curve();
 			// IDモード
 			else
@@ -604,7 +618,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				);
 
 			if (response == IDOK) {
-				if (g_config.mode == cve::Mode_Value) {
+				if (g_config.edit_mode == cve::Mode_Value) {
 					g_curve_value.clear();
 
 					::PostMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_VALUE_REDRAW, 0);
@@ -621,7 +635,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// すべてのカーブを削除
 		case ID_MENU_DELETE_ALL:
-			if (g_config.mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_ID) {
 				int response = IDOK;
 				if (g_config.alert && !lparam)
 					response = ::MessageBox(
@@ -674,7 +688,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// 値をコピー
 		case ID_MENU_COPY:
 		case CVE_CM_COPY:
-			if (g_config.mode == cve::Mode_Value) {
+			if (g_config.edit_mode == cve::Mode_Value) {
 				TCHAR result_str[12];
 				int result = g_curve_value.create_value_1d();
 				//文字列へ変換
@@ -686,7 +700,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// 値をコピー(4次元)
 		case ID_MENU_COPY4D:
-			if (g_config.mode == cve::Mode_Value) {
+			if (g_config.edit_mode == cve::Mode_Value) {
 				std::string str_result = g_curve_value.create_value_4d();
 				LPCTSTR result = str_result.c_str();
 				
@@ -716,7 +730,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// セパレータの位置を初期化
 		case ID_MENU_RESET_SEPARATOR:
-			g_config.separator = CVE_SEPARATOR_W;
+			g_config.separator = CVE_SEPARATOR_WIDTH;
 			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 			return 0;
 
@@ -728,6 +742,18 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// 次のIDに移動
 		case ID_MENU_ID_NEXT:
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_NEXT, 0);
+			return 0;
+
+		case ID_MENU_VERTICAL:
+			g_config.layout_mode = cve::Config::Vertical;
+
+			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			return 0;
+
+		case ID_MENU_HORIZONTAL:
+			g_config.layout_mode = cve::Config::Horizontal;
+
+			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 			return 0;
 		}
 		return 0;
@@ -984,7 +1010,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CVE_EDGE_ALL
 		);
 
-		if (g_config.mode == cve::Mode_ID) {
+		if (g_config.edit_mode == cve::Mode_ID) {
 			mode_id.set_status(TRUE);
 			value.hide();
 		}
@@ -1041,7 +1067,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// モード(Value)スイッチ
 		case CVE_CT_MODE_VALUE:
-			g_config.mode = cve::Mode_Value;
+			g_config.edit_mode = cve::Mode_Value;
 			mode_value.set_status(TRUE);
 			mode_id.set_status(FALSE);
 			value.show();
@@ -1053,7 +1079,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// モード(ID)スイッチ
 		case CVE_CT_MODE_ID:
-			g_config.mode = cve::Mode_ID;
+			g_config.edit_mode = cve::Mode_ID;
 			mode_value.set_status(FALSE);
 			mode_id.set_status(TRUE);
 			value.hide();
@@ -1065,7 +1091,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// 前のIDのカーブに移動
 		case CVE_CM_ID_BACK:
-			if (g_config.mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_ID) {
 				g_config.current_id--;
 				g_config.current_id = MINMAX_LIMIT(g_config.current_id, 0, CVE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
@@ -1076,7 +1102,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// 次のIDのカーブに移動
 		case CVE_CM_ID_NEXT:
-			if (g_config.mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_ID) {
 				g_config.current_id++;
 				g_config.current_id = MINMAX_LIMIT(g_config.current_id, 0, CVE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
@@ -1086,7 +1112,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			return 0;
 
 		case CVE_CM_CHANGE_ID:
-			if (g_config.mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_ID) {
 				g_config.current_id = MINMAX_LIMIT(lparam, 0, CVE_CURVE_MAX - 1);
 				g_curve_id_previous = g_curve_id[g_config.current_id];
 				id_id.redraw();

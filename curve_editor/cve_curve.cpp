@@ -25,8 +25,8 @@ void cve::Curve::initialize()
 	pt_add[0].type = Curve_Points::Default_Left;
 	pt_add[0].pt_center = { 0, 0 };
 	pt_add[0].pt_right = {
-		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1),
-		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1)
+		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1),
+		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1)
 	};
 	pt_add[0].pt_left = { 0, 0 };
 
@@ -41,8 +41,8 @@ void cve::Curve::initialize()
 	};
 
 	pt_add[1].pt_left = {
-		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2),
-		(int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2)
+		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2),
+		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)
 	};
 
 	pt_add[1].pt_right = {
@@ -58,9 +58,9 @@ void cve::Curve::initialize()
 //---------------------------------------------------------------------
 //		初期化2
 //---------------------------------------------------------------------
-void cve::Curve::set_mode(Mode md)
+void cve::Curve::set_mode(Edit_Mode md)
 {
-	mode = md;
+	edit_mode = md;
 }
 
 
@@ -595,7 +595,7 @@ void cve::Curve::add_point(const POINT& pt_graph)
 	// ・ポイントの個数が最大
 	// ・追加するポイントのX座標が範囲外
 	// のいずれかの場合
-	if (mode == Mode_Value ||
+	if (edit_mode == Mode_Value ||
 		ctpts.size >= CVE_POINT_MAX ||
 		!ISINRANGE(pt_graph.x, 0, CVE_GRAPH_RESOLUTION))
 		return;
@@ -1031,7 +1031,7 @@ void cve::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, i
 		curve_color = g_theme[g_config.theme].curve_trace;
 	}
 	else {
-		handle_color = RGB(255, 255, 255);
+		handle_color = RGB(180, 180, 180);
 		curve_color = RGB(255, 255, 255);
 	}
 

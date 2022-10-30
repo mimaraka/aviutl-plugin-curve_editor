@@ -96,8 +96,10 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		if (::PtInRect(&color_curve, pt_client))
+		if (::PtInRect(&color_curve, pt_client)) {
 			click = true;
+			::SetCursor(::LoadCursor(NULL, IDC_HAND));
+		}
 		
 		return 0;
 
@@ -117,6 +119,8 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			::InvalidateRect(hwnd, NULL, FALSE);
 		}
+		click = false;
+
 		return 0;
 
 	case WM_COMMAND:
@@ -267,7 +271,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 					return 0;
 				}
-				if (g_config.mode == cve::Mode_Value)
+				if (g_config.edit_mode == cve::Mode_Value)
 					g_curve_value.read_value_1d(value);
 				else
 					g_curve_id[g_config.current_id].read_value_1d(value);
@@ -294,7 +298,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	HWND edit;
-	char buffer[CVE_PRESET_NAME_MAX];
+	char buffer[CVE_PRESET_NAME_MAX] = "";
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -309,19 +313,15 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (LOWORD(wparam)) {
 		case IDOK:
 		{
-			cve::Curve* curve_ptr = (g_config.mode == cve::Mode_Value) ? &g_curve_value : &g_curve_id[g_config.current_id];
+			cve::Curve* curve_ptr = (g_config.edit_mode == cve::Mode_Value) ? &g_curve_value : &g_curve_id[g_config.current_id];
 			const cve::Preset preset;
 
 			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, CVE_PRESET_NAME_MAX);
 
-			if (strlen(buffer) > 0) {
-				g_presets.PushBack(preset);
-				g_presets[g_presets.size - 1].initialize(g_window_preset.hwnd, curve_ptr, buffer);
+			g_presets.PushBack(preset);
+			g_presets[g_presets.size - 1].initialize(g_window_preset.hwnd, curve_ptr, buffer);
 
-				::EndDialog(hwnd, 1);
-			}
-			else if (g_config.alert)
-				::MessageBox(hwnd, CVE_STR_ERROR_INPUTANAME, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			::EndDialog(hwnd, 1);
 
 			return 0;
 		}

@@ -111,7 +111,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 
 					response = ::MessageBox(
 						fp->hwnd,
-						CVE_STR_ERROR_DATA_INVALID,
+						CVE_STR_WARNING_DATA_INVALID,
 						CVE_PLUGIN_NAME,
 						MB_OKCANCEL | MB_ICONEXCLAMATION
 					);
@@ -123,10 +123,10 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 				}
 			}
 		}
-
-
-		
 	}
+	else
+		::PostMessage(g_window_editor.hwnd, WM_COMMAND, ID_MENU_DELETE_ALL, TRUE);
+
 	return TRUE;
 }
 
@@ -163,16 +163,17 @@ void ini_load_configs(FILTER* fp)
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
 	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1)), 0, CVE_GRAPH_RESOLUTION);
-	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_1));
-	g_curve_value.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2)), 0, CVE_GRAPH_RESOLUTION);
-	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CVE_GRAPH_RESOLUTION * CVE_CURVE_DEF_2));
-	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CVE_SEPARATOR_W);
-	g_config.mode = (cve::Mode)fp->exfunc->ini_load_int(fp, "mode", 0);
+	g_curve_value.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1)), 0, CVE_GRAPH_RESOLUTION);
+	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1));
+	g_curve_value.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)), 0, CVE_GRAPH_RESOLUTION);
+	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2));
+	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CVE_SEPARATOR_WIDTH);
+	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp, "edit_mode", cve::Mode_Value);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", true);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", true);
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CVE_DEF_PRESET_SIZE);
 	g_config.curve_color = fp->exfunc->ini_load_int(fp, "curve_color", CVE_CURVE_COLOR_DEFAULT);
+	g_config.layout_mode = (cve::Config::Layout_Mode)fp->exfunc->ini_load_int(fp, "layout_mode", cve::Config::Vertical);
 }
 
 
@@ -187,9 +188,10 @@ void ini_write_configs(FILTER* fp)
 	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpts[1].pt_left.x);
 	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpts[1].pt_left.y);
 	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
-	fp->exfunc->ini_save_int(fp, "mode", g_config.mode);
+	fp->exfunc->ini_save_int(fp, "edit_mode", g_config.edit_mode);
 	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
 	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
+	fp->exfunc->ini_save_int(fp, "layout_mode", g_config.layout_mode);
 }
 
 
@@ -228,7 +230,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		mmi = (MINMAXINFO*)lparam;
 		mmi->ptMaxTrackSize.x = CVE_MAX_W;
 		mmi->ptMaxTrackSize.y = CVE_MAX_H;
-		mmi->ptMinTrackSize.y = g_config.separator + CVE_SEPARATOR_W + CVE_HEADER_H + CVE_NON_CLIENT_H;
+		mmi->ptMinTrackSize.y = g_config.separator + CVE_SEPARATOR_WIDTH + CVE_HEADER_H + CVE_NON_CLIENT_H;
 		return 0;
 
 	case WM_KEYDOWN:

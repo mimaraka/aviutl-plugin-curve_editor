@@ -111,10 +111,16 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	mi->fMask = MIIM_STATE;
 
 	// Value/ID
-	mi->fState = g_config.mode == cve::Mode_ID ? MFS_CHECKED : MFS_UNCHECKED;
+	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo(menu, ID_MENU_MODE_ID, FALSE, mi);
-	mi->fState = g_config.mode == cve::Mode_ID ? MFS_UNCHECKED : MFS_CHECKED;
+	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_UNCHECKED : MFS_CHECKED;
 	SetMenuItemInfo(menu, ID_MENU_MODE_VALUE, FALSE, mi);
+
+	// レイアウトモード
+	mi->fState = g_config.layout_mode == cve::Config::Vertical ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(menu, ID_MENU_VERTICAL, FALSE, mi);
+	mi->fState = g_config.layout_mode == cve::Config::Vertical ? MFS_UNCHECKED : MFS_CHECKED;
+	SetMenuItemInfo(menu, ID_MENU_HORIZONTAL, FALSE, mi);
 
 	//その他
 	mi->fState = g_config.show_handle ? MFS_CHECKED : MFS_UNCHECKED;
@@ -125,15 +131,17 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	// ボタンを無効化/有効化
 	// IDモードで有効化
 	// チェックボックスが存在する場合
-	mi->fState |= g_config.mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState |= g_config.edit_mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 	// チェックボックスが存在しない場合
-	mi->fState = g_config.mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
+	SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
+	SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
 
 	// Valueモードで有効化
-	mi->fState = g_config.mode == cve::Mode_ID ? MFS_DISABLED : MFS_ENABLED;
+	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_DISABLED : MFS_ENABLED;
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
@@ -160,7 +168,7 @@ LRESULT cve::on_keydown(WPARAM wparam)
 
 		//[C]
 	case 67:
-		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.mode == cve::Mode_Value)
+		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.edit_mode == cve::Mode_Value)
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_COPY, 0);
 		return 0;
 
@@ -174,13 +182,13 @@ LRESULT cve::on_keydown(WPARAM wparam)
 
 		//[<]
 	case VK_LEFT:
-		if (g_config.mode == cve::Mode_ID && g_window_header.hwnd)
+		if (g_config.edit_mode == cve::Mode_ID && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_BACK, 0);
 		return 0;
 
 		//[>]
 	case VK_RIGHT:
-		if (g_config.mode == cve::Mode_ID && g_window_header.hwnd)
+		if (g_config.edit_mode == cve::Mode_ID && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_NEXT, 0);
 		return 0;
 
