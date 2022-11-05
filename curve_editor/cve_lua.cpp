@@ -13,17 +13,29 @@
 //---------------------------------------------------------------------
 int get_result(lua_State* L)
 {
-	// index:	カーブのID
+	// mode:	編集モード
+	// index:	カーブの数値またはID
 	// ratio:	進捗(0~1)
 	// st:		トラックバーでの開始時の値
 	// ed:		トラックバーでの終了時の値
-	int		index = lua_tointeger(L, 1);
-	double	ratio = lua_tonumber(L, 2);
-	double	st = lua_tonumber(L, 3);
-	double	ed = lua_tonumber(L, 4);
+	int		mode = lua_tointeger(L, 1);
+	int		num = lua_tointeger(L, 2);
+	double	ratio = lua_tonumber(L, 3);
+	double	st = lua_tonumber(L, 4);
+	double	ed = lua_tonumber(L, 5);
 
-	if (index < 0 || index > CVE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_curve_id[index].id_create_result(ratio, st, ed));
+	switch (mode) {
+	case cve::Mode_Normal:
+	{
+
+		break;
+	}
+		
+	}
+
+
+	if (num < 0 || num > CVE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
+	else lua_pushnumber(L, g_curve_mb[num].create_result_id(ratio, st, ed));
 	return 1;
 }
 

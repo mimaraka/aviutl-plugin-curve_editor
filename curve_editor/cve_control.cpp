@@ -32,7 +32,10 @@ BOOL cve::Button::initialize(
 	content_type = cont_type;
 
 	if (content_type == Button::String) {
-		label = (LPTSTR)lb;
+		if (lb != nullptr)
+			strcpy_s(label, CVE_CT_LABEL_MAX, lb);
+		else
+			label[0] = NULL;
 	}
 	else if (content_type == Button::Icon) {
 		icon_res_dark = (LPTSTR)ico_res_dark;
@@ -55,8 +58,15 @@ BOOL cve::Button::initialize(
 //---------------------------------------------------------------------
 //		コントロール描画用の関数
 //---------------------------------------------------------------------
-void cve::Button::draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content)
+void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content, bool change_color)
 {
+	if (change_color) {
+		if (clicked)
+			bg = CHANGE_BRIGHTNESS(bg, CVE_CT_BR_CLICKED);
+		else if (hovered)
+			bg = CHANGE_BRIGHTNESS(bg, CVE_CT_BR_HOVERED);
+	}
+
 	bitmap_buffer.d2d_setup(TO_BGR(bg));
 
 	::SetBkColor(bitmap_buffer.hdc_memory, bg);
@@ -69,7 +79,7 @@ void cve::Button::draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content)
 			bitmap_buffer.hdc_memory,
 			content,
 			strlen(content),
-			&rect_wnd,
+			rect_content,
 			DT_CENTER | DT_VCENTER | DT_NOCLIP | DT_SINGLELINE
 		);
 
@@ -79,12 +89,20 @@ void cve::Button::draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content)
 	else if (content_type == Button::Icon) {
 		::DrawIcon(
 			bitmap_buffer.hdc_memory,
-			(rect_wnd.right - CVE_ICON_SIZE) / 2,
-			(rect_wnd.bottom - CVE_ICON_SIZE) / 2,
+			(rect_content->right - CVE_ICON_SIZE) / 2,
+			(rect_content->bottom - CVE_ICON_SIZE) / 2,
 			g_config.theme ? icon_light : icon_dark
 		);
 	}
+}
 
+
+
+//---------------------------------------------------------------------
+//		ラウンドエッジを描画
+//---------------------------------------------------------------------
+void cve::Button::draw_edge()
+{
 	if (g_render_target != nullptr) {
 		g_render_target->BeginDraw();
 
@@ -92,8 +110,27 @@ void cve::Button::draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content)
 
 		g_render_target->EndDraw();
 	}
+}
 
-	bitmap_buffer.transfer();
+
+
+//---------------------------------------------------------------------
+//		フォントを設定
+//---------------------------------------------------------------------
+void cve::Button::set_font(int font_height, LPTSTR font_name)
+{
+	font = ::CreateFont(
+		font_height, 0,
+		0, 0,
+		FW_REGULAR,
+		FALSE, FALSE, FALSE,
+		SHIFTJIS_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		NULL,
+		font_name
+	);
 }
 
 
@@ -138,19 +175,7 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		tme.dwFlags = TME_LEAVE;
 		tme.hwndTrack = hw;
 
-		// フォント
-		font = ::CreateFont(
-			CVE_CT_FONT_H, 0,
-			0, 0,
-			FW_REGULAR,
-			FALSE, FALSE, FALSE,
-			ANSI_CHARSET,
-			OUT_DEFAULT_PRECIS,
-			CLIP_DEFAULT_PRECIS,
-			DEFAULT_QUALITY,
-			NULL,
-			CVE_FONT_YU_GOTHIC
-		);
+		set_font(CVE_CT_FONT_H, CVE_FONT_SEMIBOLD);
 		return 0;
 
 	case WM_CLOSE:
@@ -169,18 +194,14 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	// 描画
 	case WM_PAINT:
 	{
-		COLORREF bg;
-		
-		if (clicked)
-			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
-		else if (hovered)
-			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
-		else
-			bg = g_theme[g_config.theme].bg;
+		COLORREF bg = g_theme[g_config.theme].bg;
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw_content(bg, rect_wnd, label);
+		draw_content(bg, &rect_wnd, label, true);
+		draw_edge();
+		bitmap_buffer.transfer();
+
 		return 0;
 	}
 
@@ -224,6 +245,16 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		case CVE_CM_REDRAW:
 			::InvalidateRect(hw, NULL, FALSE);
 			return 0;
+
+		case CVE_CM_CHANGE_LABEL:
+		{
+			int len_src = strlen((LPTSTR)lparam);
+			int len_dst = strlen(label);
+
+			strcpy_s(label, CVE_CT_LABEL_MAX, (LPTSTR)lparam);
+			::InvalidateRect(hw, NULL, FALSE);
+			return 0;
+		}
 		}
 		return 0;
 
@@ -271,7 +302,10 @@ LRESULT cve::Button_Switch::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpa
 			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 		}
 
-		draw_content(bg, rect_wnd, label);
+		draw_content(bg, &rect_wnd, label, false);
+		draw_edge();
+		bitmap_buffer.transfer();
+
 		return 0;
 	}
 
@@ -285,10 +319,8 @@ LRESULT cve::Button_Switch::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpa
 		}
 		::InvalidateRect(hw, NULL, FALSE);
 		return 0;
-
-	default:
-		return Button::wndproc(hw, msg, wparam, lparam);
 	}
+	return Button::wndproc(hw, msg, wparam, lparam);
 }
 
 
@@ -316,26 +348,20 @@ LRESULT cve::Button_Value::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 	switch (msg) {
 	case WM_PAINT:
 	{
-		COLORREF bg;
-		std::string str_value_4d = g_curve_value.create_value_4d();
+		COLORREF bg = g_theme[g_config.theme].bg;
+		std::string str_value_4d = g_curve_normal.create_parameters();
 		LPTSTR value_4d = const_cast<LPTSTR>(str_value_4d.c_str());
-
-		if (clicked)
-			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
-		else if (hovered)
-			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
-		else
-			bg = g_theme[g_config.theme].bg;
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw_content(bg, rect_wnd, value_4d);
+		draw_content(bg, &rect_wnd, value_4d, true);
+		draw_edge();
+		bitmap_buffer.transfer();
+
 		return 0;
 	}
-
-	default:
-		return Button::wndproc(hw, msg, wparam, lparam);
 	}
+	return Button::wndproc(hw, msg, wparam, lparam);
 }
 
 
@@ -353,21 +379,17 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg) {
 	case WM_PAINT:
 	{
-		COLORREF bg;
+		COLORREF bg = g_theme[g_config.theme].bg;
 		TCHAR id_text[5];
 
 		::_itoa_s(g_config.current_id, id_text, 5, 10);
 
-		if (clicked)
-			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_CLICKED);
-		else if (hovered)
-			bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bg, CVE_CT_BR_HOVERED);
-		else
-			bg = g_theme[g_config.theme].bg;
-
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw_content(bg, rect_wnd, id_text);
+		draw_content(bg, &rect_wnd, id_text, true);
+		draw_edge();
+		bitmap_buffer.transfer();
+
 		return 0;
 	}
 
@@ -392,13 +414,13 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// カーソルが動いたとき
 	case WM_MOUSEMOVE:
-		if (clicked && g_config.edit_mode == Mode_ID) {
+		if (clicked && g_config.edit_mode == Mode_Multibezier) {
 			is_scrolling = true;
 
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 
 			g_config.current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CVE_CURVE_MAX - 1);
-			g_curve_id_previous = g_curve_id[g_config.current_id];
+			g_curve_mb_previous = g_curve_mb[g_config.current_id];
 
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 		}
@@ -412,7 +434,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_LBUTTONUP:
-		if (!is_scrolling && clicked && g_config.edit_mode == Mode_ID)
+		if (!is_scrolling && clicked && g_config.edit_mode == Mode_Multibezier)
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hw, dialogproc_id);
 		
 		is_scrolling = false;
@@ -422,8 +444,99 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		::InvalidateRect(hw, NULL, FALSE);
 
 		return 0;
-
-	default:
-		return Button::wndproc(hw, msg, wparam, lparam);
 	}
+	return Button::wndproc(hw, msg, wparam, lparam);
+}
+
+
+
+//---------------------------------------------------------------------
+//		ウィンドウプロシージャ(カテゴリー)
+//---------------------------------------------------------------------
+LRESULT cve::Button_Category::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	RECT rect_wnd;
+	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+
+	::GetClientRect(hw, &rect_wnd);
+
+	switch (msg) {
+	case WM_CREATE:
+	{
+		LRESULT result = Button::wndproc(hw, msg, wparam, lparam);
+
+		set_font(14, CVE_FONT_REGULAR);
+
+		return result;
+	}
+
+	case WM_PAINT:
+	{
+		COLORREF bg = g_theme[g_config.theme].bg;
+		COLORREF text_color;
+
+		if (clicked)
+			text_color = CHANGE_BRIGHTNESS(g_theme[g_config.theme].preset_tx, CVE_CT_BR_CLICKED);
+		else if (hovered)
+			text_color = CHANGE_BRIGHTNESS(g_theme[g_config.theme].preset_tx, CVE_CT_BR_HOVERED);
+		else
+			text_color = g_theme[g_config.theme].preset_tx;
+
+		::SetTextColor(bitmap_buffer.hdc_memory, text_color);
+
+		draw_content(bg, &rect_wnd, "▼ Default(23)", false);
+		bitmap_buffer.transfer();
+
+		return 0;
+	}
+
+	case WM_LBUTTONUP:
+		if (clicked) {
+
+		}
+		return 0;
+	}
+	return Button::wndproc(hw, msg, wparam, lparam);
+}
+
+
+
+//---------------------------------------------------------------------
+//		ウィンドウプロシージャ(色)
+//---------------------------------------------------------------------
+LRESULT cve::Button_Color::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	RECT rect_wnd;
+
+	::GetClientRect(hwnd, &rect_wnd);
+
+	switch (msg) {
+	case WM_CREATE:
+		bg_color = NULL;
+		break;
+
+	case WM_PAINT:
+	{
+		COLORREF bg = bg_color;
+
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
+
+		draw_content(bg, &rect_wnd, label, true);
+		draw_edge();
+		bitmap_buffer.transfer();
+
+		return 0;
+	}
+
+	case WM_COMMAND:
+		switch (wparam) {
+		case CVE_CM_CHANGE_COLOR:
+			bg_color = (COLORREF)lparam;
+			::InvalidateRect(hw, NULL, FALSE);
+
+			return 0;
+		}
+		break;
+	}
+	return Button::wndproc(hw, msg, wparam, lparam);
 }

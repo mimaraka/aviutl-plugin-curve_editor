@@ -273,21 +273,7 @@ void cve::Bitmap_Buffer::draw_panel_main(const RECT& rect_sepr)
 //---------------------------------------------------------------------
 //		ヘッダパネルを描画
 //---------------------------------------------------------------------
-void cve::Bitmap_Buffer::draw_panel_header()
-{
-	//Direct2D初期化
-	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
-
-	//ビットマップをバッファから画面に転送
-	transfer();
-}
-
-
-
-//---------------------------------------------------------------------
-//		プリセットパネルを描画
-//---------------------------------------------------------------------
-void cve::Bitmap_Buffer::draw_panel_preset()
+void cve::Bitmap_Buffer::draw_panel()
 {
 	//Direct2D初期化
 	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
@@ -335,15 +321,15 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 	};
 
 
-	// Valueモードのとき
-	if (g_config.edit_mode == Mode_Value) {
-		curve_ptr = &g_curve_value;
-		curve_trace_ptr = &g_curve_value_previous;
+	// 標準モードのとき
+	if (g_config.edit_mode == Mode_Normal) {
+		curve_ptr = &g_curve_normal;
+		curve_trace_ptr = &g_curve_normal_previous;
 	}
-	// IDモードのとき
+	// マルチベジェモードのとき
 	else {
-		curve_ptr = &g_curve_id[g_config.current_id];
-		curve_trace_ptr = &g_curve_id_previous;
+		curve_ptr = &g_curve_mb[g_config.current_id];
+		curve_trace_ptr = &g_curve_mb_previous;
 	}
 
 	//Direct2D初期化
@@ -362,8 +348,8 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 			// Xが0未満1より大の部分を暗くする
 			g_render_target->FillRectangle(&rect_left, brush);
 			g_render_target->FillRectangle(&rect_right, brush);
-			// Valueモードのとき
-			if (g_config.edit_mode == cve::Mode_Value) {
+			// 標準モードのとき
+			if (g_config.edit_mode == cve::Mode_Normal) {
 				g_render_target->FillRectangle(&rect_up, brush);
 				g_render_target->FillRectangle(&rect_down, brush);
 			}
@@ -371,9 +357,9 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 		brush->SetOpacity(1);
 
 		if (g_config.trace)
-			curve_trace_ptr->draw_curve(brush, rect, CVE_DRAW_CURVE_TRACE);
+			curve_trace_ptr->draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
-		curve_ptr->draw_curve(brush, rect, CVE_DRAW_CURVE_REGULAR);
+		curve_ptr->draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 
 		g_render_target->EndDraw();
 	}

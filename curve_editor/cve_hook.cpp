@@ -20,7 +20,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		int index_separator = -1;
 		int index_script;
 		int id_script;
-		LPCSTR script_name = "Value@" CVE_PLUGIN_NAME;
+		LPCSTR script_name_normal = CVE_STR_MODE_NORMAL "@" CVE_PLUGIN_NAME;
 		TCHAR menu_label[MAX_PATH];
 
 		static MENUITEMINFO minfo;
@@ -39,7 +39,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 			else if (minfo.fType & MFT_SEPARATOR) {
 				index_separator = count;
 			}
-			else if (strcmp(menu_label, script_name) == 0) {
+			else if (strcmp(menu_label, script_name_normal) == 0) {
 				break;
 			}
 			count++;
@@ -86,10 +86,10 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		HWND hwnd_edit = ::GetWindow(hwnd, GW_CHILD);
 		TCHAR text[MAX_PATH];
 		int data;
-		if (g_config.edit_mode == cve::Mode_ID)
+		if (g_config.edit_mode == cve::Mode_Multibezier)
 			data = g_config.current_id;
 		else
-			data = g_curve_value.create_value_1d();
+			data = g_curve_normal.create_value_1d();
 		::_itoa_s(data, text, MAX_PATH, 10);
 		::SendMessage(hwnd_edit, WM_SETTEXT, 0, (LPARAM)text);
 		::PostMessage(hwnd, WM_COMMAND, IDOK, 0);

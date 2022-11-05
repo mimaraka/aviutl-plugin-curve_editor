@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------
 // ウィンドウ
 #define CVE_MARGIN						6
-#define CVE_MARGIN_PRESET				5
+#define CVE_MARGIN_PRESET				8
 #define CVE_MAX_W						1920
 #define CVE_MAX_H						1080
 #define CVE_DEF_W						360
@@ -69,8 +69,8 @@
 //---------------------------------------------------------------------
 //		コントロール
 //---------------------------------------------------------------------
-#define CVE_CT_MODE_VALUE				0x0400
-#define CVE_CT_MODE_ID					0x0401
+#define CVE_CT_EDIT_MODE_NORMAL			0x0400
+#define CVE_CT_EDIT_MODE_MULTIBEZIER	0x0401
 #define CVE_CT_ALIGN					0x0402
 #define CVE_CT_PREV						0x0403
 #define CVE_CT_PREV_DUR					0x0404
@@ -78,6 +78,8 @@
 #define CVE_CT_ID_NEXT					0x0406
 #define CVE_CT_ID						0x0407
 #define CVE_CT_SETSTATUS				0x0408
+#define CVE_CT_COLOR_CURVE				0x0409
+#define CVE_CT_EDIT_MODE						0x040a
 
 #define CVE_CT_UPPER_H					30
 #define CVE_CT_LOWER_H					40
@@ -86,6 +88,8 @@
 
 #define CVE_COEF_MOVE_DEFAULT			9
 #define CVE_COEF_MOVE_FAST				1
+
+#define CVE_CT_LABEL_MAX				64
 
 
 
@@ -99,7 +103,7 @@
 #define CVE_CM_CLEAR					0x0804
 #define CVE_CM_FIT						0x0805
 #define CVE_CM_REVERSE					0x0806
-#define CVE_CM_SHOWHANDLE				0x0807
+#define CVE_CM_SHOW_HANDLE				0x0807
 #define CVE_CM_CHANGE_ID				0x0808
 #define CVE_CM_SELECTED					0x0809
 #define CVE_CM_ID_NEXT					0x080a
@@ -107,6 +111,9 @@
 #define CVE_CM_REDRAW_AVIUTL			0x080c
 #define CVE_CM_VALUE					0x080d
 #define CVE_CM_VALUE_REDRAW				0x080e
+#define CVE_CM_PRESET_MOVE				0x080f
+#define CVE_CM_CHANGE_COLOR				0x0810
+#define CVE_CM_CHANGE_LABEL				0x0811
 
 
 
@@ -121,8 +128,10 @@
 #define CVE_CT_BR_SWITCH				-20					//選択していない状態
 // アイコン
 #define CVE_ICON_SIZE					32
+
 // フォント
-#define CVE_FONT_YU_GOTHIC				"Yu Gothic UI Semibold"
+#define CVE_FONT_REGULAR				"Yu Gothic UI Regular"
+#define CVE_FONT_SEMIBOLD				"Yu Gothic UI Semibold"
 
 #define CVE_DRAW_CURVE_REGULAR			0
 #define CVE_DRAW_CURVE_TRACE			1
@@ -133,12 +142,22 @@
 
 
 //---------------------------------------------------------------------
+//		ライブラリ・プリセット
+//---------------------------------------------------------------------
+#define CVE_PRESET_NUM_DEFAULT			40
+#define CVE_PRESET_NUM_CUSTOM			2048
+#define CVE_PRESET_NAME_MAX				128
+#define CVE_LIBRARY_SEARCHBAR_HEIGHT	36
+#define CVE_PRESET_TITLE_HEIGHT			16
+
+
+
+//---------------------------------------------------------------------
 //		その他
 //---------------------------------------------------------------------
 #define CVE_POINT_MAX					64					// 変更不可
 #define CVE_CURVE_MAX					1024				// 変更不可
-#define CVE_PRESET_MAX					2048
-#define CVE_PRESET_NAME_MAX				128
+#define CVE_VALUE_RESOLUTION			1000
 
 
 
@@ -158,6 +177,11 @@
 //---------------------------------------------------------------------
 //		文字列
 //---------------------------------------------------------------------
+#define CVE_STR_MODE_NORMAL					"標準"
+#define CVE_STR_MODE_MULTIBEZIER			"マルチベジェ"
+#define CVE_STR_MODE_ELASTIC				"振動"
+#define CVE_STR_MODE_BOUNCE					"弾性"
+#define CVE_STR_MODE_VALUE					"数値指定"
 #define CVE_STR_WARNING_DELETE				"編集中のカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DATA_INVALID		"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"

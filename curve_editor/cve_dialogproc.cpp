@@ -6,10 +6,10 @@
 
 #include "cve_header.hpp"
 
-#define CVE_REGEX_VALUE				R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
+#define CVE_REGEX_VALUE					R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
 #define CVE_REGEX_FLOW_1				R"()"
 #define CVE_REGEX_FLOW_2				R"(^\s*\[\s*(\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\},)+\s*\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\}\s*\]\s*$)"
-#define CVE_REGEX_CEP				R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
+#define CVE_REGEX_CEP					R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
 
 
 
@@ -20,7 +20,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
 	static HWND combo;
 	static COLORREF cust_colors[16];
-	static bool click = false;
+	static cve::Button bt_color_curve;
 
 	RECT color_curve = {
 		306,
@@ -40,6 +40,19 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_INITDIALOG:
+		bt_color_curve.initialize(
+			hwnd,
+			"DIALOG_CTRL_COLOR_CURVE",
+			NULL,
+			cve::Button::Null,
+			NULL, NULL,
+			nullptr,
+			CVE_CT_COLOR_CURVE,
+			color_curve,
+			CVE_EDGE_ALL
+		);
+		::SendMessage(bt_color_curve.hwnd, WM_COMMAND, CVE_CM_CHANGE_COLOR, (LPARAM)g_config.curve_color);
+
 		if (g_config.trace)
 			::SendMessage(
 				::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
@@ -68,59 +81,8 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		return 0;
 
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-
-		HBRUSH brush = ::CreateSolidBrush(g_config.curve_color);
-		HPEN pen = ::CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-
-		HDC hdc = ::BeginPaint(hwnd, &ps);
-
-		::SelectObject(hdc, brush);
-		::SelectObject(hdc, pen);
-
-		::Rectangle(hdc, color_curve.left, color_curve.top, color_curve.right, color_curve.bottom);
-
-		::DeleteObject(brush);
-		::DeleteObject(pen);
-
-		::EndPaint(hwnd, &ps);
-	}
-		return 0;
-
-	case WM_MOUSEMOVE:
-		if (::PtInRect(&color_curve, pt_client))
-			::SetCursor(::LoadCursor(NULL, IDC_HAND));
-
-		return 0;
-
-	case WM_LBUTTONDOWN:
-		if (::PtInRect(&color_curve, pt_client)) {
-			click = true;
-			::SetCursor(::LoadCursor(NULL, IDC_HAND));
-		}
-		
-		return 0;
-
-	case WM_LBUTTONUP:
-		if (::PtInRect(&color_curve, pt_client) && click) {
-			CHOOSECOLOR cc;
-
-			cc.lStructSize = sizeof(CHOOSECOLOR);
-			cc.hwndOwner = hwnd;
-			cc.rgbResult = g_config.curve_color;
-			cc.lpCustColors = cust_colors;
-			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
-
-			::ChooseColor(&cc);
-
-			g_config.curve_color = cc.rgbResult;
-
-			::InvalidateRect(hwnd, NULL, FALSE);
-		}
-		click = false;
-
+	case WM_SIZE:
+		bt_color_curve.move(color_curve);
 		return 0;
 
 	case WM_COMMAND:
@@ -157,6 +119,25 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			::EndDialog(hwnd, 1);
 
 			return 0;
+
+		case CVE_CT_COLOR_CURVE:
+		{
+			CHOOSECOLOR cc;
+
+			cc.lStructSize = sizeof(CHOOSECOLOR);
+			cc.hwndOwner = hwnd;
+			cc.rgbResult = g_config.curve_color;
+			cc.lpCustColors = cust_colors;
+			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+
+			::ChooseColor(&cc);
+
+			g_config.curve_color = cc.rgbResult;
+
+			::InvalidateRect(hwnd, NULL, FALSE);
+			::SendMessage(bt_color_curve.hwnd, WM_COMMAND, CVE_CM_CHANGE_COLOR, (LPARAM)g_config.curve_color);
+		}
+			return 0;
 		}
 	}
 	return 0;
@@ -165,9 +146,9 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 
 //---------------------------------------------------------------------
-//		ダイアログプロシージャ（カーブ値の設定）
+//		ダイアログプロシージャ（カーブのパラメータの設定）
 //---------------------------------------------------------------------
-BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK dialogproc_param_normal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	TCHAR buffer[30];
 	std::regex re(CVE_REGEX_VALUE);
@@ -175,6 +156,10 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	switch (msg) {
 	case WM_CLOSE:
 		::EndDialog(hwnd, 1);
+		return 0;
+
+	case WM_INITDIALOG:
+		::SetFocus(::GetDlgItem(hwnd, IDC_EDIT_VALUE));
 		return 0;
 
 	case WM_COMMAND:
@@ -200,10 +185,10 @@ BOOL CALLBACK dialogproc_value(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 					CVE_CURVE_VALUE_MAX_Y
 				);
 
-				g_curve_value.ctpts[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
-				g_curve_value.ctpts[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);
-				g_curve_value.ctpts[1].pt_left.x = (int)(values[2] * CVE_GRAPH_RESOLUTION);
-				g_curve_value.ctpts[1].pt_left.y = (int)(values[3] * CVE_GRAPH_RESOLUTION);
+				g_curve_normal.ctpts[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
+				g_curve_normal.ctpts[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);
+				g_curve_normal.ctpts[1].pt_left.x = (int)(values[2] * CVE_GRAPH_RESOLUTION);
+				g_curve_normal.ctpts[1].pt_left.y = (int)(values[3] * CVE_GRAPH_RESOLUTION);
 
 				::EndDialog(hwnd, 1);
 			}
@@ -239,6 +224,8 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_INITDIALOG:
 		edit = ::GetDlgItem(hwnd, IDC_EDIT_READ);
 		::SendMessage(edit, EM_SETLIMITTEXT, 11, 0);
+		::SetFocus(edit);
+
 		return 0;
 
 	case WM_CLOSE:
@@ -271,10 +258,10 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 					return 0;
 				}
-				if (g_config.edit_mode == cve::Mode_Value)
-					g_curve_value.read_value_1d(value);
+				if (g_config.edit_mode == cve::Mode_Normal)
+					g_curve_normal.read_value_1d(value);
 				else
-					g_curve_id[g_config.current_id].read_value_1d(value);
+					g_curve_mb[g_config.current_id].read_value_1d(value);
 
 				::EndDialog(hwnd, 1);
 			}
@@ -304,22 +291,27 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_CLOSE:
 		::EndDialog(hwnd, 1);
 		return 0;
+
 	case WM_INITDIALOG:
 		edit = ::GetDlgItem(hwnd, IDC_EDIT_SAVE);
 		::SendMessage(edit, EM_SETLIMITTEXT, CVE_PRESET_NAME_MAX, 0);
+		::SetFocus(edit);
+
 		return 0;
 
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
 		{
-			cve::Curve* curve_ptr = (g_config.edit_mode == cve::Mode_Value) ? &g_curve_value : &g_curve_id[g_config.current_id];
+			cve::Curve* curve_ptr = (g_config.edit_mode == cve::Mode_Normal) ? &g_curve_normal : &g_curve_mb[g_config.current_id];
 			const cve::Preset preset;
 
 			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, CVE_PRESET_NAME_MAX);
 
-			g_presets.PushBack(preset);
-			g_presets[g_presets.size - 1].initialize(g_window_preset.hwnd, curve_ptr, buffer);
+			g_presets_custom.PushBack(preset);
+			g_presets_custom[g_presets_custom.size - 1].initialize(g_window_preset_list.hwnd, curve_ptr, buffer);
+
+			::SendMessage(g_window_preset_list.hwnd, WM_COMMAND, CVE_CM_PRESET_MOVE, 0);
 
 			::EndDialog(hwnd, 1);
 
@@ -353,6 +345,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	case WM_INITDIALOG:
 		edit = ::GetDlgItem(hwnd, IDC_EDIT_ID);
 		::SendMessage(edit, EM_SETLIMITTEXT, 4, 0);
+		::SetFocus(edit);
 		return 0;
 
 	case WM_CLOSE:

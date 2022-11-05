@@ -16,7 +16,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static bool is_separator_moving = false;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT	rect_wnd;
-	cve::Rectangle rect_sepr, rect_header, rect_editor, rect_preset;
+	cve::Rectangle rect_sepr, rect_header, rect_editor, rect_library;
 	static cve::Bitmap_Buffer bitmap_buffer;
 	const bool is_vertical = g_config.layout_mode == cve::Config::Vertical;
 
@@ -46,7 +46,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	);
 	rect_editor.set_margin(CVE_MARGIN, 0, CVE_MARGIN, CVE_MARGIN);
 
-	rect_preset.set(
+	rect_library.set(
 		is_vertical ? 0 : rect_wnd.right - g_config.separator + CVE_SEPARATOR_WIDTH,
 		is_vertical ? rect_wnd.bottom - g_config.separator + CVE_SEPARATOR_WIDTH : 0,
 		rect_wnd.right,
@@ -86,13 +86,13 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		);
 
 		// プリセットパネル
-		g_window_preset.create(
+		g_window_library.create(
 			hwnd,
 			"WINDOW_PRESET",
-			wndproc_preset,
+			wndproc_library,
 			NULL,
 			NULL,
-			rect_preset.rect, NULL
+			rect_library.rect, NULL
 		);
 
 		return 0;
@@ -105,7 +105,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		bitmap_buffer.set_size(rect_wnd);
 		g_window_header.move(rect_header.rect);
 		g_window_editor.move(rect_editor.rect);
-		g_window_preset.move(rect_preset.rect);
+		g_window_library.move(rect_library.rect);
 		return 0;
 
 	case WM_LBUTTONDOWN:
@@ -138,9 +138,10 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			else
 				g_config.separator = MINMAX_LIMIT(rect_wnd.right - pt_client.x, CVE_SEPARATOR_WIDTH, rect_wnd.right - CVE_SEPARATOR_WIDTH);
 			
+			::SetActiveWindow(g_window_library.hwnd);
 			g_window_header.move(rect_header.rect);
 			g_window_editor.move(rect_editor.rect);
-			g_window_preset.move(rect_preset.rect);
+			g_window_library.move(rect_library.rect);
 			::InvalidateRect(hwnd, NULL, FALSE);
 		}
 		return 0;
@@ -151,10 +152,10 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			::InvalidateRect(hwnd, NULL, FALSE);
 			g_window_header.move(rect_header.rect);
 			g_window_editor.move(rect_editor.rect);
-			g_window_preset.move(rect_preset.rect);
+			g_window_library.move(rect_library.rect);
 			g_window_header.redraw();
 			g_window_editor.redraw();
-			g_window_preset.redraw();
+			g_window_library.redraw();
 		}
 
 	default:
@@ -227,7 +228,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		bitmap_buffer.set_size(rect_wnd);
 
 		// メニュー
-		menu = ::GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU1)), 0);
+		menu = ::GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU_EDITOR)), 0);
 
 		minfo.cbSize = sizeof(MENUITEMINFO);
 
@@ -237,8 +238,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		obj_buttons.init(hwnd_obj);
 
-		g_curve_value_previous = g_curve_value;
-		g_curve_id_previous = g_curve_id[g_config.current_id];
+		g_curve_normal_previous = g_curve_normal;
+		g_curve_mb_previous = g_curve_mb[g_config.current_id];
 
 		g_view_info.fit(rect_wnd);
 
@@ -266,32 +267,32 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(左クリックがされたとき)
 		///////////////////////////////////////////
 	case WM_LBUTTONDOWN:
-		// Valueモードのとき
-		if (g_config.edit_mode == cve::Mode_Value) {
-			g_curve_value.pt_in_ctpt(pt_client, &pt_address);
+		// 標準モードのとき
+		if (g_config.edit_mode == cve::Mode_Normal) {
+			g_curve_normal.pt_in_ctpt(pt_client, &pt_address);
 
 			// 何らかの制御点をクリックしていた場合
 			if (pt_address.position != cve::Point_Address::Null) {
-				g_curve_value_previous = g_curve_value;
+				g_curve_normal_previous = g_curve_normal;
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
 				::SetCapture(hwnd);
 
 				return 0;
 			}
 		}
-		// IDモードのとき
+		// マルチベジェモードのとき
 		else {
-			g_curve_id[g_config.current_id].pt_in_ctpt(pt_client, &pt_address);
+			g_curve_mb[g_config.current_id].pt_in_ctpt(pt_client, &pt_address);
 
 			// 何らかの制御点をクリックしていた場合
 			if (pt_address.position != cve::Point_Address::Null) {
 				// ハンドルの座標を記憶
 				if (pt_address.position == cve::Point_Address::Center)
-					g_curve_id[g_config.current_id].move_point(pt_address.index, pt_graph, true);
+					g_curve_mb[g_config.current_id].move_point(pt_address.index, pt_graph, true);
 				else
-					g_curve_id[g_config.current_id].move_handle(pt_address, pt_graph, true);
+					g_curve_mb[g_config.current_id].move_handle(pt_address, pt_graph, true);
 
-				g_curve_id_previous = g_curve_id[g_config.current_id];
+				g_curve_mb_previous = g_curve_mb[g_config.current_id];
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
 				::SetCapture(hwnd);
 
@@ -311,8 +312,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(マウスの左ボタンが離されたとき)
 		///////////////////////////////////////////
 	case WM_LBUTTONUP:
-		// Valueモード
-		if (g_config.edit_mode == cve::Mode_Value) {
+		// 標準モード
+		if (g_config.edit_mode == cve::Mode_Normal) {
 			// 移動モード解除
 			if (g_config.auto_copy && pt_address.position != cve::Point_Address::Null)
 				::SendMessage(hwnd, WM_COMMAND, CVE_CM_COPY, 0);
@@ -343,16 +344,16 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(マウスの左ボタンがダブルクリックされたとき)
 		///////////////////////////////////////////
 	case WM_LBUTTONDBLCLK:
-		// IDモードのとき
-		if (g_config.edit_mode == cve::Mode_ID) {
+		// マルチベジェモードのとき
+		if (g_config.edit_mode == cve::Mode_Multibezier) {
 			//カーソルが制御点上にあるかどうか
-			g_curve_id[g_config.current_id].pt_in_ctpt(pt_client, &pt_address);
+			g_curve_mb[g_config.current_id].pt_in_ctpt(pt_client, &pt_address);
 
 			if (pt_address.position == cve::Point_Address::Center)
-				g_curve_id[g_config.current_id].delete_point(pt_client);
+				g_curve_mb[g_config.current_id].delete_point(pt_client);
 			else if (ISINRANGEEQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
-				g_curve_id_previous = g_curve_id[g_config.current_id];
-				g_curve_id[g_config.current_id].add_point(pt_graph);
+				g_curve_mb_previous = g_curve_mb[g_config.current_id];
+				g_curve_mb[g_config.current_id].add_point(pt_graph);
 			}
 
 			::InvalidateRect(hwnd, NULL, FALSE);
@@ -407,19 +408,19 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//制御点移動
 		if (pt_address.position != cve::Point_Address::Null) {
-			//Valueモード
-			if (g_config.edit_mode == cve::Mode_Value) {
-				g_curve_value.move_handle(pt_address, pt_graph, false);
+			//標準モード
+			if (g_config.edit_mode == cve::Mode_Normal) {
+				g_curve_normal.move_handle(pt_address, pt_graph, false);
 
 				::InvalidateRect(hwnd, NULL, FALSE);
 				::PostMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_VALUE_REDRAW, 0);
 			}
-			//IDモード
+			//マルチベジェモード
 			else {
 				if (pt_address.position == cve::Point_Address::Center)
-					g_curve_id[g_config.current_id].move_point(pt_address.index, pt_graph, false);
+					g_curve_mb[g_config.current_id].move_point(pt_address.index, pt_graph, false);
 				else
-					g_curve_id[g_config.current_id].move_handle(pt_address, pt_graph, false);
+					g_curve_mb[g_config.current_id].move_handle(pt_address, pt_graph, false);
 
 				::InvalidateRect(hwnd, NULL, FALSE);
 			}
@@ -429,12 +430,12 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		if (!is_dragging) {
 			cve::Point_Address tmp;
 
-			//Valueモード
-			if (g_config.edit_mode == cve::Mode_Value)
-				g_curve_value.pt_in_ctpt(pt_client, &tmp);
-			//IDモード
+			//標準モード
+			if (g_config.edit_mode == cve::Mode_Normal)
+				g_curve_normal.pt_in_ctpt(pt_client, &tmp);
+			//マルチベジェモード
 			else
-				g_curve_id[g_config.current_id].pt_in_ctpt(pt_client, &tmp);
+				g_curve_mb[g_config.current_id].pt_in_ctpt(pt_client, &tmp);
 
 			if (tmp.position != cve::Point_Address::Null)
 				::SetCursor(::LoadCursor(NULL, IDC_HAND));
@@ -556,18 +557,18 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
-		// Valueモードに変更
-		case ID_MENU_MODE_VALUE:
-			g_config.edit_mode = cve::Mode_Value;
+		// 標準モードに変更
+		case ID_MENU_MODE_NORMAL:
+			g_config.edit_mode = cve::Mode_Normal;
 			::InvalidateRect(hwnd, NULL, FALSE);
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CT_MODE_VALUE, 0);
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_NORMAL, 0);
 			return 0;
 
-		// IDモードに変更
-		case ID_MENU_MODE_ID:
-			g_config.edit_mode = cve::Mode_ID;
+		// マルチベジェモードに変更
+		case ID_MENU_MODE_MULTIBEZIER:
+			g_config.edit_mode = cve::Mode_Multibezier;
 			::InvalidateRect(hwnd, NULL, FALSE);
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CT_MODE_ID, 0);
+			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_MULTIBEZIER, 0);
 			return 0;
 
 		// グラフをフィット
@@ -586,19 +587,19 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// カーブを反転
 		case ID_MENU_REVERSE:
 		case CVE_CM_REVERSE:
-			// Valueモード
-			if (g_config.edit_mode == cve::Mode_Value)
-				g_curve_value.reverse_curve();
-			// IDモード
+			// 標準モード
+			if (g_config.edit_mode == cve::Mode_Normal)
+				g_curve_normal.reverse_curve();
+			// マルチベジェモード
 			else
-				g_curve_id[g_config.current_id].reverse_curve();
+				g_curve_mb[g_config.current_id].reverse_curve();
 			
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
 		// ハンドルを表示
 		case ID_MENU_SHOWHANDLE:
-		case CVE_CM_SHOWHANDLE:
+		case CVE_CM_SHOW_HANDLE:
 			g_config.show_handle = g_config.show_handle ? 0 : 1;
 
 			::InvalidateRect(hwnd, NULL, FALSE);
@@ -618,13 +619,13 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				);
 
 			if (response == IDOK) {
-				if (g_config.edit_mode == cve::Mode_Value) {
-					g_curve_value.clear();
+				if (g_config.edit_mode == cve::Mode_Normal) {
+					g_curve_normal.clear();
 
 					::PostMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_VALUE_REDRAW, 0);
 				}
 				else	
-					g_curve_id[g_config.current_id].clear();
+					g_curve_mb[g_config.current_id].clear();
 
 				::InvalidateRect(hwnd, NULL, FALSE);
 				// Aviutlを再描画
@@ -635,7 +636,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// すべてのカーブを削除
 		case ID_MENU_DELETE_ALL:
-			if (g_config.edit_mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_Multibezier) {
 				int response = IDOK;
 				if (g_config.alert && !lparam)
 					response = ::MessageBox(
@@ -647,8 +648,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 				if (response == IDOK || lparam) {
 					for (int i = 0; i < CVE_CURVE_MAX; i++) {
-						g_curve_id[i].clear();
-						g_curve_id[i].set_mode(cve::Mode_ID);
+						g_curve_mb[i].clear();
+						g_curve_mb[i].set_mode(cve::Mode_Multibezier);
 					}
 
 					::InvalidateRect(hwnd, NULL, FALSE);
@@ -663,7 +664,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		{
 			std::string info;
 			info = "ID : " + std::to_string(g_config.current_id) + "\n"
-				+ "ポイント数 : " + std::to_string(g_curve_id[g_config.current_id].ctpts.size);
+				+ "ポイント数 : " + std::to_string(g_curve_mb[g_config.current_id].ctpts.size);
 			::MessageBox(
 				hwnd,
 				info.c_str(),
@@ -688,9 +689,9 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// 値をコピー
 		case ID_MENU_COPY:
 		case CVE_CM_COPY:
-			if (g_config.edit_mode == cve::Mode_Value) {
+			if (g_config.edit_mode == cve::Mode_Normal) {
 				TCHAR result_str[12];
-				int result = g_curve_value.create_value_1d();
+				int result = g_curve_normal.create_value_1d();
 				//文字列へ変換
 				::_itoa_s(result, result_str, 12, 10);
 				//コピー
@@ -700,8 +701,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// 値をコピー(4次元)
 		case ID_MENU_COPY4D:
-			if (g_config.edit_mode == cve::Mode_Value) {
-				std::string str_result = g_curve_value.create_value_4d();
+			if (g_config.edit_mode == cve::Mode_Normal) {
+				std::string str_result = g_curve_normal.create_parameters();
 				LPCTSTR result = str_result.c_str();
 				
 				cve::copy_to_clipboard(hwnd, result);
@@ -748,12 +749,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_config.layout_mode = cve::Config::Vertical;
 
 			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			g_view_info.fit(rect_wnd);
 			return 0;
 
 		case ID_MENU_HORIZONTAL:
 			g_config.layout_mode = cve::Config::Horizontal;
 
 			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			g_view_info.fit(rect_wnd);
 			return 0;
 		}
 		return 0;
@@ -773,21 +776,23 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
 	RECT rect_wnd;
 
+	static HMENU menu;
+	static MENUITEMINFO minfo;
+
 	static cve::Bitmap_Buffer bitmap_buffer;
 	static cve::Button	copy,
 						read,
 						save,
 						clear,
 						fit,
+						mode,
 						id_back,
 						id_next;
 
-	static cve::Button_Switch mode_value, mode_id;
 	static cve::Button_Value value;
 	static cve::Button_ID id_id;
 
 	cve::Rectangle		rect_lower_buttons,
-						rect_mode_buttons,
 						rect_id_buttons;
 
 	RECT				rect_copy,
@@ -795,11 +800,23 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 						rect_save,
 						rect_clear,
 						rect_fit,
-						rect_mode_value,
-						rect_mode_id,
+						rect_mode,
 						rect_id_back,
 						rect_id_id,
 						rect_id_next;
+
+	POINT			pt_client = {
+		GET_X_LPARAM(lparam),
+		GET_Y_LPARAM(lparam)
+	};
+
+	LPCTSTR str_mode[] = {
+		CVE_STR_MODE_NORMAL,
+		CVE_STR_MODE_MULTIBEZIER,
+		CVE_STR_MODE_ELASTIC,
+		CVE_STR_MODE_BOUNCE,
+		CVE_STR_MODE_VALUE
+	};
 
 
 	::GetClientRect(hwnd, &rect_wnd);
@@ -813,12 +830,12 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	);
 
 	// Value/IDスイッチが並んだRECT
-	rect_mode_buttons.set(
+	rect_mode = {
 		CVE_MARGIN,
 		CVE_MARGIN,
 		(rect_wnd.right - CVE_MARGIN) / 2,
 		CVE_MARGIN + CVE_CT_UPPER_H
-	);
+	};
 
 	// IDのボタンが並んだRECT
 	rect_id_buttons.set(
@@ -827,11 +844,6 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		rect_wnd.right - CVE_MARGIN,
 		CVE_MARGIN + CVE_CT_UPPER_H
 	);
-
-	LPRECT mode_buttons[] = {
-		&rect_mode_value,
-		&rect_mode_id
-	};
 
 	LPRECT lower_buttons[] = {
 		&rect_copy,
@@ -848,7 +860,6 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	};
 
 	rect_lower_buttons.divide(lower_buttons, NULL, 5);
-	rect_mode_buttons.divide(mode_buttons, NULL, 2);
 	rect_id_buttons.divide(id_buttons, NULL, 3);
 
 	switch (msg) {
@@ -860,30 +871,21 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);
 
-		// モード(Value)スイッチ
-		mode_value.initialize(
-			hwnd,
-			"CTRL_MODE_VALUE",
-			NULL,
-			cve::Button::String,
-			NULL, NULL,
-			"Value",
-			CVE_CT_MODE_VALUE,
-			rect_mode_value,
-			CVE_EDGE_LT | CVE_EDGE_LB
-		);
+		// メニュー
+		menu = ::GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU_MODE)), 0);
+		minfo.cbSize = sizeof(MENUITEMINFO);
 
-		// モード(ID)スイッチ
-		mode_id.initialize(
+		// モード選択ボタン
+		mode.initialize(
 			hwnd,
-			"CTRL_MODE_ID",
+			"CTRL_MODE",
 			NULL,
 			cve::Button::String,
 			NULL, NULL,
-			"ID",
-			CVE_CT_MODE_ID,
-			rect_mode_id,
-			CVE_EDGE_RT | CVE_EDGE_RB
+			str_mode[g_config.edit_mode],
+			CVE_CT_EDIT_MODE,
+			rect_mode,
+			CVE_EDGE_LT | CVE_EDGE_LB
 		);
 
 		// 値
@@ -1010,12 +1012,10 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CVE_EDGE_ALL
 		);
 
-		if (g_config.edit_mode == cve::Mode_ID) {
-			mode_id.set_status(TRUE);
+		if (g_config.edit_mode == cve::Mode_Multibezier) {
 			value.hide();
 		}
 		else {
-			mode_value.set_status(TRUE);
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
@@ -1025,8 +1025,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_SIZE:
 		bitmap_buffer.set_size(rect_wnd);
 
-		mode_value.move(rect_mode_value);
-		mode_id.move(rect_mode_id);
+		mode.move(rect_mode);
 
 		value.move(rect_id_buttons.rect);
 
@@ -1042,15 +1041,14 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_PAINT:
-		bitmap_buffer.draw_panel_header();
+		bitmap_buffer.draw_panel();
 		return 0;
 
 	case WM_COMMAND:
 		switch (wparam) {
 		case CVE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
-			mode_value.redraw();
-			mode_id.redraw();
+			mode.redraw();
 
 			value.redraw();
 
@@ -1065,36 +1063,60 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			fit.redraw();
 			return 0;
 
-		// モード(Value)スイッチ
-		case CVE_CT_MODE_VALUE:
-			g_config.edit_mode = cve::Mode_Value;
-			mode_value.set_status(TRUE);
-			mode_id.set_status(FALSE);
+		// 編集モード選択ボタン
+		case CVE_CT_EDIT_MODE:
+		{
+			minfo.fMask = MIIM_STATE;
+
+			int edit_mode_menu_id[] = {
+				ID_MODE_NORMAL,
+				ID_MODE_MULTIBEZIER
+			};
+
+			// モードのチェック
+			for (int i = 0; i < sizeof(edit_mode_menu_id) / sizeof(int); i++) {
+				minfo.fState = g_config.edit_mode == i ? MFS_CHECKED : MFS_UNCHECKED;
+				SetMenuItemInfo(menu, edit_mode_menu_id[i], FALSE, &minfo);
+			}
+
+			::ClientToScreen(hwnd, &pt_client);
+			::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN, pt_client.x, pt_client.y, 0, hwnd, NULL);
+
+			return 0;
+		}
+
+		// 標準モード
+		case CVE_CT_EDIT_MODE_NORMAL:
+		case ID_MODE_NORMAL:
+			g_config.edit_mode = cve::Mode_Normal;
+			::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
 			value.show();
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+
 			return 0;
 
-		// モード(ID)スイッチ
-		case CVE_CT_MODE_ID:
-			g_config.edit_mode = cve::Mode_ID;
-			mode_value.set_status(FALSE);
-			mode_id.set_status(TRUE);
+		// マルチベジェモード
+		case CVE_CT_EDIT_MODE_MULTIBEZIER:
+		case ID_MODE_MULTIBEZIER:
+			g_config.edit_mode = cve::Mode_Multibezier;
+			::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
 			value.hide();
 			id_id.show();
 			id_back.show();
 			id_next.show();
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+
 			return 0;
 
 		// 前のIDのカーブに移動
 		case CVE_CM_ID_BACK:
-			if (g_config.edit_mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_Multibezier) {
 				g_config.current_id--;
 				g_config.current_id = MINMAX_LIMIT(g_config.current_id, 0, CVE_CURVE_MAX - 1);
-				g_curve_id_previous = g_curve_id[g_config.current_id];
+				g_curve_mb_previous = g_curve_mb[g_config.current_id];
 				id_id.redraw();
 				g_window_editor.redraw();
 			}
@@ -1102,19 +1124,19 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// 次のIDのカーブに移動
 		case CVE_CM_ID_NEXT:
-			if (g_config.edit_mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_Multibezier) {
 				g_config.current_id++;
 				g_config.current_id = MINMAX_LIMIT(g_config.current_id, 0, CVE_CURVE_MAX - 1);
-				g_curve_id_previous = g_curve_id[g_config.current_id];
+				g_curve_mb_previous = g_curve_mb[g_config.current_id];
 				id_id.redraw();
 				g_window_editor.redraw();
 			}
 			return 0;
 
 		case CVE_CM_CHANGE_ID:
-			if (g_config.edit_mode == cve::Mode_ID) {
+			if (g_config.edit_mode == cve::Mode_Multibezier) {
 				g_config.current_id = MINMAX_LIMIT(lparam, 0, CVE_CURVE_MAX - 1);
-				g_curve_id_previous = g_curve_id[g_config.current_id];
+				g_curve_mb_previous = g_curve_mb[g_config.current_id];
 				id_id.redraw();
 				g_window_editor.redraw();
 			}
@@ -1125,7 +1147,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			return 0;
 
 		case CVE_CM_VALUE:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_VALUE), hwnd, dialogproc_value);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PARAM), hwnd, dialogproc_param_normal);
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 			return 0;
 
@@ -1160,15 +1182,23 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ（プリセットパネル）
+//		ウィンドウプロシージャ（ライブラリ）
 //---------------------------------------------------------------------
-LRESULT CALLBACK wndproc_preset(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	POINT			pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
-	RECT			rect_wnd;
+	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+	RECT rect_wnd;
+	cve::Rectangle rect_preset_list;
 	static cve::Bitmap_Buffer bitmap_buffer;
 
 	::GetClientRect(hwnd, &rect_wnd);
+
+	rect_preset_list.set(
+		0,
+		CVE_LIBRARY_SEARCHBAR_HEIGHT + CVE_MARGIN * 2,
+		rect_wnd.right,
+		rect_wnd.bottom
+	);
 
 
 	switch (msg) {
@@ -1179,20 +1209,101 @@ LRESULT CALLBACK wndproc_preset(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);
+
+		g_window_preset_list.create(
+			hwnd,
+			"WINDOW_PRESET_LIST",
+			wndproc_preset_list,
+			NULL,
+			CS_DBLCLKS,
+			rect_preset_list.rect,
+			NULL
+		);
+
 		return 0;
 
 	case WM_SIZE:
 		bitmap_buffer.set_size(rect_wnd);
+		g_window_preset_list.move(rect_preset_list.rect);
 		return 0;
 
 	case WM_PAINT:
-		bitmap_buffer.draw_panel_preset();
+		bitmap_buffer.draw_panel();
 		return 0;
 
 	case WM_COMMAND:
 		switch (wparam) {
 		case CVE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
+			g_window_preset_list.redraw();
+			return 0;
+		}
+		return 0;
+
+	default:
+		return ::DefWindowProc(hwnd, msg, wparam, lparam);
+	}
+}
+
+
+
+//---------------------------------------------------------------------
+//		ウィンドウプロシージャ（プリセットリスト）
+//---------------------------------------------------------------------
+LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	RECT rect_wnd;
+	static cve::Bitmap_Buffer bitmap_buffer;
+
+	::GetClientRect(hwnd, &rect_wnd);
+
+	switch (msg) {
+	case WM_CLOSE:
+		bitmap_buffer.exit();
+		return 0;
+
+	case WM_CREATE:
+		bitmap_buffer.init(hwnd);
+		bitmap_buffer.set_size(rect_wnd);
+
+		return 0;
+
+	case WM_SIZE:
+		bitmap_buffer.set_size(rect_wnd);
+		for (int i = 0; i < g_presets_custom.size; i++) {
+			g_presets_custom[i].move(rect_wnd.right, i);
+		}
+
+		return 0;
+
+	case WM_PAINT:
+		bitmap_buffer.draw_panel();
+		return 0;
+
+	case WM_MOUSEWHEEL:
+		::ScrollWindowEx(
+			hwnd,
+			0,
+			GET_Y_LPARAM(wparam) / 3,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			//MAKEWPARAM(SW_INVALIDATE | SW_SCROLLCHILDREN | SW_SMOOTHSCROLL, 100)
+			SW_INVALIDATE | SW_SCROLLCHILDREN
+		);
+		return 0;
+
+	case WM_COMMAND:
+		switch (wparam) {
+		case CVE_CM_REDRAW:
+			::InvalidateRect(hwnd, NULL, FALSE);
+			return 0;
+
+		case CVE_CM_PRESET_MOVE:
+			for (int i = 0; i < g_presets_custom.size; i++) {
+				g_presets_custom[i].move(rect_wnd.right, i);
+			}
 			return 0;
 		}
 		return 0;

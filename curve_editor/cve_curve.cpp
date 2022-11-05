@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
-//		ソースファイル (IDモードでのカーブの関数)
+//		ソースファイル (カーブ)
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
@@ -500,7 +500,7 @@ int cve::Curve::create_value_1d()
 //---------------------------------------------------------------------
 //		値を生成(4次元)
 //---------------------------------------------------------------------
-std::string cve::Curve::create_value_4d()
+std::string cve::Curve::create_parameters()
 {
 	Float_Point pt;
 	std::string strx, stry, result;
@@ -591,11 +591,11 @@ void cve::Curve::add_point(const POINT& pt_graph)
 {
 	int index = 0;
 
-	// ・モードがValueモード
+	// ・モードが標準モード
 	// ・ポイントの個数が最大
 	// ・追加するポイントのX座標が範囲外
 	// のいずれかの場合
-	if (edit_mode == Mode_Value ||
+	if (edit_mode == Mode_Normal ||
 		ctpts.size >= CVE_POINT_MAX ||
 		!ISINRANGE(pt_graph.x, 0, CVE_GRAPH_RESOLUTION))
 		return;
@@ -896,8 +896,14 @@ void cve::Curve::reverse_curve()
 //---------------------------------------------------------------------
 //		ベジェ曲線を描画
 //---------------------------------------------------------------------
-void cve::Curve::draw_bezier(ID2D1SolidColorBrush* brush,
-	const Float_Point& stpt, const Float_Point& ctpt1, const Float_Point& ctpt2, const Float_Point& edpt, float thickness)
+void cve::Curve::draw_bezier(
+	Bitmap_Buffer* bitmap_buffer,
+	const Float_Point& stpt,
+	const Float_Point& ctpt1,
+	const Float_Point& ctpt2,
+	const Float_Point& edpt,
+	float thickness
+)
 {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* bezier;
@@ -930,7 +936,7 @@ void cve::Curve::draw_bezier(ID2D1SolidColorBrush* brush,
 	sink->Close();
 
 	if (bezier)
-		g_render_target->DrawGeometry(bezier, brush, thickness, style);
+		g_render_target->DrawGeometry(bezier, bitmap_buffer->brush, thickness, style);
 }
 
 
@@ -938,7 +944,7 @@ void cve::Curve::draw_bezier(ID2D1SolidColorBrush* brush,
 //---------------------------------------------------------------------
 //		ハンドルを描画
 //---------------------------------------------------------------------
-void cve::Curve::draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st, const Float_Point& ed, int drawing_mode)
+void cve::Curve::draw_handle(Bitmap_Buffer* bitmap_buffer, const Float_Point& st, const Float_Point& ed, int drawing_mode)
 {
 	static ID2D1StrokeStyle* style = nullptr;
 
@@ -972,7 +978,7 @@ void cve::Curve::draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st,
 		g_render_target->DrawLine(
 			D2D1::Point2F(st_new.x, st_new.y),
 			D2D1::Point2F(ed_new.x, ed_new.y),
-			brush, handle_thickness
+			bitmap_buffer->brush, handle_thickness
 		);
 
 		// ハンドルの先端
@@ -980,7 +986,7 @@ void cve::Curve::draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st,
 			D2D1::Ellipse(
 				D2D1::Point2F(ed.x, ed.y),
 				handle_size, handle_size),
-			brush, CVE_HANDLE_CIRCLE_LINE
+			bitmap_buffer->brush, CVE_HANDLE_CIRCLE_LINE
 		);
 
 		// ハンドルの根元
@@ -988,7 +994,7 @@ void cve::Curve::draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st,
 			D2D1::Ellipse(
 				D2D1::Point2F(st.x, st.y),
 				point_size, point_size),
-			brush
+			bitmap_buffer->brush
 		);
 	}
 }
@@ -998,13 +1004,15 @@ void cve::Curve::draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st,
 //---------------------------------------------------------------------
 //		カーブを描画
 //---------------------------------------------------------------------
-void cve::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int drawing_mode)
+void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode)
 {
 	COLORREF handle_color;
 	COLORREF curve_color;
 
 	static ID2D1StrokeStyle* style_dash;
 	const float dashes[] = { CVE_GRAPH_POINT_DASH, CVE_GRAPH_POINT_DASH_BLANK };
+
+	const bool is_preset = drawing_mode == CVE_DRAW_CURVE_PRESET;
 
 	if (style_dash == nullptr) {
 		g_d2d1_factory->CreateStrokeStyle(
@@ -1022,56 +1030,56 @@ void cve::Curve::draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, i
 		);
 	}
 
-	if (drawing_mode == 0) {
+	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
 		handle_color = g_theme[g_config.theme].handle;
 		curve_color = g_config.curve_color;
 	}
-	else if (drawing_mode == 1) {
+	else if (drawing_mode == CVE_DRAW_CURVE_TRACE) {
 		handle_color = g_theme[g_config.theme].handle;
 		curve_color = g_theme[g_config.theme].curve_trace;
 	}
 	else {
-		handle_color = RGB(180, 180, 180);
-		curve_color = RGB(255, 255, 255);
+		handle_color = g_theme[g_config.theme].handle_preset;
+		curve_color = g_theme[g_config.theme].curve_prset;
 	}
 
 
 	for (int i = 0; i < (int)ctpts.size - 1; i++)
 	{
 		// 端点以外の制御点に引かれる点線
-		if (drawing_mode == 0) {
-			brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
+		if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
+			bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
 			
 			if (i > 0) {
 				g_render_target->DrawLine(
 					D2D1::Point2F(to_client(ctpts[i].pt_center).x, 0),
 					D2D1::Point2F(to_client(ctpts[i].pt_center).x, (float)rect_wnd.bottom),
-					brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
+					bitmap_buffer->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
 				);
 			}
 		}
 
 		// ベジェ曲線を描画
-		brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
-		draw_bezier(brush,
-			to_client(ctpts[i].pt_center),
-			to_client(ctpts[i].pt_right),
-			to_client(ctpts[i + 1].pt_left),
-			to_client(ctpts[i + 1].pt_center),
+		bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
+		draw_bezier(bitmap_buffer,
+			is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
+			is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
+			is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
+			is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
 			CVE_CURVE_THICKNESS
 		);
 
 		//ハンドルの描画
 		if (g_config.show_handle) {
-			brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
-			draw_handle(brush,
-				to_client(ctpts[i].pt_center),
-				to_client(ctpts[i].pt_right),
+			bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
+			draw_handle(bitmap_buffer,
+				is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
+				is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
 				drawing_mode
 			);
-			draw_handle(brush,
-				to_client(ctpts[i + 1].pt_center),
-				to_client(ctpts[i + 1].pt_left),
+			draw_handle(bitmap_buffer,
+				is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
+				is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
 				drawing_mode
 			);
 		}
@@ -1091,13 +1099,14 @@ bool cve::Curve::is_data_valid()
 
 
 //---------------------------------------------------------------------
-//		スクリプトに渡す値を生成
+//		(IDタイプのカーブの場合)スクリプトに渡す値を生成
 //---------------------------------------------------------------------
-double cve::Curve::id_create_result(double ratio, double st, double ed)
+double cve::Curve::create_result_id(double ratio, double st, double ed)
 {
 	// 進捗が0~1の範囲外であった場合
 	if (!ISINRANGEEQ(ratio, 0, 1))
 		return 0;
+
 	// 進捗に相当する区間を調べる
 	for (int i = 0; i < (int)ctpts.size - 1; i++) {
 		if (ISINRANGEEQ(ratio, ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
@@ -1119,6 +1128,54 @@ double cve::Curve::id_create_result(double ratio, double st, double ed)
 			// y1,y2を相対値から実際の値に修正
 			y1 = st2 + (ed2 - st2) * y1;
 			y2 = st2 + (ed2 - st2) * y2;
+
+			// ベジェの計算
+			double tl = 0;
+			double tr = 1;
+			double ta = 0.5 * (tl + tr);
+			double xta;
+			for (int j = 0; j < 10; j++) {
+				xta = (1 - 3 * x2 + 3 * x1) * std::pow(ta, 3) + (x2 - 2 * x1) * 3 * std::pow(ta, 2) + 3 * x1 * ta;
+				if (ratio2 < xta) tr = ta;
+				else tl = ta;
+				ta = 0.5 * (tl + tr);
+			}
+			return std::pow(ta, 3) * (ed2 - st2 - 3 * y2 + 3 * y1) + 3 * std::pow(ta, 2) * (y2 - 2 * y1 + st2) + 3 * ta * (y1 - st2) + st2;
+		}
+	}
+	return 0;
+}
+
+
+
+//---------------------------------------------------------------------
+//		(IDタイプのカーブの場合)スクリプトに渡す値を生成
+//---------------------------------------------------------------------
+double cve::Curve::get_bezier_value(double ratio)
+{
+	// 進捗が0~1の範囲外であった場合
+	if (!ISINRANGEEQ(ratio, 0, 1))
+		return 0;
+
+	// 進捗に相当する区間を調べる
+	for (int i = 0; i < (int)ctpts.size - 1; i++) {
+		if (ISINRANGEEQ(ratio, ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
+			// 区間の長さ(ratioと同じスケール)
+			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CVE_GRAPH_RESOLUTION;
+			// 区間ごとの進捗の相対値(0~1)
+			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION) / range;
+			// 区間ごとの制御点1のX座標(相対値、0~1)
+			double x1 = (ctpts[i].pt_right.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
+			// 区間ごとの制御点1のY座標(実際の値)
+			double y1 = ctpts[i].pt_right.y - ctpts[i].pt_center.y;
+			// 区間ごとの制御点2のX座標(相対値、0~1)
+			double x2 = (ctpts[i + 1].pt_left.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
+			// 区間ごとの制御点2のY座標(相対値)
+			double y2 = ctpts[i + 1].pt_left.y - ctpts[i].pt_center.y;
+
+			// 区間ごとの始値、終値(相対値ではなく、実際の値)
+			double st2 = ctpts[i].pt_center.y;
+			double ed2 = ctpts[i + 1].pt_center.y;
 
 			// ベジェの計算
 			double tl = 0;

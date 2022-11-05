@@ -1,4 +1,4 @@
-@Value
+@標準
 --param:320896157
 local index,ratio=math.modf(obj.getpoint"index")
 local st=obj.getpoint(index)
@@ -28,7 +28,8 @@ for i=1,10 do
 end
 return ta^3*(ed-st-3*y2+3*y1)+3*ta^2*(y2-2*y1+st)+3*ta*(y1-st)+st
 
-@ID
+
+@マルチベジェ
 --param:0
 local module_name="curve_editor"
 if not package.loaded[module_name] then
@@ -43,3 +44,30 @@ local ed=obj.getpoint(index+1)
 local par=obj.getpoint"param"
 
 return curve_editor.get_result(par,ratio,st,ed)
+
+
+@振動
+--param:0
+return obj.getpoint"default"
+
+
+@弾性
+--param:700
+local index,ratio = math.modf(obj.getpoint("index"))
+local S = obj.getpoint(index)
+local E = obj.getpoint(index+1)
+local A = S - E
+local e = obj.getpoint("param")/1000
+local T = (2-2*e)/(1+e)
+local function func1(t)
+    return math.floor(math.log((e-1)*t+1)/math.log(e))
+end
+local function func2(t)
+    return t+0.5+1/(e-1)-(e+1)*e^func1(t+0.5)/(2*e-2)
+end
+return E-A*(4*(func2(ratio/T))^2-e^(2*func1(ratio/T+0.5)))
+
+
+@数値指定
+--param:0
+return obj.getpoint"default"

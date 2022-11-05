@@ -6,19 +6,20 @@
 
 #pragma once
 
-#include "cve_classes.hpp"
+#include "cve_class.hpp"
 
 
 
 //----------------------------------------------------------------------------------
 //		extern宣言
 //----------------------------------------------------------------------------------
-extern cve::Curve							g_curve_value,
-											g_curve_value_previous,
-											g_curve_id[CVE_CURVE_MAX],
-											g_curve_id_previous;
+extern cve::Curve							g_curve_normal,
+											g_curve_normal_previous,
+											g_curve_mb[CVE_CURVE_MAX],
+											g_curve_mb_previous;
 
-extern cve::Static_Array<cve::Preset, CVE_PRESET_MAX> g_presets;
+extern cve::Static_Array<cve::Preset, CVE_PRESET_NUM_DEFAULT> g_presets_default;
+extern cve::Static_Array<cve::Preset, CVE_PRESET_NUM_CUSTOM> g_presets_custom;
 
 extern const cve::Theme						g_theme[2];
 
@@ -27,7 +28,8 @@ extern cve::Config							g_config;
 extern cve::Window							g_window_main,
 											g_window_header,
 											g_window_editor,
-											g_window_preset;
+											g_window_library,
+											g_window_preset_list;
 
 extern cve::Graph_View_Info					g_view_info;
 
@@ -100,7 +102,8 @@ namespace cve {
 LRESULT CALLBACK	wndproc_main(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_header(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_editor(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_preset(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_library(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_preset_list(HWND, UINT, WPARAM, LPARAM);
 
 
 
@@ -108,7 +111,7 @@ LRESULT CALLBACK	wndproc_preset(HWND, UINT, WPARAM, LPARAM);
 //		ダイアログプロシージャ
 //----------------------------------------------------------------------------------
 BOOL CALLBACK		dialogproc_config(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		dialogproc_value(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_param_normal(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_read(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_save(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_id(HWND, UINT, WPARAM, LPARAM);
@@ -159,5 +162,22 @@ inline POINT to_graph(const POINT& pt_client)
 	return {
 		to_graph(pt_client.x, pt_client.y).x,
 		to_graph(pt_client.x, pt_client.y).y
+	};
+}
+
+//グラフ -> プリセット
+inline cve::Float_Point to_preset(int gr_x, int gr_y)
+{
+	return {
+		(float)CVE_MARGIN_PRESET + (gr_x / (float)CVE_GRAPH_RESOLUTION) * (g_config.preset_size - CVE_MARGIN_PRESET * 2),
+		g_config.preset_size - (float)CVE_MARGIN_PRESET - (gr_y / (float)CVE_GRAPH_RESOLUTION) * (g_config.preset_size - CVE_MARGIN_PRESET * 2)
+	};
+}
+
+inline cve::Float_Point to_preset(const POINT& pt_graph)
+{
+	return {
+		to_preset(pt_graph.x, pt_graph.y).x,
+		to_preset(pt_graph.x, pt_graph.y).y
 	};
 }

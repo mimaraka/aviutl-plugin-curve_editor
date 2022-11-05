@@ -4,10 +4,10 @@
 //
 #define IDD_CONFIG                      101
 #define IDD_SAVE                        103
-#define IDD_VALUE                       105
+#define IDD_PARAM                       105
 #define IDD_READ                        107
 #define IDD_ABOUT                       109
-#define IDR_MENU1                       111
+#define IDR_MENU_EDITOR                 111
 #define IDI_COPY                        117
 #define IDI_READ                        120
 #define IDI_SAVE                        121
@@ -23,7 +23,8 @@
 #define IDI_BACK_LIGHT                  131
 #define IDI_NEXT_LIGHT                  132
 #define IDD_ID                          133
-#define IDR_MENU2                       136
+#define IDR_MENU_PRESET                 136
+#define IDR_MENU_MODE                   137
 #define IDC_DRAGGING                    200
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
@@ -44,8 +45,8 @@
 #define ID_MENU_COPY4D                  40017
 #define ID_MENU_SAVE                    40018
 #define ID_MENU_COPY                    40019
-#define ID_MENU_MODE_VALUE              40020
-#define ID_MENU_MODE_ID                 40021
+#define ID_MENU_MODE_NORMAL             40020
+#define ID_MENU_MODE_MULTIBEZIER        40021
 #define ID_MENU_DELETE                  40022
 #define ID_MENU_PROPERTY                40023
 #define ID_MENU_READ                    40024
@@ -61,13 +62,15 @@
 #define ID_MENU_ID_BACK                 40034
 #define ID_MENU_VERTICAL                40063
 #define ID_MENU_HORIZONTAL              40064
+#define ID_MODE_NORMAL                  40067
+#define ID_MODE_MULTIBEZIER             40068
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
-#define _APS_NEXT_COMMAND_VALUE         40065
+#define _APS_NEXT_RESOURCE_VALUE        139
+#define _APS_NEXT_COMMAND_VALUE         40069
 #define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

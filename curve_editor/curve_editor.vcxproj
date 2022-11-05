@@ -191,6 +191,16 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="cve_curve_bounce.cpp" />
+    <ClCompile Include="cve_curve_elastic.cpp" />
+    <ClCompile Include="cve_curve_multibezier.cpp" />
+    <ClCompile Include="cve_curve_normal.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="cve_curve_value.cpp" />
     <ClCompile Include="cve_dialogproc.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -240,10 +250,10 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cve_classes.hpp" />
+    <ClInclude Include="cve_class.hpp" />
     <ClInclude Include="cve_header.hpp" />
     <ClInclude Include="cve_macro.hpp" />
-    <ClInclude Include="cve_structs.hpp" />
+    <ClInclude Include="cve_struct.hpp" />
     <ClInclude Include="cve_framework.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

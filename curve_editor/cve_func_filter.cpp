@@ -27,9 +27,9 @@ BOOL filter_initialize(FILTER* fp)
 	g_fp = fp;
 
 	for (int i = 0; i < CVE_CURVE_MAX; i++) {
-		g_curve_id[i].set_mode(cve::Mode_ID);
+		g_curve_mb[i].set_mode(cve::Mode_Multibezier);
 	}
-	g_curve_id_previous.set_mode(cve::Mode_ID);
+	g_curve_mb_previous.set_mode(cve::Mode_Multibezier);
 
 
 	// aviutl.iniから設定を読み込み
@@ -98,15 +98,15 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 		memcpy(point_data, data, size);
 
 		for (int i = 0; i < CVE_CURVE_MAX; i++)
-			g_curve_id[i].ctpts = point_data[i];
+			g_curve_mb[i].ctpts = point_data[i];
 
-		g_curve_id_previous = g_curve_id[g_config.current_id];
+		g_curve_mb_previous = g_curve_mb[g_config.current_id];
 
 		if (g_window_editor.hwnd) {
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 
 			for (int i = 0; i < CVE_CURVE_MAX; i++) {
-				if (!g_curve_id[i].is_data_valid()) {
+				if (!g_curve_mb[i].is_data_valid()) {
 					int response = IDOK;
 
 					response = ::MessageBox(
@@ -124,8 +124,6 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 			}
 		}
 	}
-	else
-		::PostMessage(g_window_editor.hwnd, WM_COMMAND, ID_MENU_DELETE_ALL, TRUE);
 
 	return TRUE;
 }
@@ -140,7 +138,7 @@ BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 	static cve::Static_Array<cve::Curve_Points, CVE_POINT_MAX> point_data[CVE_CURVE_MAX] = {};
 
 	for (int i = 0; i < CVE_CURVE_MAX; i++)
-		point_data[i] = g_curve_id[i].ctpts;
+		point_data[i] = g_curve_mb[i].ctpts;
 
 	if (!data) {
 		*size = sizeof(point_data);
@@ -163,12 +161,12 @@ void ini_load_configs(FILTER* fp)
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
 	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
-	g_curve_value.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1)), 0, CVE_GRAPH_RESOLUTION);
-	g_curve_value.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1));
-	g_curve_value.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)), 0, CVE_GRAPH_RESOLUTION);
-	g_curve_value.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2));
+	g_curve_normal.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1)), 0, CVE_GRAPH_RESOLUTION);
+	g_curve_normal.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1));
+	g_curve_normal.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)), 0, CVE_GRAPH_RESOLUTION);
+	g_curve_normal.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CVE_SEPARATOR_WIDTH);
-	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp, "edit_mode", cve::Mode_Value);
+	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp, "edit_mode", cve::Mode_Normal);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", true);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", true);
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CVE_DEF_PRESET_SIZE);
@@ -183,10 +181,10 @@ void ini_load_configs(FILTER* fp)
 //---------------------------------------------------------------------
 void ini_write_configs(FILTER* fp)
 {
-	fp->exfunc->ini_save_int(fp, "x1", g_curve_value.ctpts[0].pt_right.x);
-	fp->exfunc->ini_save_int(fp, "y1", g_curve_value.ctpts[0].pt_right.y);
-	fp->exfunc->ini_save_int(fp, "x2", g_curve_value.ctpts[1].pt_left.x);
-	fp->exfunc->ini_save_int(fp, "y2", g_curve_value.ctpts[1].pt_left.y);
+	fp->exfunc->ini_save_int(fp, "x1", g_curve_normal.ctpts[0].pt_right.x);
+	fp->exfunc->ini_save_int(fp, "y1", g_curve_normal.ctpts[0].pt_right.y);
+	fp->exfunc->ini_save_int(fp, "x2", g_curve_normal.ctpts[1].pt_left.x);
+	fp->exfunc->ini_save_int(fp, "y2", g_curve_normal.ctpts[1].pt_left.y);
 	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
 	fp->exfunc->ini_save_int(fp, "edit_mode", g_config.edit_mode);
 	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
@@ -203,6 +201,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 {
 	RECT rect_wnd;
 	::GetClientRect(hwnd, &rect_wnd);
+
 
 	switch (msg) {
 		// ウィンドウ作成時

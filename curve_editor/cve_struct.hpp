@@ -33,8 +33,11 @@ namespace cve {
 	//		エディットモード
 	//---------------------------------------------------------------------
 	enum Edit_Mode {
-		Mode_Value,
-		Mode_ID
+		Mode_Normal,
+		Mode_Multibezier,
+		Mode_Elastic,
+		Mode_Bounce,
+		Mode_Value
 	};
 
 
@@ -47,17 +50,20 @@ namespace cve {
 					bg_graph,
 					sepr,
 					curve_trace,
+					curve_prset,
 					handle,
+					handle_preset,
 					bt_selected,
 					bt_unselected,
 					bt_tx,
-					bt_tx_selected;
+					bt_tx_selected,
+					preset_tx;
 	} Theme;
 
 
 
 	//---------------------------------------------------------------------
-	//		ポイント(IDモード)
+	//		ポイント(マルチベジェモード)
 	//---------------------------------------------------------------------
 	typedef struct tagCurve_Points {
 		enum Type {

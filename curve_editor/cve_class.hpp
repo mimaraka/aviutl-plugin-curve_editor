@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "cve_structs.hpp"
+#include "cve_struct.hpp"
 
 
 
@@ -28,28 +28,64 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
+	//		ビットマップバッファ
+	//---------------------------------------------------------------------
+	class Bitmap_Buffer {
+	private:
+		HBITMAP bitmap;
+		HWND hwnd;
+		RECT rect;
+
+		void draw_grid();
+
+	public:
+		HDC hdc_memory;
+		ID2D1SolidColorBrush* brush = nullptr;
+
+		void init(HWND hw);
+		void exit() const;
+		void transfer() const;
+		bool d2d_setup(COLORREF cr);
+		void set_size(const RECT& rect_wnd);
+
+		void draw_panel();
+		void draw_panel_main(const RECT& rect_sepr);
+		void draw_panel_editor();
+
+		void draw_rounded_edge(int flag, float radius);
+	};
+
+
+
+	//---------------------------------------------------------------------
 	//		カーブ
 	//---------------------------------------------------------------------
 	class Curve {
 	private:
+		double				get_bezier_value(double ratio);
 		void				set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle);
 		void				correct_handle(const Point_Address& pt_address, double angle);
 		double				get_handle_angle(const Point_Address& pt_address);
 		void				set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth);
 		void				draw_bezier(
-								ID2D1SolidColorBrush* brush,
+								Bitmap_Buffer* bitmap_buffer,
 								const Float_Point& stpt,
 								const Float_Point& ctpt1,
 								const Float_Point& ctpt2,
 								const Float_Point& edpt,
 								float thickness
 							);
-		void				draw_handle(ID2D1SolidColorBrush* brush, const Float_Point& st, const Float_Point& ed, int drawing_mode);
+		void				draw_handle(
+								Bitmap_Buffer* bitmap_buffer,
+								const Float_Point& st,
+								const Float_Point& ed,
+								int drawing_mode
+							);
 
 	public:
 		// サイズ固定
 		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
-		Edit_Mode edit_mode = Mode_Value;
+		Edit_Mode edit_mode = Mode_Normal;
 
 		Curve() { initialize(); }
 
@@ -59,53 +95,136 @@ namespace cve {
 		void				clear();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				reverse_curve();
-		void				draw_curve(ID2D1SolidColorBrush* brush, const RECT& rect_wnd, int drawing_mode);
+		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
 		bool				is_data_valid();
 
-		// Valueモード用
+		// 標準モード用
 		int					create_value_1d();
-		std::string			create_value_4d();
+		std::string			create_parameters();
 		void				read_value_1d(int value);
 		void				read_ease(int value);
 
-		// IDモード用
+		// マルチベジェモード用
 		void				add_point(const POINT& pt_client);
 		void				delete_point(const POINT& pt_client);
 		void				move_point(int index, const POINT& pt_graph, bool init);
 		void				move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
-		double				id_create_result(double ratio, double st, double ed);
+		double				create_result_id(double ratio, double st, double ed);
 	};
 
 
 
-	//---------------------------------------------------------------------
-	//		ビットマップバッファ
-	//---------------------------------------------------------------------
-	class Bitmap_Buffer {
-	private:
-		HBITMAP bitmap;
-		HWND hwnd;
-		RECT rect;
-		ID2D1SolidColorBrush* brush = nullptr;
+	////---------------------------------------------------------------------
+	////		カーブ
+	////---------------------------------------------------------------------
+	//class Curve {
+	//private:
+	//	double					get_bezier_value(double ratio);
+	//	void				draw_bezier(
+	//		Bitmap_Buffer* bitmap_buffer,
+	//		const Float_Point& stpt,
+	//		const Float_Point& ctpt1,
+	//		const Float_Point& ctpt2,
+	//		const Float_Point& edpt,
+	//		float thickness
+	//	);
+	//	void				draw_handle(
+	//		Bitmap_Buffer* bitmap_buffer,
+	//		const Float_Point& st,
+	//		const Float_Point& ed,
+	//		int drawing_mode
+	//	);
 
-		void draw_grid();
+	//public:
+	//	// サイズ固定
+	//	Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
 
-	public:
-		HDC hdc_memory;
+	//	Curve() { initialize(); }
 
-		void init(HWND hw);
-		void exit() const;
-		void transfer() const;
-		bool d2d_setup(COLORREF cr);
-		void set_size(const RECT& rect_wnd);
+	//	void				initialize();
+	//	void				clear();
+	//	virtual void		draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
+	//	// Luaに送るやつ
+	//	virtual double		create_result(double ratio);
+	//};
 
-		void draw_panel_main(const RECT& rect_sepr);
-		void draw_panel_header();
-		void draw_panel_preset();
-		void draw_panel_editor();
 
-		void draw_rounded_edge(int flag, float radius);
-	};
+
+	////---------------------------------------------------------------------
+	////		カーブ(数値タイプ)
+	////---------------------------------------------------------------------
+	//class Curve_Numeric_Type : public Curve {
+	//public:
+	//	int result_number;
+	//};
+
+
+
+	////---------------------------------------------------------------------
+	////		カーブ(IDタイプ)
+	////---------------------------------------------------------------------
+	//class Curve_ID_Type : public Curve {
+	//public:
+	//	void				add_point(const POINT& pt_client);
+	//	void				delete_point(const POINT& pt_client);
+	//	void				move_point(int index, const POINT& pt_graph, bool init);
+	//};
+
+
+
+	////---------------------------------------------------------------------
+	////		カーブ(標準)
+	////---------------------------------------------------------------------
+	//class Curve_Normal : public Curve_Numeric_Type {
+	//public:
+	//	int					create_number();
+	//	void				read_number();
+	//	double				create_result(double ratio, double st, double ed);
+	//	std::string			create_parameters();
+	//};
+
+
+
+	////---------------------------------------------------------------------
+	////		カーブ(マルチベジェ)
+	////---------------------------------------------------------------------
+	//class Curve_Multibezier : public Curve_ID_Type {
+	//public:
+	//	double				create_result(double ratio, double st, double ed);
+	//};
+
+
+
+	////---------------------------------------------------------------------
+	////		カーブ(振動)
+	////---------------------------------------------------------------------
+	//class Curve_Elastic : public Curve_Numeric_Type {
+	//public:
+	//	int					create_number();
+	//	void				read_number();
+	//	double				create_result(double ratio, double st, double ed);
+	//};
+
+
+
+	////---------------------------------------------------------------------
+	////		カーブ(弾性)
+	////---------------------------------------------------------------------
+	//class Curve_Bounce : public Curve_Numeric_Type {
+	//public:
+	//	int					create_number();
+	//	void				read_number();
+	//	double				create_result(double ratio, double st, double ed);
+	//};
+
+
+
+	////---------------------------------------------------------------------
+	////		カーブ(数値指定)
+	////---------------------------------------------------------------------
+	//class Curve_Value : public Curve_ID_Type {
+	//public:
+	//};
 
 
 
@@ -169,7 +288,7 @@ namespace cve {
 		LPTSTR				icon_res_dark;
 		LPTSTR				icon_res_light;
 		Content_Type		content_type;
-		LPTSTR				label;
+		char				label[CVE_CT_LABEL_MAX];
 		Bitmap_Buffer		bitmap_buffer;
 		HWND				hwnd_parent;
 		HWND				hwnd_tooltip;
@@ -182,8 +301,9 @@ namespace cve {
 		LPTSTR				description;
 		int					edge_flag;
 
-		void				draw_content(COLORREF bg, RECT& rect_wnd, LPCTSTR content);
-		//void				set_font(const RECT& rect_wnd, LPTSTR font_name);
+		void				draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content, bool change_color);
+		void				draw_edge();
+		void				set_font(int font_height, LPTSTR font_name);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
@@ -223,6 +343,30 @@ namespace cve {
 		POINT				pt_lock;
 		bool				is_scrolling = false;
 		int					coef_move;
+
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		ボタン(カテゴリー)
+	//---------------------------------------------------------------------
+	class Button_Category : public Button {
+	private:
+		bool is_expanded;
+
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		ボタン(色選択)
+	//---------------------------------------------------------------------
+	class Button_Color : public Button {
+	private:
+		COLORREF bg_color;
 
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};

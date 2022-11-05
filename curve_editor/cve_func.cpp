@@ -110,11 +110,16 @@ void cve::subtract_length(cve::Float_Point* pt, const cve::Float_Point& st, cons
 void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	mi->fMask = MIIM_STATE;
 
-	// Value/ID
-	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_CHECKED : MFS_UNCHECKED;
-	SetMenuItemInfo(menu, ID_MENU_MODE_ID, FALSE, mi);
-	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_UNCHECKED : MFS_CHECKED;
-	SetMenuItemInfo(menu, ID_MENU_MODE_VALUE, FALSE, mi);
+	int edit_mode_menu_id[] = {
+		ID_MENU_MODE_NORMAL,
+		ID_MENU_MODE_MULTIBEZIER
+	};
+
+	// 編集モードのチェック
+	for (int i = 0; i < sizeof(edit_mode_menu_id) / sizeof(int); i++) {
+		mi->fState = g_config.edit_mode == i ? MFS_CHECKED : MFS_UNCHECKED;
+		SetMenuItemInfo(menu, edit_mode_menu_id[i], FALSE, mi);
+	}
 
 	// レイアウトモード
 	mi->fState = g_config.layout_mode == cve::Config::Vertical ? MFS_CHECKED : MFS_UNCHECKED;
@@ -129,19 +134,19 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 
 	// ボタンを無効化/有効化
-	// IDモードで有効化
+	// マルチベジェモードで有効化
 	// チェックボックスが存在する場合
-	mi->fState |= g_config.edit_mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState |= g_config.edit_mode == cve::Mode_Multibezier ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 	// チェックボックスが存在しない場合
-	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_ENABLED : MFS_DISABLED;
+	mi->fState = g_config.edit_mode == cve::Mode_Multibezier ? MFS_ENABLED : MFS_DISABLED;
 	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
 
-	// Valueモードで有効化
-	mi->fState = g_config.edit_mode == cve::Mode_ID ? MFS_DISABLED : MFS_ENABLED;
+	// 標準モードで有効化
+	mi->fState = g_config.edit_mode == cve::Mode_Multibezier ? MFS_DISABLED : MFS_ENABLED;
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
@@ -168,7 +173,7 @@ LRESULT cve::on_keydown(WPARAM wparam)
 
 		//[C]
 	case 67:
-		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.edit_mode == cve::Mode_Value)
+		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.edit_mode == cve::Mode_Normal)
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_COPY, 0);
 		return 0;
 
@@ -177,18 +182,18 @@ LRESULT cve::on_keydown(WPARAM wparam)
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_SAVE, 0);
 		else
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_SHOWHANDLE, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_SHOW_HANDLE, 0);
 		return 0;
 
 		//[<]
 	case VK_LEFT:
-		if (g_config.edit_mode == cve::Mode_ID && g_window_header.hwnd)
+		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_BACK, 0);
 		return 0;
 
 		//[>]
 	case VK_RIGHT:
-		if (g_config.edit_mode == cve::Mode_ID && g_window_header.hwnd)
+		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_header.hwnd)
 			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_NEXT, 0);
 		return 0;
 
@@ -210,4 +215,11 @@ LRESULT cve::on_keydown(WPARAM wparam)
 		return 0;
 	}
 	return 0;
+}
+
+
+
+void sort_presets(int mode)
+{
+
 }

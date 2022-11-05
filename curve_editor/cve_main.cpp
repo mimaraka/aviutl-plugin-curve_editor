@@ -11,18 +11,25 @@
 //---------------------------------------------------------------------
 //		グローバル変数
 //---------------------------------------------------------------------
-cve::Curve						g_curve_value;
-cve::Curve						g_curve_value_previous;
-cve::Curve						g_curve_id[CVE_CURVE_MAX];
-cve::Curve						g_curve_id_previous;
+cve::Curve						g_curve_normal;
+cve::Curve						g_curve_normal_previous;
+cve::Curve						g_curve_mb[CVE_CURVE_MAX];
+cve::Curve						g_curve_mb_previous;
+
 cve::Config						g_config;
+
 cve::Window						g_window_main,
 								g_window_header,
 								g_window_editor,
-								g_window_preset;
+								g_window_library,
+								g_window_preset_list;
+
 cve::Graph_View_Info			g_view_info;
+
 FILTER*							g_fp;
-cve::Static_Array<cve::Preset, CVE_PRESET_MAX> g_presets;
+
+cve::Static_Array<cve::Preset, CVE_PRESET_NUM_DEFAULT> g_presets_default;
+cve::Static_Array<cve::Preset, CVE_PRESET_NUM_CUSTOM> g_presets_custom;
 
 
 //ダークテーマ
@@ -31,21 +38,28 @@ const cve::Theme g_theme_dark = {
 	RGB(27, 27, 27),
 	RGB(240, 240, 240),
 	RGB(57, 57, 57),
+	RGB(240, 240, 240),
 	RGB(243, 243, 243),
+	RGB(180, 180, 180),
 	RGB(230, 230, 230),
 	RGB(68, 68, 68),
 	RGB(240, 240, 240),
 	RGB(35, 35, 35),
+	RGB(180, 180, 180)
 };
+
 //ライトテーマ
 const cve::Theme g_theme_light = {
 	RGB(244, 244, 244),
 	RGB(230, 230, 230),
 	RGB(70, 70, 70),
 	RGB(205, 205, 205),
+	RGB(100, 100, 100),
 	RGB(70, 70, 70),
+	RGB(160, 160, 160),
 	RGB(230, 230, 230),
 	RGB(188, 188, 188),
+	RGB(70, 70, 70),
 	RGB(70, 70, 70),
 	RGB(70, 70, 70)
 };

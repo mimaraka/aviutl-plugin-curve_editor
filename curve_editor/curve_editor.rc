@@ -79,7 +79,7 @@ BEGIN
     LTEXT           "プリセット名を入力してください。(最大127文字)",IDC_STATIC,7,7,147,8
 END
 
-IDD_VALUE DIALOGEX 0, 0, 207, 65
+IDD_PARAM DIALOGEX 0, 0, 207, 65
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "値を入力"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -146,7 +146,7 @@ BEGIN
         BOTTOMMARGIN, 54
     END
 
-    IDD_VALUE, DIALOG
+    IDD_PARAM, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 200
@@ -196,7 +196,7 @@ BEGIN
     0
 END
 
-IDD_VALUE AFX_DIALOG_LAYOUT
+IDD_PARAM AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -222,21 +222,21 @@ END
 // Menu
 //
 
-IDR_MENU1 MENU
+IDR_MENU_EDITOR MENU
 BEGIN
     POPUP "MENU"
     BEGIN
         POPUP "編集モード"
         BEGIN
-            MENUITEM "Valueモード",                    ID_MENU_MODE_VALUE
-            MENUITEM "IDモード",                       ID_MENU_MODE_ID
+            MENUITEM "標準",                          ID_MENU_MODE_NORMAL
+            MENUITEM "マルチベジェ",                      ID_MENU_MODE_MULTIBEZIER
         END
         MENUITEM SEPARATOR
-        MENUITEM "カーブの値をコピー\tCtrl+C",           ID_MENU_COPY
-        MENUITEM "カーブの値を入力",                    ID_MENU_READ
+        MENUITEM "カーブの数値をコピー\tCtrl+C",          ID_MENU_COPY
+        MENUITEM "カーブの数値を入力",                   ID_MENU_READ
         MENUITEM "プリセットとして保存\tCtrl+S",          ID_MENU_SAVE
         MENUITEM SEPARATOR
-        MENUITEM "カーブの値をコピー(4次元)",              ID_MENU_COPY4D
+        MENUITEM "カーブのパラメータをコピー",               ID_MENU_COPY4D
         MENUITEM "カーブを反転\tR",                   ID_MENU_REVERSE
         MENUITEM "カーブを初期化\tDel",                ID_MENU_DELETE
         MENUITEM "すべてのカーブを初期化",                 ID_MENU_DELETE_ALL
@@ -261,13 +261,22 @@ BEGIN
     END
 END
 
-IDR_MENU2 MENU
+IDR_MENU_PRESET MENU
 BEGIN
     POPUP "PRESET"
     BEGIN
         MENUITEM "適用",                          ID_PRESET_APPLY
         MENUITEM "名前を変更",                       ID_PRESET_RENAME
         MENUITEM "プリセットを削除",                    ID_PRESET_REMOVE
+    END
+END
+
+IDR_MENU_MODE MENU
+BEGIN
+    POPUP "MODE"
+    BEGIN
+        MENUITEM "標準",                          ID_MODE_NORMAL
+        MENUITEM "マルチベジェ",                      ID_MODE_MULTIBEZIER
     END
 END
 
