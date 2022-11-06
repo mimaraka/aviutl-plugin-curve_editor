@@ -43,7 +43,7 @@ local st=obj.getpoint(index)
 local ed=obj.getpoint(index+1)
 local par=obj.getpoint"param"
 
-return curve_editor.get_result(par,ratio,st,ed)
+return curve_editor.get_result(1,par,ratio,st,ed)
 
 
 @U“®

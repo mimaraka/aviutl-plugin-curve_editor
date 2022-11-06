@@ -824,9 +824,9 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	// 下部のボタンが並んだRECT
 	rect_lower_buttons.set(
 		CVE_MARGIN,
-		CVE_MARGIN * 2 + CVE_CT_UPPER_H,
+		CVE_MARGIN + CVE_MARGIN_CONTROL + CVE_CT_UPPER_H,
 		rect_wnd.right - CVE_MARGIN,
-		CVE_MARGIN * 2 + CVE_CT_LOWER_H + CVE_CT_UPPER_H
+		CVE_MARGIN + CVE_MARGIN_CONTROL + CVE_CT_LOWER_H + CVE_CT_UPPER_H
 	);
 
 	// Value/IDスイッチが並んだRECT
@@ -885,7 +885,7 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			str_mode[g_config.edit_mode],
 			CVE_CT_EDIT_MODE,
 			rect_mode,
-			CVE_EDGE_LT | CVE_EDGE_LB
+			CVE_EDGE_ALL
 		);
 
 		// 値

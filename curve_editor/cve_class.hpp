@@ -90,7 +90,7 @@ namespace cve {
 		Curve() { initialize(); }
 
 		// 共通
-		void				initialize();
+		virtual void		initialize();
 		void				set_mode(Edit_Mode md);
 		void				clear();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
@@ -109,122 +109,92 @@ namespace cve {
 		void				delete_point(const POINT& pt_client);
 		void				move_point(int index, const POINT& pt_graph, bool init);
 		void				move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
-		double				create_result_id(double ratio, double st, double ed);
+		virtual double		create_result(double ratio, double st, double ed);
 	};
 
 
 
-	////---------------------------------------------------------------------
-	////		カーブ
-	////---------------------------------------------------------------------
-	//class Curve {
-	//private:
-	//	double					get_bezier_value(double ratio);
-	//	void				draw_bezier(
-	//		Bitmap_Buffer* bitmap_buffer,
-	//		const Float_Point& stpt,
-	//		const Float_Point& ctpt1,
-	//		const Float_Point& ctpt2,
-	//		const Float_Point& edpt,
-	//		float thickness
-	//	);
-	//	void				draw_handle(
-	//		Bitmap_Buffer* bitmap_buffer,
-	//		const Float_Point& st,
-	//		const Float_Point& ed,
-	//		int drawing_mode
-	//	);
-
-	//public:
-	//	// サイズ固定
-	//	Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
-
-	//	Curve() { initialize(); }
-
-	//	void				initialize();
-	//	void				clear();
-	//	virtual void		draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
-	//	// Luaに送るやつ
-	//	virtual double		create_result(double ratio);
-	//};
+	//---------------------------------------------------------------------
+	//		カーブ(数値タイプ)
+	//---------------------------------------------------------------------
+	class Curve_Numeric_Type : public Curve {
+	public:
+		int result_number;
+	};
 
 
 
-	////---------------------------------------------------------------------
-	////		カーブ(数値タイプ)
-	////---------------------------------------------------------------------
-	//class Curve_Numeric_Type : public Curve {
-	//public:
-	//	int result_number;
-	//};
+	//---------------------------------------------------------------------
+	//		カーブ(IDタイプ)
+	//---------------------------------------------------------------------
+	class Curve_ID_Type : public Curve {
+	public:
+		void				add_point(const POINT& pt_client);
+		void				delete_point(const POINT& pt_client);
+		void				move_point(int index, const POINT& pt_graph, bool init);
+	};
 
 
 
-	////---------------------------------------------------------------------
-	////		カーブ(IDタイプ)
-	////---------------------------------------------------------------------
-	//class Curve_ID_Type : public Curve {
-	//public:
-	//	void				add_point(const POINT& pt_client);
-	//	void				delete_point(const POINT& pt_client);
-	//	void				move_point(int index, const POINT& pt_graph, bool init);
-	//};
+	//---------------------------------------------------------------------
+	//		カーブ(標準)
+	//---------------------------------------------------------------------
+	class Curve_Normal : public Curve_Numeric_Type {
+	public:
+		int					create_number();
+		void				read_number();
+		double				create_result(double ratio, double st, double ed);
+		std::string			create_parameters();
+	};
 
 
 
-	////---------------------------------------------------------------------
-	////		カーブ(標準)
-	////---------------------------------------------------------------------
-	//class Curve_Normal : public Curve_Numeric_Type {
-	//public:
-	//	int					create_number();
-	//	void				read_number();
-	//	double				create_result(double ratio, double st, double ed);
-	//	std::string			create_parameters();
-	//};
+	//---------------------------------------------------------------------
+	//		カーブ(マルチベジェ)
+	//---------------------------------------------------------------------
+	class Curve_Multibezier : public Curve_ID_Type {
+	public:
+		double				create_result(double ratio, double st, double ed);
+	};
 
 
 
-	////---------------------------------------------------------------------
-	////		カーブ(マルチベジェ)
-	////---------------------------------------------------------------------
-	//class Curve_Multibezier : public Curve_ID_Type {
-	//public:
-	//	double				create_result(double ratio, double st, double ed);
-	//};
+	//---------------------------------------------------------------------
+	//		カーブ(振動)
+	//---------------------------------------------------------------------
+	class Curve_Elastic : public Curve_Numeric_Type {
+	public:
+
+		void				initialize();
+
+		int					create_number();
+		void				read_number();
+		double				create_result(double ratio, double st, double ed);
+	};
 
 
 
-	////---------------------------------------------------------------------
-	////		カーブ(振動)
-	////---------------------------------------------------------------------
-	//class Curve_Elastic : public Curve_Numeric_Type {
-	//public:
-	//	int					create_number();
-	//	void				read_number();
-	//	double				create_result(double ratio, double st, double ed);
-	//};
+	//---------------------------------------------------------------------
+	//		カーブ(弾性)
+	//---------------------------------------------------------------------
+	class Curve_Bounce : public Curve_Numeric_Type {
+	public:
+
+		void				initialize();
+
+		int					create_number();
+		void				read_number();
+		double				create_result(double ratio, double st, double ed);
+	};
 
 
 
-	////---------------------------------------------------------------------
-	////		カーブ(弾性)
-	////---------------------------------------------------------------------
-	//class Curve_Bounce : public Curve_Numeric_Type {
-	//public:
-	//	int					create_number();
-	//	void				read_number();
-	//	double				create_result(double ratio, double st, double ed);
-	//};
-
-
-
-	////---------------------------------------------------------------------
-	////		カーブ(数値指定)
-	////---------------------------------------------------------------------
-	//class Curve_Value : public Curve_ID_Type {
-	//public:
-	//};
+	//---------------------------------------------------------------------
+	//		カーブ(数値指定)
+	//---------------------------------------------------------------------
+	class Curve_Value : public Curve_ID_Type {
+	public:
+	};
 
 
 

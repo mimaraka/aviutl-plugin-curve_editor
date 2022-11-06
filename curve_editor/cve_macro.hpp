@@ -13,6 +13,7 @@
 //---------------------------------------------------------------------
 // ウィンドウ
 #define CVE_MARGIN						6
+#define CVE_MARGIN_CONTROL				3
 #define CVE_MARGIN_PRESET				8
 #define CVE_MAX_W						1920
 #define CVE_MAX_H						1080
@@ -56,6 +57,8 @@
 #define CVE_POINT_DEFAULT_1				0.4f
 #define CVE_POINT_DEFAULT_2				0.6f
 
+#define CVE_ELASTIC_DECAY				9.21
+
 //フラグ
 #define BIT(num)						((UINT)1 << num)
 #define CVE_EDGE_LT						BIT(0)
@@ -84,7 +87,7 @@
 #define CVE_CT_UPPER_H					30
 #define CVE_CT_LOWER_H					40
 #define CVE_CT_FONT_H					20
-#define CVE_HEADER_H						(CVE_CT_UPPER_H + CVE_CT_LOWER_H + CVE_MARGIN * 3)
+#define CVE_HEADER_H						(CVE_CT_UPPER_H + CVE_CT_LOWER_H + CVE_MARGIN * 2 + CVE_MARGIN_CONTROL)
 
 #define CVE_COEF_MOVE_DEFAULT			9
 #define CVE_COEF_MOVE_FAST				1
@@ -145,7 +148,7 @@
 //		ライブラリ・プリセット
 //---------------------------------------------------------------------
 #define CVE_PRESET_NUM_DEFAULT			40
-#define CVE_PRESET_NUM_CUSTOM			2048
+#define CVE_PRESET_NUM_CUSTOM			1024
 #define CVE_PRESET_NAME_MAX				128
 #define CVE_LIBRARY_SEARCHBAR_HEIGHT	36
 #define CVE_PRESET_TITLE_HEIGHT			16

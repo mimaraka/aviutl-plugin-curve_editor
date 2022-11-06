@@ -15,6 +15,12 @@ cve::Curve						g_curve_normal;
 cve::Curve						g_curve_normal_previous;
 cve::Curve						g_curve_mb[CVE_CURVE_MAX];
 cve::Curve						g_curve_mb_previous;
+cve::Curve						g_curve_elastic;
+cve::Curve						g_curve_elastic_previous;
+cve::Curve						g_curve_bounce;
+cve::Curve						g_curve_bounce_previous;
+cve::Curve						g_curve_value[CVE_CURVE_MAX];
+cve::Curve						g_curve_value_previous;
 
 cve::Config						g_config;
 

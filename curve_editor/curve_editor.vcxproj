@@ -60,15 +60,19 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -103,10 +107,13 @@
       <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
+      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
+copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
+copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -129,10 +136,13 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
+      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
+copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
+copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -150,10 +160,13 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
+      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
+copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
+copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -175,10 +188,13 @@ copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curv
       <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.10-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\1.00-0.92\Plugins"
-copy $(TargetPath) "C:\Program_Files_Portable\AviUtl\aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
+      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
+copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
+copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
+copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
+copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

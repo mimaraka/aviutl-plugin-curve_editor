@@ -17,6 +17,12 @@ extern cve::Curve							g_curve_normal,
 											g_curve_normal_previous,
 											g_curve_mb[CVE_CURVE_MAX],
 											g_curve_mb_previous;
+extern cve::Curve							g_curve_elastic;
+extern cve::Curve							g_curve_elastic_previous;
+extern cve::Curve							g_curve_bounce;
+extern cve::Curve							g_curve_bounce_previous;
+extern cve::Curve							g_curve_value[CVE_CURVE_MAX];
+extern cve::Curve							g_curve_value_previous;
 
 extern cve::Static_Array<cve::Preset, CVE_PRESET_NUM_DEFAULT> g_presets_default;
 extern cve::Static_Array<cve::Preset, CVE_PRESET_NUM_CUSTOM> g_presets_custom;

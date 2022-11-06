@@ -1101,49 +1101,13 @@ bool cve::Curve::is_data_valid()
 //---------------------------------------------------------------------
 //		(IDタイプのカーブの場合)スクリプトに渡す値を生成
 //---------------------------------------------------------------------
-double cve::Curve::create_result_id(double ratio, double st, double ed)
+double cve::Curve::create_result(double ratio, double st, double ed)
 {
 	// 進捗が0~1の範囲外であった場合
 	if (!ISINRANGEEQ(ratio, 0, 1))
 		return 0;
-
-	// 進捗に相当する区間を調べる
-	for (int i = 0; i < (int)ctpts.size - 1; i++) {
-		if (ISINRANGEEQ(ratio, ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
-			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CVE_GRAPH_RESOLUTION;
-			// 区間ごとの進捗の相対値(0~1)
-			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION) / range;
-			// 区間ごとの制御点1のX座標(相対値、0~1)
-			double x1 = (ctpts[i].pt_right.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
-			// 区間ごとの制御点1のY座標(相対値)
-			double y1 = (ctpts[i].pt_right.y - ctpts[i].pt_center.y) / (double)(ctpts[i + 1].pt_center.y - ctpts[i].pt_center.y);
-			// 区間ごとの制御点2のX座標(相対値、0~1)
-			double x2 = (ctpts[i + 1].pt_left.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
-			// 区間ごとの制御点2のY座標(相対値)
-			double y2 = (ctpts[i + 1].pt_left.y - ctpts[i].pt_center.y) / (double)(ctpts[i + 1].pt_center.y - ctpts[i].pt_center.y);
-
-			// 区間ごとの始値、終値(相対値ではなく、実際の値)
-			double st2 = st + ctpts[i].pt_center.y / (double)CVE_GRAPH_RESOLUTION * (ed - st);
-			double ed2 = st + ctpts[i + 1].pt_center.y / (double)CVE_GRAPH_RESOLUTION * (ed - st);
-			// y1,y2を相対値から実際の値に修正
-			y1 = st2 + (ed2 - st2) * y1;
-			y2 = st2 + (ed2 - st2) * y2;
-
-			// ベジェの計算
-			double tl = 0;
-			double tr = 1;
-			double ta = 0.5 * (tl + tr);
-			double xta;
-			for (int j = 0; j < 10; j++) {
-				xta = (1 - 3 * x2 + 3 * x1) * std::pow(ta, 3) + (x2 - 2 * x1) * 3 * std::pow(ta, 2) + 3 * x1 * ta;
-				if (ratio2 < xta) tr = ta;
-				else tl = ta;
-				ta = 0.5 * (tl + tr);
-			}
-			return std::pow(ta, 3) * (ed2 - st2 - 3 * y2 + 3 * y1) + 3 * std::pow(ta, 2) * (y2 - 2 * y1 + st2) + 3 * ta * (y1 - st2) + st2;
-		}
-	}
-	return 0;
+	else
+		return st + get_bezier_value(ratio) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
 }
 
 

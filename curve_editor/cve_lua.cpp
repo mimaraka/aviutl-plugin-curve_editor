@@ -24,18 +24,18 @@ int get_result(lua_State* L)
 	double	st = lua_tonumber(L, 4);
 	double	ed = lua_tonumber(L, 5);
 
-	switch (mode) {
+	/*switch (mode) {
 	case cve::Mode_Normal:
 	{
 
 		break;
 	}
 		
-	}
+	}*/
 
 
 	if (num < 0 || num > CVE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_curve_mb[num].create_result_id(ratio, st, ed));
+	else lua_pushnumber(L, g_curve_mb[num].create_result(ratio, st, ed));
 	return 1;
 }
 
