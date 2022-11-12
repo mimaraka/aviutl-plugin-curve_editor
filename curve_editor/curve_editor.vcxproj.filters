@@ -18,7 +18,7 @@
     <ClCompile Include="cve_main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="cve_wndproc.cpp">
+    <ClCompile Include="cve_wndproc_editor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cve_dialogproc.cpp">
@@ -70,6 +70,15 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cve_curve_value.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="cve_wndproc_main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="cve_wndproc_header.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="cve_wndproc_library.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

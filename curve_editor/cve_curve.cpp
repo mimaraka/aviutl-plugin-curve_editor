@@ -10,7 +10,6 @@
 #define CVE_GRAPH_POINT_CONTRAST		3
 #define CVE_GRAPH_POINT_DASH			42
 #define CVE_GRAPH_POINT_DASH_BLANK		24
-#define CVE_MATH_PI						3.14159265
 
 
 
@@ -1002,17 +1001,12 @@ void cve::Curve::draw_handle(Bitmap_Buffer* bitmap_buffer, const Float_Point& st
 
 
 //---------------------------------------------------------------------
-//		カーブを描画
+//		ポイントに引かれる点線を描画
 //---------------------------------------------------------------------
-void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode)
+void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int pt_idx)
 {
-	COLORREF handle_color;
-	COLORREF curve_color;
-
 	static ID2D1StrokeStyle* style_dash;
 	const float dashes[] = { CVE_GRAPH_POINT_DASH, CVE_GRAPH_POINT_DASH_BLANK };
-
-	const bool is_preset = drawing_mode == CVE_DRAW_CURVE_PRESET;
 
 	if (style_dash == nullptr) {
 		g_d2d1_factory->CreateStrokeStyle(
@@ -1029,6 +1023,32 @@ void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, 
 			&style_dash
 		);
 	}
+
+	// 端点以外の制御点に引かれる点線
+	bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
+
+	if (pt_idx > 0) {
+		g_render_target->DrawLine(
+			D2D1::Point2F(to_client(ctpts[pt_idx].pt_center).x, 0),
+			D2D1::Point2F(to_client(ctpts[pt_idx].pt_center).x, (float)rect_wnd.bottom),
+			bitmap_buffer->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
+		);
+	}
+
+}
+
+
+
+//---------------------------------------------------------------------
+//		カーブを描画
+//---------------------------------------------------------------------
+void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode)
+{
+	COLORREF handle_color;
+	COLORREF curve_color;
+
+	const bool is_preset = drawing_mode == CVE_DRAW_CURVE_PRESET;
+
 
 	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
 		handle_color = g_theme[g_config.theme].handle;
@@ -1048,15 +1068,7 @@ void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, 
 	{
 		// 端点以外の制御点に引かれる点線
 		if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
-			bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
-			
-			if (i > 0) {
-				g_render_target->DrawLine(
-					D2D1::Point2F(to_client(ctpts[i].pt_center).x, 0),
-					D2D1::Point2F(to_client(ctpts[i].pt_center).x, (float)rect_wnd.bottom),
-					bitmap_buffer->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
-				);
-			}
+			draw_dash_line(bitmap_buffer, rect_wnd, i);
 		}
 
 		// ベジェ曲線を描画
@@ -1099,7 +1111,7 @@ bool cve::Curve::is_data_valid()
 
 
 //---------------------------------------------------------------------
-//		(IDタイプのカーブの場合)スクリプトに渡す値を生成
+//		スクリプトに渡す値を生成
 //---------------------------------------------------------------------
 double cve::Curve::create_result(double ratio, double st, double ed)
 {
@@ -1113,7 +1125,7 @@ double cve::Curve::create_result(double ratio, double st, double ed)
 
 
 //---------------------------------------------------------------------
-//		(IDタイプのカーブの場合)スクリプトに渡す値を生成
+//		ベジェの値を計算
 //---------------------------------------------------------------------
 double cve::Curve::get_bezier_value(double ratio)
 {

@@ -57,7 +57,7 @@
 #define CVE_POINT_DEFAULT_1				0.4f
 #define CVE_POINT_DEFAULT_2				0.6f
 
-#define CVE_ELASTIC_DECAY				9.21
+#define CVE_ELASTIC_DECAY				0.0001
 
 //フラグ
 #define BIT(num)						((UINT)1 << num)
@@ -140,6 +140,8 @@
 #define CVE_DRAW_CURVE_TRACE			1
 #define CVE_DRAW_CURVE_PRESET			2
 
+#define CVE_DRAW_GRAPH_INCREASEMENT		2.0f
+
 #define CVE_CURVE_COLOR_DEFAULT			RGB(103, 103, 241)
 
 
@@ -161,6 +163,8 @@
 #define CVE_POINT_MAX					64					// 変更不可
 #define CVE_CURVE_MAX					1024				// 変更不可
 #define CVE_VALUE_RESOLUTION			1000
+
+#define CVE_MATH_PI						3.14159265
 
 
 

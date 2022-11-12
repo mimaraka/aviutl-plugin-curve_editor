@@ -67,6 +67,7 @@ namespace cve {
 		void				correct_handle(const Point_Address& pt_address, double angle);
 		double				get_handle_angle(const Point_Address& pt_address);
 		void				set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth);
+		void				draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int pt_idx);
 		void				draw_bezier(
 								Bitmap_Buffer* bitmap_buffer,
 								const Float_Point& stpt,
@@ -95,7 +96,7 @@ namespace cve {
 		void				clear();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				reverse_curve();
-		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
+		virtual void		draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
 		bool				is_data_valid();
 
 		// 標準モード用
@@ -107,7 +108,7 @@ namespace cve {
 		// マルチベジェモード用
 		void				add_point(const POINT& pt_client);
 		void				delete_point(const POINT& pt_client);
-		void				move_point(int index, const POINT& pt_graph, bool init);
+		virtual void		move_point(int index, const POINT& pt_graph, bool init);
 		void				move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
 		virtual double		create_result(double ratio, double st, double ed);
 	};
@@ -163,10 +164,16 @@ namespace cve {
 	//		カーブ(振動)
 	//---------------------------------------------------------------------
 	class Curve_Elastic : public Curve_Numeric_Type {
+	private:
+		double				func_elastic(double st, double ed, double freq, double t);
+
 	public:
 
 		void				initialize();
 
+		void				move_point();
+
+		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
 		int					create_number();
 		void				read_number();
 		double				create_result(double ratio, double st, double ed);

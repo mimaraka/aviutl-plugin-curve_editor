@@ -258,12 +258,15 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
     </ClCompile>
     <ClCompile Include="cve_rectangle.cpp" />
     <ClCompile Include="cve_window.cpp" />
-    <ClCompile Include="cve_wndproc.cpp">
+    <ClCompile Include="cve_wndproc_editor.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="cve_wndproc_header.cpp" />
+    <ClCompile Include="cve_wndproc_main.cpp" />
+    <ClCompile Include="cve_wndproc_library.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cve_class.hpp" />
