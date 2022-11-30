@@ -61,8 +61,8 @@ namespace cve {
 	//		カーブ
 	//---------------------------------------------------------------------
 	class Curve {
-	private:
-		double				get_bezier_value(double ratio);
+	protected:
+		double				get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
 		void				set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle);
 		void				correct_handle(const Point_Address& pt_address, double angle);
 		double				get_handle_angle(const Point_Address& pt_address);
@@ -80,37 +80,28 @@ namespace cve {
 								Bitmap_Buffer* bitmap_buffer,
 								const Float_Point& st,
 								const Float_Point& ed,
-								int drawing_mode
+								int drawing_mode,
+								bool draw_point_only
 							);
 
 	public:
 		// サイズ固定
 		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
-		Edit_Mode edit_mode = Mode_Normal;
 
 		Curve() { initialize(); }
 
 		// 共通
 		virtual void		initialize();
-		void				set_mode(Edit_Mode md);
 		void				clear();
-		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
+		virtual void		pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				reverse_curve();
 		virtual void		draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
 		bool				is_data_valid();
-
-		// 標準モード用
-		int					create_value_1d();
-		std::string			create_parameters();
-		void				read_value_1d(int value);
-		void				read_ease(int value);
+		virtual void		read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
+		virtual void		read_number(int number);
 
 		// マルチベジェモード用
-		void				add_point(const POINT& pt_client);
-		void				delete_point(const POINT& pt_client);
-		virtual void		move_point(int index, const POINT& pt_graph, bool init);
-		void				move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
-		virtual double		create_result(double ratio, double st, double ed);
+		virtual void		move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
 	};
 
 
@@ -118,7 +109,7 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(数値タイプ)
 	//---------------------------------------------------------------------
-	class Curve_Numeric_Type : public Curve {
+	class Curve_Type_Numeric : public Curve {
 	public:
 		int result_number;
 	};
@@ -128,7 +119,7 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(IDタイプ)
 	//---------------------------------------------------------------------
-	class Curve_ID_Type : public Curve {
+	class Curve_Type_ID : public Curve {
 	public:
 		void				add_point(const POINT& pt_client);
 		void				delete_point(const POINT& pt_client);
@@ -140,11 +131,10 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(標準)
 	//---------------------------------------------------------------------
-	class Curve_Normal : public Curve_Numeric_Type {
+	class Curve_Normal : public Curve_Type_Numeric {
 	public:
 		int					create_number();
-		void				read_number();
-		double				create_result(double ratio, double st, double ed);
+		double				create_result(int number, double ratio, double st, double ed);
 		std::string			create_parameters();
 	};
 
@@ -153,7 +143,7 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(マルチベジェ)
 	//---------------------------------------------------------------------
-	class Curve_Multibezier : public Curve_ID_Type {
+	class Curve_Multibezier : public Curve_Type_ID {
 	public:
 		double				create_result(double ratio, double st, double ed);
 	};
@@ -163,20 +153,23 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(振動)
 	//---------------------------------------------------------------------
-	class Curve_Elastic : public Curve_Numeric_Type {
+	class Curve_Elastic : public Curve_Type_Numeric {
 	private:
-		double				func_elastic(double st, double ed, double freq, double t);
+		double				func_elastic(double st, double ed, double f, double t);
+		void				elastic_maxpoint(double st, double ed, double f, Double_Point* pt);
 
 	public:
+		double				freq;
+
+		Curve_Elastic() { initialize(); }
 
 		void				initialize();
-
-		void				move_point();
-
+		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
+		void				move_handle(int pt_graph_y);
 		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
 		int					create_number();
-		void				read_number();
-		double				create_result(double ratio, double st, double ed);
+		void				read_number(int number);
+		double				create_result(int number, double ratio, double st, double ed);
 	};
 
 
@@ -184,14 +177,14 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(弾性)
 	//---------------------------------------------------------------------
-	class Curve_Bounce : public Curve_Numeric_Type {
+	class Curve_Bounce : public Curve_Type_Numeric {
 	public:
 
 		void				initialize();
 
-		int					create_number();
-		void				read_number();
-		double				create_result(double ratio, double st, double ed);
+		/*int				create_number();
+		void				read_number();*/
+		double				create_result(int number, double ratio, double st, double ed) { return 0; }
 	};
 
 
@@ -199,8 +192,9 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(数値指定)
 	//---------------------------------------------------------------------
-	class Curve_Value : public Curve_ID_Type {
+	class Curve_Value : public Curve_Type_ID {
 	public:
+		double				create_result(double ratio, double st, double ed) { return 0; }
 	};
 
 
@@ -304,7 +298,7 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		ボタン(Value)
 	//---------------------------------------------------------------------
-	class Button_Value : public Button {
+	class Button_Param : public Button {
 	private:
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
@@ -346,26 +340,6 @@ namespace cve {
 		COLORREF bg_color;
 
 		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-	};
-
-
-
-	//---------------------------------------------------------------------
-	//		プリセット
-	//---------------------------------------------------------------------
-	class Preset : public Button {
-	private:
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-	public:
-		char				name[CVE_PRESET_NAME_MAX];
-		Curve				curve;
-		time_t				unix_time;
-
-		Preset();
-
-		BOOL				initialize(HWND hwnd_p, const Curve* cv, LPTSTR nm);
-		void				move(int panel_width, int index);
 	};
 
 

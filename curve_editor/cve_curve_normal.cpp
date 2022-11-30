@@ -53,7 +53,7 @@ int cve::Curve_Normal::create_number()
 //---------------------------------------------------------------------
 //		パラメータを生成(","で区切る)
 //---------------------------------------------------------------------
-std::string cve::Curve::create_parameters()
+std::string cve::Curve_Normal::create_parameters()
 {
 	Float_Point pt;
 	std::string strx, stry, result;
@@ -104,6 +104,17 @@ std::string cve::Curve::create_parameters()
 
 
 //---------------------------------------------------------------------
-//		Luaに渡す用
+//		スクリプトに渡す値を生成
 //---------------------------------------------------------------------
-//double cve::Curve_Normal::
+double cve::Curve_Normal::create_result(int number, double ratio, double st, double ed)
+{
+	// 進捗が0~1の範囲外であった場合
+	if (!ISINRANGEEQ(ratio, 0, 1))
+		return 0;
+	else {
+		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_buffer;
+		read_number(number, ctpts_buffer);
+
+		return st + get_bezier_value(ratio, ctpts_buffer) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
+	}
+}

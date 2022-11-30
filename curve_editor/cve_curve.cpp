@@ -14,7 +14,7 @@
 
 
 //---------------------------------------------------------------------
-//		初期化1
+//		初期化
 //---------------------------------------------------------------------
 void cve::Curve::initialize()
 {
@@ -55,19 +55,9 @@ void cve::Curve::initialize()
 
 
 //---------------------------------------------------------------------
-//		初期化2
-//---------------------------------------------------------------------
-void cve::Curve::set_mode(Edit_Mode md)
-{
-	edit_mode = md;
-}
-
-
-
-//---------------------------------------------------------------------
 //		ポイントを移動
 //---------------------------------------------------------------------
-void cve::Curve::move_point(int index, const POINT& pt_graph, bool init)
+void cve::Curve_Type_ID::move_point(int index, const POINT& pt_graph, bool init)
 {
 	static POINT		handle_prev_right,
 						handle_next_left,
@@ -455,147 +445,16 @@ void cve::Curve::set_handle_position(const Point_Address& pt_address, const POIN
 
 
 //---------------------------------------------------------------------
-//		値を生成(1次元)
-//---------------------------------------------------------------------
-int cve::Curve::create_value_1d()
-{
-	int result;
-	Float_Point ptf[2];
-	POINT pt[2];
-
-	ptf[0].x = MINMAX_LIMIT(
-		ctpts[0].pt_right.x / (float)CVE_GRAPH_RESOLUTION,
-		0, 1
-	);
-
-	ptf[0].y = MINMAX_LIMIT(
-		ctpts[0].pt_right.y / (float)CVE_GRAPH_RESOLUTION,
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
-	);
-
-	ptf[1].x = MINMAX_LIMIT(
-		ctpts[1].pt_left.x / (float)CVE_GRAPH_RESOLUTION,
-		0, 1
-	);
-
-	ptf[1].y = MINMAX_LIMIT(
-		ctpts[1].pt_left.y / (float)CVE_GRAPH_RESOLUTION,
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
-	);
-
-	for (int i = 0; i < 2; i++) {
-		pt[i].x = (int)std::round(ptf[i].x * 100);
-		pt[i].y = (int)std::round(ptf[i].y * 100);
-	}
-	// 計算
-	result = 6600047 * (pt[1].y + 273) + 65347 * pt[1].x + 101 * (pt[0].y + 273) + pt[0].x - 2147483647;
-	return result;
-}
-
-
-
-//---------------------------------------------------------------------
-//		値を生成(4次元)
-//---------------------------------------------------------------------
-std::string cve::Curve::create_parameters()
-{
-	Float_Point pt;
-	std::string strx, stry, result;
-
-	pt.x = MINMAX_LIMIT(
-		(float)(std::round(ctpts[0].pt_right.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		0, 1
-	);
-	pt.y = MINMAX_LIMIT(
-		(float)(std::round(ctpts[0].pt_right.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
-	);
-
-	strx = std::to_string(pt.x);
-	stry = std::to_string(pt.y);
-	strx.erase(4);
-
-	if (ctpts[0].pt_right.y < 0)
-		stry.erase(5);
-	else
-		stry.erase(4);
-	result += strx + ", " + stry + ", ";
-
-	pt.x = MINMAX_LIMIT(
-		(float)(std::round(ctpts[1].pt_left.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		0, 1
-	);
-	pt.y = MINMAX_LIMIT(
-		(float)(std::round(ctpts[1].pt_left.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
-	);
-
-	strx = std::to_string(pt.x);
-	stry = std::to_string(pt.y);
-	strx.erase(4);
-
-	if (ctpts[1].pt_left.y < 0)
-		stry.erase(5);
-	else
-		stry.erase(4);
-	result += strx + ", " + stry;
-
-	return result;
-}
-
-
-
-//---------------------------------------------------------------------
-//		1次元値を読み取る
-//---------------------------------------------------------------------
-void cve::Curve::read_value_1d(int value)
-{
-	int64_t int64;
-	int64 = (int64_t)value + (int64_t)2147483647;
-
-	clear();
-
-	ctpts[1].pt_left.y = (LONG)(int64 / 6600047);
-	ctpts[1].pt_left.x = (LONG)((int64 - (int64_t)ctpts[1].pt_left.y * 6600047) / 65347);
-	ctpts[0].pt_right.y = (LONG)((int64 - ((int64_t)ctpts[1].pt_left.y * 6600047 + (int64_t)ctpts[1].pt_left.x * 65347)) / 101);
-	ctpts[0].pt_right.x = (LONG)((int64 - ((int64_t)ctpts[1].pt_left.y * 6600047 + (int64_t)ctpts[1].pt_left.x * 65347)) % 101);
-	ctpts[0].pt_right.x *= CVE_GRAPH_RESOLUTION / 100;
-	ctpts[0].pt_right.y *= CVE_GRAPH_RESOLUTION / 100;
-	ctpts[1].pt_left.x *= CVE_GRAPH_RESOLUTION / 100;
-	ctpts[1].pt_left.y *= CVE_GRAPH_RESOLUTION / 100;
-	ctpts[0].pt_right.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
-	ctpts[1].pt_left.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
-}
-
-
-
-//---------------------------------------------------------------------
-//		easeの値を読み取る
-//---------------------------------------------------------------------
-void cve::Curve::read_ease(int value)
-{
-
-}
-
-
-
-//---------------------------------------------------------------------
 //		ポイント・ハンドルを追加
 //---------------------------------------------------------------------
-void cve::Curve::add_point(const POINT& pt_graph)
+void cve::Curve_Type_ID::add_point(const POINT& pt_graph)
 {
 	int index = 0;
 
-	// ・モードが標準モード
 	// ・ポイントの個数が最大
 	// ・追加するポイントのX座標が範囲外
 	// のいずれかの場合
-	if (edit_mode == Mode_Normal ||
-		ctpts.size >= CVE_POINT_MAX ||
+	if (ctpts.size >= CVE_POINT_MAX ||
 		!ISINRANGE(pt_graph.x, 0, CVE_GRAPH_RESOLUTION))
 		return;
 
@@ -654,7 +513,7 @@ void cve::Curve::add_point(const POINT& pt_graph)
 //---------------------------------------------------------------------
 //		ポイントを削除
 //---------------------------------------------------------------------
-void cve::Curve::delete_point(const POINT& pt_client)
+void cve::Curve_Type_ID::delete_point(const POINT& pt_client)
 {
 	Point_Address pt_address;
 	pt_in_ctpt(pt_client, &pt_address);
@@ -943,7 +802,12 @@ void cve::Curve::draw_bezier(
 //---------------------------------------------------------------------
 //		ハンドルを描画
 //---------------------------------------------------------------------
-void cve::Curve::draw_handle(Bitmap_Buffer* bitmap_buffer, const Float_Point& st, const Float_Point& ed, int drawing_mode)
+void cve::Curve::draw_handle(
+	Bitmap_Buffer* bitmap_buffer,
+	const Float_Point& st,
+	const Float_Point& ed,
+	int drawing_mode,
+	bool draw_point_only)
 {
 	static ID2D1StrokeStyle* style = nullptr;
 
@@ -974,19 +838,22 @@ void cve::Curve::draw_handle(Bitmap_Buffer* bitmap_buffer, const Float_Point& st
 	);
 
 	if (drawing_mode != CVE_DRAW_CURVE_TRACE) {
-		g_render_target->DrawLine(
-			D2D1::Point2F(st_new.x, st_new.y),
-			D2D1::Point2F(ed_new.x, ed_new.y),
-			bitmap_buffer->brush, handle_thickness
-		);
+		if (!draw_point_only) {
+			// ハンドルの直線
+			g_render_target->DrawLine(
+				D2D1::Point2F(st_new.x, st_new.y),
+				D2D1::Point2F(ed_new.x, ed_new.y),
+				bitmap_buffer->brush, handle_thickness
+			);
 
-		// ハンドルの先端
-		g_render_target->DrawEllipse(
-			D2D1::Ellipse(
-				D2D1::Point2F(ed.x, ed.y),
-				handle_size, handle_size),
-			bitmap_buffer->brush, CVE_HANDLE_CIRCLE_LINE
-		);
+			// ハンドルの先端
+			g_render_target->DrawEllipse(
+				D2D1::Ellipse(
+					D2D1::Point2F(ed.x, ed.y),
+					handle_size, handle_size),
+				bitmap_buffer->brush, CVE_HANDLE_CIRCLE_LINE
+			);
+		}
 
 		// ハンドルの根元
 		g_render_target->FillEllipse(
@@ -1087,12 +954,12 @@ void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, 
 			draw_handle(bitmap_buffer,
 				is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
 				is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
-				drawing_mode
+				drawing_mode, false
 			);
 			draw_handle(bitmap_buffer,
 				is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
 				is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
-				drawing_mode
+				drawing_mode, false
 			);
 		}
 	}
@@ -1111,15 +978,35 @@ bool cve::Curve::is_data_valid()
 
 
 //---------------------------------------------------------------------
-//		スクリプトに渡す値を生成
+//		1次元値を読み取る
 //---------------------------------------------------------------------
-double cve::Curve::create_result(double ratio, double st, double ed)
+void cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
-	// 進捗が0~1の範囲外であった場合
-	if (!ISINRANGEEQ(ratio, 0, 1))
-		return 0;
-	else
-		return st + get_bezier_value(ratio) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
+	int64_t int64;
+	int64 = (int64_t)number + (int64_t)2147483647;
+
+	clear();
+
+	points[1].pt_left.y = (LONG)(int64 / 6600047);
+	points[1].pt_left.x = (LONG)((int64 - (int64_t)points[1].pt_left.y * 6600047) / 65347);
+	points[0].pt_right.y = (LONG)((int64 - ((int64_t)points[1].pt_left.y * 6600047 + (int64_t)points[1].pt_left.x * 65347)) / 101);
+	points[0].pt_right.x = (LONG)((int64 - ((int64_t)points[1].pt_left.y * 6600047 + (int64_t)points[1].pt_left.x * 65347)) % 101);
+	points[0].pt_right.x *= CVE_GRAPH_RESOLUTION / 100;
+	points[0].pt_right.y *= CVE_GRAPH_RESOLUTION / 100;
+	points[1].pt_left.x *= CVE_GRAPH_RESOLUTION / 100;
+	points[1].pt_left.y *= CVE_GRAPH_RESOLUTION / 100;
+	points[0].pt_right.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
+	points[1].pt_left.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
+}
+
+
+
+//---------------------------------------------------------------------
+//		1次元値を読み取る
+//---------------------------------------------------------------------
+void cve::Curve::read_number(int number)
+{
+	read_number(number, ctpts);
 }
 
 
@@ -1127,31 +1014,31 @@ double cve::Curve::create_result(double ratio, double st, double ed)
 //---------------------------------------------------------------------
 //		ベジェの値を計算
 //---------------------------------------------------------------------
-double cve::Curve::get_bezier_value(double ratio)
+double cve::Curve::get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
 	// 進捗が0~1の範囲外であった場合
 	if (!ISINRANGEEQ(ratio, 0, 1))
 		return 0;
 
 	// 進捗に相当する区間を調べる
-	for (int i = 0; i < (int)ctpts.size - 1; i++) {
-		if (ISINRANGEEQ(ratio, ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, ctpts[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
+	for (int i = 0; i < (int)points.size - 1; i++) {
+		if (ISINRANGEEQ(ratio, points[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, points[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
 			// 区間の長さ(ratioと同じスケール)
-			double range = (ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x) / (double)CVE_GRAPH_RESOLUTION;
+			double range = (points[i + 1].pt_center.x - points[i].pt_center.x) / (double)CVE_GRAPH_RESOLUTION;
 			// 区間ごとの進捗の相対値(0~1)
-			double ratio2 = (ratio - ctpts[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION) / range;
+			double ratio2 = (ratio - points[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION) / range;
 			// 区間ごとの制御点1のX座標(相対値、0~1)
-			double x1 = (ctpts[i].pt_right.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
+			double x1 = (points[i].pt_right.x - points[i].pt_center.x) / (double)(points[i + 1].pt_center.x - points[i].pt_center.x);
 			// 区間ごとの制御点1のY座標(実際の値)
-			double y1 = ctpts[i].pt_right.y - ctpts[i].pt_center.y;
+			double y1 = points[i].pt_right.y - points[i].pt_center.y;
 			// 区間ごとの制御点2のX座標(相対値、0~1)
-			double x2 = (ctpts[i + 1].pt_left.x - ctpts[i].pt_center.x) / (double)(ctpts[i + 1].pt_center.x - ctpts[i].pt_center.x);
+			double x2 = (points[i + 1].pt_left.x - points[i].pt_center.x) / (double)(points[i + 1].pt_center.x - points[i].pt_center.x);
 			// 区間ごとの制御点2のY座標(相対値)
-			double y2 = ctpts[i + 1].pt_left.y - ctpts[i].pt_center.y;
+			double y2 = points[i + 1].pt_left.y - points[i].pt_center.y;
 
 			// 区間ごとの始値、終値(相対値ではなく、実際の値)
-			double st2 = ctpts[i].pt_center.y;
-			double ed2 = ctpts[i + 1].pt_center.y;
+			double st2 = points[i].pt_center.y;
+			double ed2 = points[i + 1].pt_center.y;
 
 			// ベジェの計算
 			double tl = 0;

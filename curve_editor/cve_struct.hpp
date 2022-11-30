@@ -14,18 +14,18 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		Float Point (floatの点)
 	//---------------------------------------------------------------------
-	typedef struct tagFloat_Point {
+	struct Float_Point {
 		float x, y;
-	} Float_Point;
+	};
 
 
 
 	//---------------------------------------------------------------------
 	//		Double Point (doubleの点)
 	//---------------------------------------------------------------------
-	typedef struct tagDouble_Point {
+	struct Double_Point {
 		double x, y;
-	} Double_Point;
+	};
 
 
 
@@ -45,7 +45,7 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		テーマ
 	//---------------------------------------------------------------------
-	typedef struct tagTheme {
+	struct Theme {
 		COLORREF	bg,
 					bg_graph,
 					sepr,
@@ -58,14 +58,14 @@ namespace cve {
 					bt_tx,
 					bt_tx_selected,
 					preset_tx;
-	} Theme;
+	};
 
 
 
 	//---------------------------------------------------------------------
 	//		ポイント(マルチベジェモード)
 	//---------------------------------------------------------------------
-	typedef struct tagCurve_Points {
+	struct Curve_Points {
 		enum Type {
 			Default_Left,		// 初期制御点の左
 			Default_Right,		// 初期制御点の右
@@ -77,14 +77,14 @@ namespace cve {
 				pt_right;
 
 		Type type;
-	} Curve_Points;
+	};
 
 
 
 	//---------------------------------------------------------------------
 	//		ポイントの場所
 	//---------------------------------------------------------------------
-	typedef struct tagPoint_Address {
+	struct Point_Address {
 		// ポイントの位置
 		enum Point_Position {
 			Null,
@@ -95,17 +95,22 @@ namespace cve {
 
 		int index;
 		Point_Position position;
-	} Point_Address;
+	};
 
 
 
 	//---------------------------------------------------------------------
 	//		設定
 	//---------------------------------------------------------------------
-	typedef struct tagConfig {
+	struct Config {
 		enum Layout_Mode {
 			Vertical,
 			Horizontal
+		};
+
+		struct Curve_ID {
+			int multibezier = 0,
+				value = 0;
 		};
 
 		bool	alert,
@@ -118,11 +123,11 @@ namespace cve {
 
 		int		theme,
 				separator,
-				current_id,
 				preset_size;
 
+		Curve_ID	current_id;
 		Edit_Mode	edit_mode;
 		Layout_Mode	layout_mode;
 		COLORREF	curve_color;
-	} Config;
+	};
 }

@@ -230,6 +230,9 @@ BEGIN
         BEGIN
             MENUITEM "標準",                          ID_MENU_MODE_NORMAL
             MENUITEM "マルチベジェ",                      ID_MENU_MODE_MULTIBEZIER
+            MENUITEM "振動",                          ID_MENU_MODE_ELASTIC
+            MENUITEM "弾性",                          ID_MENU_MODE_BOUNCE
+            MENUITEM "数値指定",                        ID_MENU_MODE_VALUE
         END
         MENUITEM SEPARATOR
         MENUITEM "カーブの数値をコピー\tCtrl+C",          ID_MENU_COPY
@@ -277,6 +280,9 @@ BEGIN
     BEGIN
         MENUITEM "標準",                          ID_MODE_NORMAL
         MENUITEM "マルチベジェ",                      ID_MODE_MULTIBEZIER
+        MENUITEM "振動",                          ID_MODE_ELASTIC
+        MENUITEM "弾性",                          ID_MODE_BOUNCE
+        MENUITEM "数値指定",                        ID_MODE_VALUE
     END
 END
 

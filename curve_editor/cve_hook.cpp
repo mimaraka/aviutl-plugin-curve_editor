@@ -87,9 +87,9 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		TCHAR text[MAX_PATH];
 		int data;
 		if (g_config.edit_mode == cve::Mode_Multibezier)
-			data = g_config.current_id;
+			data = g_config.current_id.multibezier;
 		else
-			data = g_curve_normal.create_value_1d();
+			data = g_curve_normal.create_number();
 		::_itoa_s(data, text, MAX_PATH, 10);
 		::SendMessage(hwnd_edit, WM_SETTEXT, 0, (LPARAM)text);
 		::PostMessage(hwnd, WM_COMMAND, IDOK, 0);

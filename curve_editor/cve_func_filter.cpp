@@ -26,12 +26,6 @@ BOOL filter_initialize(FILTER* fp)
 {
 	g_fp = fp;
 
-	for (int i = 0; i < CVE_CURVE_MAX; i++) {
-		g_curve_mb[i].set_mode(cve::Mode_Multibezier);
-	}
-	g_curve_mb_previous.set_mode(cve::Mode_Multibezier);
-
-
 	// aviutl.ini‚©‚çÝ’è‚ð“Ç‚Ýž‚Ý
 	ini_load_configs(fp);
 	
@@ -100,7 +94,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 		for (int i = 0; i < CVE_CURVE_MAX; i++)
 			g_curve_mb[i].ctpts = point_data[i];
 
-		g_curve_mb_previous = g_curve_mb[g_config.current_id];
+		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier];
 
 		if (g_window_editor.hwnd) {
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
@@ -160,7 +154,6 @@ void ini_load_configs(FILTER* fp)
 	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", true);
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
-	g_config.current_id = fp->exfunc->ini_load_int(fp, "id", 0);
 	g_curve_normal.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1)), 0, CVE_GRAPH_RESOLUTION);
 	g_curve_normal.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1));
 	g_curve_normal.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)), 0, CVE_GRAPH_RESOLUTION);

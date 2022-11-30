@@ -110,9 +110,12 @@ void cve::subtract_length(cve::Float_Point* pt, const cve::Float_Point& st, cons
 void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	mi->fMask = MIIM_STATE;
 
-	int edit_mode_menu_id[] = {
+	const int edit_mode_menu_id[] = {
 		ID_MENU_MODE_NORMAL,
-		ID_MENU_MODE_MULTIBEZIER
+		ID_MENU_MODE_MULTIBEZIER,
+		ID_MENU_MODE_ELASTIC,
+		ID_MENU_MODE_BOUNCE,
+		ID_MENU_MODE_VALUE
 	};
 
 	// 編集モードのチェック

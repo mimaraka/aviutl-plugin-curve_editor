@@ -23,19 +23,36 @@ int get_result(lua_State* L)
 	double	ratio = lua_tonumber(L, 3);
 	double	st = lua_tonumber(L, 4);
 	double	ed = lua_tonumber(L, 5);
+	double	result;
 
-	/*switch (mode) {
+	switch (mode) {
 	case cve::Mode_Normal:
-	{
+		result = g_curve_normal.create_result(num, ratio, st, ed);
+		break;
 
+	case cve::Mode_Multibezier:
+		result = g_curve_mb[num].create_result(ratio, st, ed);
+		break;
+
+	case cve::Mode_Elastic:
+		result = g_curve_elastic.create_result(num, ratio, st, ed);
+		break;
+
+	case cve::Mode_Bounce:
+		result = g_curve_bounce.create_result(num, ratio, st, ed);
+		break;
+
+	case cve::Mode_Value:
+		result = g_curve_value[num].create_result(ratio, st, ed);
+		break;
+
+	default:
+		result = 0;
 		break;
 	}
-		
-	}*/
-
 
 	if (num < 0 || num > CVE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, g_curve_mb[num].create_result(ratio, st, ed));
+	else lua_pushnumber(L, result);
 	return 1;
 }
 

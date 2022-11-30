@@ -45,8 +45,6 @@
 #define ID_MENU_COPY4D                  40017
 #define ID_MENU_SAVE                    40018
 #define ID_MENU_COPY                    40019
-#define ID_MENU_MODE_NORMAL             40020
-#define ID_MENU_MODE_MULTIBEZIER        40021
 #define ID_MENU_DELETE                  40022
 #define ID_MENU_PROPERTY                40023
 #define ID_MENU_READ                    40024
@@ -64,13 +62,21 @@
 #define ID_MENU_HORIZONTAL              40064
 #define ID_MODE_NORMAL                  40067
 #define ID_MODE_MULTIBEZIER             40068
+#define ID_MODE_ELASTIC                 40069
+#define ID_MODE_BOUNCE                  40070
+#define ID_MODE_VALUE                   40071
+#define ID_MENU_MODE_NORMAL             40100
+#define ID_MENU_MODE_MULTIBEZIER        40101
+#define ID_MENU_MODE_ELASTIC            40102
+#define ID_MENU_MODE_BOUNCE             40103
+#define ID_MENU_MODE_VALUE              40104
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        139
-#define _APS_NEXT_COMMAND_VALUE         40069
+#define _APS_NEXT_COMMAND_VALUE         40081
 #define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

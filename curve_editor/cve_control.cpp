@@ -339,7 +339,7 @@ void cve::Button_Switch::set_status(BOOL bl)
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ(Value)
 //---------------------------------------------------------------------
-LRESULT cve::Button_Value::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 
@@ -373,6 +373,18 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
+	int* current_id = nullptr;
+
+	switch (g_config.edit_mode) {
+	case Mode_Multibezier:
+		current_id = &g_config.current_id.multibezier;
+		break;
+
+	case Mode_Value:
+	default:
+		current_id = &g_config.current_id.value;
+		break;
+	}
 
 	::GetClientRect(hw, &rect_wnd);
 
@@ -382,7 +394,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		COLORREF bg = g_theme[g_config.theme].bg;
 		TCHAR id_text[5];
 
-		::_itoa_s(g_config.current_id, id_text, 5, 10);
+		::_itoa_s(g_config.current_id.multibezier, id_text, 5, 10);
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
@@ -396,7 +408,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	// 左クリックがされたとき
 	case WM_LBUTTONDOWN:
 		pt_lock = pt_client;
-		id_buffer = g_config.current_id;
+		id_buffer = *current_id;
 
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
 
@@ -419,8 +431,16 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 
-			g_config.current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CVE_CURVE_MAX - 1);
-			g_curve_mb_previous = g_curve_mb[g_config.current_id];
+			*current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CVE_CURVE_MAX - 1);
+			switch (g_config.edit_mode) {
+			case Mode_Multibezier:
+				g_curve_mb_previous = g_curve_mb[*current_id];
+				break;
+
+			case Mode_Value:
+				g_curve_value_previous = g_curve_value[*current_id];
+				break;
+			}
 
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 		}
@@ -434,7 +454,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_LBUTTONUP:
-		if (!is_scrolling && clicked && g_config.edit_mode == Mode_Multibezier)
+		if (!is_scrolling && clicked)
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ID), hw, dialogproc_id);
 		
 		is_scrolling = false;

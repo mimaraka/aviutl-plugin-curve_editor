@@ -8,7 +8,7 @@
 
 #define CVE_GR_GRID_TH_L				0.5f
 #define CVE_GR_GRID_TH_B				1.0f
-#define CVE_GR_GRID_MIN				36
+#define CVE_GR_GRID_MIN					36
 
 
 
@@ -136,6 +136,7 @@ void cve::Bitmap_Buffer::draw_grid()
 			thickness = CVE_GR_GRID_TH_B;
 		else
 			thickness = CVE_GR_GRID_TH_L;
+
 		g_render_target->DrawLine(
 			D2D1::Point2F(0, ay + dy * i),
 			D2D1::Point2F((float)rect.right, ay + dy * i),
@@ -289,9 +290,6 @@ void cve::Bitmap_Buffer::draw_panel()
 //---------------------------------------------------------------------
 void cve::Bitmap_Buffer::draw_panel_editor()
 {
-	Curve* curve_ptr;
-	Curve* curve_trace_ptr;
-
 	D2D1_RECT_F rect_left = {
 		0,
 		0,
@@ -321,17 +319,6 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 	};
 
 
-	// 標準モードのとき
-	if (g_config.edit_mode == Mode_Normal) {
-		curve_ptr = &g_curve_normal;
-		curve_trace_ptr = &g_curve_normal_previous;
-	}
-	// マルチベジェモードのとき
-	else {
-		curve_ptr = &g_curve_mb[g_config.current_id];
-		curve_trace_ptr = &g_curve_mb_previous;
-	}
-
 	//Direct2D初期化
 	d2d_setup(TO_BGR(g_theme[g_config.theme].bg_graph));
 
@@ -356,10 +343,48 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 		}
 		brush->SetOpacity(1);
 
-		if (g_config.trace)
-			curve_trace_ptr->draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+		// 編集モード振り分け
+		switch (g_config.edit_mode) {
+			// 標準モードのとき
+		case Mode_Normal:
+			if (g_config.trace)
+				g_curve_normal_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
-		curve_ptr->draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			g_curve_normal.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			break;
+
+			// マルチベジェモードのとき
+		case Mode_Multibezier:
+			if (g_config.trace)
+				g_curve_mb_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+
+			g_curve_mb[g_config.current_id.multibezier].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			break;
+
+			// 振動モードのとき
+		case Mode_Elastic:
+			if (g_config.trace)
+				g_curve_elastic_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+
+			g_curve_elastic.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			break;
+
+			// 弾性モードのとき
+		case Mode_Bounce:
+			if (g_config.trace)
+				g_curve_bounce_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+
+			g_curve_bounce.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			break;
+
+			// 数値指定モードのとき
+		case Mode_Value:
+			if (g_config.trace)
+				g_curve_value_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+
+			g_curve_value[g_config.current_id.value].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			break;
+		}
 
 		g_render_target->EndDraw();
 	}

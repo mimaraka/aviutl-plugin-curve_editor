@@ -11,16 +11,16 @@
 //---------------------------------------------------------------------
 //		グローバル変数
 //---------------------------------------------------------------------
-cve::Curve						g_curve_normal;
-cve::Curve						g_curve_normal_previous;
-cve::Curve						g_curve_mb[CVE_CURVE_MAX];
-cve::Curve						g_curve_mb_previous;
-cve::Curve						g_curve_elastic;
-cve::Curve						g_curve_elastic_previous;
-cve::Curve						g_curve_bounce;
-cve::Curve						g_curve_bounce_previous;
-cve::Curve						g_curve_value[CVE_CURVE_MAX];
-cve::Curve						g_curve_value_previous;
+cve::Curve_Normal				g_curve_normal,
+								g_curve_normal_previous;
+cve::Curve_Multibezier			g_curve_mb[CVE_CURVE_MAX],
+								g_curve_mb_previous;
+cve::Curve_Elastic				g_curve_elastic,
+								g_curve_elastic_previous;
+cve::Curve_Bounce				g_curve_bounce,
+								g_curve_bounce_previous;
+cve::Curve_Value				g_curve_value[CVE_CURVE_MAX],
+								g_curve_value_previous;
 
 cve::Config						g_config;
 
@@ -34,8 +34,15 @@ cve::Graph_View_Info			g_view_info;
 
 FILTER*							g_fp;
 
-cve::Static_Array<cve::Preset, CVE_PRESET_NUM_DEFAULT> g_presets_default;
-cve::Static_Array<cve::Preset, CVE_PRESET_NUM_CUSTOM> g_presets_custom;
+cve::Static_Array<cve::Preset<cve::Curve_Normal>, CVE_PRESET_NUM_DEFAULT> g_presets_normal_default;
+cve::Static_Array<cve::Preset<cve::Curve_Normal>, CVE_PRESET_NUM_CUSTOM> g_presets_normal_custom;
+
+cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_DEFAULT> g_presets_mb_default;
+cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_CUSTOM> g_presets_mb_custom;
+
+cve::Static_Array<cve::Preset<cve::Curve_Elastic>, CVE_PRESET_NUM_CUSTOM> g_presets_elastic_custom;
+
+cve::Static_Array<cve::Preset<cve::Curve_Bounce>, CVE_PRESET_NUM_CUSTOM> g_presets_bounce_custom;
 
 
 //ダークテーマ

@@ -59,6 +59,7 @@
 
 #define CVE_ELASTIC_DECAY				0.0001
 
+
 //フラグ
 #define BIT(num)						((UINT)1 << num)
 #define CVE_EDGE_LT						BIT(0)
@@ -74,20 +75,24 @@
 //---------------------------------------------------------------------
 #define CVE_CT_EDIT_MODE_NORMAL			0x0400
 #define CVE_CT_EDIT_MODE_MULTIBEZIER	0x0401
-#define CVE_CT_ALIGN					0x0402
-#define CVE_CT_PREV						0x0403
-#define CVE_CT_PREV_DUR					0x0404
-#define CVE_CT_ID_BACK					0x0405
-#define CVE_CT_ID_NEXT					0x0406
-#define CVE_CT_ID						0x0407
-#define CVE_CT_SETSTATUS				0x0408
-#define CVE_CT_COLOR_CURVE				0x0409
-#define CVE_CT_EDIT_MODE						0x040a
+#define CVE_CT_EDIT_MODE_ELASTIC		0x0402
+#define CVE_CT_EDIT_MODE_BOUNCE			0x0403
+#define CVE_CT_EDIT_MODE_VALUE			0x0404
+
+#define CVE_CT_ALIGN					0x0410
+#define CVE_CT_PREV						0x0411
+#define CVE_CT_PREV_DUR					0x0412
+#define CVE_CT_ID_BACK					0x0413
+#define CVE_CT_ID_NEXT					0x0414
+#define CVE_CT_ID						0x0415
+#define CVE_CT_SETSTATUS				0x0416
+#define CVE_CT_COLOR_CURVE				0x0417
+#define CVE_CT_EDIT_MODE				0x0418
 
 #define CVE_CT_UPPER_H					30
 #define CVE_CT_LOWER_H					40
 #define CVE_CT_FONT_H					20
-#define CVE_HEADER_H						(CVE_CT_UPPER_H + CVE_CT_LOWER_H + CVE_MARGIN * 2 + CVE_MARGIN_CONTROL)
+#define CVE_HEADER_H					(CVE_CT_UPPER_H + CVE_CT_LOWER_H + CVE_MARGIN * 2 + CVE_MARGIN_CONTROL)
 
 #define CVE_COEF_MOVE_DEFAULT			9
 #define CVE_COEF_MOVE_FAST				1
@@ -112,8 +117,8 @@
 #define CVE_CM_ID_NEXT					0x080a
 #define CVE_CM_ID_BACK					0x080b
 #define CVE_CM_REDRAW_AVIUTL			0x080c
-#define CVE_CM_VALUE					0x080d
-#define CVE_CM_VALUE_REDRAW				0x080e
+#define CVE_CM_PARAM					0x080d
+#define CVE_CM_PARAM_REDRAW				0x080e
 #define CVE_CM_PRESET_MOVE				0x080f
 #define CVE_CM_CHANGE_COLOR				0x0810
 #define CVE_CM_CHANGE_LABEL				0x0811
@@ -140,7 +145,7 @@
 #define CVE_DRAW_CURVE_TRACE			1
 #define CVE_DRAW_CURVE_PRESET			2
 
-#define CVE_DRAW_GRAPH_INCREASEMENT		2.0f
+#define CVE_DRAW_GRAPH_INCREASEMENT		1.0f
 
 #define CVE_CURVE_COLOR_DEFAULT			RGB(103, 103, 241)
 
@@ -163,6 +168,7 @@
 #define CVE_POINT_MAX					64					// 変更不可
 #define CVE_CURVE_MAX					1024				// 変更不可
 #define CVE_VALUE_RESOLUTION			1000
+#define CVE_ELASTIC_FREQ_COEF			10000000
 
 #define CVE_MATH_PI						3.14159265
 

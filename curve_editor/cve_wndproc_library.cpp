@@ -97,9 +97,7 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 	case WM_SIZE:
 		bitmap_buffer.set_size(rect_wnd);
-		for (int i = 0; i < g_presets_custom.size; i++) {
-			g_presets_custom[i].move(rect_wnd.right, i);
-		}
+		::PostMessage(hwnd, WM_COMMAND, CVE_CM_PRESET_MOVE, 0);
 
 		return 0;
 
@@ -128,8 +126,16 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			return 0;
 
 		case CVE_CM_PRESET_MOVE:
-			for (int i = 0; i < g_presets_custom.size; i++) {
-				g_presets_custom[i].move(rect_wnd.right, i);
+			switch (g_config.edit_mode) {
+			case cve::Mode_Normal:
+				break;
+
+			case cve::Mode_Multibezier:
+				break;
+			}
+			// Œã‚ÅÁ‚·
+			for (int i = 0; i < g_presets_normal_custom.size; i++) {
+				g_presets_normal_custom[i].move(rect_wnd.right, i);
 			}
 			return 0;
 		}

@@ -259,9 +259,9 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					return 0;
 				}
 				if (g_config.edit_mode == cve::Mode_Normal)
-					g_curve_normal.read_value_1d(value);
+					g_curve_normal.read_number(value);
 				else
-					g_curve_mb[g_config.current_id].read_value_1d(value);
+					g_curve_mb[g_config.current_id.multibezier].read_number(value);
 
 				::EndDialog(hwnd, 1);
 			}
@@ -303,13 +303,44 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (LOWORD(wparam)) {
 		case IDOK:
 		{
-			cve::Curve* curve_ptr = (g_config.edit_mode == cve::Mode_Normal) ? &g_curve_normal : &g_curve_mb[g_config.current_id];
-			const cve::Preset preset;
-
 			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, CVE_PRESET_NAME_MAX);
 
-			g_presets_custom.PushBack(preset);
-			g_presets_custom[g_presets_custom.size - 1].initialize(g_window_preset_list.hwnd, curve_ptr, buffer);
+			switch (g_config.edit_mode) {
+			case cve::Mode_Normal:
+			{
+				const cve::Preset<cve::Curve_Normal> preset_normal;
+				g_presets_normal_custom.PushBack(preset_normal);
+				g_presets_normal_custom[g_presets_normal_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_normal, buffer);
+				break;
+			}
+
+			case cve::Mode_Multibezier:
+			{
+				const cve::Preset<cve::Curve_Multibezier> preset_mb;
+				g_presets_mb_custom.PushBack(preset_mb);
+				g_presets_mb_custom[g_presets_mb_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_mb[g_config.current_id.multibezier], buffer);
+				break;
+			}
+
+			case cve::Mode_Elastic:
+			{
+				const cve::Preset<cve::Curve_Elastic> preset_elastic;
+				g_presets_elastic_custom.PushBack(preset_elastic);
+				g_presets_elastic_custom[g_presets_elastic_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_elastic, buffer);
+				break;
+			}
+
+			case cve::Mode_Bounce:
+			{
+				const cve::Preset<cve::Curve_Bounce> preset_bounce;
+				g_presets_bounce_custom.PushBack(preset_bounce);
+				g_presets_bounce_custom[g_presets_bounce_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_bounce, buffer);
+				break;
+			}
+
+			default:
+				break;
+			}
 
 			::SendMessage(g_window_preset_list.hwnd, WM_COMMAND, CVE_CM_PRESET_MOVE, 0);
 

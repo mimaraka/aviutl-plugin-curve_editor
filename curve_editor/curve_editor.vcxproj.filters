@@ -33,9 +33,6 @@
     <ClCompile Include="cve_control.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="cve_preset.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="cve_func_filter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
