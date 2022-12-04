@@ -165,6 +165,7 @@ void ini_load_configs(FILTER* fp)
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CVE_DEF_PRESET_SIZE);
 	g_config.curve_color = fp->exfunc->ini_load_int(fp, "curve_color", CVE_CURVE_COLOR_DEFAULT);
 	g_config.layout_mode = (cve::Config::Layout_Mode)fp->exfunc->ini_load_int(fp, "layout_mode", cve::Config::Vertical);
+	g_config.notify_latest_version = fp->exfunc->ini_load_int(fp, "notify_latest_version", false);
 }
 
 

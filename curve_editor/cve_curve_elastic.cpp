@@ -110,7 +110,6 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 	COLORREF handle_color;
 	COLORREF curve_color;
 
-	const bool is_preset = drawing_mode == CVE_DRAW_CURVE_PRESET;
 	Double_Point extpoint;
 	elastic_maxpoint(0, 1, freq, &extpoint);
 
@@ -139,7 +138,7 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 		left_side = 0;
 	}
 	else if (right_side > rect_wnd.right) {
-		right_side = rect_wnd.right;
+		right_side = (float)rect_wnd.right;
 	}
 
 	bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
@@ -148,11 +147,11 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 		g_render_target->DrawLine(
 			D2D1::Point2F(
 				x,
-				(float)(to_client(0, func_elastic(0.0, 1.0, freq, to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION) * CVE_GRAPH_RESOLUTION * 0.5).y)),
+				(float)(to_client(0, (int)(func_elastic(0.0, 1.0, freq, to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION) * CVE_GRAPH_RESOLUTION * 0.5)).y)),
 				//100),
 			D2D1::Point2F(
 				x + CVE_DRAW_GRAPH_INCREASEMENT,
-				(float)(to_client(0, func_elastic(0.0, 1.0, freq, to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION) * CVE_GRAPH_RESOLUTION * 0.5).y)),
+				(float)(to_client(0, (int)(func_elastic(0.0, 1.0, freq, to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION) * CVE_GRAPH_RESOLUTION * 0.5)).y)),
 				//100),
 			bitmap_buffer->brush, CVE_CURVE_THICKNESS
 		);
@@ -186,8 +185,8 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 		// èIì_
 		draw_handle(
 			bitmap_buffer,
-			to_client(CVE_GRAPH_RESOLUTION, CVE_GRAPH_RESOLUTION * 0.5),
-			to_client(CVE_GRAPH_RESOLUTION, CVE_GRAPH_RESOLUTION * 0.5),
+			to_client(CVE_GRAPH_RESOLUTION, (int)(CVE_GRAPH_RESOLUTION * 0.5)),
+			to_client(CVE_GRAPH_RESOLUTION, (int)(CVE_GRAPH_RESOLUTION * 0.5)),
 			drawing_mode, true
 		);
 	}
@@ -200,9 +199,7 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 //---------------------------------------------------------------------
 int cve::Curve_Elastic::create_number()
 {
-	Double_Point dpt;
-	elastic_maxpoint(0, 1, freq, &dpt);
-	return (int)(dpt.y * CVE_GRAPH_RESOLUTION);
+	return (int)(freq * CVE_ELASTIC_FREQ_COEF);
 }
 
 
@@ -212,6 +209,7 @@ int cve::Curve_Elastic::create_number()
 //---------------------------------------------------------------------
 void cve::Curve_Elastic::read_number(int number)
 {
+
 	move_handle(number);
 }
 
@@ -222,5 +220,5 @@ void cve::Curve_Elastic::read_number(int number)
 //---------------------------------------------------------------------
 double cve::Curve_Elastic::create_result(int number, double ratio, double st, double ed)
 {
-	return func_elastic(st, ed, freq, ratio);
+	return func_elastic(st, ed, MINMAX_LIMIT(number / (double)CVE_ELASTIC_FREQ_COEF, 1, CVE_ELASTIC_FREQ_MAX), ratio);
 }

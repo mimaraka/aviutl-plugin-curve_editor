@@ -23,3 +23,4 @@
 
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "wininet.lib")

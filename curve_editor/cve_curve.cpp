@@ -16,7 +16,7 @@
 //---------------------------------------------------------------------
 //		初期化
 //---------------------------------------------------------------------
-void cve::Curve::initialize()
+void cve::Curve::initialize(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
 	// 追加する制御点
 	Curve_Points pt_add[2];
@@ -29,7 +29,7 @@ void cve::Curve::initialize()
 	};
 	pt_add[0].pt_left = { 0, 0 };
 
-	ctpts.PushBack(pt_add[0]);
+	points.PushBack(pt_add[0]);
 
 
 	pt_add[1].type = Curve_Points::Default_Right;
@@ -49,7 +49,7 @@ void cve::Curve::initialize()
 		CVE_GRAPH_RESOLUTION
 	};
 
-	ctpts.PushBack(pt_add[1]);
+	points.PushBack(pt_add[1]);
 }
 
 
@@ -532,10 +532,10 @@ void cve::Curve_Type_ID::delete_point(const POINT& pt_client)
 //---------------------------------------------------------------------
 //		ポイントをクリア
 //---------------------------------------------------------------------
-void cve::Curve::clear()
+void cve::Curve::clear(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
-	ctpts.Clear();
-	initialize();
+	points.Clear();
+	initialize(points);
 }
 
 
@@ -821,7 +821,7 @@ void cve::Curve::draw_handle(
 
 	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
 		subtract_length(&st_new, ed, st, CVE_SUBTRACT_LENGTH_2);
-		subtract_length(&ed_new, st, ed, CVE_SUBTRACT_LENGTH);
+		subtract_length(&ed_new, st_new, ed, CVE_SUBTRACT_LENGTH);
 	}
 
 	g_d2d1_factory->CreateStrokeStyle(
@@ -985,7 +985,7 @@ void cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MA
 	int64_t int64;
 	int64 = (int64_t)number + (int64_t)2147483647;
 
-	clear();
+	clear(points);
 
 	points[1].pt_left.y = (LONG)(int64 / 6600047);
 	points[1].pt_left.x = (LONG)((int64 - (int64_t)points[1].pt_left.y * 6600047) / 65347);
@@ -997,16 +997,6 @@ void cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MA
 	points[1].pt_left.y *= CVE_GRAPH_RESOLUTION / 100;
 	points[0].pt_right.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
 	points[1].pt_left.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
-}
-
-
-
-//---------------------------------------------------------------------
-//		1次元値を読み取る
-//---------------------------------------------------------------------
-void cve::Curve::read_number(int number)
-{
-	read_number(number, ctpts);
 }
 
 

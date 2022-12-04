@@ -28,8 +28,10 @@ BOOL cve::Button::initialize(
 	description = (LPTSTR)desc;
 	edge_flag = flag;
 	hwnd_parent = hwnd_p;
-
 	content_type = cont_type;
+	hovered = false;
+	clicked = false;
+	disabled = false;
 
 	if (content_type == Button::String) {
 		if (lb != nullptr)
@@ -99,12 +101,26 @@ void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content,
 
 
 //---------------------------------------------------------------------
-//		ラウンドエッジを描画
+//		ラウンドエッジ(等)を描画
 //---------------------------------------------------------------------
 void cve::Button::draw_edge()
 {
 	if (g_render_target != nullptr) {
 		g_render_target->BeginDraw();
+
+		if (disabled) {
+			bitmap_buffer.brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
+			bitmap_buffer.brush->SetOpacity(0.5f);
+			g_render_target->FillRectangle(
+				D2D1::RectF(
+					(float)bitmap_buffer.rect.left,
+					(float)bitmap_buffer.rect.top,
+					(float)bitmap_buffer.rect.right,
+					(float)bitmap_buffer.rect.bottom
+				),
+				bitmap_buffer.brush);
+			bitmap_buffer.brush->SetOpacity(1);
+		}
 
 		bitmap_buffer.draw_rounded_edge(edge_flag, CVE_ROUND_RADIUS);
 
@@ -131,6 +147,21 @@ void cve::Button::set_font(int font_height, LPTSTR font_name)
 		NULL,
 		font_name
 	);
+}
+
+
+
+//---------------------------------------------------------------------
+//		ボタンの状態を設定
+//---------------------------------------------------------------------
+void cve::Button::set_status(int flags)
+{
+	if (flags & CVE_BUTTON_ENABLED)
+		disabled = false;
+	else if (flags & CVE_BUTTON_DISABLED)
+		disabled = true;
+
+	::SendMessage(hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 }
 
 
@@ -199,6 +230,7 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
 		draw_content(bg, &rect_wnd, label, true);
+
 		draw_edge();
 		bitmap_buffer.transfer();
 
@@ -207,9 +239,11 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// マウスが動いたとき
 	case WM_MOUSEMOVE:
-		hovered = true;
-		::InvalidateRect(hw, NULL, FALSE);
-		::TrackMouseEvent(&tme);
+		if (!disabled) {
+			hovered = true;
+			::InvalidateRect(hw, NULL, FALSE);
+			::TrackMouseEvent(&tme);
+		}
 		return 0;
 
 	case WM_SETCURSOR:
@@ -218,18 +252,22 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// 左クリックがされたとき
 	case WM_LBUTTONDOWN:
-		::SetCursor(::LoadCursor(NULL, IDC_HAND));
-		clicked = true;
-		::InvalidateRect(hw, NULL, FALSE);
-		::TrackMouseEvent(&tme);
+		if (!disabled) {
+			::SetCursor(::LoadCursor(NULL, IDC_HAND));
+			clicked = true;
+			::InvalidateRect(hw, NULL, FALSE);
+			::TrackMouseEvent(&tme);
+		}
 		return 0;
 
 	// 左クリックが終わったとき
 	case WM_LBUTTONUP:
-		::SetCursor(::LoadCursor(NULL, IDC_HAND));
-		clicked = false;
-		::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
-		::InvalidateRect(hw, NULL, FALSE);
+		if (!disabled) {
+			::SetCursor(::LoadCursor(NULL, IDC_HAND));
+			clicked = false;
+			::SendMessage(hwnd_parent, WM_COMMAND, id, 0);
+			::InvalidateRect(hw, NULL, FALSE);
+		}
 		return 0;
 
 	// マウスがウィンドウから離れたとき
@@ -248,13 +286,14 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		case CVE_CM_CHANGE_LABEL:
 		{
-			int len_src = strlen((LPTSTR)lparam);
-			int len_dst = strlen(label);
-
 			strcpy_s(label, CVE_CT_LABEL_MAX, (LPTSTR)lparam);
 			::InvalidateRect(hw, NULL, FALSE);
 			return 0;
 		}
+
+		case CVE_CM_SET_STATUS:
+			set_status(lparam);
+			return 0;
 		}
 		return 0;
 
@@ -349,12 +388,24 @@ LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 	case WM_PAINT:
 	{
 		COLORREF bg = g_theme[g_config.theme].bg;
-		std::string str_value_4d = g_curve_normal.create_parameters();
-		LPTSTR value_4d = const_cast<LPTSTR>(str_value_4d.c_str());
+		std::string str_param;
+		LPTSTR param = "";
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
-		draw_content(bg, &rect_wnd, value_4d, true);
+		switch (g_config.edit_mode) {
+		case cve::Mode_Normal:
+			str_param = g_curve_normal.create_parameters();
+			param = const_cast<LPTSTR>(str_param.c_str());
+			break;
+
+		case cve::Mode_Elastic:
+			str_param = "Freq : " + std::to_string(g_curve_elastic.freq).substr(0, 5);
+			param = const_cast<LPTSTR>(str_param.c_str());
+			break;
+		}
+
+		draw_content(bg, &rect_wnd, param, true);
 		draw_edge();
 		bitmap_buffer.transfer();
 
@@ -522,7 +573,7 @@ LRESULT cve::Button_Category::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM l
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ(色)
+//		ウィンドウプロシージャ(色プレビュー&選択ボタン)
 //---------------------------------------------------------------------
 LRESULT cve::Button_Color::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {

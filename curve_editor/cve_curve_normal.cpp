@@ -111,6 +111,8 @@ double cve::Curve_Normal::create_result(int number, double ratio, double st, dou
 	// i’»‚ª0~1‚Ì”ÍˆÍŠO‚Å‚ ‚Á‚½ê‡
 	if (!ISINRANGEEQ(ratio, 0, 1))
 		return 0;
+	else if (number < -2147483647 || number > 2122746762)
+		return st + (ed - st) * ratio;
 	else {
 		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_buffer;
 		read_number(number, ctpts_buffer);

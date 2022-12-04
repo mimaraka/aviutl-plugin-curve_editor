@@ -251,14 +251,38 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			CVE_EDGE_ALL
 		);
 
-		if (g_config.edit_mode == cve::Mode_Multibezier) {
-			param.hide();
-		}
-		else {
+		switch (g_config.edit_mode) {
+		case cve::Mode_Normal:
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
+			break;
+
+		case cve::Mode_Multibezier:
+			param.hide();
+			copy.set_status(CVE_BUTTON_DISABLED);
+			break;
+
+		case cve::Mode_Elastic:
+			id_id.hide();
+			id_back.hide();
+			id_next.hide();
+			break;
+
+		case cve::Mode_Bounce:
+			id_id.hide();
+			id_back.hide();
+			id_next.hide();
+			break;
+
+		case cve::Mode_Value:
+			param.hide();
+			copy.set_status(CVE_BUTTON_DISABLED);
+			read.set_status(CVE_BUTTON_DISABLED);
+			save.set_status(CVE_BUTTON_DISABLED);
+			break;
 		}
+
 		return 0;
 
 	case WM_SIZE:
@@ -336,7 +360,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			copy.set_status(CVE_BUTTON_ENABLED);
+			read.set_status(CVE_BUTTON_ENABLED);
+			save.set_status(CVE_BUTTON_ENABLED);
+			param.redraw();
+			g_window_editor.redraw();
 
 			return 0;
 
@@ -349,7 +377,10 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			id_id.show();
 			id_back.show();
 			id_next.show();
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			copy.set_status(CVE_BUTTON_DISABLED);
+			read.set_status(CVE_BUTTON_ENABLED);
+			save.set_status(CVE_BUTTON_ENABLED);
+			g_window_editor.redraw();
 
 			return 0;
 
@@ -362,7 +393,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			copy.set_status(CVE_BUTTON_ENABLED);
+			read.set_status(CVE_BUTTON_ENABLED);
+			save.set_status(CVE_BUTTON_ENABLED);
+			param.redraw();
+			g_window_editor.redraw();
 
 			return 0;
 
@@ -375,7 +410,11 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			copy.set_status(CVE_BUTTON_ENABLED);
+			read.set_status(CVE_BUTTON_ENABLED);
+			save.set_status(CVE_BUTTON_ENABLED);
+			param.redraw();
+			g_window_editor.redraw();
 
 			return 0;
 
@@ -388,7 +427,10 @@ LRESULT CALLBACK wndproc_header(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			id_id.show();
 			id_back.show();
 			id_next.show();
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			copy.set_status(CVE_BUTTON_DISABLED);
+			read.set_status(CVE_BUTTON_DISABLED);
+			save.set_status(CVE_BUTTON_DISABLED);
+			g_window_editor.redraw();
 
 			return 0;
 

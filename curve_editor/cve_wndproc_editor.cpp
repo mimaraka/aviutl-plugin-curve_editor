@@ -40,6 +40,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static HMENU	menu;
 	static HWND		hwnd_obj;
 	static HWND		hwnd_exedit;
+	static DWORD	thread_id;
 
 	//その他
 	static cve::Point_Address		pt_address;
@@ -80,6 +81,9 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		hwnd_obj = auls::ObjDlg_GetWindow(hwnd_exedit);
 
 		obj_buttons.init(hwnd_obj);
+
+		if (g_config.notify_latest_version)
+			::CreateThread(NULL, 0, cve::check_version, NULL, 0, &thread_id);
 
 		g_curve_normal_previous = g_curve_normal;
 		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier];
@@ -325,6 +329,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				g_curve_elastic.move_handle(pt_graph.y);
 
 				::InvalidateRect(hwnd, NULL, FALSE);
+				::PostMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_PARAM_REDRAW, 0);
 				break;
 
 				// 弾性モードのとき
@@ -428,8 +433,12 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 					obj_buttons.invalidate(&old_rect.rect);
 
 				// 現在何らかのRECTにホバーしている場合
-				if (obj_buttons.is_hovered())
-					obj_buttons.highlight();
+				if (obj_buttons.is_hovered() && ::GetAsyncKeyState(VK_MENU) >= 0) {
+					if (::GetAsyncKeyState(VK_CONTROL) < 0)
+						obj_buttons.highlight(1);
+					else
+						obj_buttons.highlight(0);
+				}
 			}
 		}
 
@@ -495,7 +504,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		};
 
 		// 編集モードを変更
-		for (const auto& el : edit_mode_menu_id) {
+		for (const int& el : edit_mode_menu_id) {
 			if (wparam == el) {
 				g_config.edit_mode = (cve::Edit_Mode)(wparam - ID_MENU_MODE_NORMAL);
 				::InvalidateRect(hwnd, NULL, FALSE);
@@ -698,6 +707,10 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
+			return 0;
+
+		case ID_MENU_LATEST_VERSION:
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_LATEST_VERSION), hwnd, dialogproc_latest_version);
 			return 0;
 		}
 

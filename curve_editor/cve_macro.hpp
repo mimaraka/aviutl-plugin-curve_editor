@@ -68,6 +68,9 @@
 #define CVE_EDGE_RB						BIT(3)
 #define CVE_EDGE_ALL					CVE_EDGE_LT | CVE_EDGE_LB | CVE_EDGE_RT | CVE_EDGE_RB
 
+#define CVE_BUTTON_ENABLED				BIT(0)
+#define CVE_BUTTON_DISABLED				BIT(1)
+
 
 
 //---------------------------------------------------------------------
@@ -122,6 +125,7 @@
 #define CVE_CM_PRESET_MOVE				0x080f
 #define CVE_CM_CHANGE_COLOR				0x0810
 #define CVE_CM_CHANGE_LABEL				0x0811
+#define CVE_CM_SET_STATUS				0x0812
 
 
 
@@ -179,6 +183,9 @@
 //---------------------------------------------------------------------
 #define CVE_PLUGIN_NAME						"Curve Editor"
 #define CVE_PLUGIN_VERSION					"v0.5"
+#define CVE_VERSION_MAJOR					0
+#define CVE_VERSION_MINOR					5
+#define CVE_VERSION_REVISION				0
 #define CVE_PLUGIN_DEVELOPER				"mimaraka"
 #define CVE_PLUGIN_YEAR						"2022"
 #define CVE_PLUGIN_INFO						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION " by " CVE_PLUGIN_DEVELOPER
@@ -191,7 +198,7 @@
 //		文字列
 //---------------------------------------------------------------------
 #define CVE_STR_MODE_NORMAL					"標準"
-#define CVE_STR_MODE_MULTIBEZIER			"マルチベジェ"
+#define CVE_STR_MODE_MULTIBEZIER			"複数ベジェ"
 #define CVE_STR_MODE_ELASTIC				"振動"
 #define CVE_STR_MODE_BOUNCE					"弾性"
 #define CVE_STR_MODE_VALUE					"数値指定"
@@ -202,6 +209,8 @@
 #define CVE_STR_ERROR_OUTOFRANGE			"値が範囲外です。"
 #define CVE_STR_ERROR_INPUT_INVALID			"無効な入力値です。"
 #define CVE_STR_ERROR_EXEDIT_NOT_FOUND		"拡張編集プラグイン(exedit.auf)が見つかりません。"
+#define CVE_STR_INFO_LATEST_VERSION			"お使いのバージョンは最新です。"
+#define CVE_STR_ERROR_CONNECTION_FAILED		"接続に失敗しました。"
 
 
 

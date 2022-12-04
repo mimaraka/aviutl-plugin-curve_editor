@@ -20,7 +20,8 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
 	static HWND combo;
 	static COLORREF cust_colors[16];
-	static cve::Button bt_color_curve;
+	static cve::Button_Color bt_color_curve;
+	static bool init = true;
 
 	RECT color_curve = {
 		306,
@@ -29,28 +30,43 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		86
 	};
 
-	POINT			pt_client = {
-		GET_X_LPARAM(lparam),
-		GET_Y_LPARAM(lparam)
-	};
-
 	switch (msg) {
 	case WM_CLOSE:
 		::EndDialog(hwnd, 1);
 		return 0;
 
 	case WM_INITDIALOG:
-		bt_color_curve.initialize(
-			hwnd,
-			"DIALOG_CTRL_COLOR_CURVE",
-			NULL,
-			cve::Button::Null,
-			NULL, NULL,
-			nullptr,
-			CVE_CT_COLOR_CURVE,
-			color_curve,
-			CVE_EDGE_ALL
-		);
+		if (init) {
+			bt_color_curve.initialize(
+				hwnd,
+				"DIALOG_CTRL_COLOR_CURVE",
+				NULL,
+				cve::Button::Null,
+				NULL, NULL,
+				nullptr,
+				CVE_CT_COLOR_CURVE,
+				color_curve,
+				NULL
+			);
+			init = false;
+		}
+		else {
+			bt_color_curve.hwnd = ::CreateWindowEx(
+				NULL,
+				"DIALOG_CTRL_COLOR_CURVE",
+				NULL,
+				WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
+				color_curve.left,
+				color_curve.top,
+				color_curve.right - color_curve.left,
+				color_curve.bottom - color_curve.top,
+				hwnd,
+				NULL,
+				g_fp->dll_hinst,
+				&bt_color_curve
+			);
+		}
+
 		::SendMessage(bt_color_curve.hwnd, WM_COMMAND, CVE_CM_CHANGE_COLOR, (LPARAM)g_config.curve_color);
 
 		if (g_config.trace)
@@ -70,6 +86,13 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		if (g_config.auto_copy)
 			::SendMessage(
 				::GetDlgItem(hwnd, IDC_AUTOCOPY),
+				BM_SETCHECK,
+				BST_CHECKED, 0
+			);
+
+		if (g_config.notify_latest_version)
+			::SendMessage(
+				::GetDlgItem(hwnd, IDC_LATEST_VERSION),
 				BM_SETCHECK,
 				BST_CHECKED, 0
 			);
@@ -100,6 +123,10 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::GetDlgItem(hwnd, IDC_AUTOCOPY),
 				BM_GETCHECK, 0, 0
 			);
+			g_config.notify_latest_version = ::SendMessage(
+				::GetDlgItem(hwnd, IDC_LATEST_VERSION),
+				BM_GETCHECK, 0, 0
+			);
 			g_config.theme = ::SendMessage(
 				combo,
 				CB_GETCURSEL, 0, 0
@@ -110,6 +137,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.alert);
 			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
 			g_fp->exfunc->ini_save_int(g_fp, "curve_color", g_config.curve_color);
+			g_fp->exfunc->ini_save_int(g_fp, "notify_latest_version", g_config.notify_latest_version);
 
 			::EndDialog(hwnd, 1);
 
@@ -417,6 +445,20 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			::EndDialog(hwnd, 1);
 			return 0;
 		}
+	}
+	return 0;
+}
+
+
+
+BOOL CALLBACK dialogproc_latest_version(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	DWORD thread_id;
+
+	switch (msg) {
+	case WM_INITDIALOG:
+		::CreateThread(NULL, 0, cve::check_version, (LPVOID)hwnd, 0, &thread_id);
+		return 0;
 	}
 	return 0;
 }

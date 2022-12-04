@@ -25,13 +25,13 @@ int get_result(lua_State* L)
 	double	ed = lua_tonumber(L, 5);
 	double	result;
 
-	switch (mode) {
+	switch ((cve::Edit_Mode)mode) {
 	case cve::Mode_Normal:
 		result = g_curve_normal.create_result(num, ratio, st, ed);
 		break;
 
 	case cve::Mode_Multibezier:
-		result = g_curve_mb[num].create_result(ratio, st, ed);
+		result = g_curve_mb[MINMAX_LIMIT(num, 0, CVE_CURVE_MAX - 1)].create_result(ratio, st, ed);
 		break;
 
 	case cve::Mode_Elastic:
@@ -43,7 +43,7 @@ int get_result(lua_State* L)
 		break;
 
 	case cve::Mode_Value:
-		result = g_curve_value[num].create_result(ratio, st, ed);
+		result = g_curve_value[MINMAX_LIMIT(num, 0, CVE_CURVE_MAX - 1)].create_result(ratio, st, ed);
 		break;
 
 	default:
@@ -51,8 +51,7 @@ int get_result(lua_State* L)
 		break;
 	}
 
-	if (num < 0 || num > CVE_CURVE_MAX) lua_pushnumber(L, st + (ed - st) * ratio);
-	else lua_pushnumber(L, result);
+	lua_pushnumber(L, result);
 	return 1;
 }
 

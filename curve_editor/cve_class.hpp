@@ -34,13 +34,13 @@ namespace cve {
 	private:
 		HBITMAP bitmap;
 		HWND hwnd;
-		RECT rect;
 
 		void draw_grid();
 
 	public:
 		HDC hdc_memory;
 		ID2D1SolidColorBrush* brush = nullptr;
+		RECT rect;
 
 		void init(HWND hw);
 		void exit() const;
@@ -65,8 +65,12 @@ namespace cve {
 		double				get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
 		void				set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle);
 		void				correct_handle(const Point_Address& pt_address, double angle);
+
+		// ハンドルの角度を取得&設定
 		double				get_handle_angle(const Point_Address& pt_address);
 		void				set_handle_angle(const Point_Address& pt_address, double angle, bool use_length, double lgth);
+
+		// 描画系
 		void				draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int pt_idx);
 		void				draw_bezier(
 								Bitmap_Buffer* bitmap_buffer,
@@ -90,17 +94,23 @@ namespace cve {
 
 		Curve() { initialize(); }
 
-		// 共通
-		virtual void		initialize();
-		void				clear();
+		// 初期化
+		virtual void		initialize(Static_Array<Curve_Points, CVE_POINT_MAX>& points);
+		virtual void		initialize() { initialize(ctpts); }
+
+		// ポイントを削除(&初期化)
+		void				clear(Static_Array<Curve_Points, CVE_POINT_MAX>& points);
+		void				clear() { clear(ctpts); }
+
 		virtual void		pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
-		void				reverse_curve();
+		virtual void		reverse_curve();
 		virtual void		draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
 		bool				is_data_valid();
-		virtual void		read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
-		virtual void		read_number(int number);
 
-		// マルチベジェモード用
+		// 数値を読み取る
+		virtual void		read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
+		virtual void		read_number(int number) { read_number(number, ctpts); }
+
 		virtual void		move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
 	};
 
@@ -182,8 +192,8 @@ namespace cve {
 
 		void				initialize();
 
-		/*int				create_number();
-		void				read_number();*/
+		int					create_number() { return 0; };
+		/*void				read_number(); */
 		double				create_result(int number, double ratio, double st, double ed) { return 0; }
 	};
 
@@ -254,6 +264,7 @@ namespace cve {
 			const RECT& rect,
 			int flag
 		);
+		void				set_status(int flags);
 		
 	protected:
 		LPTSTR				icon_res_dark;
@@ -264,7 +275,7 @@ namespace cve {
 		HWND				hwnd_parent;
 		HWND				hwnd_tooltip;
 		TOOLINFO			tool_info;
-		bool				hovered, clicked;
+		bool				hovered, clicked, disabled;
 		TRACKMOUSEEVENT		tme;
 		HICON				icon_dark;
 		HICON				icon_light;
@@ -381,7 +392,7 @@ namespace cve {
 
 		int		update(LPPOINT pt_sc, LPRECT old_rect);
 		void	click();
-		void	highlight() const;
+		void	highlight(int mode) const;
 		void	invalidate(const LPRECT rect) const;
 	};
 

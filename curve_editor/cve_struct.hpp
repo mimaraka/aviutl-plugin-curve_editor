@@ -119,7 +119,8 @@ namespace cve {
 				show_handle,
 				align_handle,
 				is_hooked_popup,
-				is_hooked_dialog;
+				is_hooked_dialog,
+				notify_latest_version;
 
 		int		theme,
 				separator,

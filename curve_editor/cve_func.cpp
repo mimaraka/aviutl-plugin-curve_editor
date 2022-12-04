@@ -88,10 +88,12 @@ void cve::subtract_length(cve::Float_Point* pt, const cve::Float_Point& st, cons
 	if (old_length == 0) {
 		pt->x = ed.x;
 		pt->y = ed.y;
+		return;
 	}
 	if (length > old_length) {
 		pt->x = st.x;
 		pt->y = st.y;
+		return;
 	}
 
 	double length_ratio = (old_length - length) / old_length;
@@ -225,4 +227,156 @@ LRESULT cve::on_keydown(WPARAM wparam)
 void sort_presets(int mode)
 {
 
+}
+
+
+
+int is_url_valid(LPCSTR url)
+{
+	HINTERNET hinet, hurl;
+	DWORD status_code = 0;
+
+	hinet = ::InternetOpen(
+		CVE_PLUGIN_NAME,
+		INTERNET_OPEN_TYPE_PRECONFIG,
+		NULL, NULL, NULL
+	);
+
+	if (hinet == NULL)
+		return 0;
+
+	hurl = ::InternetOpenUrl(
+		hinet,
+		url,
+		NULL,
+		0, 0, 0
+	);
+
+	if (hurl == NULL) {
+		::InternetCloseHandle(hinet);
+		return 0;
+	}
+
+	DWORD length = sizeof(DWORD);
+
+	if (!::HttpQueryInfo(hurl, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, &status_code, &length, 0)) {
+		::InternetCloseHandle(hurl);
+		::InternetCloseHandle(hinet);
+		return 0;
+	}
+
+	::InternetCloseHandle(hurl);
+	::InternetCloseHandle(hinet);
+
+	if (status_code == HTTP_STATUS_NOT_FOUND)
+		return 1;
+	
+	return 2;
+	
+}
+
+
+
+bool get_latest_version(int (&result)[3])
+{
+	const std::string cve_url_base = "https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v";
+	std::string cve_url;
+	int v_major = CVE_VERSION_MAJOR;
+	int v_minor = CVE_VERSION_MINOR;
+	int v_revision = CVE_VERSION_REVISION;
+	int v_result[3];
+	int status;
+	bool f_major = true;
+	bool f_minor = true;
+	int count = 0;
+
+
+	while (true) {
+		cve_url = cve_url_base + std::to_string(v_major) + "." + std::to_string(v_minor);
+		if (v_revision != 0)
+			cve_url += "." + std::to_string(v_revision);
+
+		status = is_url_valid(cve_url.c_str());
+
+		if (status == 0) {
+			return false;
+		}
+		else if (status == 1) {
+			if (count == 0) {
+				v_major = 0;
+				v_minor = 0;
+				v_revision = 0;
+			}
+			if (!f_major) {
+				for (int i = 0; i < 3; i++)
+					result[i] = v_result[i];
+				return true;
+			}
+			else if (!f_minor) {
+				v_minor = 0;
+				v_major++;
+				f_major = false;
+			}
+			f_minor = false;
+			v_revision = 0;
+			v_minor++;
+		}
+		else {
+			v_result[0] = v_major;
+			v_result[1] = v_minor;
+			v_result[2] = v_revision;
+			f_major = true;
+			f_minor = true;
+			v_revision++;
+		}
+		count++;
+	}
+}
+
+
+
+DWORD WINAPI cve::check_version(LPVOID param)
+{
+	int ver_latest[3] = {};
+	int ver_current[3] = {
+		CVE_VERSION_MAJOR,
+		CVE_VERSION_MINOR,
+		CVE_VERSION_REVISION
+	};
+	std::string str_latest, str_notif, str_link;
+
+	if (get_latest_version(ver_latest)) {
+		for (int i = 0; i < 3; i++) {
+			if (ver_current[i] < ver_latest[i]) {
+				if (param) ::EndDialog((HWND)param, 1);
+
+				str_latest = std::to_string(ver_latest[0]) + "." + std::to_string(ver_latest[1]);
+				if (ver_latest[2] != 0)
+					str_latest += "." + std::to_string(ver_latest[2]);
+
+				str_notif = "新しいバージョン(v" + str_latest + ")が利用可能です。ダウンロードしますか？\n現在のバージョン: " CVE_PLUGIN_VERSION;
+				int responce = ::MessageBox(g_fp->hwnd, str_notif.c_str(), CVE_PLUGIN_NAME, MB_OKCANCEL | MB_ICONINFORMATION);
+				if (responce == IDOK) {
+					str_link = CVE_PLUGIN_LINK "/releases/tag/v" + str_latest;
+					::ShellExecute(0, "open", str_link.c_str(), NULL, NULL, SW_SHOWNORMAL);
+				}
+				::ExitThread(TRUE);
+			}
+			else if (ver_current[i] > ver_latest[i]) {
+				if (param) {
+					::EndDialog((HWND)param, 1);
+					::MessageBox(g_fp->hwnd, CVE_STR_INFO_LATEST_VERSION, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+				}
+				::ExitThread(TRUE);
+			}
+		}
+		if (param) {
+			::EndDialog((HWND)param, 1);
+			::MessageBox(g_fp->hwnd, CVE_STR_INFO_LATEST_VERSION, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+		}
+	}
+	else if (param) {
+		::EndDialog((HWND)param, 1);
+		::MessageBox(g_fp->hwnd, CVE_STR_ERROR_CONNECTION_FAILED, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+	}
 }

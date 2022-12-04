@@ -72,8 +72,14 @@ void cve::Obj_Dialog_Buttons::click()
 //---------------------------------------------------------------------
 //		ハイライト
 //---------------------------------------------------------------------
-void cve::Obj_Dialog_Buttons::highlight() const
+void cve::Obj_Dialog_Buttons::highlight(int mode) const
 {
+	D2D1_COLOR_F color;
+	if (mode == 0)
+		color = D2D1::ColorF(TO_BGR(RGB(45, 140, 235)));
+	else
+		color = D2D1::ColorF(INVERT(TO_BGR(RGB(45, 140, 235))));
+
 	if (id >= 0) {
 		RECT rect_wnd;
 		::GetClientRect(hwnd_obj, &rect_wnd);
@@ -87,7 +93,7 @@ void cve::Obj_Dialog_Buttons::highlight() const
 			g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
 
 			if (brush == nullptr) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
-			brush->SetColor(D2D1::ColorF(TO_BGR(RGB(45, 140, 235))));
+			brush->SetColor(color);
 
 			D2D1_ROUNDED_RECT d2d_rect = D2D1::RoundedRect(
 				D2D1::RectF(

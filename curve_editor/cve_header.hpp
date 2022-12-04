@@ -11,8 +11,9 @@
 
 
 //---------------------------------------------------------------------
-//		プリセット
+//		クラステンプレート(宣言)
 //---------------------------------------------------------------------
+// プリセット
 namespace cve {
 	template <typename Curve_Class>
 	class Preset : public Button {
@@ -84,8 +85,9 @@ extern INT_PTR								(WINAPI* dialogproc_original)(HWND, UINT, WPARAM, LPARAM);
 
 
 //---------------------------------------------------------------------
-//		コンストラクタ
+//		クラステンプレート(定義)
 //---------------------------------------------------------------------
+// コンストラクタ(プリセット)
 template <typename Curve_Class>
 cve::Preset<Curve_Class>::Preset()
 {
@@ -117,10 +119,7 @@ cve::Preset<Curve_Class>::Preset()
 }
 
 
-
-//---------------------------------------------------------------------
-//		プリセット(ウィンドウ)を作成
-//---------------------------------------------------------------------
+// プリセット(ウィンドウ)を作成
 template <typename Curve_Class>
 BOOL cve::Preset<Curve_Class>::initialize(HWND hwnd_p, const Curve_Class& cv, LPTSTR nm)
 {
@@ -151,10 +150,7 @@ BOOL cve::Preset<Curve_Class>::initialize(HWND hwnd_p, const Curve_Class& cv, LP
 }
 
 
-
-//---------------------------------------------------------------------
-//		プリセットを移動
-//---------------------------------------------------------------------
+// プリセットを移動
 template <typename Curve_Class>
 void cve::Preset<Curve_Class>::move(int panel_width, int index)
 {
@@ -177,10 +173,7 @@ void cve::Preset<Curve_Class>::move(int panel_width, int index)
 }
 
 
-
-//---------------------------------------------------------------------
-//		ウィンドウプロシージャ(static変数使用不可)
-//---------------------------------------------------------------------
+// ウィンドウプロシージャ(static変数使用不可)
 template <typename Curve_Class>
 LRESULT cve::Preset<Curve_Class>::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -294,6 +287,9 @@ namespace cve {
 
 	// キー押下時の処理
 	LRESULT						on_keydown(WPARAM wparam);
+
+	// バージョンをチェック
+	DWORD WINAPI				check_version(LPVOID param);
 }
 
 
@@ -317,6 +313,7 @@ BOOL CALLBACK		dialogproc_param_normal(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_read(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_save(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK		dialogproc_id(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK		dialogproc_latest_version(HWND, UINT, WPARAM, LPARAM);
 
 
 

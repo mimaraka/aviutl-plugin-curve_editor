@@ -134,7 +134,7 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 				break;
 			}
 			// å„Ç≈è¡Ç∑
-			for (int i = 0; i < g_presets_normal_custom.size; i++) {
+			for (int i = 0; i < (int)g_presets_normal_custom.size; i++) {
 				g_presets_normal_custom[i].move(rect_wnd.right, i);
 			}
 			return 0;

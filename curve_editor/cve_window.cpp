@@ -35,8 +35,8 @@ BOOL cve::Window::create(
 	tmp.lpszClassName = class_name;
 	tmp.hIconSm = NULL;
 
-	if (RegisterClassEx(&tmp)) {
-		hwnd = CreateWindowEx(
+	if (::RegisterClassEx(&tmp)) {
+		hwnd = ::CreateWindowEx(
 			NULL,
 			class_name,
 			NULL,
