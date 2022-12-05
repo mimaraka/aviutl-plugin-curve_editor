@@ -11,7 +11,8 @@
 ※プリセット機能以外の機能が実装されています。
 
 ## インストール
-同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。
+同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  
+[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ](https://aka.ms/vs/17/release/vc_redist.x86.exe)をインストールしていない場合は、こちらもインストールしてください。  
 
 ## 使用方法
 AviUtlを起動後、メインウィンドウの「表示」メニューから「Curve Editorの表示」をクリックすると、Curve EditorのGUIが表示されます。
@@ -34,10 +35,12 @@ AviUtlを起動後、メインウィンドウの「表示」メニューから�
 ## 動作環境
 | OS | AviUtl | 拡張編集 | 
 | :---: | :---: | :---: |
-| Windows 7~11 | ~1.10 | ~0.93rc(0.92推奨) |
+| Windows 7~11 | ~1.10 | ~0.93rc(0.92推奨) |  
+
+※[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ](https://aka.ms/vs/17/release/vc_redist.x86.exe)が必要です。
 
 【動作確認済み】  
-Windows 11  
+Windows 10, 11  
 AviUtl 1.00, 1.10  
 拡張編集 0.92  
 
