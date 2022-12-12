@@ -8,11 +8,16 @@
 
 <a href="https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/download/v0.4.3/curve_editor-v0.4.3.zip">![Download](https://user-images.githubusercontent.com/106879397/198503637-3f0ca637-08cf-47b0-afdc-10f9974c7b37.png)</a>
 
-※プリセット機能以外の機能が実装されています。
+※プリセット機能以外の機能が実装されています。  
+
+**⚠注意⚠**  
+このバージョンはあくまでテスト版です。  
+次にリリースされるバージョンは現在のものとの互換性がないため、このバージョンで作成されたカーブ等は今後のバージョンで読み込むことができなくなります。  
+ご理解の程よろしくお願いいたします。
 
 ## インストール
 同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  
-[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ](https://aka.ms/vs/17/release/vc_redist.x86.exe)をインストールしていない場合は、こちらもインストールしてください。  
+[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)をインストールしていない場合は、こちらもインストールしてください。  
 
 ## 使用方法
 AviUtlを起動後、メインウィンドウの「表示」メニューから「Curve Editorの表示」をクリックすると、Curve EditorのGUIが表示されます。
@@ -37,7 +42,7 @@ AviUtlを起動後、メインウィンドウの「表示」メニューから�
 | :---: | :---: | :---: |
 | Windows 7~11 | ~1.10 | ~0.93rc(0.92推奨) |  
 
-※[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ](https://aka.ms/vs/17/release/vc_redist.x86.exe)が必要です。
+※[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)が必要です。
 
 【動作確認済み】  
 Windows 10, 11  

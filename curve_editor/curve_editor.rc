@@ -62,9 +62,8 @@ BEGIN
     GROUPBOX        "全般",IDC_STATIC,7,7,239,165
     CONTROL         "アラートを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,57,61,10
     GROUPBOX        "編集",IDC_STATIC,7,181,239,95
-    GROUPBOX        "Valueモード",IDC_STATIC,13,193,228,78
     CONTROL         "変更前のカーブをグラフに表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,110,10
-    CONTROL         "値を自動でコピー",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,206,71,10
+    CONTROL         "値を自動でコピー(標準・振動・バウンスモードで有効)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,194,182,10
     LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
     CONTROL         "新しいバージョンを通知",IDC_LATEST_VERSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,89,10
 END
@@ -253,7 +252,7 @@ BEGIN
             MENUITEM "標準",                          ID_MENU_MODE_NORMAL
             MENUITEM "複数ベジェ",                       ID_MENU_MODE_MULTIBEZIER
             MENUITEM "振動",                          ID_MENU_MODE_ELASTIC
-            MENUITEM "弾性",                          ID_MENU_MODE_BOUNCE
+            MENUITEM "バウンス",                        ID_MENU_MODE_BOUNCE
             MENUITEM "数値指定",                        ID_MENU_MODE_VALUE
         END
         MENUITEM SEPARATOR
@@ -304,7 +303,7 @@ BEGIN
         MENUITEM "標準",                          ID_MODE_NORMAL
         MENUITEM "複数ベジェ",                       ID_MODE_MULTIBEZIER
         MENUITEM "振動",                          ID_MODE_ELASTIC
-        MENUITEM "弾性",                          ID_MODE_BOUNCE
+        MENUITEM "バウンス",                        ID_MODE_BOUNCE
         MENUITEM "数値指定",                        ID_MODE_VALUE
     END
 END

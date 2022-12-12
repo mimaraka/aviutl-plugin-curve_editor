@@ -86,7 +86,7 @@ local par=gpt"param"
 return curve_editor.get_result(2,par,gpt"totalindex",gpt(0),gpt(1))
 
 
-@弾性
+@バウンス
 --param:700
 local idx,ratio = math.modf(obj.getpoint("index"))
 local S = obj.getpoint(idx)
@@ -103,7 +103,7 @@ end
 return E-A*(4*(func2(ratio/T))^2-e^(2*func1(ratio/T+0.5)))
 
 
-@弾性(中間点無視)
+@バウンス(中間点無視)
 --twopoint
 --param:700
 return obj.getpoint"default"

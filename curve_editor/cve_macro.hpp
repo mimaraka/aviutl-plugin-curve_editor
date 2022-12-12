@@ -200,7 +200,7 @@
 #define CVE_STR_MODE_NORMAL					"標準"
 #define CVE_STR_MODE_MULTIBEZIER			"複数ベジェ"
 #define CVE_STR_MODE_ELASTIC				"振動"
-#define CVE_STR_MODE_BOUNCE					"弾性"
+#define CVE_STR_MODE_BOUNCE					"バウンス"
 #define CVE_STR_MODE_VALUE					"数値指定"
 #define CVE_STR_WARNING_DELETE				"編集中のカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
