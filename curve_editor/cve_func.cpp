@@ -113,11 +113,11 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	mi->fMask = MIIM_STATE;
 
 	const int edit_mode_menu_id[] = {
-		ID_MENU_MODE_NORMAL,
+		ID_MENU_MODE_BEZIER,
 		ID_MENU_MODE_MULTIBEZIER,
+		ID_MENU_MODE_VALUE,
 		ID_MENU_MODE_ELASTIC,
-		ID_MENU_MODE_BOUNCE,
-		ID_MENU_MODE_VALUE
+		ID_MENU_MODE_BOUNCE
 	};
 
 	// 編集モードのチェック
@@ -150,7 +150,7 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
 
-	// 標準モードで有効化
+	// ベジェモードで有効化
 	mi->fState = g_config.edit_mode == cve::Mode_Multibezier ? MFS_DISABLED : MFS_ENABLED;
 	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
 	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
@@ -178,7 +178,7 @@ LRESULT cve::on_keydown(WPARAM wparam)
 
 		//[C]
 	case 67:
-		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.edit_mode == cve::Mode_Normal)
+		if (::GetAsyncKeyState(VK_CONTROL) < 0 && g_config.edit_mode == cve::Mode_Bezier)
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_COPY, 0);
 		return 0;
 
@@ -192,14 +192,14 @@ LRESULT cve::on_keydown(WPARAM wparam)
 
 		//[<]
 	case VK_LEFT:
-		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_header.hwnd)
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_BACK, 0);
+		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_menu.hwnd)
+			::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_ID_BACK, 0);
 		return 0;
 
 		//[>]
 	case VK_RIGHT:
-		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_header.hwnd)
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_ID_NEXT, 0);
+		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_menu.hwnd)
+			::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_ID_NEXT, 0);
 		return 0;
 
 		//[Home]

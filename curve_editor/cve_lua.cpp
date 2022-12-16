@@ -26,12 +26,17 @@ int get_result(lua_State* L)
 	double	result;
 
 	switch ((cve::Edit_Mode)mode) {
-	case cve::Mode_Normal:
+	case cve::Mode_Bezier:
 		result = g_curve_normal.create_result(num, ratio, st, ed);
 		break;
 
 	case cve::Mode_Multibezier:
-		result = g_curve_mb[MINMAX_LIMIT(num, 0, CVE_CURVE_MAX - 1)].create_result(ratio, st, ed);
+		result = g_curve_mb[MINMAX_LIMIT(num, 1, CVE_CURVE_MAX) - 1].create_result(ratio, st, ed);
+		break;
+
+	case cve::Mode_Value:
+		//result = g_curve_value[MINMAX_LIMIT(num, 1, CVE_CURVE_MAX) - 1].create_result(ratio, st, ed);
+		result = (ed - st) * ratio + st;
 		break;
 
 	case cve::Mode_Elastic:
@@ -40,10 +45,6 @@ int get_result(lua_State* L)
 
 	case cve::Mode_Bounce:
 		result = g_curve_bounce.create_result(num, ratio, st, ed);
-		break;
-
-	case cve::Mode_Value:
-		result = g_curve_value[MINMAX_LIMIT(num, 0, CVE_CURVE_MAX - 1)].create_result(ratio, st, ed);
 		break;
 
 	default:
@@ -61,7 +62,7 @@ int get_result(lua_State* L)
 //		ä÷êîÉeÅ[ÉuÉã
 //---------------------------------------------------------------------
 static luaL_Reg functions[] = {
-	{ "get_result", get_result },
+	{ "getresult", get_result },
 	{ nullptr, nullptr }
 };
 

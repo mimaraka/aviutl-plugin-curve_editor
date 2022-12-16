@@ -1,34 +1,4 @@
-@標準
---param:320896157
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
-local gpt=obj.getpoint
-local idx,ratio=math.modf(gpt"index")
-local st=gpt(idx)
-local ed=gpt(idx+1)
-local par=gpt"param"
-return curve_editor.get_result(0,par,ratio,st,ed)
-
-
-@標準(中間点無視)
---twopoint
---param:320896157
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
-local gpt=obj.getpoint
-local par=gpt"param"
-return curve_editor.get_result(0,par,gpt"totalindex",gpt(0),gpt(1))
-
-
-@複数ベジェ
+@ベジェ・ID
 --param:0
 local modname="curve_editor"
 if not package.loaded[modname] then
@@ -40,10 +10,19 @@ local gpt=obj.getpoint
 local idx,ratio=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
-return curve_editor.get_result(1,gpt"param",ratio,st,ed)
+local par=gpt"param"
+--ベジェ
+if (-2147483647 <= par and par <= -12368443) or (12368443 <= par and par <= 2147483646) then
+	return curve_editor.getresult(0,par,ratio,st,ed)
+--ベジェ(複数)
+elseif 1 <= par and par <= 1024 then
+	return curve_editor.getresult(1,par,ratio,st,ed)
+else
+	return gpt"default"
+end
 
 
-@複数ベジェ(中間点無視)
+@ベジェ・ID(中間点無視)
 --twopoint
 --param:0
 local modname="curve_editor"
@@ -53,10 +32,19 @@ if not package.loaded[modname] then
 	package.preload[modname]=nil
 end
 local gpt=obj.getpoint
-return curve_editor.get_result(1,gpt"param",gpt"totalindex",gpt(0),gpt(1))
+local par=gpt"param"
+--ベジェ
+if (-2147483647 <= par and par <= -12368443) or (12368443 <= par and par <= 2147483646) then
+	return curve_editor.getresult(0,par,gpt"totalindex",gpt(0),gpt(1))
+--ベジェ(複数)
+elseif 1 <= par and par <= 1024 then
+	return curve_editor.getresult(1,par,gpt"totalindex",gpt(0),gpt(1))
+else
+	return gpt"default"
+end
 
 
-@振動
+@その他
 --param:40000000
 local modname="curve_editor"
 if not package.loaded[modname] then
@@ -69,10 +57,10 @@ local idx,ratio=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
 local par=gpt"param"
-return curve_editor.get_result(2,par,ratio,st,ed)
+return curve_editor.getresult(2,par,ratio,st,ed)
 
 
-@振動(中間点無視)
+@その他(中間点無視)
 --twopoint
 --param:40000000
 local modname="curve_editor"
@@ -83,38 +71,4 @@ if not package.loaded[modname] then
 end
 local gpt=obj.getpoint
 local par=gpt"param"
-return curve_editor.get_result(2,par,gpt"totalindex",gpt(0),gpt(1))
-
-
-@バウンス
---param:700
-local idx,ratio = math.modf(obj.getpoint("index"))
-local S = obj.getpoint(idx)
-local E = obj.getpoint(idx+1)
-local A = S - E
-local e = obj.getpoint("param")/1000
-local T = (2-2*e)/(1+e)
-local function func1(t)
-    return math.floor(math.log((e-1)*t+1)/math.log(e))
-end
-local function func2(t)
-    return t+0.5+1/(e-1)-(e+1)*e^func1(t+0.5)/(2*e-2)
-end
-return E-A*(4*(func2(ratio/T))^2-e^(2*func1(ratio/T+0.5)))
-
-
-@バウンス(中間点無視)
---twopoint
---param:700
-return obj.getpoint"default"
-
-
-@数値指定
---param:0
-return obj.getpoint"default"
-
-
-@数値指定(中間点無視)
---twopoint
---param:0
-return obj.getpoint"default"
+return curve_editor.getresult(2,par,gpt"totalindex",gpt(0),gpt(1))

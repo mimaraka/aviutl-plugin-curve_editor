@@ -19,8 +19,9 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		int count = 0;
 		int index_separator = -1;
 		int index_script;
+		int index_mode;
 		int id_script;
-		LPCSTR script_name_normal = CVE_STR_MODE_NORMAL "@" CVE_PLUGIN_NAME;
+		LPCSTR script_name_top = "ベジェ・ID@" CVE_PLUGIN_NAME;
 		TCHAR menu_label[MAX_PATH];
 
 		static MENUITEMINFO minfo;
@@ -39,13 +40,29 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 			else if (minfo.fType & MFT_SEPARATOR) {
 				index_separator = count;
 			}
-			else if (strcmp(menu_label, script_name_normal) == 0) {
+			else if (strcmp(menu_label, script_name_top) == 0) {
 				break;
 			}
 			count++;
 		}
+		switch (g_config.edit_mode) {
+		case cve::Mode_Bezier:
+		case cve::Mode_Multibezier:
+		case cve::Mode_Value:
+			index_mode = 0;
+			break;
 
-		index_script = count - index_separator - 10 + g_config.edit_mode * 2;
+		case cve::Mode_Elastic:
+		case cve::Mode_Bounce:
+			index_mode = 1;
+			break;
+
+		default:
+			index_mode = 0;
+			break;
+		}
+
+		index_script = count - index_separator - 10 + index_mode * 2;
 
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
 			index_script++;
@@ -91,7 +108,7 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		int data;
 
 		switch (g_config.edit_mode) {
-		case cve::Mode_Normal:
+		case cve::Mode_Bezier:
 			data = g_curve_normal.create_number();
 			break;
 
@@ -108,7 +125,7 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			break;
 
 		case cve::Mode_Value:
-			data = g_config.current_id.value;
+			data = -g_config.current_id.value;
 			break;
 		}
 

@@ -8,6 +8,9 @@
 
 #define CVE_ELASTIC_FREQ_MAX			100
 #define CVE_ELASTIC_FREQ_DEFAULT		5.0
+#define CVE_ELASTIC_DECAY_DEFAULT		10.0
+#define CVE_ELASTIC_AMP_DEFAULT			1.0
+#define CVE_ELASTIC_SMOOTH_COEF			1.94
 
 
 
@@ -17,6 +20,24 @@
 void cve::Curve_Elastic::initialize()
 {
 	freq = CVE_ELASTIC_FREQ_DEFAULT;
+	dec = CVE_ELASTIC_DECAY_DEFAULT;
+	ampl = CVE_ELASTIC_AMP_DEFAULT;
+}
+
+
+
+//---------------------------------------------------------------------
+//		振動の関数1
+//---------------------------------------------------------------------
+double func_elastic_1(double t, double f, double k)
+{
+	double decay;
+	if (k == 0)
+		decay = 1 - t;
+	else
+		decay = (std::exp(-k * t) - std::exp(-k)) / (1.0 - std::exp(-k));
+
+	return 1 - decay * std::cos(CVE_MATH_PI * f * t);
 }
 
 
@@ -24,21 +45,35 @@ void cve::Curve_Elastic::initialize()
 //---------------------------------------------------------------------
 //		振動の関数
 //---------------------------------------------------------------------
-double cve::Curve_Elastic::func_elastic(double st, double ed, double f, double t)
+double cve::Curve_Elastic::func_elastic(double t, double f, double k, double a, double st, double ed)
 {
-	return (st - ed) * std::pow(CVE_ELASTIC_DECAY, t) * std::cos(CVE_MATH_PI * f * t) + ed;
-}
+	// 微分係数
+	double elastic_der;
 
+	// 二分法によりelasticの導関数の値から極値をとるtを近似する
+	double t_border = 1.0 / (2.0 * f);
+	for (int i = 0; i < 12; i++) {
+		if (k == 0)
+			elastic_der = -std::cos(CVE_MATH_PI * f * t_border) - CVE_MATH_PI * f * (1 - t_border) * std::sin(CVE_MATH_PI * f * t_border);
+		else {
+			elastic_der = -k * std::exp(-k * t_border) * std::cos(CVE_MATH_PI * f * t_border) - CVE_MATH_PI * f * (std::exp(-k * t_border) - std::exp(-k)) * std::sin(CVE_MATH_PI * f * t_border);
+		}
 
+		if (elastic_der == 0)
+			break;
+		else if (elastic_der < 0)
+			t_border += 1.0 / f * std::pow(0.5, i + 2);
+		else
+			t_border -= 1.0 / f * std::pow(0.5, i + 2);
+	}
+	double e_border = func_elastic_1(t_border, f, k);
 
-//---------------------------------------------------------------------
-//		振動の関数の値が最大となる点を返す
-//---------------------------------------------------------------------
-void cve::Curve_Elastic::elastic_maxpoint(double st, double ed, double f, Double_Point* pt)
-{
-	const double extpoint_x = (std::atan(std::log(CVE_ELASTIC_DECAY) / (CVE_MATH_PI * f)) + CVE_MATH_PI) / (CVE_MATH_PI * f);
-	const double extpoint_y = func_elastic(0, 1, f, extpoint_x);
-	*pt = { extpoint_x, extpoint_y };
+	if (t < t_border) {
+		return (ed - st) * (a * (e_border - 1.0) + 1.0) / e_border * func_elastic_1(t, f, k) + st;
+	}
+	else {
+		return (ed - st) * (a * (func_elastic_1(t, f, k) - 1.0) + 1.0) + st;
+	}
 }
 
 
@@ -48,56 +83,65 @@ void cve::Curve_Elastic::elastic_maxpoint(double st, double ed, double f, Double
 //---------------------------------------------------------------------
 void cve::Curve_Elastic::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
 {
-	Double_Point pt;
-	elastic_maxpoint(0, 1, freq, &pt);
-
-	const RECT handle_left = {
+	// 振幅を調整するハンドル(左)
+	const RECT handle_amp_left = {
 		(LONG)to_client(0, 0).x - CVE_POINT_RANGE,
-		(LONG)to_client(0, (int)(pt.y * CVE_GRAPH_RESOLUTION * 0.5)).y - CVE_POINT_RANGE,
+		(LONG)to_client(0, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))).y - CVE_POINT_RANGE,
 		(LONG)to_client(0, 0).x + CVE_POINT_RANGE,
-		(LONG)to_client(0, (int)(pt.y * CVE_GRAPH_RESOLUTION * 0.5)).y + CVE_POINT_RANGE
+		(LONG)to_client(0, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))).y + CVE_POINT_RANGE
 	};
 
-	const RECT handle_right = {
+	// 振幅を調整するハンドル(右)
+	const RECT handle_amp_right = {
 		(LONG)to_client(CVE_GRAPH_RESOLUTION, 0).x - CVE_POINT_RANGE,
-		(LONG)to_client(0, (int)(pt.y * CVE_GRAPH_RESOLUTION * 0.5)).y - CVE_POINT_RANGE,
+		(LONG)to_client(0, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))).y - CVE_POINT_RANGE,
 		(LONG)to_client(CVE_GRAPH_RESOLUTION, 0).x + CVE_POINT_RANGE,
-		(LONG)to_client(0, (int)(pt.y * CVE_GRAPH_RESOLUTION * 0.5)).y + CVE_POINT_RANGE
+		(LONG)to_client(0, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))).y + CVE_POINT_RANGE
 	};
-	pt_address->index = NULL;
 
-	if (::PtInRect(&handle_left, pt_client) || ::PtInRect(&handle_right, pt_client))
+	// 振動数・減衰を調整するハンドル
+	const RECT pt_freq_decay = {
+		(LONG)to_client((int)(2.0 * CVE_GRAPH_RESOLUTION / freq), 0).x - CVE_POINT_RANGE,
+		(LONG)to_client(0, -(int)((std::exp(-(dec - 1.0) * 0.1) - 1.0) * CVE_GRAPH_RESOLUTION * 0.5)).y - CVE_POINT_RANGE,
+		(LONG)to_client((int)(2.0 * CVE_GRAPH_RESOLUTION / freq), 0).x + CVE_POINT_RANGE,
+		(LONG)to_client(0, -(int)((std::exp(-(dec - 1.0) * 0.1) - 1.0) * CVE_GRAPH_RESOLUTION * 0.5)).y + CVE_POINT_RANGE
+	};
+
+	if (::PtInRect(&handle_amp_left, pt_client) || ::PtInRect(&handle_amp_right, pt_client)) {
+		pt_address->index = 0;
 		pt_address->position = Point_Address::Center;
-	else
+	}
+	else if (::PtInRect(&pt_freq_decay, pt_client)) {
+		pt_address->index = 1;
+		pt_address->position = Point_Address::Center;
+	}
+	else {
+		pt_address->index = NULL;
 		pt_address->position = Point_Address::Null;
+	}
 }
 
 
 
 //---------------------------------------------------------------------
-//		ハンドルの位置からfreqを決定
+//		ハンドルを移動
 //---------------------------------------------------------------------
-void cve::Curve_Elastic::move_handle(int pt_graph_y)
+void cve::Curve_Elastic::move_handle(const Point_Address pt_address, const POINT& pt_graph)
 {
-	double x = pt_graph_y / (double)CVE_GRAPH_RESOLUTION * 2;
-	Double_Point extpoint;
+	int x;
+	switch (pt_address.index) {
+	// 振幅
+	case 0:
+		ampl = (MINMAX_LIMIT(pt_graph.y, CVE_GRAPH_RESOLUTION / 2, CVE_GRAPH_RESOLUTION) - CVE_GRAPH_RESOLUTION * 0.5) / (CVE_GRAPH_RESOLUTION * 0.5);
+		break;
 
-	// 二分法によりxの値からfを近似する
-	// fの範囲は1~CVE_ELASTIC_FREQ_MAX
-	double f_border = (CVE_ELASTIC_FREQ_MAX + 1) / 2.0;
-	for (int i = 0; i < 12; i++) {
-		elastic_maxpoint(0, 1, f_border, &extpoint);
-		if (x == extpoint.y) {
-			break;
-		}
-		else if (x > extpoint.y) {
-			f_border += (CVE_ELASTIC_FREQ_MAX - 1) * std::pow(0.5, i + 2);
-		}
-		else {
-			f_border -= (CVE_ELASTIC_FREQ_MAX - 1) * std::pow(0.5, i + 2);
-		}
+	// 振動数, 減衰
+	case 1:
+		x = MIN_LIMIT(pt_graph.x, 10);
+		freq = MIN_LIMIT(2.0 / (x / (double)CVE_GRAPH_RESOLUTION), 2.0);
+		dec = -10.0 * std::log(-(MINMAX_LIMIT(pt_graph.y, 0, (int)(CVE_GRAPH_RESOLUTION * 0.5)) / (CVE_GRAPH_RESOLUTION * 0.5)) + 1.0) + 1.0;
+		break;
 	}
-	freq = f_border;
 }
 
 
@@ -109,10 +153,6 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 {
 	COLORREF handle_color;
 	COLORREF curve_color;
-
-	Double_Point extpoint;
-	elastic_maxpoint(0, 1, freq, &extpoint);
-
 
 	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
 		handle_color = g_theme[g_config.theme].handle;
@@ -147,12 +187,10 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 		g_render_target->DrawLine(
 			D2D1::Point2F(
 				x,
-				(float)(to_client(0, (int)(func_elastic(0.0, 1.0, freq, to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION) * CVE_GRAPH_RESOLUTION * 0.5)).y)),
-				//100),
+				(float)(to_client(0, (int)(func_elastic(to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5) * CVE_GRAPH_RESOLUTION)).y)),
 			D2D1::Point2F(
 				x + CVE_DRAW_GRAPH_INCREASEMENT,
-				(float)(to_client(0, (int)(func_elastic(0.0, 1.0, freq, to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION) * CVE_GRAPH_RESOLUTION * 0.5)).y)),
-				//100),
+				(float)(to_client(0, (int)(func_elastic(to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5) * CVE_GRAPH_RESOLUTION)).y)),
 			bitmap_buffer->brush, CVE_CURVE_THICKNESS
 		);
 	}
@@ -161,18 +199,20 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 	if (g_config.show_handle) {
 		bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
 
+		// 振幅を調整するハンドル
 		draw_handle(
 			bitmap_buffer,
-			to_client((int)(extpoint.x * CVE_GRAPH_RESOLUTION), (int)(extpoint.y * CVE_GRAPH_RESOLUTION * 0.5)),
-			to_client(0, (int)(extpoint.y * CVE_GRAPH_RESOLUTION * 0.5)),
-			drawing_mode, false
+			to_client(0, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))),
+			to_client(CVE_GRAPH_RESOLUTION, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))),
+			drawing_mode, CVE_DRAW_HANDLE_ONLY
 		);
 
+		// 振動数・減衰を調整するハンドル
 		draw_handle(
 			bitmap_buffer,
-			to_client((int)(extpoint.x * CVE_GRAPH_RESOLUTION), (int)(extpoint.y * CVE_GRAPH_RESOLUTION * 0.5)),
-			to_client(CVE_GRAPH_RESOLUTION, (int)(extpoint.y * CVE_GRAPH_RESOLUTION * 0.5)),
-			drawing_mode, false
+			to_client((int)(2.0 * CVE_GRAPH_RESOLUTION / freq), (int)(CVE_GRAPH_RESOLUTION * 0.5)),
+			to_client((int)(2.0 * CVE_GRAPH_RESOLUTION / freq), -(int)((std::exp(-(dec - 1.0) * 0.1) - 1.0) * CVE_GRAPH_RESOLUTION * 0.5)),
+			drawing_mode, NULL
 		);
 
 		// 始点
@@ -180,14 +220,14 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 			bitmap_buffer,
 			to_client(0, 0),
 			to_client(0, 0),
-			drawing_mode, true
+			drawing_mode, CVE_DRAW_POINT_ONLY
 		);
 		// 終点
 		draw_handle(
 			bitmap_buffer,
 			to_client(CVE_GRAPH_RESOLUTION, (int)(CVE_GRAPH_RESOLUTION * 0.5)),
 			to_client(CVE_GRAPH_RESOLUTION, (int)(CVE_GRAPH_RESOLUTION * 0.5)),
-			drawing_mode, true
+			drawing_mode, CVE_DRAW_POINT_ONLY
 		);
 	}
 }
@@ -199,7 +239,10 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 //---------------------------------------------------------------------
 int cve::Curve_Elastic::create_number()
 {
-	return (int)(freq * CVE_ELASTIC_FREQ_COEF);
+	int f = (int)(2000 / freq);
+	int a = (int)(100 * ampl);
+	int k = -(int)(100 * (std::exp(-(dec - 1.0) * 0.1) - 1.0));
+	return a + k * 101 + f * 101 * 1001;
 }
 
 
@@ -207,10 +250,14 @@ int cve::Curve_Elastic::create_number()
 //---------------------------------------------------------------------
 //		数値を読み取り
 //---------------------------------------------------------------------
-void cve::Curve_Elastic::read_number(int number)
+void cve::Curve_Elastic::read_number(int number, double* f, double* k, double* a)
 {
-
-	move_handle(number);
+	*f = std::floor(number / (101 * 1001));
+	*k = std::floor((number - *f * 101 * 1001) / 101);
+	*a = std::floor(number - *f * 101 * 1001 - *k * 101);
+	*f = 2.0 / MIN_LIMIT(*f * 0.001, 0.001);
+	*k = -10.0 * std::log(-*k * 0.01 + 1.0) + 1.0;
+	*a = MINMAX_LIMIT(*a, 0, 100) * 0.01;
 }
 
 
@@ -220,5 +267,14 @@ void cve::Curve_Elastic::read_number(int number)
 //---------------------------------------------------------------------
 double cve::Curve_Elastic::create_result(int number, double ratio, double st, double ed)
 {
-	return func_elastic(st, ed, MINMAX_LIMIT(number / (double)CVE_ELASTIC_FREQ_COEF, 1, CVE_ELASTIC_FREQ_MAX), ratio);
+	
+	if (number >= 0) {
+
+	}
+	else {
+
+	}
+	double f, k, a;
+	read_number(number, &f, &k, &a);
+	return func_elastic(ratio, f, k, a, st, ed);
 }

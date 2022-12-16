@@ -85,7 +85,7 @@ namespace cve {
 								const Float_Point& st,
 								const Float_Point& ed,
 								int drawing_mode,
-								bool draw_point_only
+								int draw_option
 							);
 
 	public:
@@ -139,9 +139,9 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		カーブ(標準)
+	//		カーブ(ベジェ)
 	//---------------------------------------------------------------------
-	class Curve_Normal : public Curve_Type_Numeric {
+	class Curve_Bezier : public Curve_Type_Numeric {
 	public:
 		int					create_number();
 		double				create_result(int number, double ratio, double st, double ed);
@@ -151,7 +151,7 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		カーブ(マルチベジェ)
+	//		カーブ(複数ベジェ)
 	//---------------------------------------------------------------------
 	class Curve_Multibezier : public Curve_Type_ID {
 	public:
@@ -165,20 +165,22 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Curve_Elastic : public Curve_Type_Numeric {
 	private:
-		double				func_elastic(double st, double ed, double f, double t);
-		void				elastic_maxpoint(double st, double ed, double f, Double_Point* pt);
+		double				func_elastic(double t, double f, double k, double a, double st, double ed);
 
 	public:
 		double				freq;
+		double				ampl;
+		double				dec;
+		bool				invert;
 
 		Curve_Elastic() { initialize(); }
 
 		void				initialize();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
-		void				move_handle(int pt_graph_y);
+		void				move_handle(const Point_Address pt_address, const POINT& pt_graph);
 		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
 		int					create_number();
-		void				read_number(int number);
+		void				read_number(int number, double* f, double* k, double* a);
 		double				create_result(int number, double ratio, double st, double ed);
 	};
 

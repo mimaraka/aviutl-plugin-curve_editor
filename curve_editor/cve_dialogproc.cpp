@@ -20,15 +20,12 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 {
 	static HWND combo;
 	static COLORREF cust_colors[16];
-	static cve::Button_Color bt_color_curve;
-	static bool init = true;
 
-	RECT color_curve = {
-		306,
-		63,
-		363,
-		86
+	RECT rect_color_curve = {
+		263, 64,
+		291, 85
 	};
+
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -36,39 +33,6 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		return 0;
 
 	case WM_INITDIALOG:
-		if (init) {
-			bt_color_curve.initialize(
-				hwnd,
-				"DIALOG_CTRL_COLOR_CURVE",
-				NULL,
-				cve::Button::Null,
-				NULL, NULL,
-				nullptr,
-				CVE_CT_COLOR_CURVE,
-				color_curve,
-				NULL
-			);
-			init = false;
-		}
-		else {
-			bt_color_curve.hwnd = ::CreateWindowEx(
-				NULL,
-				"DIALOG_CTRL_COLOR_CURVE",
-				NULL,
-				WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
-				color_curve.left,
-				color_curve.top,
-				color_curve.right - color_curve.left,
-				color_curve.bottom - color_curve.top,
-				hwnd,
-				NULL,
-				g_fp->dll_hinst,
-				&bt_color_curve
-			);
-		}
-
-		::SendMessage(bt_color_curve.hwnd, WM_COMMAND, CVE_CM_CHANGE_COLOR, (LPARAM)g_config.curve_color);
-
 		if (g_config.trace)
 			::SendMessage(
 				::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
@@ -104,9 +68,18 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		return 0;
 
-	case WM_SIZE:
-		bt_color_curve.move(color_curve);
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = ::BeginPaint(hwnd, &ps);
+		HBRUSH brush = ::CreateSolidBrush(g_config.curve_color);
+		::SelectObject(hdc, brush);
+		::Rectangle(hdc, rect_color_curve.left, rect_color_curve.top, rect_color_curve.right, rect_color_curve.bottom);
+		::DeleteObject(brush);
+		::EndPaint(hwnd, &ps);
+
 		return 0;
+	}
 
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
@@ -148,7 +121,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			return 0;
 
-		case CVE_CT_COLOR_CURVE:
+		case IDC_CURVE_COLOR:
 		{
 			CHOOSECOLOR cc;
 
@@ -163,7 +136,6 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_config.curve_color = cc.rgbResult;
 
 			::InvalidateRect(hwnd, NULL, FALSE);
-			::SendMessage(bt_color_curve.hwnd, WM_COMMAND, CVE_CM_CHANGE_COLOR, (LPARAM)g_config.curve_color);
 		}
 			return 0;
 		}
@@ -280,16 +252,23 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 					return 0;
 				}
-				if (!ISINRANGEEQ(value, -2147483647, 2122746761)) {
+				// -2147483647 ~  -12368443：ベジェが使用
+				//   -12368442 ~         -1：IDが使用
+				//           0             ：不使用
+				//           1 ~   12368442：IDが使用
+				//    12368443 ~ 2147483646：ベジェが使用
+				//  2147483647             ：不使用
+
+				if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
 					if (g_config.alert)
 						::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 					return 0;
 				}
-				if (g_config.edit_mode == cve::Mode_Normal)
+				if (g_config.edit_mode == cve::Mode_Bezier)
 					g_curve_normal.read_number(value);
 				else
-					g_curve_mb[g_config.current_id.multibezier].read_number(value);
+					g_curve_mb[g_config.current_id.multibezier - 1].read_number(value);
 
 				::EndDialog(hwnd, 1);
 			}
@@ -334,9 +313,9 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			::GetDlgItemText(hwnd, IDC_EDIT_SAVE, buffer, CVE_PRESET_NAME_MAX);
 
 			switch (g_config.edit_mode) {
-			case cve::Mode_Normal:
+			case cve::Mode_Bezier:
 			{
-				const cve::Preset<cve::Curve_Normal> preset_normal;
+				const cve::Preset<cve::Curve_Bezier> preset_normal;
 				g_presets_normal_custom.PushBack(preset_normal);
 				g_presets_normal_custom[g_presets_normal_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_normal, buffer);
 				break;
@@ -346,7 +325,7 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			{
 				const cve::Preset<cve::Curve_Multibezier> preset_mb;
 				g_presets_mb_custom.PushBack(preset_mb);
-				g_presets_mb_custom[g_presets_mb_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_mb[g_config.current_id.multibezier], buffer);
+				g_presets_mb_custom[g_presets_mb_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_mb[g_config.current_id.multibezier - 1], buffer);
 				break;
 			}
 
@@ -431,14 +410,14 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			str = buffer;
 			value = std::stoi(str);
 
-			if (!ISINRANGEEQ(value, 0, CVE_CURVE_MAX - 1)) {
+			if (!ISINRANGEEQ(value, 1, CVE_CURVE_MAX)) {
 				if (g_config.alert)
 					::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
 			}
 
-			::SendMessage(g_window_header.hwnd, WM_COMMAND, CVE_CM_CHANGE_ID, (LPARAM)value);
+			::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_CHANGE_ID, (LPARAM)value);
 			::EndDialog(hwnd, 1);
 			return 0;
 		case IDCANCEL:

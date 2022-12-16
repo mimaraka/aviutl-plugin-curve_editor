@@ -26,6 +26,7 @@
 #define IDR_MENU_PRESET                 136
 #define IDR_MENU_MODE                   137
 #define IDD_LATEST_VERSION              139
+#define IDR_MENU_APPLY                  141
 #define IDC_DRAGGING                    200
 #define IDC_EDIT_SAVE                   1001
 #define IDC_EDIT_VALUE                  1002
@@ -38,6 +39,7 @@
 #define IDC_AUTOCOPY2                   1012
 #define IDC_EDIT_ID                     1012
 #define IDC_LATEST_VERSION              1016
+#define IDC_CURVE_COLOR                 1017
 #define ID_MENU_ABOUT                   40011
 #define ID_MENU_CONFIG                  40012
 #define ID_MENU_SHOWHANDLE              40013
@@ -62,7 +64,6 @@
 #define ID_MENU_ID_BACK                 40034
 #define ID_MENU_VERTICAL                40063
 #define ID_MENU_HORIZONTAL              40064
-#define ID_MODE_NORMAL                  40067
 #define ID_MODE_MULTIBEZIER             40068
 #define ID_MODE_ELASTIC                 40069
 #define ID_MODE_BOUNCE                  40070
@@ -70,7 +71,12 @@
 #define ID_MENU_40081                   40081
 #define ID_MENU_LATEST                  40082
 #define ID_MENU_LATEST_VERSION          40083
-#define ID_MENU_MODE_NORMAL             40100
+#define ID_APPLY_40084                  40084
+#define ID_APPLY_40085                  40085
+#define ID_APPLY_NORMAL                 40086
+#define ID_APPLY_IGNOREKEY              40087
+#define ID_MENU_MODE_BEZIER             40088
+#define ID_MODE_BEZIER                  40089
 #define ID_MENU_MODE_MULTIBEZIER        40101
 #define ID_MENU_MODE_ELASTIC            40102
 #define ID_MENU_MODE_BOUNCE             40103
@@ -80,9 +86,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        141
-#define _APS_NEXT_COMMAND_VALUE         40084
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_RESOURCE_VALUE        142
+#define _APS_NEXT_COMMAND_VALUE         40090
+#define _APS_NEXT_CONTROL_VALUE         1018
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

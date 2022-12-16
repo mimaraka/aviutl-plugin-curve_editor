@@ -36,6 +36,7 @@ BOOL filter_initialize(FILTER* fp)
 	char exedit_path[1024];
 	FILTER* fp_exedit = auls::Exedit_GetFilter(fp);
 
+	// 拡張編集プラグインが存在する場合
 	if (fp_exedit) {
 		::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));
 
@@ -53,12 +54,13 @@ BOOL filter_initialize(FILTER* fp)
 			DialogBox_hooked
 		);
 	}
+	// 存在しない場合
 	else
 		::MessageBox(fp->hwnd, CVE_STR_ERROR_EXEDIT_NOT_FOUND, CVE_PLUGIN_NAME, MB_OK);
 
-
-	// Direct2D初期化
+	// Direct2Dの初期化
 	cve::d2d_init();
+
 	return TRUE;
 }
 
@@ -69,7 +71,10 @@ BOOL filter_initialize(FILTER* fp)
 //---------------------------------------------------------------------
 BOOL filter_exit(FILTER* fp)
 {
+	// aviutl.iniに設定を書き込み
 	ini_write_configs(fp);
+
+	// Direct2Dオブジェクト開放
 	if (NULL != g_render_target) {
 		g_render_target->Release();
 	}
@@ -94,7 +99,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 		for (int i = 0; i < CVE_CURVE_MAX; i++)
 			g_curve_mb[i].ctpts = point_data[i];
 
-		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier];
+		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
 
 		if (g_window_editor.hwnd) {
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
@@ -159,12 +164,13 @@ void ini_load_configs(FILTER* fp)
 	g_curve_normal.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)), 0, CVE_GRAPH_RESOLUTION);
 	g_curve_normal.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CVE_SEPARATOR_WIDTH);
-	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp, "edit_mode", cve::Mode_Normal);
+	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp, "edit_mode", cve::Mode_Bezier);
+	g_config.layout_mode = (cve::Config::Layout_Mode)fp->exfunc->ini_load_int(fp, "layout_mode", cve::Config::Vertical);
+	g_config.apply_mode = (cve::Config::Apply_Mode)fp->exfunc->ini_load_int(fp, "apply_mode", cve::Config::Normal);
 	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", true);
 	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", true);
 	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CVE_DEF_PRESET_SIZE);
 	g_config.curve_color = fp->exfunc->ini_load_int(fp, "curve_color", CVE_CURVE_COLOR_DEFAULT);
-	g_config.layout_mode = (cve::Config::Layout_Mode)fp->exfunc->ini_load_int(fp, "layout_mode", cve::Config::Vertical);
 	g_config.notify_latest_version = fp->exfunc->ini_load_int(fp, "notify_latest_version", false);
 }
 
@@ -181,9 +187,9 @@ void ini_write_configs(FILTER* fp)
 	fp->exfunc->ini_save_int(fp, "y2", g_curve_normal.ctpts[1].pt_left.y);
 	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
 	fp->exfunc->ini_save_int(fp, "edit_mode", g_config.edit_mode);
+	fp->exfunc->ini_save_int(fp, "layout_mode", g_config.layout_mode);
 	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
 	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
-	fp->exfunc->ini_save_int(fp, "layout_mode", g_config.layout_mode);
 }
 
 

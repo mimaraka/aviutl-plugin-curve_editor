@@ -210,7 +210,7 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
     <ClCompile Include="cve_curve_bounce.cpp" />
     <ClCompile Include="cve_curve_elastic.cpp" />
     <ClCompile Include="cve_curve_multibezier.cpp" />
-    <ClCompile Include="cve_curve_normal.cpp">
+    <ClCompile Include="cve_curve_bezier.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -260,7 +260,7 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="cve_wndproc_header.cpp" />
+    <ClCompile Include="cve_wndproc_menu.cpp" />
     <ClCompile Include="cve_wndproc_main.cpp" />
     <ClCompile Include="cve_wndproc_library.cpp" />
   </ItemGroup>

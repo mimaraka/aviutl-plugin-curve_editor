@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
-//		ソースファイル (標準モードのカーブ)
+//		ソースファイル (ベジェモードのカーブ)
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		数値を生成
 //---------------------------------------------------------------------
-int cve::Curve_Normal::create_number()
+int cve::Curve_Bezier::create_number()
 {
 	int result;
 	Float_Point ptf[2];
@@ -53,7 +53,7 @@ int cve::Curve_Normal::create_number()
 //---------------------------------------------------------------------
 //		パラメータを生成(","で区切る)
 //---------------------------------------------------------------------
-std::string cve::Curve_Normal::create_parameters()
+std::string cve::Curve_Bezier::create_parameters()
 {
 	Float_Point pt;
 	std::string strx, stry, result;
@@ -106,12 +106,23 @@ std::string cve::Curve_Normal::create_parameters()
 //---------------------------------------------------------------------
 //		スクリプトに渡す値を生成
 //---------------------------------------------------------------------
-double cve::Curve_Normal::create_result(int number, double ratio, double st, double ed)
+double cve::Curve_Bezier::create_result(int number, double ratio, double st, double ed)
 {
+	// -2147483647 ~  -12368443：ベジェが使用
+	//   -12368442 ~         -1：IDが使用
+	//           0             ：不使用
+	//           1 ~   12368442：IDが使用
+	//    12368443 ~ 2147483646：ベジェが使用
+	//  2147483647             ：不使用
+
+
 	// 進捗が0~1の範囲外であった場合
-	if (!ISINRANGEEQ(ratio, 0, 1))
-		return 0;
-	else if (number < -2147483647 || number > 2122746762)
+	if (ratio < 0)
+		return st;
+	else if (ratio > 1)
+		return ed;
+	// 数値が範囲外であった場合
+	else if (-12368442 <= number && number <= 12368442 || number <= 2147483647)
 		return st + (ed - st) * ratio;
 	else {
 		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_buffer;

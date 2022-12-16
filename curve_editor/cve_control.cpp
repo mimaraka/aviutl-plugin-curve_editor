@@ -394,7 +394,7 @@ LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
 		switch (g_config.edit_mode) {
-		case cve::Mode_Normal:
+		case cve::Mode_Bezier:
 			str_param = g_curve_normal.create_parameters();
 			param = const_cast<LPTSTR>(str_param.c_str());
 			break;
@@ -482,14 +482,14 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 
-			*current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 0, CVE_CURVE_MAX - 1);
+			*current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 1, CVE_CURVE_MAX);
 			switch (g_config.edit_mode) {
 			case Mode_Multibezier:
-				g_curve_mb_previous = g_curve_mb[*current_id];
+				g_curve_mb_previous = g_curve_mb[*current_id - 1];
 				break;
 
 			case Mode_Value:
-				g_curve_value_previous = g_curve_value[*current_id];
+				g_curve_value_previous = g_curve_value[*current_id - 1];
 				break;
 			}
 

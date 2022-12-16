@@ -127,7 +127,7 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 		case CVE_CM_PRESET_MOVE:
 			switch (g_config.edit_mode) {
-			case cve::Mode_Normal:
+			case cve::Mode_Bezier:
 				break;
 
 			case cve::Mode_Multibezier:

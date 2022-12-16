@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		ÉOÉçÅ[ÉoÉãïœêî
 //---------------------------------------------------------------------
-cve::Curve_Normal				g_curve_normal,
+cve::Curve_Bezier				g_curve_normal,
 								g_curve_normal_previous;
 cve::Curve_Multibezier			g_curve_mb[CVE_CURVE_MAX],
 								g_curve_mb_previous;
@@ -25,7 +25,7 @@ cve::Curve_Value				g_curve_value[CVE_CURVE_MAX],
 cve::Config						g_config;
 
 cve::Window						g_window_main,
-								g_window_header,
+								g_window_menu,
 								g_window_editor,
 								g_window_library,
 								g_window_preset_list;
@@ -34,8 +34,8 @@ cve::Graph_View_Info			g_view_info;
 
 FILTER*							g_fp;
 
-cve::Static_Array<cve::Preset<cve::Curve_Normal>, CVE_PRESET_NUM_DEFAULT> g_presets_normal_default;
-cve::Static_Array<cve::Preset<cve::Curve_Normal>, CVE_PRESET_NUM_CUSTOM> g_presets_normal_custom;
+cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_DEFAULT> g_presets_normal_default;
+cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_CUSTOM> g_presets_normal_custom;
 
 cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_DEFAULT> g_presets_mb_default;
 cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_CUSTOM> g_presets_mb_custom;

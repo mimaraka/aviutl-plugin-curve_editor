@@ -38,7 +38,7 @@ namespace cve {
 //----------------------------------------------------------------------------------
 //		extern宣言
 //----------------------------------------------------------------------------------
-extern cve::Curve_Normal					g_curve_normal,
+extern cve::Curve_Bezier					g_curve_normal,
 											g_curve_normal_previous;
 extern cve::Curve_Multibezier				g_curve_mb[CVE_CURVE_MAX],
 											g_curve_mb_previous;
@@ -49,8 +49,8 @@ extern cve::Curve_Bounce					g_curve_bounce,
 extern cve::Curve_Value						g_curve_value[CVE_CURVE_MAX],
 											g_curve_value_previous;
 
-extern cve::Static_Array<cve::Preset<cve::Curve_Normal>, CVE_PRESET_NUM_DEFAULT> g_presets_normal_default;
-extern cve::Static_Array<cve::Preset<cve::Curve_Normal>, CVE_PRESET_NUM_CUSTOM> g_presets_normal_custom;
+extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_DEFAULT> g_presets_normal_default;
+extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_CUSTOM> g_presets_normal_custom;
 
 extern cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_DEFAULT> g_presets_mb_default;
 extern cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_CUSTOM> g_presets_mb_custom;
@@ -64,7 +64,7 @@ extern const cve::Theme						g_theme[2];
 extern cve::Config							g_config;
 
 extern cve::Window							g_window_main,
-											g_window_header,
+											g_window_menu,
 											g_window_editor,
 											g_window_library,
 											g_window_preset_list;
@@ -298,7 +298,7 @@ namespace cve {
 //		ウィンドウプロシージャ
 //----------------------------------------------------------------------------------
 LRESULT CALLBACK	wndproc_main(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_header(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK	wndproc_menu(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_editor(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_library(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK	wndproc_preset_list(HWND, UINT, WPARAM, LPARAM);

@@ -567,17 +567,17 @@ void cve::Curve::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
 			(LONG)to_client(ctpts[i].pt_right).y + CVE_POINT_RANGE
 		};
 
-		if (PtInRect(&left, pt_client) && ctpts[i].type != 0) {
+		if (PtInRect(&left, pt_client) && ctpts[i].type != Curve_Points::Default_Left) {
 			pt_address->index = i;
 			pt_address->position = Point_Address::Left;
 			return;
 		}
-		else if (PtInRect(&right, pt_client) && ctpts[i].type != 1) {
+		else if (PtInRect(&right, pt_client) && ctpts[i].type != Curve_Points::Default_Right) {
 			pt_address->index = i;
 			pt_address->position = Point_Address::Right;
 			return;
 		}
-		else if (PtInRect(&center, pt_client) && ctpts[i].type > 1) {
+		else if (PtInRect(&center, pt_client) && ctpts[i].type == Curve_Points::Extended) {
 			pt_address->index = i;
 			pt_address->position = Point_Address::Center;
 			return;
@@ -807,7 +807,7 @@ void cve::Curve::draw_handle(
 	const Float_Point& st,
 	const Float_Point& ed,
 	int drawing_mode,
-	bool draw_point_only)
+	int draw_option)
 {
 	static ID2D1StrokeStyle* style = nullptr;
 
@@ -820,7 +820,7 @@ void cve::Curve::draw_handle(
 	const float handle_circle_line = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_HANDLE_CIRCLE_LINE : CVE_HANDLE_CIRCLE_LINE_PRESET;
 
 	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
-		subtract_length(&st_new, ed, st, CVE_SUBTRACT_LENGTH_2);
+		subtract_length(&st_new, ed, st, draw_option == CVE_DRAW_HANDLE_ONLY ? CVE_SUBTRACT_LENGTH : CVE_SUBTRACT_LENGTH_2);
 		subtract_length(&ed_new, st_new, ed, CVE_SUBTRACT_LENGTH);
 	}
 
@@ -838,7 +838,7 @@ void cve::Curve::draw_handle(
 	);
 
 	if (drawing_mode != CVE_DRAW_CURVE_TRACE) {
-		if (!draw_point_only) {
+		if (draw_option != CVE_DRAW_POINT_ONLY) {
 			// ハンドルの直線
 			g_render_target->DrawLine(
 				D2D1::Point2F(st_new.x, st_new.y),
@@ -856,12 +856,22 @@ void cve::Curve::draw_handle(
 		}
 
 		// ハンドルの根元
-		g_render_target->FillEllipse(
-			D2D1::Ellipse(
-				D2D1::Point2F(st.x, st.y),
-				point_size, point_size),
-			bitmap_buffer->brush
-		);
+		if (draw_option == CVE_DRAW_HANDLE_ONLY) {
+			g_render_target->DrawEllipse(
+				D2D1::Ellipse(
+					D2D1::Point2F(st.x, st.y),
+					handle_size, handle_size),
+				bitmap_buffer->brush, CVE_HANDLE_CIRCLE_LINE
+			);
+		}
+		else {
+			g_render_target->FillEllipse(
+				D2D1::Ellipse(
+					D2D1::Point2F(st.x, st.y),
+					point_size, point_size),
+				bitmap_buffer->brush
+			);
+		}
 	}
 }
 
@@ -954,12 +964,12 @@ void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, 
 			draw_handle(bitmap_buffer,
 				is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
 				is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
-				drawing_mode, false
+				drawing_mode, NULL
 			);
 			draw_handle(bitmap_buffer,
 				is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
 				is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
-				drawing_mode, false
+				drawing_mode, NULL
 			);
 		}
 	}
@@ -982,21 +992,36 @@ bool cve::Curve::is_data_valid()
 //---------------------------------------------------------------------
 void cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
-	int64_t int64;
-	int64 = (int64_t)number + (int64_t)2147483647;
+	// -2147483647 ~  -12368443：ベジェが使用
+	//   -12368442 ~         -1：IDが使用
+	//           0             ：不使用
+	//           1 ~   12368442：IDが使用
+	//    12368443 ~ 2147483646：ベジェが使用
+	//  2147483647             ：不使用
+
+	int64_t num;
+	if (number <= -12368443) {
+		num = (int64_t)number + (int64_t)2147483647;
+	}
+	else if (12368443 <= number && number <= 2147483646) {
+		num = (int64_t)number + (int64_t)2122746762;
+	}
+	else return;
+
+	
 
 	clear(points);
 
-	points[1].pt_left.y = (LONG)(int64 / 6600047);
-	points[1].pt_left.x = (LONG)((int64 - (int64_t)points[1].pt_left.y * 6600047) / 65347);
-	points[0].pt_right.y = (LONG)((int64 - ((int64_t)points[1].pt_left.y * 6600047 + (int64_t)points[1].pt_left.x * 65347)) / 101);
-	points[0].pt_right.x = (LONG)((int64 - ((int64_t)points[1].pt_left.y * 6600047 + (int64_t)points[1].pt_left.x * 65347)) % 101);
+	points[1].pt_left.y = (int32_t)(num / 6600047);
+	points[1].pt_left.x = (int32_t)((num - (int64_t)points[1].pt_left.y * 6600047) / 65347);
+	points[0].pt_right.y = (int32_t)((num - ((int64_t)points[1].pt_left.y * 6600047 + (int64_t)points[1].pt_left.x * 65347)) / 101);
+	points[0].pt_right.x = (int32_t)((num - ((int64_t)points[1].pt_left.y * 6600047 + (int64_t)points[1].pt_left.x * 65347)) % 101);
 	points[0].pt_right.x *= CVE_GRAPH_RESOLUTION / 100;
 	points[0].pt_right.y *= CVE_GRAPH_RESOLUTION / 100;
 	points[1].pt_left.x *= CVE_GRAPH_RESOLUTION / 100;
 	points[1].pt_left.y *= CVE_GRAPH_RESOLUTION / 100;
-	points[0].pt_right.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
-	points[1].pt_left.y -= (LONG)(2.73 * CVE_GRAPH_RESOLUTION);
+	points[0].pt_right.y -= (int32_t)(2.73 * CVE_GRAPH_RESOLUTION);
+	points[1].pt_left.y -= (int32_t)(2.73 * CVE_GRAPH_RESOLUTION);
 }
 
 

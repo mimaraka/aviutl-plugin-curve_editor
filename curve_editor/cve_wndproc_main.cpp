@@ -64,10 +64,10 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		bitmap_buffer.set_size(rect_wnd);
 
 		// ヘッダパネル
-		g_window_header.create(
+		g_window_menu.create(
 			hwnd,
 			"WINDOW_HEADER",
-			wndproc_header,
+			wndproc_menu,
 			NULL,
 			NULL,
 			rect_header.rect,
@@ -103,7 +103,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_SIZE:
 		bitmap_buffer.set_size(rect_wnd);
-		g_window_header.move(rect_header.rect);
+		g_window_menu.move(rect_header.rect);
 		g_window_editor.move(rect_editor.rect);
 		g_window_library.move(rect_library.rect);
 		return 0;
@@ -139,7 +139,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				g_config.separator = MINMAX_LIMIT(rect_wnd.right - pt_client.x, CVE_SEPARATOR_WIDTH, rect_wnd.right - CVE_SEPARATOR_WIDTH);
 
 			::SetActiveWindow(g_window_library.hwnd);
-			g_window_header.move(rect_header.rect);
+			g_window_menu.move(rect_header.rect);
 			g_window_editor.move(rect_editor.rect);
 			g_window_library.move(rect_library.rect);
 			::InvalidateRect(hwnd, NULL, FALSE);
@@ -150,10 +150,10 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (wparam) {
 		case CVE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
-			g_window_header.move(rect_header.rect);
+			g_window_menu.move(rect_header.rect);
 			g_window_editor.move(rect_editor.rect);
 			g_window_library.move(rect_library.rect);
-			g_window_header.redraw();
+			g_window_menu.redraw();
 			g_window_editor.redraw();
 			g_window_library.redraw();
 		}

@@ -33,11 +33,11 @@ namespace cve {
 	//		エディットモード
 	//---------------------------------------------------------------------
 	enum Edit_Mode {
-		Mode_Normal,
+		Mode_Bezier,
 		Mode_Multibezier,
+		Mode_Value,
 		Mode_Elastic,
-		Mode_Bounce,
-		Mode_Value
+		Mode_Bounce
 	};
 
 
@@ -108,9 +108,14 @@ namespace cve {
 			Horizontal
 		};
 
+		enum Apply_Mode {
+			Normal,
+			Ignore_Mid_Point
+		};
+
 		struct Curve_ID {
-			int multibezier = 0,
-				value = 0;
+			int multibezier = 1,
+				value = 1;
 		};
 
 		bool	alert,
@@ -129,6 +134,7 @@ namespace cve {
 		Curve_ID	current_id;
 		Edit_Mode	edit_mode;
 		Layout_Mode	layout_mode;
+		Apply_Mode	apply_mode;
 		COLORREF	curve_color;
 	};
 }

@@ -57,11 +57,21 @@
 #define CVE_POINT_DEFAULT_1				0.4f
 #define CVE_POINT_DEFAULT_2				0.6f
 
-#define CVE_ELASTIC_DECAY				0.0001
+// カーブ描画
+#define CVE_DRAW_CURVE_REGULAR			0
+#define CVE_DRAW_CURVE_TRACE			1
+#define CVE_DRAW_CURVE_PRESET			2
+#define CVE_DRAW_POINT_ONLY				1
+#define CVE_DRAW_HANDLE_ONLY			2
+
+#define CVE_DRAW_GRAPH_INCREASEMENT		1.0f
+
+#define CVE_CURVE_COLOR_DEFAULT			RGB(103, 103, 241)
 
 
 //フラグ
 #define BIT(num)						((UINT)1 << num)
+
 #define CVE_EDGE_LT						BIT(0)
 #define CVE_EDGE_LB						BIT(1)
 #define CVE_EDGE_RT						BIT(2)
@@ -78,9 +88,9 @@
 //---------------------------------------------------------------------
 #define CVE_CT_EDIT_MODE_NORMAL			0x0400
 #define CVE_CT_EDIT_MODE_MULTIBEZIER	0x0401
-#define CVE_CT_EDIT_MODE_ELASTIC		0x0402
-#define CVE_CT_EDIT_MODE_BOUNCE			0x0403
-#define CVE_CT_EDIT_MODE_VALUE			0x0404
+#define CVE_CT_EDIT_MODE_VALUE			0x0402
+#define CVE_CT_EDIT_MODE_ELASTIC		0x0403
+#define CVE_CT_EDIT_MODE_BOUNCE			0x0404
 
 #define CVE_CT_ALIGN					0x0410
 #define CVE_CT_PREV						0x0411
@@ -145,14 +155,6 @@
 #define CVE_FONT_REGULAR				"Yu Gothic UI Regular"
 #define CVE_FONT_SEMIBOLD				"Yu Gothic UI Semibold"
 
-#define CVE_DRAW_CURVE_REGULAR			0
-#define CVE_DRAW_CURVE_TRACE			1
-#define CVE_DRAW_CURVE_PRESET			2
-
-#define CVE_DRAW_GRAPH_INCREASEMENT		1.0f
-
-#define CVE_CURVE_COLOR_DEFAULT			RGB(103, 103, 241)
-
 
 
 //---------------------------------------------------------------------
@@ -172,7 +174,6 @@
 #define CVE_POINT_MAX					64					// 変更不可
 #define CVE_CURVE_MAX					1024				// 変更不可
 #define CVE_VALUE_RESOLUTION			1000
-#define CVE_ELASTIC_FREQ_COEF			10000000
 
 #define CVE_MATH_PI						3.14159265
 
@@ -182,9 +183,9 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CVE_PLUGIN_NAME						"Curve Editor"
-#define CVE_PLUGIN_VERSION					"v0.5"
-#define CVE_VERSION_MAJOR					0
-#define CVE_VERSION_MINOR					5
+#define CVE_PLUGIN_VERSION					"v1.0"
+#define CVE_VERSION_MAJOR					1
+#define CVE_VERSION_MINOR					0
 #define CVE_VERSION_REVISION				0
 #define CVE_PLUGIN_DEVELOPER				"mimaraka"
 #define CVE_PLUGIN_YEAR						"2022"
@@ -197,11 +198,11 @@
 //---------------------------------------------------------------------
 //		文字列
 //---------------------------------------------------------------------
-#define CVE_STR_MODE_NORMAL					"標準"
-#define CVE_STR_MODE_MULTIBEZIER			"複数ベジェ"
+#define CVE_STR_MODE_BEZIER					"ベジェ"
+#define CVE_STR_MODE_MULTIBEZIER			"ベジェ(複数)"
+#define CVE_STR_MODE_VALUE					"ベジェ(数値指定)"
 #define CVE_STR_MODE_ELASTIC				"振動"
 #define CVE_STR_MODE_BOUNCE					"バウンス"
-#define CVE_STR_MODE_VALUE					"数値指定"
 #define CVE_STR_WARNING_DELETE				"編集中のカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DATA_INVALID		"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"

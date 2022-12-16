@@ -335,8 +335,8 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 			// Xが0未満1より大の部分を暗くする
 			g_render_target->FillRectangle(&rect_left, brush);
 			g_render_target->FillRectangle(&rect_right, brush);
-			// 標準モードのとき
-			if (g_config.edit_mode == cve::Mode_Normal) {
+			// ベジェモードのとき
+			if (g_config.edit_mode == cve::Mode_Bezier) {
 				g_render_target->FillRectangle(&rect_up, brush);
 				g_render_target->FillRectangle(&rect_down, brush);
 			}
@@ -345,8 +345,8 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 
 		// 編集モード振り分け
 		switch (g_config.edit_mode) {
-			// 標準モードのとき
-		case Mode_Normal:
+			// ベジェモードのとき
+		case Mode_Bezier:
 			if (g_config.trace)
 				g_curve_normal_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
@@ -358,7 +358,7 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 			if (g_config.trace)
 				g_curve_mb_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
-			g_curve_mb[g_config.current_id.multibezier].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			g_curve_mb[g_config.current_id.multibezier - 1].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 			break;
 
 			// 振動モードのとき

@@ -66,6 +66,7 @@ BEGIN
     CONTROL         "値を自動でコピー(標準・振動・バウンスモードで有効)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,194,182,10
     LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
     CONTROL         "新しいバージョンを通知",IDC_LATEST_VERSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,89,10
+    PUSHBUTTON      "変更",IDC_CURVE_COLOR,196,39,50,14
 END
 
 IDD_SAVE DIALOGEX 0, 0, 228, 61
@@ -249,11 +250,10 @@ BEGIN
     BEGIN
         POPUP "編集モード"
         BEGIN
-            MENUITEM "標準",                          ID_MENU_MODE_NORMAL
-            MENUITEM "複数ベジェ",                       ID_MENU_MODE_MULTIBEZIER
+            MENUITEM "ベジェ",                         ID_MENU_MODE_BEZIER
+            MENUITEM "ベジェ(複数)",                     ID_MENU_MODE_MULTIBEZIER
             MENUITEM "振動",                          ID_MENU_MODE_ELASTIC
             MENUITEM "バウンス",                        ID_MENU_MODE_BOUNCE
-            MENUITEM "数値指定",                        ID_MENU_MODE_VALUE
         END
         MENUITEM SEPARATOR
         MENUITEM "カーブの数値をコピー\tCtrl+C",          ID_MENU_COPY
@@ -300,11 +300,19 @@ IDR_MENU_MODE MENU
 BEGIN
     POPUP "MODE"
     BEGIN
-        MENUITEM "標準",                          ID_MODE_NORMAL
-        MENUITEM "複数ベジェ",                       ID_MODE_MULTIBEZIER
+        MENUITEM "ベジェ",                         ID_MODE_BEZIER
+        MENUITEM "ベジェ(複数)",                     ID_MODE_MULTIBEZIER
         MENUITEM "振動",                          ID_MODE_ELASTIC
         MENUITEM "バウンス",                        ID_MODE_BOUNCE
-        MENUITEM "数値指定",                        ID_MODE_VALUE
+    END
+END
+
+IDR_MENU_APPLY MENU
+BEGIN
+    POPUP "APPLY"
+    BEGIN
+        MENUITEM "通常",                          ID_APPLY_NORMAL
+        MENUITEM "中間点無視",                       ID_APPLY_IGNOREKEY
     END
 END
 

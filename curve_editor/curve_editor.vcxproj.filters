@@ -54,7 +54,7 @@
     <ClCompile Include="cve_curve.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="cve_curve_normal.cpp">
+    <ClCompile Include="cve_curve_bezier.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cve_curve_multibezier.cpp">
@@ -72,7 +72,7 @@
     <ClCompile Include="cve_wndproc_main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="cve_wndproc_header.cpp">
+    <ClCompile Include="cve_wndproc_menu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cve_wndproc_library.cpp">
