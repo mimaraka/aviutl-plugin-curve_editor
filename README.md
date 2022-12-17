@@ -37,32 +37,6 @@ AviUtlを起動後、メインウィンドウの「表示」メニューから�
 
 詳しい使用方法は[Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。  
 
-## スクリプトから使用する(スクリプト開発者向け)
-以下のようにして`curve_editor`を読み込み、`getcurve()`関数を使用することでスクリプトからカーブの値を取得することができます。  
-
-```lua
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
-```
-```
-curve_editor.getcurve(モード番号, パラメータ値, 進捗(0~1), 開始値, 終了値)
-```
-
-モード番号については以下のようになっています：  
-| 番号 | モード |
-| :---: | :---: |
-| 0 | ベジェ |
-| 1 | ベジェ(複数) |
-| 2 | (未実装) |
-| 3 | 振動 |
-| 4 | バウンス |
-
-パラメータ値については、数値を指定するものであれば「カーブの数値をコピー」からコピーできる値を、IDを指定するものであればIDを入力します。
-
 ## 動作環境
 | OS | AviUtl | 拡張編集 | 
 | :---: | :---: | :---: |
@@ -77,7 +51,10 @@ AviUtl 1.00, 1.10
 
 ※[patch.aul](https://github.com/ePi5131/patch.aul)、
 [イージング設定時短プラグイン](https://github.com/kumrnm/aviutl-easing-quick-setup)、
-[イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)との共存を確認。
+[イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)との共存を確認。  
+
+## バグ報告
+バグ報告はこのリポジトリのIssuesまたはTwitter([@mimaraka](https://twitter.com/mimaraka))のDMにてお願いします。  
 
 ## 免責事項
 当プラグイン・スクリプトを使用したことによっていかなる損害が生じても、製作者は一切の責任を負わないものとします。  
