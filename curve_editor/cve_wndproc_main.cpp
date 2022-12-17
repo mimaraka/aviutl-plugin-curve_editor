@@ -63,17 +63,6 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);
 
-		// ヘッダパネル
-		g_window_menu.create(
-			hwnd,
-			"WINDOW_HEADER",
-			wndproc_menu,
-			NULL,
-			NULL,
-			rect_header.rect,
-			NULL
-		);
-
 		// エディタパネル
 		g_window_editor.create(
 			hwnd,
@@ -82,6 +71,17 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CS_DBLCLKS,
 			rect_editor.rect,
+			NULL
+		);
+
+		// ヘッダパネル
+		g_window_menu.create(
+			hwnd,
+			"WINDOW_HEADER",
+			wndproc_menu,
+			NULL,
+			NULL,
+			rect_header.rect,
 			NULL
 		);
 

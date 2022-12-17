@@ -54,8 +54,8 @@
 #define CVE_SUBTRACT_LENGTH_2			8.0f
 #define CVE_CURVE_VALUE_MIN_Y			-2.73f
 #define CVE_CURVE_VALUE_MAX_Y			3.73f
-#define CVE_POINT_DEFAULT_1				0.4f
-#define CVE_POINT_DEFAULT_2				0.6f
+#define CVE_POINT_DEFAULT_1				0.3f
+#define CVE_POINT_DEFAULT_2				0.7f
 
 // カーブ描画
 #define CVE_DRAW_CURVE_REGULAR			0
@@ -66,7 +66,7 @@
 
 #define CVE_DRAW_GRAPH_INCREASEMENT		1.0f
 
-#define CVE_CURVE_COLOR_DEFAULT			RGB(103, 103, 241)
+#define CVE_CURVE_COLOR_DEFAULT			RGB(148, 158, 197)
 
 
 //フラグ
@@ -206,7 +206,7 @@
 #define CVE_STR_WARNING_DELETE				"編集中のカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DATA_INVALID		"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
-#define CVE_STR_ABOUT						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION "\n" "Copyright : (C) " CVE_PLUGIN_YEAR " " CVE_PLUGIN_DEVELOPER
+#define CVE_STR_ABOUT						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION "\n(" CVE_PLUGIN_YEAR " " CVE_PLUGIN_DEVELOPER ")"
 #define CVE_STR_ERROR_OUTOFRANGE			"値が範囲外です。"
 #define CVE_STR_ERROR_INPUT_INVALID			"無効な入力値です。"
 #define CVE_STR_ERROR_EXEDIT_NOT_FOUND		"拡張編集プラグイン(exedit.auf)が見つかりません。"

@@ -106,7 +106,17 @@ double cve::Curve_Elastic::pt_to_param(int pt_graph_val, int idx_param)
 //---------------------------------------------------------------------
 void cve::Curve_Elastic::param_to_pt(POINT* pt_graph, int idx_pt)
 {
-
+	if (idx_pt <= 1) {
+		if (idx_pt == 0)
+			pt_graph->x = 0;
+		else
+			pt_graph->x = CVE_GRAPH_RESOLUTION;
+		pt_graph->y = (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0));
+	}
+	else if (idx_pt == 2) {
+		pt_graph->x = (int)(2.0 * CVE_GRAPH_RESOLUTION / freq);
+		pt_graph->y = -(int)((std::exp(-(dec - 1.0) * 0.1) - 1.0) * CVE_GRAPH_RESOLUTION * 0.5);
+	}
 }
 
 
@@ -184,6 +194,7 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 {
 	COLORREF handle_color;
 	COLORREF curve_color;
+	POINT pt_graph;
 
 	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
 		handle_color = g_theme[g_config.theme].handle;
@@ -230,19 +241,23 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 	if (g_config.show_handle) {
 		bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
 
+		param_to_pt(&pt_graph, 0);
+
 		// 振幅を調整するハンドル
 		draw_handle(
 			bitmap_buffer,
-			to_client(0, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))),
-			to_client(CVE_GRAPH_RESOLUTION, (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.0))),
+			to_client(pt_graph),
+			to_client(CVE_GRAPH_RESOLUTION, pt_graph.y),
 			drawing_mode, CVE_DRAW_HANDLE_ONLY
 		);
+
+		param_to_pt(&pt_graph, 2);
 
 		// 振動数・減衰を調整するハンドル
 		draw_handle(
 			bitmap_buffer,
-			to_client((int)(2.0 * CVE_GRAPH_RESOLUTION / freq), (int)(CVE_GRAPH_RESOLUTION * 0.5)),
-			to_client((int)(2.0 * CVE_GRAPH_RESOLUTION / freq), -(int)((std::exp(-(dec - 1.0) * 0.1) - 1.0) * CVE_GRAPH_RESOLUTION * 0.5)),
+			to_client(pt_graph.x, (int)(CVE_GRAPH_RESOLUTION * 0.5)),
+			to_client(pt_graph),
 			drawing_mode, NULL
 		);
 
@@ -274,7 +289,7 @@ int cve::Curve_Elastic::create_number()
 	int f = (int)(2000 / freq);
 	int a = (int)(100 * ampl);
 	int k = -(int)(100 * (std::exp(-(dec - 1.0) * 0.1) - 1.0));
-	result = 1 + a + k * 101 + f * 101 * 1001;
+	result = 1 + a + k * 101 + f * 101 * 101;
 	if (reverse)
 		result *= -1;
 	return result;
@@ -304,9 +319,9 @@ bool cve::Curve_Elastic::read_number(int number, double* f, double* k, double* a
 		num = number - 1;
 	}
 	else return false;
-	*f = std::floor(num / (101 * 1001));
-	*k = std::floor((num - *f * 101 * 1001) / 101);
-	*a = std::floor(num - *f * 101 * 1001 - *k * 101);
+	*f = std::floor(num / (101 * 101));
+	*k = std::floor((num - *f * 101 * 101) / 101);
+	*a = std::floor(num - *f * 101 * 101 - *k * 101);
 	*f = 2.0 / MIN_LIMIT(*f * 0.001, 0.001);
 	*k = -10.0 * std::log(-*k * 0.01 + 1.0) + 1.0;
 	*a = MINMAX_LIMIT(*a, 0, 100) * 0.01;

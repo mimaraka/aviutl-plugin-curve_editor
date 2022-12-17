@@ -15,3 +15,24 @@ void cve::Curve_Bounce::initialize()
 {
 
 }
+
+
+
+double func1(double t, double e)
+{
+	return std::floor(std::log((e - 1) * t + 1)/std::log(e));
+}
+
+
+
+double func2(double t)
+{
+
+}
+
+
+
+//double cve::Curve_Bounce::func_bounce()
+//{
+//
+//}

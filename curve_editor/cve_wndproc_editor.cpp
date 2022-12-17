@@ -639,7 +639,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			// 本プラグインについて
 		case ID_MENU_ABOUT:
-			::MessageBox(hwnd, CVE_STR_ABOUT, CVE_PLUGIN_NAME, MB_OK);
+			::MessageBox(hwnd, CVE_STR_ABOUT, CVE_PLUGIN_NAME, MB_ICONINFORMATION);
 			return 0;
 
 			// 値をコピー
