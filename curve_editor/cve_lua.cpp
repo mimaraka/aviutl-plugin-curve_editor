@@ -62,7 +62,7 @@ int get_result(lua_State* L)
 //		ŠÖ”ƒe[ƒuƒ‹
 //---------------------------------------------------------------------
 static luaL_Reg functions[] = {
-	{ "getresult", get_result },
+	{ "getcurve", get_result },
 	{ nullptr, nullptr }
 };
 

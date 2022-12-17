@@ -35,7 +35,33 @@ AviUtlを起動後、メインウィンドウの「表示」メニューから�
     グラフ上の何もないところをダブルクリックすると制御点が追加され、制御点上で再度ダブルクリックすると削除されます。  
 
 
-詳しい使用方法は[Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。
+詳しい使用方法は[Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。  
+
+## スクリプトから使用する(スクリプト開発者向け)
+以下のようにして`curve_editor`を読み込み、`getcurve()`関数を使用することでスクリプトからカーブの値を取得することができます。  
+
+```lua
+local modname="curve_editor"
+if not package.loaded[modname] then
+	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
+	require(modname)
+	package.preload[modname]=nil
+end
+```
+```
+curve_editor.getcurve(モード番号, パラメータ値, 進捗(0~1), 開始値, 終了値)
+```
+
+モード番号については以下のようになっています：  
+| 番号 | モード |
+| :---: | :---: |
+| 0 | ベジェ |
+| 1 | ベジェ(複数) |
+| 2 | (未実装) |
+| 3 | 振動 |
+| 4 | バウンス |
+
+パラメータ値については、数値を指定するものであれば「カーブの数値をコピー」からコピーできる値を、IDを指定するものであればIDを入力します。
 
 ## 動作環境
 | OS | AviUtl | 拡張編集 | 

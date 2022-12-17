@@ -185,7 +185,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		copy.initialize(
 			hwnd,
 			"CTRL_COPY",
-			"カーブの値をコピー",
+			"カーブの数値をコピー",
 			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_COPY),
 			MAKEINTRESOURCE(IDI_COPY_LIGHT),
@@ -199,7 +199,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		read.initialize(
 			hwnd,
 			"CTRL_READ",
-			"カーブの値を読み取り",
+			"カーブの数値を読み取り",
 			cve::Button::Icon,
 			MAKEINTRESOURCE(IDI_READ),
 			MAKEINTRESOURCE(IDI_READ_LIGHT),
@@ -489,8 +489,10 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 
 		case CVE_CM_PARAM:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PARAM), hwnd, dialogproc_param_normal);
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			if (g_config.edit_mode == cve::Mode_Bezier) {
+				::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PARAM), hwnd, dialogproc_param_normal);
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			}
 			return 0;
 
 		case CVE_CM_COPY:

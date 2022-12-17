@@ -6,11 +6,9 @@
 
 #include "cve_header.hpp"
 
-#define CVE_ELASTIC_FREQ_MAX			100
-#define CVE_ELASTIC_FREQ_DEFAULT		5.0
-#define CVE_ELASTIC_DECAY_DEFAULT		10.0
+#define CVE_ELASTIC_FREQ_DEFAULT		8.0
+#define CVE_ELASTIC_DECAY_DEFAULT		6.0
 #define CVE_ELASTIC_AMP_DEFAULT			1.0
-#define CVE_ELASTIC_SMOOTH_COEF			1.94
 
 
 
@@ -79,6 +77,41 @@ double cve::Curve_Elastic::func_elastic(double t, double f, double k, double a, 
 
 
 //---------------------------------------------------------------------
+//		ポイント -> パラメータ
+//		pt_graph_val	: 変換するポイントのグラフ座標(xまたはy)
+//		idx_param		: パラメータのインデックス(0: ampl, 1: freq, 2: dec)
+//---------------------------------------------------------------------
+double cve::Curve_Elastic::pt_to_param(int pt_graph_val, int idx_param)
+{
+	// Amp
+	if (idx_param == 0) {
+		return (MINMAX_LIMIT(pt_graph_val, CVE_GRAPH_RESOLUTION / 2, CVE_GRAPH_RESOLUTION) - CVE_GRAPH_RESOLUTION * 0.5) / (CVE_GRAPH_RESOLUTION * 0.5);
+	}
+	// Freq
+	else if (idx_param == 1) {
+		return MIN_LIMIT(2.0 / (MIN_LIMIT(pt_graph_val, 10) / (double)CVE_GRAPH_RESOLUTION), 2.0);
+	}
+	// Decay
+	else {
+		return -10.0 * std::log(-(MINMAX_LIMIT(pt_graph_val, 0, (int)(CVE_GRAPH_RESOLUTION * 0.5 - 1)) / (CVE_GRAPH_RESOLUTION * 0.5)) + 1.0) + 1.0;
+	}
+}
+
+
+
+//---------------------------------------------------------------------
+//		パラメータ -> ポイント
+//		pt_graph		: 変換するポイントのグラフ座標
+//		idx_pt			: ポイントのインデックス(0: 振幅(左), 1: 振幅(右), 2: 振動数・減衰)
+//---------------------------------------------------------------------
+void cve::Curve_Elastic::param_to_pt(POINT* pt_graph, int idx_pt)
+{
+
+}
+
+
+
+//---------------------------------------------------------------------
 //		指定した座標がポイント・ハンドルの内部に存在しているか
 //---------------------------------------------------------------------
 void cve::Curve_Elastic::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
@@ -128,18 +161,16 @@ void cve::Curve_Elastic::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_ad
 //---------------------------------------------------------------------
 void cve::Curve_Elastic::move_handle(const Point_Address pt_address, const POINT& pt_graph)
 {
-	int x;
 	switch (pt_address.index) {
 	// 振幅
 	case 0:
-		ampl = (MINMAX_LIMIT(pt_graph.y, CVE_GRAPH_RESOLUTION / 2, CVE_GRAPH_RESOLUTION) - CVE_GRAPH_RESOLUTION * 0.5) / (CVE_GRAPH_RESOLUTION * 0.5);
+		ampl = pt_to_param(pt_graph.y, 0);
 		break;
 
 	// 振動数, 減衰
 	case 1:
-		x = MIN_LIMIT(pt_graph.x, 10);
-		freq = MIN_LIMIT(2.0 / (x / (double)CVE_GRAPH_RESOLUTION), 2.0);
-		dec = -10.0 * std::log(-(MINMAX_LIMIT(pt_graph.y, 0, (int)(CVE_GRAPH_RESOLUTION * 0.5)) / (CVE_GRAPH_RESOLUTION * 0.5)) + 1.0) + 1.0;
+		freq = pt_to_param(pt_graph.x, 1);
+		dec = pt_to_param(pt_graph.y, 2);
 		break;
 	}
 }
@@ -239,10 +270,14 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 //---------------------------------------------------------------------
 int cve::Curve_Elastic::create_number()
 {
+	int result;
 	int f = (int)(2000 / freq);
 	int a = (int)(100 * ampl);
 	int k = -(int)(100 * (std::exp(-(dec - 1.0) * 0.1) - 1.0));
-	return a + k * 101 + f * 101 * 1001;
+	result = 1 + a + k * 101 + f * 101 * 1001;
+	if (reverse)
+		result *= -1;
+	return result;
 }
 
 
@@ -250,14 +285,32 @@ int cve::Curve_Elastic::create_number()
 //---------------------------------------------------------------------
 //		数値を読み取り
 //---------------------------------------------------------------------
-void cve::Curve_Elastic::read_number(int number, double* f, double* k, double* a)
+bool cve::Curve_Elastic::read_number(int number, double* f, double* k, double* a, bool* rev)
 {
-	*f = std::floor(number / (101 * 1001));
-	*k = std::floor((number - *f * 101 * 1001) / 101);
-	*a = std::floor(number - *f * 101 * 1001 - *k * 101);
+	// -2147483647 ~  -10211202：バウンスが使用
+	//   -10211201 ~         -1：振動が使用
+	//           0             ：不使用
+	//           1 ~   10211201：振動が使用
+	//    10211202 ~ 2147483646：バウンスが使用
+	//  2147483647             ：不使用
+
+	int num;
+	if (ISINRANGEEQ(number, -10211201, -1)) {
+		*rev = true;
+		num = -number - 1;
+	}
+	else if (ISINRANGEEQ(number, 1, 10211201)) {
+		*rev = false;
+		num = number - 1;
+	}
+	else return false;
+	*f = std::floor(num / (101 * 1001));
+	*k = std::floor((num - *f * 101 * 1001) / 101);
+	*a = std::floor(num - *f * 101 * 1001 - *k * 101);
 	*f = 2.0 / MIN_LIMIT(*f * 0.001, 0.001);
 	*k = -10.0 * std::log(-*k * 0.01 + 1.0) + 1.0;
 	*a = MINMAX_LIMIT(*a, 0, 100) * 0.01;
+	return true;
 }
 
 
@@ -267,14 +320,13 @@ void cve::Curve_Elastic::read_number(int number, double* f, double* k, double* a
 //---------------------------------------------------------------------
 double cve::Curve_Elastic::create_result(int number, double ratio, double st, double ed)
 {
-	
-	if (number >= 0) {
-
-	}
-	else {
-
-	}
 	double f, k, a;
-	read_number(number, &f, &k, &a);
-	return func_elastic(ratio, f, k, a, st, ed);
+	bool rev;
+	if (!read_number(number, &f, &k, &a, &rev))
+		return st + (ed - st) * ratio;
+
+	if (rev)
+		return func_elastic(MINMAX_LIMIT(1.0 - ratio, 0, 1.0), f, k, a, ed, st);
+	else
+		return func_elastic(MINMAX_LIMIT(ratio, 0, 1.0), f, k, a, st, ed);
 }

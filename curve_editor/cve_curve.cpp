@@ -990,7 +990,7 @@ bool cve::Curve::is_data_valid()
 //---------------------------------------------------------------------
 //		1次元値を読み取る
 //---------------------------------------------------------------------
-void cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
+bool cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
 	// -2147483647 ~  -12368443：ベジェが使用
 	//   -12368442 ~         -1：IDが使用
@@ -1006,9 +1006,7 @@ void cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MA
 	else if (12368443 <= number && number <= 2147483646) {
 		num = (int64_t)number + (int64_t)2122746762;
 	}
-	else return;
-
-	
+	else return false;
 
 	clear(points);
 
@@ -1022,6 +1020,8 @@ void cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MA
 	points[1].pt_left.y *= CVE_GRAPH_RESOLUTION / 100;
 	points[0].pt_right.y -= (int32_t)(2.73 * CVE_GRAPH_RESOLUTION);
 	points[1].pt_left.y -= (int32_t)(2.73 * CVE_GRAPH_RESOLUTION);
+
+	return true;
 }
 
 
@@ -1045,13 +1045,13 @@ double cve::Curve::get_bezier_value(double ratio, Static_Array<Curve_Points, CVE
 			// 区間ごとの制御点1のX座標(相対値、0~1)
 			double x1 = (points[i].pt_right.x - points[i].pt_center.x) / (double)(points[i + 1].pt_center.x - points[i].pt_center.x);
 			// 区間ごとの制御点1のY座標(実際の値)
-			double y1 = points[i].pt_right.y - points[i].pt_center.y;
+			double y1 = points[i].pt_right.y - points[i].pt_center.y / (double)(points[i + 1].pt_center.y - points[i].pt_center.y);
 			// 区間ごとの制御点2のX座標(相対値、0~1)
 			double x2 = (points[i + 1].pt_left.x - points[i].pt_center.x) / (double)(points[i + 1].pt_center.x - points[i].pt_center.x);
 			// 区間ごとの制御点2のY座標(相対値)
-			double y2 = points[i + 1].pt_left.y - points[i].pt_center.y;
+			double y2 = points[i + 1].pt_left.y - points[i].pt_center.y / (double)(points[i + 1].pt_center.y - points[i].pt_center.y);
 
-			// 区間ごとの始値、終値(相対値ではなく、実際の値)
+			// 区間ごとの始値、終値(相対値ではなく、グラフの値)
 			double st2 = points[i].pt_center.y;
 			double ed2 = points[i + 1].pt_center.y;
 

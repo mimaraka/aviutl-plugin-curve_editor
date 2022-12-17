@@ -376,7 +376,7 @@ void cve::Button_Switch::set_status(BOOL bl)
 
 
 //---------------------------------------------------------------------
-//		ウィンドウプロシージャ(Value)
+//		ウィンドウプロシージャ(パラメータ)
 //---------------------------------------------------------------------
 LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -400,7 +400,7 @@ LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 			break;
 
 		case cve::Mode_Elastic:
-			str_param = "Freq : " + std::to_string(g_curve_elastic.freq).substr(0, 5);
+			str_param = std::to_string(g_curve_elastic.create_number());
 			param = const_cast<LPTSTR>(str_param.c_str());
 			break;
 		}

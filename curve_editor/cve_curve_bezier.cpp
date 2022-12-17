@@ -45,6 +45,8 @@ int cve::Curve_Bezier::create_number()
 	}
 	// 計算
 	result = 6600047 * (pt[1].y + 273) + 65347 * pt[1].x + 101 * (pt[0].y + 273) + pt[0].x - 2147483647;
+	if (result >= -12368442)
+		result += 24736885;
 	return result;
 }
 
@@ -114,20 +116,10 @@ double cve::Curve_Bezier::create_result(int number, double ratio, double st, dou
 	//           1 ~   12368442：IDが使用
 	//    12368443 ~ 2147483646：ベジェが使用
 	//  2147483647             ：不使用
-
-
-	// 進捗が0~1の範囲外であった場合
-	if (ratio < 0)
-		return st;
-	else if (ratio > 1)
-		return ed;
-	// 数値が範囲外であった場合
-	else if (-12368442 <= number && number <= 12368442 || number <= 2147483647)
+	
+	Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_buffer;
+	if (!read_number(number, ctpts_buffer))
 		return st + (ed - st) * ratio;
-	else {
-		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_buffer;
-		read_number(number, ctpts_buffer);
 
-		return st + get_bezier_value(ratio, ctpts_buffer) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
-	}
+	return st + get_bezier_value(MINMAX_LIMIT(ratio, 0, 1.0), ctpts_buffer) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
 }

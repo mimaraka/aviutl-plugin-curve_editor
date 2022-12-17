@@ -108,8 +108,8 @@ namespace cve {
 		bool				is_data_valid();
 
 		// ”’l‚ğ“Ç‚İæ‚é
-		virtual void		read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
-		virtual void		read_number(int number) { read_number(number, ctpts); }
+		virtual bool		read_number(int number, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
+		virtual bool		read_number(int number) { return read_number(number, ctpts); }
 
 		virtual void		move_handle(const Point_Address& pt_address, const POINT& pt_graph, bool init);
 	};
@@ -168,10 +168,11 @@ namespace cve {
 		double				func_elastic(double t, double f, double k, double a, double st, double ed);
 
 	public:
-		double				freq;
 		double				ampl;
+		double				freq;
 		double				dec;
-		bool				invert;
+		
+		bool				reverse;
 
 		Curve_Elastic() { initialize(); }
 
@@ -179,8 +180,10 @@ namespace cve {
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				move_handle(const Point_Address pt_address, const POINT& pt_graph);
 		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
+		double				pt_to_param(int pt_graph_val, int idx_param);
+		void				param_to_pt(POINT* pt_graph, int idx_pt);
 		int					create_number();
-		void				read_number(int number, double* f, double* k, double* a);
+		bool				read_number(int number, double* f, double* k, double* a, bool* rev);
 		double				create_result(int number, double ratio, double st, double ed);
 	};
 
