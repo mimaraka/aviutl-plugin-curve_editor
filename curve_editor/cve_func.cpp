@@ -139,22 +139,87 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 
 	// ボタンを無効化/有効化
-	// マルチベジェモードで有効化
-	// チェックボックスが存在する場合
-	mi->fState |= g_config.edit_mode == cve::Mode_Multibezier ? MFS_ENABLED : MFS_DISABLED;
-	SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
-	// チェックボックスが存在しない場合
-	mi->fState = g_config.edit_mode == cve::Mode_Multibezier ? MFS_ENABLED : MFS_DISABLED;
-	SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
-	SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
-	SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
-	SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
+	switch (g_config.edit_mode) {
+	case cve::Mode_Bezier:
+		mi->fState |= MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 
-	// ベジェモードで有効化
-	mi->fState = g_config.edit_mode == cve::Mode_Multibezier ? MFS_DISABLED : MFS_ENABLED;
-	SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
-	SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
-	SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
+		mi->fState = MFS_ENABLED;
+		SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
+
+		mi->fState = MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
+		break;
+
+	case cve::Mode_Multibezier:
+		mi->fState |= MFS_ENABLED;
+		SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
+
+		mi->fState = MFS_ENABLED;
+		SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
+
+		mi->fState = MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
+		break;
+
+	case cve::Mode_Value:
+		mi->fState |= MFS_ENABLED;
+		SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
+
+		mi->fState = MFS_ENABLED;
+		SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
+
+		mi->fState = MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
+		break;
+
+	case cve::Mode_Elastic:
+		mi->fState |= MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
+
+		mi->fState = MFS_ENABLED;
+		SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
+
+		mi->fState = MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
+		break;
+
+	case cve::Mode_Bounce:
+		mi->fState |= MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
+
+		mi->fState = MFS_ENABLED;
+		SetMenuItemInfo(menu, ID_MENU_COPY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
+
+		mi->fState = MFS_DISABLED;
+		SetMenuItemInfo(menu, ID_MENU_PROPERTY, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_DELETE_ALL, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_BACK, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
+		SetMenuItemInfo(menu, ID_MENU_COPY4D, FALSE, mi);
+		break;
+	}
 
 	//プラグイン名の反映
 	mi->fMask = MIIM_TYPE;
@@ -231,6 +296,9 @@ void sort_presets(int mode)
 
 
 
+//---------------------------------------------------------------------
+//		URLが有効かどうかを判定
+//---------------------------------------------------------------------
 int is_url_valid(LPCSTR url)
 {
 	HINTERNET hinet, hurl;
@@ -272,11 +340,13 @@ int is_url_valid(LPCSTR url)
 		return 1;
 	
 	return 2;
-	
 }
 
 
 
+//---------------------------------------------------------------------
+//		最新のバージョンを取得
+//---------------------------------------------------------------------
 bool get_latest_version(int (&result)[3])
 {
 	const std::string cve_url_base = "https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/tag/v";
@@ -335,6 +405,9 @@ bool get_latest_version(int (&result)[3])
 
 
 
+//---------------------------------------------------------------------
+//		バージョンが最新かどうかを判定
+//---------------------------------------------------------------------
 DWORD WINAPI cve::check_version(LPVOID param)
 {
 	int ver_latest[3] = {};

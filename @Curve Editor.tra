@@ -1,4 +1,4 @@
-@ベジェ・ID
+@Type1
 --param:0
 local modname="curve_editor"
 if not package.loaded[modname] then
@@ -11,10 +11,8 @@ local idx,ratio=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
 local par=gpt"param"
---ベジェ
 if (-2147483647 <= par and par <= -12368443) or (12368443 <= par and par <= 2147483646) then
 	return curve_editor.getcurve(0,par,ratio,st,ed)
---ベジェ(複数)
 elseif 1 <= par and par <= 1024 then
 	return curve_editor.getcurve(1,par,ratio,st,ed)
 else
@@ -22,7 +20,7 @@ else
 end
 
 
-@ベジェ・ID(中間点無視)
+@Type1(中間点無視)
 --twopoint
 --param:0
 local modname="curve_editor"
@@ -33,10 +31,8 @@ if not package.loaded[modname] then
 end
 local gpt=obj.getpoint
 local par=gpt"param"
---ベジェ
 if (-2147483647 <= par and par <= -12368443) or (12368443 <= par and par <= 2147483646) then
 	return curve_editor.getcurve(0,par,gpt"totalindex",gpt(0),gpt(1))
---ベジェ(複数)
 elseif 1 <= par and par <= 1024 then
 	return curve_editor.getcurve(1,par,gpt"totalindex",gpt(0),gpt(1))
 else
@@ -44,7 +40,7 @@ else
 end
 
 
-@その他
+@Type2
 --param:0
 local modname="curve_editor"
 if not package.loaded[modname] then
@@ -57,10 +53,16 @@ local idx,ratio=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
 local par=gpt"param"
-return curve_editor.getcurve(3,par,ratio,st,ed)
+if (-10211201 <= par and par <= -1) or (1 <= par and par <= 10211201) then
+	return curve_editor.getcurve(3,par,ratio,st,ed)
+elseif (-11213202 <= par and par <= -10211202) or (10211202 <= par and par <= 11213202) then
+	return curve_editor.getcurve(4,par,ratio,st,ed)
+else
+	return gpt"default"
+end
 
 
-@その他(中間点無視)
+@Type2(中間点無視)
 --twopoint
 --param:0
 local modname="curve_editor"
@@ -71,4 +73,10 @@ if not package.loaded[modname] then
 end
 local gpt=obj.getpoint
 local par=gpt"param"
-return curve_editor.getcurve(2,par,gpt"totalindex",gpt(0),gpt(1))
+if (-10211201 <= par and par <= -1) or (1 <= par and par <= 10211201) then
+	return curve_editor.getcurve(3,par,gpt"totalindex",gpt(0),gpt(1))
+elseif (-11213202 <= par and par <= -10211202) or (10211202 <= par and par <= 11213202) then
+	return curve_editor.getcurve(4,par,gpt"totalindex",gpt(0),gpt(1))
+else
+	return gpt"default"
+end

@@ -165,13 +165,14 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Curve_Elastic : public Curve_Type_Numeric {
 	private:
-		double				func_elastic(double t, double f, double k, double a, double st, double ed);
+		double				func_elastic(double ratio, double f, double k, double a, double st, double ed);
+		double				pt_to_param(int pt_graph_val, int idx_param);
+		void				param_to_pt(POINT* pt_graph, int idx_pt);
 
 	public:
 		double				ampl;
 		double				freq;
 		double				dec;
-		
 		bool				reverse;
 
 		Curve_Elastic() { initialize(); }
@@ -180,26 +181,40 @@ namespace cve {
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				move_handle(const Point_Address pt_address, const POINT& pt_graph);
 		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
-		double				pt_to_param(int pt_graph_val, int idx_param);
-		void				param_to_pt(POINT* pt_graph, int idx_pt);
+		void				reverse_curve();
 		int					create_number();
 		bool				read_number(int number, double* f, double* k, double* a, bool* rev);
+		bool				read_number(int number) { return read_number(number, &freq, &dec, &ampl, &reverse); }
 		double				create_result(int number, double ratio, double st, double ed);
 	};
 
 
 
 	//---------------------------------------------------------------------
-	//		カーブ(弾性)
+	//		カーブ(バウンス)
 	//---------------------------------------------------------------------
 	class Curve_Bounce : public Curve_Type_Numeric {
+	private:
+		double				func_bounce(double ratio, double e, double t, double st, double ed);
+		double				pt_to_param(const POINT& pt_graph, int idx_param);
+		void				param_to_pt(POINT* pt_graph);
+
 	public:
+		double				coef_bounce;
+		double				coef_time;
+		bool				reverse;
+
+		Curve_Bounce() { initialize(); }
 
 		void				initialize();
-
-		int					create_number() { return 0; };
-		/*void				read_number(); */
-		double				create_result(int number, double ratio, double st, double ed) { return 0; }
+		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
+		void				move_handle(const POINT& pt_graph);
+		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
+		void				reverse_curve();
+		int					create_number();
+		bool				read_number(int number, double* e, double* t, bool* rev);
+		bool				read_number(int number) { return read_number(number, &coef_bounce, &coef_time, &reverse); }
+		double				create_result(int number, double ratio, double st, double ed);
 	};
 
 

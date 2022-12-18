@@ -159,13 +159,9 @@ void ini_load_configs(FILTER* fp)
 	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", true);
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
-	g_curve_normal.ctpts[0].pt_right.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1)), 0, CVE_GRAPH_RESOLUTION);
-	g_curve_normal.ctpts[0].pt_right.y = fp->exfunc->ini_load_int(fp, "y1", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1));
-	g_curve_normal.ctpts[1].pt_left.x = MINMAX_LIMIT(fp->exfunc->ini_load_int(fp, "x2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)), 0, CVE_GRAPH_RESOLUTION);
-	g_curve_normal.ctpts[1].pt_left.y = fp->exfunc->ini_load_int(fp, "y2", (int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2));
-	g_curve_elastic.ampl = g_curve_elastic.pt_to_param(fp->exfunc->ini_load_int(fp, "amp", CVE_GRAPH_RESOLUTION), 0);
-	g_curve_elastic.freq = g_curve_elastic.pt_to_param(fp->exfunc->ini_load_int(fp, "freq", (int)(CVE_GRAPH_RESOLUTION * 0.25)), 1);
-	g_curve_elastic.dec = g_curve_elastic.pt_to_param(fp->exfunc->ini_load_int(fp, "decay", (int)(CVE_GRAPH_RESOLUTION * 0.1875)), 2);
+	g_curve_bezier.read_number(fp->exfunc->ini_load_int(fp, "num_bezier", CVE_NUM_BEZIER_LINER));
+	g_curve_elastic.read_number(fp->exfunc->ini_load_int(fp, "num_elastic", CVE_NUM_ELASTIC_DEFAULT));
+	g_curve_bounce.read_number(fp->exfunc->ini_load_int(fp, "num_bounce", CVE_NUM_BOUNCE_DEFAULT));
 	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CVE_SEPARATOR_WIDTH);
 	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp, "edit_mode", cve::Mode_Bezier);
 	g_config.layout_mode = (cve::Config::Layout_Mode)fp->exfunc->ini_load_int(fp, "layout_mode", cve::Config::Vertical);
@@ -184,22 +180,14 @@ void ini_load_configs(FILTER* fp)
 //---------------------------------------------------------------------
 void ini_write_configs(FILTER* fp)
 {
-	POINT pt_graph;
-	fp->exfunc->ini_save_int(fp, "x1", g_curve_normal.ctpts[0].pt_right.x);
-	fp->exfunc->ini_save_int(fp, "y1", g_curve_normal.ctpts[0].pt_right.y);
-	fp->exfunc->ini_save_int(fp, "x2", g_curve_normal.ctpts[1].pt_left.x);
-	fp->exfunc->ini_save_int(fp, "y2", g_curve_normal.ctpts[1].pt_left.y);
+	fp->exfunc->ini_save_int(fp, "num_bezier", g_curve_bezier.create_number());
+	fp->exfunc->ini_save_int(fp, "num_elastic", g_curve_elastic.create_number());
+	fp->exfunc->ini_save_int(fp, "num_bounce", g_curve_bounce.create_number());
 	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
 	fp->exfunc->ini_save_int(fp, "edit_mode", g_config.edit_mode);
 	fp->exfunc->ini_save_int(fp, "layout_mode", g_config.layout_mode);
 	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
 	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
-	
-	g_curve_elastic.param_to_pt(&pt_graph, 0);
-	fp->exfunc->ini_save_int(fp, "amp", pt_graph.y);
-	g_curve_elastic.param_to_pt(&pt_graph, 2);
-	fp->exfunc->ini_save_int(fp, "freq", pt_graph.x);
-	fp->exfunc->ini_save_int(fp, "decay", pt_graph.y);
 }
 
 

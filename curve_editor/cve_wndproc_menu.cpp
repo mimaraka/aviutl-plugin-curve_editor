@@ -489,9 +489,19 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 
 		case CVE_CM_PARAM:
-			if (g_config.edit_mode == cve::Mode_Bezier) {
+			switch (g_config.edit_mode) {
+			case cve::Mode_Bezier:
 				::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PARAM), hwnd, dialogproc_param_normal);
 				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+				break;
+
+			case cve::Mode_Elastic:
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_COPY, 0);
+				break;
+
+			case cve::Mode_Bounce:
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_COPY, 0);
+				break;
 			}
 			return 0;
 

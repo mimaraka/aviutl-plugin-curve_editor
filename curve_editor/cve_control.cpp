@@ -395,12 +395,17 @@ LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 
 		switch (g_config.edit_mode) {
 		case cve::Mode_Bezier:
-			str_param = g_curve_normal.create_parameters();
+			str_param = g_curve_bezier.create_parameters();
 			param = const_cast<LPTSTR>(str_param.c_str());
 			break;
 
 		case cve::Mode_Elastic:
 			str_param = std::to_string(g_curve_elastic.create_number());
+			param = const_cast<LPTSTR>(str_param.c_str());
+			break;
+
+		case cve::Mode_Bounce:
+			str_param = std::to_string(g_curve_bounce.create_number());
 			param = const_cast<LPTSTR>(str_param.c_str());
 			break;
 		}

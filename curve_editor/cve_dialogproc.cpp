@@ -185,10 +185,10 @@ BOOL CALLBACK dialogproc_param_normal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 					CVE_CURVE_VALUE_MAX_Y
 				);
 
-				g_curve_normal.ctpts[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
-				g_curve_normal.ctpts[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);
-				g_curve_normal.ctpts[1].pt_left.x = (int)(values[2] * CVE_GRAPH_RESOLUTION);
-				g_curve_normal.ctpts[1].pt_left.y = (int)(values[3] * CVE_GRAPH_RESOLUTION);
+				g_curve_bezier.ctpts[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
+				g_curve_bezier.ctpts[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);
+				g_curve_bezier.ctpts[1].pt_left.x = (int)(values[2] * CVE_GRAPH_RESOLUTION);
+				g_curve_bezier.ctpts[1].pt_left.y = (int)(values[3] * CVE_GRAPH_RESOLUTION);
 
 				::EndDialog(hwnd, 1);
 			}
@@ -259,16 +259,59 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				//    12368443 ~ 2147483646：ベジェが使用
 				//  2147483647             ：不使用
 
-				if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
-					if (g_config.alert)
-						::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+				// -2147483647 ~  -11213203：不使用
+				//   -11213202 ~  -10211202：バウンスが使用
+				//   -10211201 ~         -1：振動が使用
+				//           0             ：不使用
+				//           1 ~   10211201：振動が使用
+				//    10211202 ~   11213202：バウンスが使用
+				//    11213203 ~ 2147483647：不使用
+				
+				switch (g_config.edit_mode) {
+				case cve::Mode_Bezier:
+					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
+						if (g_config.alert)
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
-					return 0;
-				}
-				if (g_config.edit_mode == cve::Mode_Bezier)
-					g_curve_normal.read_number(value);
-				else
+						return 0;
+					}
+					g_curve_bezier.read_number(value);
+					break;
+
+				case cve::Mode_Multibezier:
+					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
+						if (g_config.alert)
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
+						return 0;
+					}
 					g_curve_mb[g_config.current_id.multibezier - 1].read_number(value);
+					break;
+
+				case cve::Mode_Value:
+
+					break;
+
+				case cve::Mode_Elastic:
+					if (!(ISINRANGEEQ(value, -10211201, -1) || ISINRANGEEQ(value, 1, 10211201))) {
+						if (g_config.alert)
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
+						return 0;
+					}
+					g_curve_elastic.read_number(value);
+					break;
+
+				case cve::Mode_Bounce:
+					if (!(ISINRANGEEQ(value, -11213202, -10211202) || ISINRANGEEQ(value, 10211202, 11213202))) {
+						if (g_config.alert)
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+
+						return 0;
+					}
+					g_curve_bounce.read_number(value);
+					break;
+				}
 
 				::EndDialog(hwnd, 1);
 			}
@@ -317,7 +360,7 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			{
 				const cve::Preset<cve::Curve_Bezier> preset_normal;
 				g_presets_normal_custom.PushBack(preset_normal);
-				g_presets_normal_custom[g_presets_normal_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_normal, buffer);
+				g_presets_normal_custom[g_presets_normal_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_bezier, buffer);
 				break;
 			}
 

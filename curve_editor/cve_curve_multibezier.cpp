@@ -13,9 +13,7 @@
 //---------------------------------------------------------------------
 double cve::Curve_Multibezier::create_result(double ratio, double st, double ed)
 {
-	// i’»‚ª0~1‚Ì”ÍˆÍŠO‚Å‚ ‚Á‚½ê‡
-	if (!ISINRANGEEQ(ratio, 0, 1))
-		return 0;
-	else
-		return st + get_bezier_value(ratio, ctpts) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
+	ratio = MINMAX_LIMIT(ratio, 0.0, 1.0);
+
+	return st + get_bezier_value(ratio, ctpts) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
 }

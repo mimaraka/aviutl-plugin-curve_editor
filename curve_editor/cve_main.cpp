@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		ƒOƒ[ƒoƒ‹•Ï”
 //---------------------------------------------------------------------
-cve::Curve_Bezier				g_curve_normal,
+cve::Curve_Bezier				g_curve_bezier,
 								g_curve_normal_previous;
 cve::Curve_Multibezier			g_curve_mb[CVE_CURVE_MAX],
 								g_curve_mb_previous;

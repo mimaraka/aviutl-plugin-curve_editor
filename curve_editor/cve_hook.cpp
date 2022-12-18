@@ -21,7 +21,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		int index_script;
 		int index_mode;
 		int id_script;
-		LPCSTR script_name_top = "ベジェ・ID@" CVE_PLUGIN_NAME;
+		LPCSTR script_name_top = "Type1@" CVE_PLUGIN_NAME;
 		TCHAR menu_label[MAX_PATH];
 
 		static MENUITEMINFO minfo;
@@ -109,7 +109,7 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		switch (g_config.edit_mode) {
 		case cve::Mode_Bezier:
-			data = g_curve_normal.create_number();
+			data = g_curve_bezier.create_number();
 			break;
 
 		case cve::Mode_Multibezier:

@@ -257,7 +257,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "カーブの数値をコピー\tCtrl+C",          ID_MENU_COPY
-        MENUITEM "カーブの数値を入力",                   ID_MENU_READ
+        MENUITEM "カーブの数値を読み取り",                 ID_MENU_READ
         MENUITEM "プリセットとして保存\tCtrl+S",          ID_MENU_SAVE
         MENUITEM SEPARATOR
         MENUITEM "カーブのパラメータをコピー",               ID_MENU_COPY4D

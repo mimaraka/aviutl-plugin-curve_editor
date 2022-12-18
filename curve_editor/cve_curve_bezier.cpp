@@ -118,8 +118,11 @@ double cve::Curve_Bezier::create_result(int number, double ratio, double st, dou
 	//  2147483647             ：不使用
 	
 	Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_buffer;
+
+	ratio = MINMAX_LIMIT(ratio, 0.0, 1.0);
+
 	if (!read_number(number, ctpts_buffer))
 		return st + (ed - st) * ratio;
 
-	return st + get_bezier_value(MINMAX_LIMIT(ratio, 0, 1.0), ctpts_buffer) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
+	return st + get_bezier_value(ratio, ctpts_buffer) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
 }
