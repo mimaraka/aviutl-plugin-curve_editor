@@ -172,10 +172,10 @@ void cve::Curve_Bounce::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rec
 	if (right_side < 0 || left_side > rect_wnd.right) {
 		return;
 	}
-	else if (left_side < 0) {
+	if (left_side < 0) {
 		left_side = 0;
 	}
-	else if (right_side > rect_wnd.right) {
+	if (right_side > rect_wnd.right) {
 		right_side = (float)rect_wnd.right;
 	}
 

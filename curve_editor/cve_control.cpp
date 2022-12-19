@@ -262,7 +262,7 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// 左クリックが終わったとき
 	case WM_LBUTTONUP:
-		if (!disabled) {
+		if (!disabled && clicked) {
 			::SetCursor(::LoadCursor(NULL, IDC_HAND));
 			clicked = false;
 			::SendMessage(hwnd_parent, WM_COMMAND, id, 0);

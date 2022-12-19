@@ -63,7 +63,7 @@ BEGIN
     CONTROL         "アラートを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,57,61,10
     GROUPBOX        "編集",IDC_STATIC,7,181,239,95
     CONTROL         "変更前のカーブをグラフに表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,110,10
-    CONTROL         "値を自動でコピー(標準・振動・バウンスモードで有効)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,194,182,10
+    CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモードで有効)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,194,184,10
     LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
     CONTROL         "新しいバージョンを通知",IDC_LATEST_VERSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,89,10
     PUSHBUTTON      "変更",IDC_CURVE_COLOR,196,39,50,14
