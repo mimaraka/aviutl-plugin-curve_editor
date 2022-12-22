@@ -30,8 +30,8 @@ BOOL filter_initialize(FILTER* fp)
 	ini_load_configs(fp);
 	
 	// ƒtƒbƒN‚Ì€”õ
-	g_config.is_hooked_popup = false;
-	g_config.is_hooked_dialog = false;
+	g_config.hooked_popup = false;
+	g_config.hooked_dialog = false;
 
 	char exedit_path[1024];
 	FILTER* fp_exedit = auls::Exedit_GetFilter(fp);
@@ -159,6 +159,7 @@ void ini_load_configs(FILTER* fp)
 	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", true);
 	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
+	g_config.auto_apply = fp->exfunc->ini_load_int(fp, "auto_apply", true);
 	g_curve_bezier.read_number(fp->exfunc->ini_load_int(fp, "num_bezier", CVE_NUM_BEZIER_LINER));
 	g_curve_elastic.read_number(fp->exfunc->ini_load_int(fp, "num_elastic", CVE_NUM_ELASTIC_DEFAULT));
 	g_curve_bounce.read_number(fp->exfunc->ini_load_int(fp, "num_bounce", CVE_NUM_BOUNCE_DEFAULT));
@@ -186,6 +187,7 @@ void ini_write_configs(FILTER* fp)
 	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
 	fp->exfunc->ini_save_int(fp, "edit_mode", g_config.edit_mode);
 	fp->exfunc->ini_save_int(fp, "layout_mode", g_config.layout_mode);
+	fp->exfunc->ini_save_int(fp, "layout_mode", g_config.apply_mode);
 	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
 	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
 }

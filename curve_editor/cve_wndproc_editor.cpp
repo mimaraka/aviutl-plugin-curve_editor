@@ -210,8 +210,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		if (is_dragging) {
 			// Altキーを押していない場合
 			if (obj_buttons.is_hovered() && ::GetAsyncKeyState(VK_MENU) >= 0) {
-				g_config.is_hooked_popup = TRUE;
-				g_config.is_hooked_dialog = TRUE;
+				g_config.hooked_popup = TRUE;
+				g_config.hooked_dialog = TRUE;
 				
 				obj_buttons.click();
 				obj_buttons.invalidate(NULL);
@@ -222,7 +222,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		is_dragging = false;
 
 		// Aviutlを再描画
-		::SendMessage(g_fp->hwnd, WM_COMMAND, CVE_CM_REDRAW_AVIUTL, 0);
+		if ((g_config.edit_mode == cve::Mode_Multibezier || g_config.edit_mode == cve::Mode_Value) && g_config.auto_apply)
+			::SendMessage(g_fp->hwnd, WM_COMMAND, CVE_CM_REDRAW_AVIUTL, 0);
 		::ReleaseCapture();
 		return 0;
 
@@ -454,12 +455,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 					obj_buttons.invalidate(&old_rect.rect);
 
 				// 現在何らかのRECTにホバーしている場合
-				if (obj_buttons.is_hovered() && ::GetAsyncKeyState(VK_MENU) >= 0) {
-					if (::GetAsyncKeyState(VK_CONTROL) < 0)
-						obj_buttons.highlight(1);
-					else
-						obj_buttons.highlight(0);
-				}
+				if (obj_buttons.is_hovered() && ::GetAsyncKeyState(VK_MENU) >= 0)
+					obj_buttons.highlight();
 			}
 		}
 

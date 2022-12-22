@@ -186,10 +186,10 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CVE_PLUGIN_NAME						"Curve Editor"
-#define CVE_PLUGIN_VERSION					"v1.0.1"
+#define CVE_PLUGIN_VERSION					"v1.0.2"
 #define CVE_VERSION_MAJOR					1
 #define CVE_VERSION_MINOR					0
-#define CVE_VERSION_REVISION				1
+#define CVE_VERSION_REVISION				2
 #define CVE_PLUGIN_DEVELOPER				"mimaraka"
 #define CVE_PLUGIN_YEAR						"2022"
 #define CVE_PLUGIN_INFO						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION " by " CVE_PLUGIN_DEVELOPER

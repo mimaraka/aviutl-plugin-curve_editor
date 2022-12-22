@@ -339,11 +339,27 @@ inline cve::Float_Point to_client(int gr_x, int gr_y)
 	};
 }
 
+inline cve::Float_Point to_clientf(float gr_x, float gr_y)
+{
+	return {
+		g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
+		g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
+	};
+}
+
 inline cve::Float_Point to_client(const POINT& pt_graph)
 {
 	return {
 		to_client(pt_graph.x, pt_graph.y).x,
 		to_client(pt_graph.x, pt_graph.y).y
+	};
+}
+
+inline cve::Float_Point to_client(const cve::Float_Point& pt_graph)
+{
+	return {
+		to_clientf(pt_graph.x, pt_graph.y).x,
+		to_clientf(pt_graph.x, pt_graph.y).y
 	};
 }
 
@@ -353,6 +369,14 @@ inline POINT to_graph(double cl_x, double cl_y)
 	return {
 		(int)((cl_x - g_view_info.origin.x) / g_view_info.scale.x),
 		(int)((-cl_y + g_view_info.origin.y) / g_view_info.scale.y)
+	};
+}
+
+inline cve::Float_Point to_graphf(double cl_x, double cl_y)
+{
+	return {
+		(float)((cl_x - g_view_info.origin.x) / g_view_info.scale.x),
+		(float)((-cl_y + g_view_info.origin.y) / g_view_info.scale.y)
 	};
 }
 

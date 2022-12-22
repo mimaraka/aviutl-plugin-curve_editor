@@ -129,8 +129,14 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 	// レイアウトモード
 	mi->fState = g_config.layout_mode == cve::Config::Vertical ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo(menu, ID_MENU_VERTICAL, FALSE, mi);
-	mi->fState = g_config.layout_mode == cve::Config::Vertical ? MFS_UNCHECKED : MFS_CHECKED;
+	mi->fState = g_config.layout_mode == cve::Config::Horizontal ? MFS_CHECKED : MFS_UNCHECKED;
 	SetMenuItemInfo(menu, ID_MENU_HORIZONTAL, FALSE, mi);
+
+	// 適用モード
+	mi->fState = g_config.apply_mode == cve::Config::Normal ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(menu, ID_MENU_APPLY_NORMAL, FALSE, mi);
+	mi->fState = g_config.apply_mode == cve::Config::Ignore_Mid_Point ? MFS_CHECKED : MFS_UNCHECKED;
+	SetMenuItemInfo(menu, ID_MENU_APPLY_IGNOREMID, FALSE, mi);
 
 	//その他
 	mi->fState = g_config.show_handle ? MFS_CHECKED : MFS_UNCHECKED;

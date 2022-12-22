@@ -59,14 +59,17 @@ BEGIN
     PUSHBUTTON      "キャンセル",IDCANCEL,196,283,50,14
     COMBOBOX        IDC_THEME,172,23,74,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "テーマ",IDC_STATIC,15,25,20,8
-    GROUPBOX        "全般",IDC_STATIC,7,7,239,165
-    CONTROL         "アラートを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,57,61,10
-    GROUPBOX        "編集",IDC_STATIC,7,181,239,95
-    CONTROL         "変更前のカーブをグラフに表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,110,10
-    CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモードで有効)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,194,184,10
+    GROUPBOX        "全般",IDC_STATIC,7,7,239,134
+    CONTROL         "ポップアップを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,57,72,10
+    GROUPBOX        "編集",IDC_STATIC,7,147,239,129
+    CONTROL         "1ステップ前の編集状態を表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,111,10
+    CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモード)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,160,161,10
     LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
     CONTROL         "新しいバージョンを通知",IDC_LATEST_VERSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,89,10
     PUSHBUTTON      "変更",IDC_CURVE_COLOR,196,39,50,14
+    CONTROL         "ハンドルを動かしたときにカーブを自動で反映(ベジェ(複数)モード)",IDC_AUTO_APPLY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,174,218,10
+    LTEXT           "(AviUtlで重い編集をしている時などは、この設定をオフにすると\nCurve Editorの動作が軽くなります。)",IDC_STATIC,26,185,220,19
 END
 
 IDD_SAVE DIALOGEX 0, 0, 228, 61
@@ -119,7 +122,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,71,42,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,124,42,50,14
     EDITTEXT        IDC_EDIT_ID,7,21,167,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "0~1023の範囲のIDを入力してください",IDC_STATIC,7,7,119,8
+    LTEXT           "1~1024の範囲のIDを入力してください",IDC_STATIC,7,7,119,8
 END
 
 IDD_LATEST_VERSION DIALOGEX 0, 0, 171, 39
@@ -260,7 +263,12 @@ BEGIN
         MENUITEM "カーブの数値を読み取り",                 ID_MENU_READ
         MENUITEM "プリセットとして保存\tCtrl+S",          ID_MENU_SAVE
         MENUITEM SEPARATOR
-        MENUITEM "カーブのパラメータをコピー",               ID_MENU_COPY4D
+        POPUP "カーブの適用モード"
+        BEGIN
+            MENUITEM "通常",                          ID_MENU_APPLY_NORMAL
+            MENUITEM "中間点無視",                       ID_MENU_APPLY_IGNOREMID
+        END
+        MENUITEM "ベジェのパラメータをコピー",               ID_MENU_COPY4D
         MENUITEM "カーブを反転\tR",                   ID_MENU_REVERSE
         MENUITEM "カーブを初期化\tDel",                ID_MENU_DELETE
         MENUITEM "すべてのカーブを初期化",                 ID_MENU_DELETE_ALL

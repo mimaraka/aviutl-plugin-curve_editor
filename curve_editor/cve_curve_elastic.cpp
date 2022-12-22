@@ -249,20 +249,20 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 
 	for (float x = left_side; x < right_side; x += CVE_DRAW_GRAPH_INCREASEMENT) {
 		if (reverse) {
-			y1 = func_elastic(1.0 - to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1.0, 0.5);
-			y2 = func_elastic(1.0 - to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1.0, 0.5);
+			y1 = func_elastic(1.0 - to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1.0, 0.5);
+			y2 = func_elastic(1.0 - to_graphf(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1.0, 0.5);
 		}
 		else {
-			y1 = func_elastic(to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5);
-			y2 = func_elastic(to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5);
+			y1 = func_elastic(to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5);
+			y2 = func_elastic(to_graphf(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5);
 		}
 		g_render_target->DrawLine(
 			D2D1::Point2F(
 				x,
-				(float)(to_client(0, (int)(y1 * CVE_GRAPH_RESOLUTION)).y)),
+				(float)(to_clientf(0.0f, y1 * CVE_GRAPH_RESOLUTION).y)),
 			D2D1::Point2F(
 				x + CVE_DRAW_GRAPH_INCREASEMENT,
-				(float)(to_client(0, (int)(y2 * CVE_GRAPH_RESOLUTION)).y)),
+				(float)(to_clientf(0.0f, y2 * CVE_GRAPH_RESOLUTION).y)),
 			bitmap_buffer->brush, CVE_CURVE_THICKNESS
 		);
 	}

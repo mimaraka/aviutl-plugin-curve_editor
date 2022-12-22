@@ -72,13 +72,22 @@ void cve::Obj_Dialog_Buttons::click()
 //---------------------------------------------------------------------
 //		ハイライト
 //---------------------------------------------------------------------
-void cve::Obj_Dialog_Buttons::highlight(int mode) const
+void cve::Obj_Dialog_Buttons::highlight() const
 {
 	D2D1_COLOR_F color;
-	if (mode == 0)
+
+	switch (g_config.apply_mode) {
+	case Config::Normal:
 		color = D2D1::ColorF(TO_BGR(RGB(45, 140, 235)));
-	else
+		break;
+
+	case Config::Ignore_Mid_Point:
 		color = D2D1::ColorF(INVERT(TO_BGR(RGB(45, 140, 235))));
+		break;
+
+	default:
+		color = D2D1::ColorF(TO_BGR(RGB(45, 140, 235)));
+	}
 
 	if (id >= 0) {
 		RECT rect_wnd;

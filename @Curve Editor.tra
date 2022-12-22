@@ -7,14 +7,14 @@ if not package.loaded[modname] then
 	package.preload[modname]=nil
 end
 local gpt=obj.getpoint
-local idx,ratio=math.modf(gpt"index")
+local idx,t=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
 local par=gpt"param"
-if (-2147483647 <= par and par <= -12368443) or (12368443 <= par and par <= 2147483646) then
-	return curve_editor.getcurve(0,par,ratio,st,ed)
-elseif 1 <= par and par <= 1024 then
-	return curve_editor.getcurve(1,par,ratio,st,ed)
+if(-2147483647<=par and par<=-12368443)or(12368443<=par and par<=2147483646)then
+	return curve_editor.getcurve(0,par,t,st,ed)
+elseif 1<=par and par<=1024 then
+	return curve_editor.getcurve(1,par,t,st,ed)
 else
 	return gpt"default"
 end
@@ -31,9 +31,9 @@ if not package.loaded[modname] then
 end
 local gpt=obj.getpoint
 local par=gpt"param"
-if (-2147483647 <= par and par <= -12368443) or (12368443 <= par and par <= 2147483646) then
+if(-2147483647<=par and par<=-12368443)or(12368443<=par and par<=2147483646)then
 	return curve_editor.getcurve(0,par,gpt"totalindex",gpt(0),gpt(1))
-elseif 1 <= par and par <= 1024 then
+elseif 1<=par and par<=1024 then
 	return curve_editor.getcurve(1,par,gpt"totalindex",gpt(0),gpt(1))
 else
 	return gpt"default"
@@ -49,14 +49,14 @@ if not package.loaded[modname] then
 	package.preload[modname]=nil
 end
 local gpt=obj.getpoint
-local idx,ratio=math.modf(gpt"index")
+local idx,t=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
 local par=gpt"param"
-if (-10211201 <= par and par <= -1) or (1 <= par and par <= 10211201) then
-	return curve_editor.getcurve(3,par,ratio,st,ed)
-elseif (-11213202 <= par and par <= -10211202) or (10211202 <= par and par <= 11213202) then
-	return curve_editor.getcurve(4,par,ratio,st,ed)
+if(-10211201<=par and par<=-1)or(1<=par and par<=10211201)then
+	return curve_editor.getcurve(3,par,t,st,ed)
+elseif(-11213202<=par and par<=-10211202)or(10211202<=par and par<=11213202)then
+	return curve_editor.getcurve(4,par,t,st,ed)
 else
 	return gpt"default"
 end
@@ -73,9 +73,9 @@ if not package.loaded[modname] then
 end
 local gpt=obj.getpoint
 local par=gpt"param"
-if (-10211201 <= par and par <= -1) or (1 <= par and par <= 10211201) then
+if(-10211201<=par and par<=-1)or(1<=par and par<=10211201)then
 	return curve_editor.getcurve(3,par,gpt"totalindex",gpt(0),gpt(1))
-elseif (-11213202 <= par and par <= -10211202) or (10211202 <= par and par <= 11213202) then
+elseif(-11213202<=par and par<=-10211202)or(10211202<=par and par<=11213202)then
 	return curve_editor.getcurve(4,par,gpt"totalindex",gpt(0),gpt(1))
 else
 	return gpt"default"

@@ -1,19 +1,12 @@
-# Curve Editor v1.0.1 for AviUtl
+# Curve Editor v1.0.2 for AviUtl
 ![graph](https://user-images.githubusercontent.com/106879397/208284126-54f9caf2-8525-4a1b-8c89-6e3726afe3c1.png)  
 
 様々なイージングをウィンドウ上で編集できるAviUtlプラグイン&スクリプトです。  
 
 ## ダウンロード
-最新バージョン: **v1.0.1**
+最新バージョン: **v1.0.2**
 
-<a href="https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/download/v1.0.1/curve_editor-v1.0.1.zip">![Download](https://user-images.githubusercontent.com/106879397/198503637-3f0ca637-08cf-47b0-afdc-10f9974c7b37.png)</a>
-
-<br/>
-
-**⚠注意⚠(Alpha版を使用していた方々へ)**  
-このバージョンでは大きな仕様変更がされており、前のバージョンとの互換性がなくなっています。  
-これまでのAlpha版を使用していた場合、作成したカーブ等はこのバージョン以降では読み込むことができません。申し訳ございません。  
-ご理解の程よろしくお願いいたします。
+<a href="https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/download/v1.0.2/curve_editor-v1.0.2.zip">![Download](https://user-images.githubusercontent.com/106879397/198503637-3f0ca637-08cf-47b0-afdc-10f9974c7b37.png)</a>
 
 ## インストール
 同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  

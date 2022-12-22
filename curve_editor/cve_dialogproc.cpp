@@ -61,6 +61,13 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				BST_CHECKED, 0
 			);
 
+		if (g_config.auto_apply)
+			::SendMessage(
+				::GetDlgItem(hwnd, IDC_AUTO_APPLY),
+				BM_SETCHECK,
+				BST_CHECKED, 0
+			);
+
 		combo = ::GetDlgItem(hwnd, IDC_THEME);
 		::SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ダーク");
 		::SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ライト");
@@ -100,6 +107,10 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::GetDlgItem(hwnd, IDC_LATEST_VERSION),
 				BM_GETCHECK, 0, 0
 			);
+			g_config.auto_apply = ::SendMessage(
+				::GetDlgItem(hwnd, IDC_AUTO_APPLY),
+				BM_GETCHECK, 0, 0
+			);
 			g_config.theme = ::SendMessage(
 				combo,
 				CB_GETCURSEL, 0, 0
@@ -111,6 +122,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
 			g_fp->exfunc->ini_save_int(g_fp, "curve_color", g_config.curve_color);
 			g_fp->exfunc->ini_save_int(g_fp, "notify_latest_version", g_config.notify_latest_version);
+			g_fp->exfunc->ini_save_int(g_fp, "auto_apply", g_config.auto_apply);
 
 			::EndDialog(hwnd, 1);
 
@@ -246,7 +258,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				try {
 					value = std::stoi(str);
 				}
-				catch (std::out_of_range& e) {
+				catch (std::out_of_range&) {
 					if (g_config.alert)
 						MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 

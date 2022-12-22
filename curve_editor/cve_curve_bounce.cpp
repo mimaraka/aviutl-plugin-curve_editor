@@ -185,20 +185,20 @@ void cve::Curve_Bounce::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rec
 
 	for (float x = left_side; x < right_side; x += CVE_DRAW_GRAPH_INCREASEMENT) {
 		if (reverse) {
-			y1 = func_bounce(1.0 - to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1.0, 0.0);
-			y2 = func_bounce(1.0 - to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1.0, 0.0);
+			y1 = func_bounce(1.0 - to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1.0, 0.0);
+			y2 = func_bounce(1.0 - to_graphf(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1.0, 0.0);
 		}
 		else {
-			y1 = func_bounce(to_graph(x, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0.0, 1.0);
-			y2 = func_bounce(to_graph(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0.0, 1.0);
+			y1 = func_bounce(to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0.0, 1.0);
+			y2 = func_bounce(to_graphf(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0.0, 1.0);
 		}
 		g_render_target->DrawLine(
 			D2D1::Point2F(
 				x,
-				(float)(to_client(0, (int)(y1 * CVE_GRAPH_RESOLUTION)).y)),
+				(float)(to_clientf(0.0f, y1 * CVE_GRAPH_RESOLUTION).y)),
 			D2D1::Point2F(
 				x + CVE_DRAW_GRAPH_INCREASEMENT,
-				(float)(to_client(0, (int)(y2 * CVE_GRAPH_RESOLUTION)).y)),
+				(float)(to_clientf(0.0f, y2 * CVE_GRAPH_RESOLUTION).y)),
 			bitmap_buffer->brush, CVE_CURVE_THICKNESS
 		);
 	}

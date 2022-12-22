@@ -15,11 +15,13 @@ BOOL(WINAPI* TrackPopupMenu_original)(HMENU, UINT, int, int, int, HWND, const RE
 
 BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int reserved, HWND hwnd, const RECT* rect)
 {
-	if (g_config.is_hooked_popup) {
+	if (g_config.hooked_popup) {
+		constexpr int NUM_APPLY_MODE = 2;
 		int count = 0;
-		int index_separator = -1;
-		int index_script;
-		int index_mode;
+		int idx_separator = -1;
+		int idx_script;
+		int idx_edit_mode;
+		int idx_apply_mode;
 		int id_script;
 		LPCSTR script_name_top = "Type1@" CVE_PLUGIN_NAME;
 		TCHAR menu_label[MAX_PATH];
@@ -28,7 +30,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		minfo.cbSize = sizeof(MENUITEMINFO);
 		minfo.fMask = MIIM_TYPE;
 
-		g_config.is_hooked_popup = false;
+		g_config.hooked_popup = false;
 
 		// スクリプトのメニューIDを取得
 		while (true) {
@@ -38,7 +40,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 			if (!result)
 				return 0;
 			else if (minfo.fType & MFT_SEPARATOR) {
-				index_separator = count;
+				idx_separator = count;
 			}
 			else if (strcmp(menu_label, script_name_top) == 0) {
 				break;
@@ -49,25 +51,34 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		case cve::Mode_Bezier:
 		case cve::Mode_Multibezier:
 		case cve::Mode_Value:
-			index_mode = 0;
+			idx_edit_mode = 0;
 			break;
 
 		case cve::Mode_Elastic:
 		case cve::Mode_Bounce:
-			index_mode = 1;
+			idx_edit_mode = 1;
 			break;
 
 		default:
-			index_mode = 0;
-			break;
+			idx_edit_mode = 0;
 		}
 
-		index_script = count - index_separator - 10 + index_mode * 2;
+		switch (g_config.apply_mode) {
+		case cve::Config::Normal:
+			idx_apply_mode = 0;
+			break;
 
-		if (::GetAsyncKeyState(VK_CONTROL) < 0)
-			index_script++;
+		case cve::Config::Ignore_Mid_Point:
+			idx_apply_mode = 1;
+			break;
 
-		id_script = 16 + 65536 * index_script;
+		default:
+			idx_apply_mode = 0;
+		}
+
+		idx_script = count - idx_separator - 10 + idx_edit_mode * NUM_APPLY_MODE + idx_apply_mode;
+
+		id_script = 16 + 65536 * idx_script;
 		
 		return id_script;
 	}
@@ -83,8 +94,8 @@ INT_PTR(WINAPI* DialogBox_original)(HINSTANCE, LPCSTR, HWND, DLGPROC, LPARAM) = 
 
 INT_PTR WINAPI DialogBox_hooked(HINSTANCE hinstance, LPCSTR template_name, HWND hwnd_parent, DLGPROC dlgproc, LPARAM init_param)
 {
-	if (g_config.is_hooked_dialog) {
-		g_config.is_hooked_dialog = false;
+	if (g_config.hooked_dialog) {
+		g_config.hooked_dialog = false;
 		dialogproc_original = dlgproc;
 		return DialogBox_original(hinstance, template_name, hwnd_parent, dialogproc_hooked, init_param);
 	}

@@ -412,7 +412,7 @@ namespace cve {
 
 		int		update(LPPOINT pt_sc, LPRECT old_rect);
 		void	click();
-		void	highlight(int mode) const;
+		void	highlight() const;
 		void	invalidate(const LPRECT rect) const;
 	};
 

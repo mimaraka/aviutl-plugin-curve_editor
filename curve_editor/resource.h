@@ -40,6 +40,7 @@
 #define IDC_EDIT_ID                     1012
 #define IDC_LATEST_VERSION              1016
 #define IDC_CURVE_COLOR                 1017
+#define IDC_AUTO_APPLY                  1018
 #define ID_MENU_ABOUT                   40011
 #define ID_MENU_CONFIG                  40012
 #define ID_MENU_SHOWHANDLE              40013
@@ -77,6 +78,11 @@
 #define ID_APPLY_IGNOREKEY              40087
 #define ID_MENU_MODE_BEZIER             40088
 #define ID_MODE_BEZIER                  40089
+#define ID_MENU_40090                   40090
+#define ID_40091                        40091
+#define ID_40092                        40092
+#define ID_MENU_APPLY_NORMAL            40093
+#define ID_MENU_APPLY_IGNOREMID         40094
 #define ID_MENU_MODE_MULTIBEZIER        40101
 #define ID_MENU_MODE_ELASTIC            40102
 #define ID_MENU_MODE_BOUNCE             40103
@@ -87,8 +93,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        142
-#define _APS_NEXT_COMMAND_VALUE         40090
-#define _APS_NEXT_CONTROL_VALUE         1018
+#define _APS_NEXT_COMMAND_VALUE         40095
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -121,10 +121,11 @@ namespace cve {
 		bool	alert,
 				trace,
 				auto_copy,
+				auto_apply,
 				show_handle,
 				align_handle,
-				is_hooked_popup,
-				is_hooked_dialog,
+				hooked_popup,
+				hooked_dialog,
 				notify_latest_version;
 
 		int		theme,
