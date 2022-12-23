@@ -348,7 +348,7 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 			// ベジェモードのとき
 		case Mode_Bezier:
 			if (g_config.trace)
-				g_curve_normal_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+				g_curve_bezier_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
 			g_curve_bezier.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 			break;

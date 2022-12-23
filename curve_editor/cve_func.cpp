@@ -236,6 +236,36 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 
 
 //---------------------------------------------------------------------
+//		カーブを更新
+//---------------------------------------------------------------------
+void cve::trace_curve()
+{
+	switch (g_config.edit_mode) {
+	case cve::Mode_Bezier:
+		g_curve_bezier_previous = g_curve_bezier;
+		break;
+
+	case cve::Mode_Multibezier:
+		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
+		break;
+
+	case cve::Mode_Value:
+		g_curve_value_previous = g_curve_value[g_config.current_id.value - 1];
+		break;
+
+	case cve::Mode_Elastic:
+		g_curve_elastic_previous = g_curve_elastic;
+		break;
+
+	case cve::Mode_Bounce:
+		g_curve_bounce_previous = g_curve_bounce;
+		break;
+	}
+}
+
+
+
+//---------------------------------------------------------------------
 //		キー押下時の処理
 //---------------------------------------------------------------------
 LRESULT cve::on_keydown(WPARAM wparam)
@@ -424,38 +454,40 @@ DWORD WINAPI cve::check_version(LPVOID param)
 	};
 	std::string str_latest, str_notif, str_link;
 
+	// 最新バージョンを取得
 	if (get_latest_version(ver_latest)) {
 		for (int i = 0; i < 3; i++) {
 			if (ver_current[i] < ver_latest[i]) {
-				if (param) ::EndDialog((HWND)param, 1);
+				if (param)
+					::EndDialog((HWND)param, 1);
 
 				str_latest = std::to_string(ver_latest[0]) + "." + std::to_string(ver_latest[1]);
 				if (ver_latest[2] != 0)
 					str_latest += "." + std::to_string(ver_latest[2]);
 
-				str_notif = "新しいバージョン(v" + str_latest + ")が利用可能です。ダウンロードしますか？\n現在のバージョン: " CVE_PLUGIN_VERSION;
+				str_notif = "アップデートが利用可能です。ダウンロードしますか？\nバージョン：" CVE_PLUGIN_VERSION " → v" + str_latest;
 				int responce = ::MessageBox(g_fp->hwnd, str_notif.c_str(), CVE_PLUGIN_NAME, MB_OKCANCEL | MB_ICONINFORMATION);
 				if (responce == IDOK) {
 					str_link = CVE_PLUGIN_LINK "/releases/tag/v" + str_latest;
 					::ShellExecute(0, "open", str_link.c_str(), NULL, NULL, SW_SHOWNORMAL);
 				}
 				::ExitThread(TRUE);
+				return 0;
 			}
-			else if (ver_current[i] > ver_latest[i]) {
-				if (param) {
-					::EndDialog((HWND)param, 1);
-					::MessageBox(g_fp->hwnd, CVE_STR_INFO_LATEST_VERSION, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
-				}
-				::ExitThread(TRUE);
-			}
+			else if (ver_current[i] > ver_latest[i])
+				break;
 		}
 		if (param) {
 			::EndDialog((HWND)param, 1);
 			::MessageBox(g_fp->hwnd, CVE_STR_INFO_LATEST_VERSION, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 		}
 	}
+	// 最新バージョンの取得に失敗した場合
 	else if (param) {
 		::EndDialog((HWND)param, 1);
 		::MessageBox(g_fp->hwnd, CVE_STR_ERROR_CONNECTION_FAILED, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 	}
+
+	::ExitThread(TRUE);
+	return 0;
 }

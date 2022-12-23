@@ -376,6 +376,34 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
+	//		エディットボックス
+	//---------------------------------------------------------------------
+	class Edit_Box : public Button {
+	private:
+		COLORREF			bg_color;
+		COLORREF			tx_color;
+		int					line_height;
+
+		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+	public:
+		HWND				editbox;
+
+		BOOL				initialize(
+			HWND			hwnd_p,
+			LPCTSTR			name,
+			int				l_height,
+			COLORREF		bg_cl,
+			COLORREF		tx_cl,
+			int				ct_id,
+			const RECT&		rect,
+			int				flag
+		);
+	};
+
+
+
+	//---------------------------------------------------------------------
 	//		矩形
 	//---------------------------------------------------------------------
 	class Rectangle {

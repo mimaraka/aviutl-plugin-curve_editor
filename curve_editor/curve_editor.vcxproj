@@ -199,7 +199,7 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cve_bitmap_buffer.cpp" />
-    <ClCompile Include="cve_control.cpp">
+    <ClCompile Include="cve_button.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -227,6 +227,7 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="cve_editbox.cpp" />
     <ClCompile Include="cve_func.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -266,8 +267,10 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cve_class.hpp" />
+    <ClInclude Include="cve_extern.hpp" />
     <ClInclude Include="cve_header.hpp" />
     <ClInclude Include="cve_macro.hpp" />
+    <ClInclude Include="cve_preset.hpp" />
     <ClInclude Include="cve_struct.hpp" />
     <ClInclude Include="cve_framework.hpp" />
     <ClInclude Include="resource.h" />

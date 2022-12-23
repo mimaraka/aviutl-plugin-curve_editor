@@ -139,6 +139,7 @@
 #define CVE_CM_CHANGE_COLOR				0x0810
 #define CVE_CM_CHANGE_LABEL				0x0811
 #define CVE_CM_SET_STATUS				0x0812
+#define CVE_CM_GET_EXEDIT				0x0813
 
 
 
@@ -166,7 +167,7 @@
 #define CVE_PRESET_NUM_DEFAULT			40
 #define CVE_PRESET_NUM_CUSTOM			1024
 #define CVE_PRESET_NAME_MAX				128
-#define CVE_LIBRARY_SEARCHBAR_HEIGHT	36
+#define CVE_LIBRARY_SEARCHBAR_HEIGHT	30
 #define CVE_PRESET_TITLE_HEIGHT			16
 
 
@@ -186,10 +187,10 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CVE_PLUGIN_NAME						"Curve Editor"
-#define CVE_PLUGIN_VERSION					"v1.0.2"
+#define CVE_PLUGIN_VERSION					"v1.0.3"
 #define CVE_VERSION_MAJOR					1
 #define CVE_VERSION_MINOR					0
-#define CVE_VERSION_REVISION				2
+#define CVE_VERSION_REVISION				3
 #define CVE_PLUGIN_DEVELOPER				"mimaraka"
 #define CVE_PLUGIN_YEAR						"2022"
 #define CVE_PLUGIN_INFO						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION " by " CVE_PLUGIN_DEVELOPER
@@ -213,7 +214,7 @@
 #define CVE_STR_ERROR_OUTOFRANGE			"値が範囲外です。"
 #define CVE_STR_ERROR_INPUT_INVALID			"無効な入力値です。"
 #define CVE_STR_ERROR_EXEDIT_NOT_FOUND		"拡張編集プラグイン(exedit.auf)が見つかりません。"
-#define CVE_STR_INFO_LATEST_VERSION			"お使いのバージョンは最新です。"
+#define CVE_STR_INFO_LATEST_VERSION			"お使いのバージョン (" CVE_PLUGIN_VERSION ") は最新です。"
 #define CVE_STR_ERROR_CONNECTION_FAILED		"接続に失敗しました。"
 
 

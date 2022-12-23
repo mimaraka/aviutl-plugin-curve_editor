@@ -4,6 +4,7 @@
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
+#include <yulib/extra.h>
 #include "cve_header.hpp"
 
 
@@ -76,16 +77,10 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		minfo.cbSize = sizeof(MENUITEMINFO);
 
-		// 拡張編集とオブジェクト設定ダイアログのウィンドウハンドルの取得
-		hwnd_exedit = auls::Exedit_GetWindow(g_fp);
-		hwnd_obj = auls::ObjDlg_GetWindow(hwnd_exedit);
-
-		obj_buttons.init(hwnd_obj);
-
-		if (g_config.notify_latest_version)
+		if (g_config.notify_update)
 			::CreateThread(NULL, 0, cve::check_version, NULL, 0, &thread_id);
 
-		g_curve_normal_previous = g_curve_bezier;
+		g_curve_bezier_previous = g_curve_bezier;
 		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
 		g_curve_elastic_previous = g_curve_elastic;
 		g_curve_bounce_previous = g_curve_bounce;
@@ -126,7 +121,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			// 何らかの制御点をクリックしていた場合
 			if (pt_address.position != cve::Point_Address::Null) {
-				g_curve_normal_previous = g_curve_bezier;
+				cve::trace_curve();
+				::InvalidateRect(hwnd, NULL, FALSE);
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
 				::SetCapture(hwnd);
 
@@ -146,7 +142,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				else
 					g_curve_mb[g_config.current_id.multibezier - 1].move_handle(pt_address, pt_graph, true);
 
-				g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
+				cve::trace_curve();
+				::InvalidateRect(hwnd, NULL, FALSE);
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
 				::SetCapture(hwnd);
 
@@ -163,8 +160,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_curve_elastic.pt_in_ctpt(pt_client, &pt_address);
 
 			if (pt_address.position != cve::Point_Address::Null) {
-				g_curve_elastic_previous = g_curve_elastic;
-
+				cve::trace_curve();
+				::InvalidateRect(hwnd, NULL, FALSE);
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
 				::SetCapture(hwnd);
 
@@ -177,8 +174,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_curve_bounce.pt_in_ctpt(pt_client, &pt_address);
 
 			if (pt_address.position != cve::Point_Address::Null) {
-				g_curve_bounce_previous = g_curve_bounce;
-
+				cve::trace_curve();
+				::InvalidateRect(hwnd, NULL, FALSE);
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
 				::SetCapture(hwnd);
 
@@ -250,7 +247,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index + 1].pt_left = g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index + 1].pt_center;
 			}
 			else if (ISINRANGEEQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
-				g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
+				cve::trace_curve();
 				g_curve_mb[g_config.current_id.multibezier - 1].add_point(pt_graph);
 			}
 
@@ -265,7 +262,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			if (pt_address.position == cve::Point_Address::Center)
 				g_curve_value[g_config.current_id.value - 1].delete_point(pt_client);
 			else if (ISINRANGEEQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
-				g_curve_value_previous = g_curve_value[g_config.current_id.value - 1];
+				cve::trace_curve();
 				g_curve_value[g_config.current_id.value - 1].add_point(pt_graph);
 			}
 
@@ -538,6 +535,47 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
+			// 拡張編集のウィンドウハンドルを取得
+		case CVE_CM_GET_EXEDIT:
+		{
+			// フックの準備
+			g_config.hooked_popup = false;
+			g_config.hooked_dialog = false;
+
+			char exedit_path[1024];
+			FILTER* fp_exedit = auls::Exedit_GetFilter(g_fp);
+
+			// 拡張編集プラグインが存在する場合
+			if (fp_exedit) {
+				::GetModuleFileName(fp_exedit->dll_hinst, exedit_path, sizeof(exedit_path));
+
+				// TrackPopupMenu()をフック
+				TrackPopupMenu_original = (decltype(TrackPopupMenu_original))yulib::RewriteFunction(
+					exedit_path,
+					"TrackPopupMenu",
+					TrackPopupMenu_hooked
+				);
+
+				// DialogBoxParamA()をフック
+				DialogBox_original = (decltype(DialogBox_original))yulib::RewriteFunction(
+					exedit_path,
+					"DialogBoxParamA",
+					DialogBox_hooked
+				);
+			}
+			// 存在しない場合
+			else
+				::MessageBox(g_fp->hwnd, CVE_STR_ERROR_EXEDIT_NOT_FOUND, CVE_PLUGIN_NAME, MB_OK);
+
+			// 拡張編集とオブジェクト設定ダイアログのウィンドウハンドルの取得
+			hwnd_exedit = auls::Exedit_GetWindow(g_fp);
+			hwnd_obj = auls::ObjDlg_GetWindow(hwnd_exedit);
+
+			obj_buttons.init(hwnd_obj);
+
+			return 0;
+		}
+
 			// グラフをフィット
 		case ID_MENU_FIT:
 		case CVE_CM_FIT:
@@ -548,12 +586,15 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// ハンドルを整列
 		case ID_MENU_ALIGNHANDLE:
 		case CVE_CT_ALIGN:
-			g_config.align_handle = g_config.align_handle ? 0 : 1;
+			if (g_config.edit_mode == cve::Mode_Multibezier || g_config.edit_mode == cve::Mode_Value)
+				g_config.align_handle = g_config.align_handle ? 0 : 1;
 			return 0;
 
 			// カーブを反転
 		case ID_MENU_REVERSE:
 		case CVE_CM_REVERSE:
+			cve::trace_curve();
+
 			switch (g_config.edit_mode) {
 			case cve::Mode_Bezier:
 				g_curve_bezier.reverse_curve();
@@ -598,6 +639,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				);
 
 			if (response == IDOK) {
+				cve::trace_curve();
+
 				switch (g_config.edit_mode) {
 				case cve::Mode_Bezier:
 					g_curve_bezier.clear();
@@ -776,8 +819,18 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
 			return 0;
 
-		case ID_MENU_LATEST_VERSION:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_LATEST_VERSION), hwnd, dialogproc_latest_version);
+			// 適用モードを通常にする
+		case ID_MENU_APPLY_NORMAL:
+			g_config.apply_mode = cve::Config::Normal;
+			return 0;
+
+			// 適用モードを中間点無視にする
+		case ID_MENU_APPLY_IGNOREMID:
+			g_config.apply_mode = cve::Config::Ignore_Mid_Point;
+			return 0;
+
+		case ID_MENU_CHECK_UPDATE:
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_LATEST_VERSION), hwnd, dialogproc_check_update);
 			return 0;
 		}
 

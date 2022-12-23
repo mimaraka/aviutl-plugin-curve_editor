@@ -54,9 +54,9 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				BST_CHECKED, 0
 			);
 
-		if (g_config.notify_latest_version)
+		if (g_config.notify_update)
 			::SendMessage(
-				::GetDlgItem(hwnd, IDC_LATEST_VERSION),
+				::GetDlgItem(hwnd, IDC_NOTIFY_UPDATE),
 				BM_SETCHECK,
 				BST_CHECKED, 0
 			);
@@ -103,8 +103,8 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::GetDlgItem(hwnd, IDC_AUTOCOPY),
 				BM_GETCHECK, 0, 0
 			);
-			g_config.notify_latest_version = ::SendMessage(
-				::GetDlgItem(hwnd, IDC_LATEST_VERSION),
+			g_config.notify_update = ::SendMessage(
+				::GetDlgItem(hwnd, IDC_NOTIFY_UPDATE),
 				BM_GETCHECK, 0, 0
 			);
 			g_config.auto_apply = ::SendMessage(
@@ -121,7 +121,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.alert);
 			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
 			g_fp->exfunc->ini_save_int(g_fp, "curve_color", g_config.curve_color);
-			g_fp->exfunc->ini_save_int(g_fp, "notify_latest_version", g_config.notify_latest_version);
+			g_fp->exfunc->ini_save_int(g_fp, "notify_update", g_config.notify_update);
 			g_fp->exfunc->ini_save_int(g_fp, "auto_apply", g_config.auto_apply);
 
 			::EndDialog(hwnd, 1);
@@ -298,10 +298,6 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 						return 0;
 					}
 					g_curve_mb[g_config.current_id.multibezier - 1].read_number(value);
-					break;
-
-				case cve::Mode_Value:
-
 					break;
 
 				case cve::Mode_Elastic:
@@ -485,7 +481,10 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 
 
-BOOL CALLBACK dialogproc_latest_version(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+//---------------------------------------------------------------------
+//		ダイアログプロシージャ（アップデートをチェック）
+//---------------------------------------------------------------------
+BOOL CALLBACK dialogproc_check_update(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	DWORD thread_id;
 

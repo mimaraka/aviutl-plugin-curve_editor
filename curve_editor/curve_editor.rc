@@ -65,7 +65,7 @@ BEGIN
     CONTROL         "1ステップ前の編集状態を表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,111,10
     CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモード)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,160,161,10
     LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
-    CONTROL         "新しいバージョンを通知",IDC_LATEST_VERSION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,89,10
+    CONTROL         "アップデートを通知",IDC_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,73,10
     PUSHBUTTON      "変更",IDC_CURVE_COLOR,196,39,50,14
     CONTROL         "ハンドルを動かしたときにカーブを自動で反映(ベジェ(複数)モード)",IDC_AUTO_APPLY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,174,218,10
@@ -90,24 +90,24 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,114,44,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,166,44,50,14
-    LTEXT           """X1, Y1, X2, Y2""の形式でカーブのパラメータを入力してください。",IDC_STATIC,7,7,209,8
-    EDITTEXT        IDC_EDIT_VALUE,7,22,209,14,ES_AUTOHSCROLL
+    LTEXT           "ベジェのパラメータを入力してください。\n( 形式：X1, Y1, X2, Y2 )",IDC_STATIC,7,7,209,18
+    EDITTEXT        IDC_EDIT_VALUE,7,27,209,14,ES_AUTOHSCROLL
 END
 
 IDD_READ DIALOGEX 0, 0, 181, 63
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "値を入力"
+CAPTION "カーブの数値を入力"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,71,42,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,124,42,50,14
     EDITTEXT        IDC_EDIT_READ,7,21,167,14,ES_AUTOHSCROLL
-    LTEXT           "1次元のカーブ値を入力してください",IDC_STATIC,7,7,110,8
+    LTEXT           "カーブの数値を入力してください。",IDC_STATIC,7,7,104,8
 END
 
 IDD_ABOUT DIALOGEX 0, 0, 310, 177
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
+CAPTION "Curve Editor"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,199,156,50,14
@@ -122,15 +122,15 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,71,42,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,124,42,50,14
     EDITTEXT        IDC_EDIT_ID,7,21,167,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "1~1024の範囲のIDを入力してください",IDC_STATIC,7,7,119,8
+    LTEXT           "移動したいID(1~1024)を入力してください。",IDC_STATIC,7,7,135,8
 END
 
-IDD_LATEST_VERSION DIALOGEX 0, 0, 171, 39
+IDD_CHECK_UPDATE DIALOGEX 0, 0, 125, 35
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Curve Editor"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "最新のバージョンをチェックしています...",IDC_STATIC,7,7,120,8
+    LTEXT           "アップデートをチェックしています...",IDC_STATIC,7,7,102,8
 END
 
 
@@ -190,12 +190,12 @@ BEGIN
         BOTTOMMARGIN, 56
     END
 
-    IDD_LATEST_VERSION, DIALOG
+    IDD_CHECK_UPDATE, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 164
+        RIGHTMARGIN, 118
         TOPMARGIN, 7
-        BOTTOMMARGIN, 32
+        BOTTOMMARGIN, 28
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -236,7 +236,7 @@ BEGIN
     0
 END
 
-IDD_LATEST_VERSION AFX_DIALOG_LAYOUT
+IDD_CHECK_UPDATE AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -290,7 +290,7 @@ BEGIN
         MENUITEM "設定",                          ID_MENU_CONFIG
         MENUITEM "ヘルプ",                         ID_MENU_HELP
         MENUITEM "About",                       ID_MENU_ABOUT
-        MENUITEM "最新バージョンを確認",                  ID_MENU_LATEST_VERSION
+        MENUITEM "アップデートを確認",                   ID_MENU_CHECK_UPDATE
     END
 END
 
@@ -320,7 +320,7 @@ BEGIN
     POPUP "APPLY"
     BEGIN
         MENUITEM "通常",                          ID_APPLY_NORMAL
-        MENUITEM "中間点無視",                       ID_APPLY_IGNOREKEY
+        MENUITEM "中間点無視",                       ID_APPLY_IGNOREMID
     END
 END
 

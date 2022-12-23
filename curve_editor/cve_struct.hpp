@@ -48,9 +48,10 @@ namespace cve {
 	struct Theme {
 		COLORREF	bg,
 					bg_graph,
+					bg_editbox,
 					sepr,
 					curve_trace,
-					curve_prset,
+					curve_preset,
 					handle,
 					handle_preset,
 					bt_selected,
@@ -126,7 +127,7 @@ namespace cve {
 				align_handle,
 				hooked_popup,
 				hooked_dialog,
-				notify_latest_version;
+				notify_update;
 
 		int		theme,
 				separator,

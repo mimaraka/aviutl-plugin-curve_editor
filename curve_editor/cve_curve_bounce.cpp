@@ -162,7 +162,7 @@ void cve::Curve_Bounce::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rec
 	}
 	else {
 		handle_color = g_theme[g_config.theme].handle_preset;
-		curve_color = g_theme[g_config.theme].curve_prset;
+		curve_color = g_theme[g_config.theme].curve_preset;
 	}
 
 	float left_side = to_client(0, 0).x;
@@ -181,7 +181,7 @@ void cve::Curve_Bounce::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rec
 
 	bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
 
-	float y1, y2;
+	double y1, y2;
 
 	for (float x = left_side; x < right_side; x += CVE_DRAW_GRAPH_INCREASEMENT) {
 		if (reverse) {
@@ -195,10 +195,10 @@ void cve::Curve_Bounce::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rec
 		g_render_target->DrawLine(
 			D2D1::Point2F(
 				x,
-				(float)(to_clientf(0.0f, y1 * CVE_GRAPH_RESOLUTION).y)),
+				(to_clientf(0.0f, (float)(y1 * CVE_GRAPH_RESOLUTION)).y)),
 			D2D1::Point2F(
 				x + CVE_DRAW_GRAPH_INCREASEMENT,
-				(float)(to_clientf(0.0f, y2 * CVE_GRAPH_RESOLUTION).y)),
+				(to_clientf(0.0f, (float)(y2 * CVE_GRAPH_RESOLUTION)).y)),
 			bitmap_buffer->brush, CVE_CURVE_THICKNESS
 		);
 	}

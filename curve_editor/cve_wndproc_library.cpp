@@ -13,6 +13,8 @@
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	static HWND search;
+	HFONT font;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT rect_wnd;
 	cve::Rectangle rect_preset_list;
@@ -37,6 +39,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);
 
+		// プリセットのリスト
 		g_window_preset_list.create(
 			hwnd,
 			"WINDOW_PRESET_LIST",
@@ -47,11 +50,48 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 			NULL
 		);
 
+#ifdef _DEBUG
+
+		// 検索バー
+		search = ::CreateWindowEx(
+			NULL,
+			"EDIT",
+			NULL,
+			WS_CHILD | WS_VISIBLE,
+			CVE_MARGIN, CVE_MARGIN,
+			rect_wnd.right - CVE_MARGIN * 2,
+			20,
+			hwnd,
+			NULL,
+			g_fp->dll_hinst,
+			NULL
+		);
+
+		font = ::CreateFont(
+			CVE_CT_FONT_H, 0,
+			0, 0,
+			FW_REGULAR,
+			FALSE, FALSE, FALSE,
+			SHIFTJIS_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			CLIP_DEFAULT_PRECIS,
+			DEFAULT_QUALITY,
+			NULL,
+			CVE_FONT_REGULAR
+		);
+
+		::SendMessage(search, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
+
+#endif
+
 		return 0;
 
 	case WM_SIZE:
 		bitmap_buffer.set_size(rect_wnd);
 		g_window_preset_list.move(rect_preset_list.rect);
+#ifdef _DEBUG
+		::MoveWindow(search, CVE_MARGIN, CVE_MARGIN, rect_wnd.right - CVE_MARGIN * 2, 20, TRUE);
+#endif
 		return 0;
 
 	case WM_PAINT:

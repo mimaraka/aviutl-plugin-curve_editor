@@ -911,7 +911,6 @@ void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_w
 			bitmap_buffer->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
 		);
 	}
-
 }
 
 
@@ -926,7 +925,6 @@ void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, 
 
 	const bool is_preset = drawing_mode == CVE_DRAW_CURVE_PRESET;
 
-
 	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
 		handle_color = g_theme[g_config.theme].handle;
 		curve_color = g_config.curve_color;
@@ -937,7 +935,7 @@ void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, 
 	}
 	else {
 		handle_color = g_theme[g_config.theme].handle_preset;
-		curve_color = g_theme[g_config.theme].curve_prset;
+		curve_color = g_theme[g_config.theme].curve_preset;
 	}
 
 

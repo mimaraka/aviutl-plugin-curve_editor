@@ -12,7 +12,7 @@
 //		ÉOÉçÅ[ÉoÉãïœêî
 //---------------------------------------------------------------------
 cve::Curve_Bezier				g_curve_bezier,
-								g_curve_normal_previous;
+								g_curve_bezier_previous;
 cve::Curve_Multibezier			g_curve_mb[CVE_CURVE_MAX],
 								g_curve_mb_previous;
 cve::Curve_Elastic				g_curve_elastic,
@@ -49,6 +49,7 @@ cve::Static_Array<cve::Preset<cve::Curve_Bounce>, CVE_PRESET_NUM_CUSTOM> g_prese
 const cve::Theme g_theme_dark = {
 	RGB(27, 27, 27),
 	RGB(27, 27, 27),
+	RGB(19, 19, 19),
 	RGB(240, 240, 240),
 	RGB(57, 57, 57),
 	RGB(240, 240, 240),
@@ -65,6 +66,7 @@ const cve::Theme g_theme_dark = {
 const cve::Theme g_theme_light = {
 	RGB(244, 244, 244),
 	RGB(230, 230, 230),
+	RGB(252, 252, 252),
 	RGB(70, 70, 70),
 	RGB(205, 205, 205),
 	RGB(100, 100, 100),
