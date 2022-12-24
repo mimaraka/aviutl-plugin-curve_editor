@@ -59,7 +59,8 @@ const cve::Theme g_theme_dark = {
 	RGB(68, 68, 68),
 	RGB(240, 240, 240),
 	RGB(35, 35, 35),
-	RGB(180, 180, 180)
+	RGB(180, 180, 180),
+	RGB(200, 200, 200)
 };
 
 //ライトテーマ
@@ -76,7 +77,8 @@ const cve::Theme g_theme_light = {
 	RGB(188, 188, 188),
 	RGB(70, 70, 70),
 	RGB(70, 70, 70),
-	RGB(70, 70, 70)
+	RGB(70, 70, 70),
+	RGB(100, 100, 100)
 };
 
 const cve::Theme g_theme[2] = {

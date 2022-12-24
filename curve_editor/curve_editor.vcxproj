@@ -227,7 +227,12 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="cve_editbox.cpp" />
+    <ClCompile Include="cve_editbox.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="cve_func.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>

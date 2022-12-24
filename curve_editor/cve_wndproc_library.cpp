@@ -13,11 +13,10 @@
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	static HWND search;
-	HFONT font;
+	static cve::Edit_Box search;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT rect_wnd;
-	cve::Rectangle rect_preset_list;
+	cve::Rectangle rect_preset_list, rect_search_bar;
 	static cve::Bitmap_Buffer bitmap_buffer;
 
 	::GetClientRect(hwnd, &rect_wnd);
@@ -27,6 +26,13 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		CVE_LIBRARY_SEARCHBAR_HEIGHT + CVE_MARGIN * 2,
 		rect_wnd.right,
 		rect_wnd.bottom
+	);
+
+	rect_search_bar.set(
+		CVE_MARGIN,
+		CVE_MARGIN,
+		rect_wnd.right - CVE_MARGIN,
+		CVE_MARGIN + CVE_LIBRARY_SEARCHBAR_HEIGHT
 	);
 
 
@@ -52,35 +58,14 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 #ifdef _DEBUG
 
-		// ŒŸõƒo[
-		search = ::CreateWindowEx(
-			NULL,
-			"EDIT",
-			NULL,
-			WS_CHILD | WS_VISIBLE,
-			CVE_MARGIN, CVE_MARGIN,
-			rect_wnd.right - CVE_MARGIN * 2,
-			20,
+		search.initialize(
 			hwnd,
-			NULL,
-			g_fp->dll_hinst,
-			NULL
+			"CVE_SEARCHBAR",
+			20,
+			CVE_CT_SEARCHBAR,
+			rect_search_bar.rect,
+			CVE_EDGE_ALL
 		);
-
-		font = ::CreateFont(
-			CVE_CT_FONT_H, 0,
-			0, 0,
-			FW_REGULAR,
-			FALSE, FALSE, FALSE,
-			SHIFTJIS_CHARSET,
-			OUT_DEFAULT_PRECIS,
-			CLIP_DEFAULT_PRECIS,
-			DEFAULT_QUALITY,
-			NULL,
-			CVE_FONT_REGULAR
-		);
-
-		::SendMessage(search, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
 
 #endif
 
@@ -90,7 +75,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		bitmap_buffer.set_size(rect_wnd);
 		g_window_preset_list.move(rect_preset_list.rect);
 #ifdef _DEBUG
-		::MoveWindow(search, CVE_MARGIN, CVE_MARGIN, rect_wnd.right - CVE_MARGIN * 2, 20, TRUE);
+		search.move(rect_search_bar.rect);
 #endif
 		return 0;
 
@@ -103,6 +88,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		case CVE_CM_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
 			g_window_preset_list.redraw();
+			search.redraw();
 			return 0;
 		}
 		return 0;

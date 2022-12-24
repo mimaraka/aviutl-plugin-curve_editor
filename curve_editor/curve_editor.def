@@ -1,4 +1,2 @@
-LIBRARY
-
 EXPORTS
 	GetFilterTable @1

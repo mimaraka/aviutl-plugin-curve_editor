@@ -58,7 +58,8 @@ namespace cve {
 					bt_unselected,
 					bt_tx,
 					bt_tx_selected,
-					preset_tx;
+					preset_tx,
+					editbox_tx;
 	};
 
 

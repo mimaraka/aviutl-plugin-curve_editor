@@ -171,6 +171,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 {
 	RECT rect_wnd;
 	::GetClientRect(hwnd, &rect_wnd);
+	static bool init = true;
 
 
 	switch (msg) {
@@ -191,7 +192,10 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		return 0;
 
 	case WM_FILTER_CHANGE_WINDOW:
-		::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_GET_EXEDIT, 0);
+		if (init) {
+			init = false;
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_GET_EXEDIT, 0);
+		}
 		return 0;
 
 	case WM_SIZE:

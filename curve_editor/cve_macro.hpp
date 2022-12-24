@@ -104,6 +104,7 @@
 #define CVE_CT_SETSTATUS				0x0416
 #define CVE_CT_COLOR_CURVE				0x0417
 #define CVE_CT_EDIT_MODE				0x0418
+#define CVE_CT_SEARCHBAR				0x0419
 
 #define CVE_CT_UPPER_H					30
 #define CVE_CT_LOWER_H					40
@@ -187,10 +188,10 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CVE_PLUGIN_NAME						"Curve Editor"
-#define CVE_PLUGIN_VERSION					"v1.0.3"
+#define CVE_PLUGIN_VERSION					"v1.0.4"
 #define CVE_VERSION_MAJOR					1
 #define CVE_VERSION_MINOR					0
-#define CVE_VERSION_REVISION				3
+#define CVE_VERSION_REVISION				4
 #define CVE_PLUGIN_DEVELOPER				"mimaraka"
 #define CVE_PLUGIN_YEAR						"2022"
 #define CVE_PLUGIN_INFO						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION " by " CVE_PLUGIN_DEVELOPER
