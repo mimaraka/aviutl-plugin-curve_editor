@@ -54,7 +54,8 @@ AviUtlを起動後、メインウィンドウの「表示」メニューから�
 
 
 ### その他
-その他の詳しい使用方法については、[Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。  
+エディタ上で右クリックするとコンテクストメニューを開くことができるので、色々触りながら試してみると良いです。  
+また、詳細な使用方法については、[このリポジトリのWiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。  
 
 ## スクリプトから使用する(スクリプト開発者向け)
 以下のようにして`curve_editor`を読み込み、`getcurve()`関数を使用することでスクリプトからカーブの値を取得することができます。  
