@@ -92,11 +92,11 @@ namespace cve {
 		// サイズ固定
 		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
 
-		Curve() { initialize(); }
+		Curve() { init(); }
 
 		// 初期化
-		virtual void		initialize(Static_Array<Curve_Points, CVE_POINT_MAX>& points);
-		virtual void		initialize() { initialize(ctpts); }
+		virtual void		init(Static_Array<Curve_Points, CVE_POINT_MAX>& points);
+		virtual void		init() { init(ctpts); }
 
 		// ポイントを削除(&初期化)
 		void				clear(Static_Array<Curve_Points, CVE_POINT_MAX>& points);
@@ -119,10 +119,7 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		カーブ(数値タイプ)
 	//---------------------------------------------------------------------
-	class Curve_Type_Numeric : public Curve {
-	public:
-		int result_number;
-	};
+	class Curve_Type_Numeric : public Curve {};
 
 
 
@@ -151,11 +148,22 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		カーブ(複数ベジェ)
+	//		カーブ(ベジェ(複数))
 	//---------------------------------------------------------------------
-	class Curve_Multibezier : public Curve_Type_ID {
+	class Curve_Bezier_Multi : public Curve_Type_ID {
 	public:
+		//void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address, bool prioritize);
 		double				create_result(double ratio, double st, double ed);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		カーブ(ベジェ(値指定)))
+	//---------------------------------------------------------------------
+	class Curve_Bezier_Value : public Curve_Type_ID {
+	public:
+		double				create_result(double ratio, double st, double ed) { return 0; }
 	};
 
 
@@ -165,6 +173,10 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Curve_Elastic : public Curve_Type_Numeric {
 	private:
+		static constexpr double DEF_FREQ		= 8.0;
+		static constexpr double DEF_DECAY		= 6.0;
+		static constexpr double DEF_AMP			= 1.0;
+
 		double				func_elastic(double ratio, double f, double k, double a, double st, double ed);
 		double				pt_to_param(int pt_graph_val, int idx_param);
 		void				param_to_pt(POINT* pt_graph, int idx_pt);
@@ -175,9 +187,9 @@ namespace cve {
 		double				dec;
 		bool				reverse;
 
-		Curve_Elastic() { initialize(); }
+		Curve_Elastic() { init(); }
 
-		void				initialize();
+		void				init();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				move_handle(const Point_Address pt_address, const POINT& pt_graph);
 		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
@@ -195,6 +207,9 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Curve_Bounce : public Curve_Type_Numeric {
 	private:
+		static constexpr double DEF_COEF_BOUNCE	= 0.6;
+		static constexpr double DEF_COEF_TIME	= 0.5;
+
 		double				func_bounce(double ratio, double e, double t, double st, double ed);
 		double				pt_to_param(const POINT& pt_graph, int idx_param);
 		void				param_to_pt(POINT* pt_graph);
@@ -204,9 +219,9 @@ namespace cve {
 		double				coef_time;
 		bool				reverse;
 
-		Curve_Bounce() { initialize(); }
+		Curve_Bounce() { init(); }
 
-		void				initialize();
+		void				init();
 		void				pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				move_handle(const POINT& pt_graph);
 		void				draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode);
@@ -215,16 +230,6 @@ namespace cve {
 		bool				read_number(int number, double* e, double* t, bool* rev);
 		bool				read_number(int number) { return read_number(number, &coef_bounce, &coef_time, &reverse); }
 		double				create_result(int number, double ratio, double st, double ed);
-	};
-
-
-
-	//---------------------------------------------------------------------
-	//		カーブ(数値指定)
-	//---------------------------------------------------------------------
-	class Curve_Value : public Curve_Type_ID {
-	public:
-		double				create_result(double ratio, double st, double ed) { return 0; }
 	};
 
 
@@ -272,7 +277,7 @@ namespace cve {
 
 		int					id;
 
-		virtual BOOL		initialize(
+		virtual BOOL		init(
 			HWND hwnd_p,
 			LPCTSTR name,
 			LPCTSTR desc,
@@ -387,7 +392,7 @@ namespace cve {
 	public:
 		HWND				editbox;
 
-		BOOL				initialize(
+		BOOL				init(
 			HWND			hwnd_p,
 			LPCTSTR			name,
 			int				l_height,

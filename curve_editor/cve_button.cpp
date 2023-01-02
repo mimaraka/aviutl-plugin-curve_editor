@@ -11,7 +11,7 @@
 //---------------------------------------------------------------------
 //		コントロールを作成
 //---------------------------------------------------------------------
-BOOL cve::Button::initialize(
+BOOL cve::Button::init(
 	HWND			hwnd_p,
 	LPCTSTR			name,
 	LPCTSTR			desc,
@@ -432,11 +432,11 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	int* current_id = nullptr;
 
 	switch (g_config.edit_mode) {
-	case Mode_Multibezier:
-		current_id = &g_config.current_id.multibezier;
+	case Mode_Bezier_Multi:
+		current_id = &g_config.current_id.multi;
 		break;
 
-	case Mode_Value:
+	case Mode_Bezier_Value:
 	default:
 		current_id = &g_config.current_id.value;
 		break;
@@ -450,7 +450,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		COLORREF bg = g_theme[g_config.theme].bg;
 		TCHAR id_text[5];
 
-		::_itoa_s(g_config.current_id.multibezier, id_text, 5, 10);
+		::_itoa_s(g_config.current_id.multi, id_text, 5, 10);
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
 
@@ -482,19 +482,19 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	// カーソルが動いたとき
 	case WM_MOUSEMOVE:
-		if (clicked && g_config.edit_mode == Mode_Multibezier) {
+		if (clicked && g_config.edit_mode == Mode_Bezier_Multi) {
 			is_scrolling = true;
 
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 
 			*current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 1, CVE_CURVE_MAX);
 			switch (g_config.edit_mode) {
-			case Mode_Multibezier:
-				g_curve_mb_previous = g_curve_mb[*current_id - 1];
+			case Mode_Bezier_Multi:
+				g_curve_bezier_multi_trace = g_curve_bezier_multi[*current_id - 1];
 				break;
 
-			case Mode_Value:
-				g_curve_value_previous = g_curve_value[*current_id - 1];
+			case Mode_Bezier_Value:
+				g_curve_bezier_value_trace = g_curve_bezier_value[*current_id - 1];
 				break;
 			}
 

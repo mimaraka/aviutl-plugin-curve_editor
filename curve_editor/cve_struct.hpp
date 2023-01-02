@@ -34,8 +34,8 @@ namespace cve {
 	//---------------------------------------------------------------------
 	enum Edit_Mode {
 		Mode_Bezier,
-		Mode_Multibezier,
-		Mode_Value,
+		Mode_Bezier_Multi,
+		Mode_Bezier_Value,
 		Mode_Elastic,
 		Mode_Bounce
 	};
@@ -65,7 +65,7 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		ポイント(マルチベジェモード)
+	//		ポイント(ベジェ(複数)モード)
 	//---------------------------------------------------------------------
 	struct Curve_Points {
 		enum Type {
@@ -116,16 +116,18 @@ namespace cve {
 		};
 
 		struct Curve_ID {
-			int multibezier = 1,
+			int multi = 1,
 				value = 1;
 		};
 
-		bool	alert,
+		bool	show_popup,
 				trace,
 				auto_copy,
 				auto_apply,
 				show_handle,
+				show_bezier_deriv,
 				align_handle,
+				linearize,
 				hooked_popup,
 				hooked_dialog,
 				notify_update;

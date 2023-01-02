@@ -8,6 +8,11 @@
 
 
 
+void ini_load_configs(FILTER*);
+void ini_write_configs(FILTER*);
+
+
+
 //---------------------------------------------------------------------
 //		FILTER構造体のポインタを取得
 //---------------------------------------------------------------------
@@ -21,7 +26,7 @@ EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void)
 //---------------------------------------------------------------------
 //		初期化時に実行される関数
 //---------------------------------------------------------------------
-BOOL filter_initialize(FILTER* fp)
+BOOL filter_init(FILTER* fp)
 {
 	g_fp = fp;
 
@@ -67,15 +72,15 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 		memcpy(point_data, data, size);
 
 		for (int i = 0; i < CVE_CURVE_MAX; i++)
-			g_curve_mb[i].ctpts = point_data[i];
+			g_curve_bezier_multi[i].ctpts = point_data[i];
 
-		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
+		g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 
 		if (g_window_editor.hwnd) {
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
 
 			for (int i = 0; i < CVE_CURVE_MAX; i++) {
-				if (!g_curve_mb[i].is_data_valid()) {
+				if (!g_curve_bezier_multi[i].is_data_valid()) {
 					int response = IDOK;
 
 					response = ::MessageBox(
@@ -107,7 +112,7 @@ BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 	static cve::Static_Array<cve::Curve_Points, CVE_POINT_MAX> point_data[CVE_CURVE_MAX] = {};
 
 	for (int i = 0; i < CVE_CURVE_MAX; i++)
-		point_data[i] = g_curve_mb[i].ctpts;
+		point_data[i] = g_curve_bezier_multi[i].ctpts;
 
 	if (!data) {
 		*size = sizeof(point_data);
@@ -125,23 +130,109 @@ BOOL on_project_save(FILTER* fp, void* editp, void* data, int* size)
 //---------------------------------------------------------------------
 void ini_load_configs(FILTER* fp)
 {
-	g_config.theme = fp->exfunc->ini_load_int(fp, "theme", 0);
-	g_config.trace = fp->exfunc->ini_load_int(fp, "show_previous_curve", true);
-	g_config.alert = fp->exfunc->ini_load_int(fp, "show_alerts", true);
-	g_config.auto_copy = fp->exfunc->ini_load_int(fp, "auto_copy", false);
-	g_config.auto_apply = fp->exfunc->ini_load_int(fp, "auto_apply", true);
-	g_curve_bezier.read_number(fp->exfunc->ini_load_int(fp, "num_bezier", CVE_NUM_BEZIER_LINER));
-	g_curve_elastic.read_number(fp->exfunc->ini_load_int(fp, "num_elastic", CVE_NUM_ELASTIC_DEFAULT));
-	g_curve_bounce.read_number(fp->exfunc->ini_load_int(fp, "num_bounce", CVE_NUM_BOUNCE_DEFAULT));
-	g_config.separator = fp->exfunc->ini_load_int(fp, "separator", CVE_SEPARATOR_WIDTH);
-	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp, "edit_mode", cve::Mode_Bezier);
-	g_config.layout_mode = (cve::Config::Layout_Mode)fp->exfunc->ini_load_int(fp, "layout_mode", cve::Config::Vertical);
-	g_config.apply_mode = (cve::Config::Apply_Mode)fp->exfunc->ini_load_int(fp, "apply_mode", cve::Config::Normal);
-	g_config.align_handle = fp->exfunc->ini_load_int(fp, "align_handle", true);
-	g_config.show_handle = fp->exfunc->ini_load_int(fp, "show_handle", true);
-	g_config.preset_size = fp->exfunc->ini_load_int(fp, "preset_size", CVE_DEF_PRESET_SIZE);
-	g_config.curve_color = fp->exfunc->ini_load_int(fp, "curve_color", CVE_CURVE_COLOR_DEFAULT);
-	g_config.notify_update = fp->exfunc->ini_load_int(fp, "notify_update", false);
+	// 編集モード
+	g_config.edit_mode = (cve::Edit_Mode)fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_MODE_EDIT,
+		cve::Mode_Bezier
+	);
+	// 適用モード
+	g_config.apply_mode = (cve::Config::Apply_Mode)fp->exfunc->ini_load_int(fp, 
+		CVE_INI_KEY_MODE_APPLY,
+		cve::Config::Normal
+	);
+	// レイアウトモード
+	g_config.layout_mode = (cve::Config::Layout_Mode)fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_MODE_LAYOUT,
+		cve::Config::Vertical
+	);
+
+	// テーマ
+	g_config.theme = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_THEME,
+		0
+	);
+	// 1ステップ前のカーブを表示
+	g_config.trace = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_SHOW_TRACE,
+		true
+	);
+	// 微分ベジェを表示
+	g_config.show_bezier_deriv = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_SHOW_BEZIER_DERIV,
+		false
+	);
+	// ポップアップを表示
+	g_config.show_popup = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_SHOW_POPUP,
+		true
+	);
+	// 自動コピー
+	g_config.auto_copy = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_AUTO_COPY,
+		false
+	);
+	// 自動適用
+	g_config.auto_apply = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_AUTO_APPLY,
+		true
+	);
+	// ベジェを直線にする
+	g_config.linearize = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_LINEARIZE,
+		false
+	);
+	// セパレータ
+	g_config.separator = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_SEPARATOR,
+		CVE_SEPARATOR_WIDTH
+	);
+	// ハンドルを整列
+	g_config.align_handle = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_ALIGN_HANDLE,
+		true
+	);
+	// ハンドルを表示
+	g_config.show_handle = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_SHOW_HANDLE,
+		true
+	);
+	// プリセットのサイズ
+	g_config.preset_size = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_PRESET_SIZE,
+		CVE_DEF_PRESET_SIZE
+	);
+	// カーブの色
+	g_config.curve_color = (COLORREF)fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_CURVE_COLOR,
+		CVE_CURVE_COLOR_DEFAULT
+	);
+	// アップデートを通知
+	g_config.notify_update = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_NOTIFY_UPDATE,
+		false
+	);
+
+	// カーブの数値(ベジェ)
+	g_curve_bezier.read_number(
+		fp->exfunc->ini_load_int(fp,
+			CVE_INI_KEY_NUM_BEZIER,
+			CVE_NUM_BEZIER_LINER
+		)
+	);
+	// カーブの数値(振動)
+	g_curve_elastic.read_number(
+		fp->exfunc->ini_load_int(fp,
+			CVE_INI_KEY_NUM_ELASTIC,
+			CVE_NUM_ELASTIC_DEFAULT
+		)
+	);
+	// カーブの数値(バウンス)
+	g_curve_bounce.read_number(
+		fp->exfunc->ini_load_int(fp,
+			CVE_INI_KEY_NUM_BOUNCE,
+			CVE_NUM_BOUNCE_DEFAULT
+		)
+	);
 }
 
 
@@ -151,15 +242,58 @@ void ini_load_configs(FILTER* fp)
 //---------------------------------------------------------------------
 void ini_write_configs(FILTER* fp)
 {
-	fp->exfunc->ini_save_int(fp, "num_bezier", g_curve_bezier.create_number());
-	fp->exfunc->ini_save_int(fp, "num_elastic", g_curve_elastic.create_number());
-	fp->exfunc->ini_save_int(fp, "num_bounce", g_curve_bounce.create_number());
-	fp->exfunc->ini_save_int(fp, "separator", g_config.separator);
-	fp->exfunc->ini_save_int(fp, "edit_mode", g_config.edit_mode);
-	fp->exfunc->ini_save_int(fp, "layout_mode", g_config.layout_mode);
-	fp->exfunc->ini_save_int(fp, "apply_mode", g_config.apply_mode);
-	fp->exfunc->ini_save_int(fp, "align_handle", g_config.align_handle);
-	fp->exfunc->ini_save_int(fp, "show_handle", g_config.show_handle);
+	// 編集モード
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_MODE_EDIT,
+		g_config.edit_mode
+	);
+	// 適用モード
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_MODE_APPLY,
+		g_config.apply_mode
+	);
+	// レイアウトモード
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_MODE_LAYOUT,
+		g_config.layout_mode
+	);
+
+	// ハンドルを整列
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_ALIGN_HANDLE,
+		g_config.align_handle
+	);
+	// ハンドルを表示
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_SHOW_HANDLE,
+		g_config.show_handle
+	);
+	// 微分ベジェを表示
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_SHOW_BEZIER_DERIV,
+		g_config.show_bezier_deriv
+	);
+	// セパレータ
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_SEPARATOR,
+		g_config.separator
+	);
+
+	// カーブの数値(ベジェ)
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_NUM_BEZIER,
+		g_curve_bezier.create_number()
+	);
+	// カーブの数値(振動)
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_NUM_ELASTIC,
+		g_curve_elastic.create_number()
+	);
+	// カーブの数値(バウンス)
+	fp->exfunc->ini_save_int(fp,
+		CVE_INI_KEY_NUM_BOUNCE,
+		g_curve_bounce.create_number()
+	);
 }
 
 
@@ -177,6 +311,8 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 	switch (msg) {
 		// ウィンドウ作成時
 	case WM_FILTER_INIT:
+		g_editp = editp;
+
 		// WS_CLIPCHILDRENを追加
 		::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
 
@@ -207,7 +343,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		mmi = (MINMAXINFO*)lparam;
 		mmi->ptMaxTrackSize.x = CVE_MAX_W;
 		mmi->ptMaxTrackSize.y = CVE_MAX_H;
-		mmi->ptMinTrackSize.y = g_config.separator + CVE_SEPARATOR_WIDTH + CVE_HEADER_H + CVE_NON_CLIENT_H;
+		mmi->ptMinTrackSize.y = g_config.separator + CVE_SEPARATOR_WIDTH + CVE_MENU_H + CVE_NON_CLIENT_H;
 		return 0;
 
 	case WM_KEYDOWN:

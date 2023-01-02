@@ -14,15 +14,15 @@
 //		externêÈåæ
 //----------------------------------------------------------------------------------
 extern cve::Curve_Bezier					g_curve_bezier,
-											g_curve_bezier_previous;
-extern cve::Curve_Multibezier				g_curve_mb[CVE_CURVE_MAX],
-											g_curve_mb_previous;
-extern cve::Curve_Value						g_curve_value[CVE_CURVE_MAX],
-											g_curve_value_previous;
+											g_curve_bezier_trace;
+extern cve::Curve_Bezier_Multi				g_curve_bezier_multi[CVE_CURVE_MAX],
+											g_curve_bezier_multi_trace;
+extern cve::Curve_Bezier_Value				g_curve_bezier_value[CVE_CURVE_MAX],
+											g_curve_bezier_value_trace;
 extern cve::Curve_Elastic					g_curve_elastic,
-											g_curve_elastic_previous;
+											g_curve_elastic_trace;
 extern cve::Curve_Bounce					g_curve_bounce,
-											g_curve_bounce_previous;
+											g_curve_bounce_trace;
 
 extern const cve::Theme						g_theme[2];
 
@@ -37,6 +37,7 @@ extern cve::Window							g_window_main,
 extern cve::Graph_View_Info					g_view_info;
 
 extern FILTER*								g_fp;
+extern void*								g_editp;
 extern FILTER_DLL							g_filter;
 //Direct2D
 extern ID2D1Factory*						g_d2d1_factory;

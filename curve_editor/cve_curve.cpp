@@ -16,7 +16,7 @@
 //---------------------------------------------------------------------
 //		初期化
 //---------------------------------------------------------------------
-void cve::Curve::initialize(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
+void cve::Curve::init(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
 	// 追加する制御点
 	Curve_Points pt_add[2];
@@ -535,7 +535,7 @@ void cve::Curve_Type_ID::delete_point(const POINT& pt_client)
 void cve::Curve::clear(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
 	points.Clear();
-	initialize(points);
+	init(points);
 }
 
 
@@ -549,37 +549,59 @@ void cve::Curve::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
 
 	for (int i = 0; i < (int)ctpts.size; i++) {
 		center = {
-			(LONG)to_client(ctpts[i].pt_center).x - CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_center).y - CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_center).x + CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_center).y + CVE_POINT_RANGE
+			(LONG)to_client(ctpts[i].pt_center).x - CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_center).y - CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_center).x + CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_center).y + CVE_POINT_BOX_WIDTH
 		};
 		left = {
-			(LONG)to_client(ctpts[i].pt_left).x - CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_left).y - CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_left).x + CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_left).y + CVE_POINT_RANGE
+			(LONG)to_client(ctpts[i].pt_left).x - CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_left).y - CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_left).x + CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_left).y + CVE_POINT_BOX_WIDTH
 		};
 		right = {
-			(LONG)to_client(ctpts[i].pt_right).x - CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_right).y - CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_right).x + CVE_POINT_RANGE,
-			(LONG)to_client(ctpts[i].pt_right).y + CVE_POINT_RANGE
+			(LONG)to_client(ctpts[i].pt_right).x - CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_right).y - CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_right).x + CVE_POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_right).y + CVE_POINT_BOX_WIDTH
 		};
 
-		if (PtInRect(&left, pt_client) && ctpts[i].type != Curve_Points::Default_Left) {
+		// ポイント上かつハンドル上のとき
+		if (::PtInRect(&center, pt_client) && ctpts[i].type == Curve_Points::Extended) {
+			if (::PtInRect(&left, pt_client) && ctpts[i].type != Curve_Points::Default_Left) {
+				if (ctpts[i].pt_center.x == ctpts[i].pt_left.x && ctpts[i].pt_center.y == ctpts[i].pt_left.y) {
+					if (::GetAsyncKeyState(VK_CONTROL) < 0) {
+						pt_address->index = i;
+						pt_address->position = Point_Address::Center;
+						return;
+					}
+				}
+			}
+			else if (::PtInRect(&right, pt_client) && ctpts[i].type != Curve_Points::Default_Right) {
+				if (ctpts[i].pt_center.x == ctpts[i].pt_right.x && ctpts[i].pt_center.y == ctpts[i].pt_right.y) {
+					if (::GetAsyncKeyState(VK_CONTROL) < 0) {
+						pt_address->index = i;
+						pt_address->position = Point_Address::Center;
+						return;
+					}
+				}
+			}
+			else {
+				pt_address->index = i;
+				pt_address->position = Point_Address::Center;
+				return;
+			}
+		}
+		// ハンドル上のとき
+		if (::PtInRect(&left, pt_client) && ctpts[i].type != Curve_Points::Default_Left) {
 			pt_address->index = i;
 			pt_address->position = Point_Address::Left;
 			return;
 		}
-		else if (PtInRect(&right, pt_client) && ctpts[i].type != Curve_Points::Default_Right) {
+		else if (::PtInRect(&right, pt_client) && ctpts[i].type != Curve_Points::Default_Right) {
 			pt_address->index = i;
 			pt_address->position = Point_Address::Right;
-			return;
-		}
-		else if (PtInRect(&center, pt_client) && ctpts[i].type == Curve_Points::Extended) {
-			pt_address->index = i;
-			pt_address->position = Point_Address::Center;
 			return;
 		}
 	}

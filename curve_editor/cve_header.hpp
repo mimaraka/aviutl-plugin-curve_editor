@@ -18,19 +18,15 @@
 EXTERN_C FILTER_DLL __declspec(dllexport)* __stdcall GetFilterTable(void);
 
 //初期化・終了
-BOOL				filter_initialize(FILTER*);
-BOOL				filter_exit(FILTER*);
-
-// aviutl.iniを用いて設定を読み書き
-void				ini_load_configs(FILTER* fp);
-void				ini_write_configs(FILTER* fp);
+BOOL							filter_init(FILTER*);
+BOOL							filter_exit(FILTER*);
 
 // プロジェクト読み込み・書き出し時に呼び出される関数
-BOOL				on_project_load(FILTER* fp, void* editp, void* data, int size);
-BOOL				on_project_save(FILTER* fp, void* editp, void* data, int* size);
+BOOL							on_project_load(FILTER* fp, void* editp, void* data, int size);
+BOOL							on_project_save(FILTER* fp, void* editp, void* data, int* size);
 
 // ウィンドウプロシージャ
-BOOL				filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
+BOOL							filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 
 
 
@@ -54,7 +50,7 @@ namespace cve {
 	// 設定をメニューに反映
 	void						apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
 
-	// カーブを更新
+	// カーブをトレース
 	void						trace_curve();
 
 	// キー押下時の処理
@@ -69,32 +65,32 @@ namespace cve {
 //----------------------------------------------------------------------------------
 //		ウィンドウプロシージャ
 //----------------------------------------------------------------------------------
-LRESULT CALLBACK	wndproc_main(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_menu(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_editor(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_library(HWND, UINT, WPARAM, LPARAM);
-LRESULT CALLBACK	wndproc_preset_list(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK				wndproc_main(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK				wndproc_menu(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK				wndproc_editor(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK				wndproc_library(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK				wndproc_preset_list(HWND, UINT, WPARAM, LPARAM);
 
 
 
 //----------------------------------------------------------------------------------
 //		ダイアログプロシージャ
 //----------------------------------------------------------------------------------
-BOOL CALLBACK		dialogproc_config(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		dialogproc_param_normal(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		dialogproc_read(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		dialogproc_save(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		dialogproc_id(HWND, UINT, WPARAM, LPARAM);
-BOOL CALLBACK		dialogproc_check_update(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK					dialogproc_config(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK					dialogproc_bezier_param(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK					dialogproc_read(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK					dialogproc_save(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK					dialogproc_id(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK					dialogproc_check_update(HWND, UINT, WPARAM, LPARAM);
 
 
 
 //----------------------------------------------------------------------------------
 //		フック
 //----------------------------------------------------------------------------------
-BOOL WINAPI			TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int reserved, HWND hwnd, const RECT* rect);
-INT_PTR WINAPI		DialogBox_hooked(HINSTANCE hinstance, LPCSTR template_name, HWND hwnd_parent, DLGPROC dlgproc, LPARAM init_param);
-BOOL CALLBACK		dialogproc_hooked(HWND, UINT, WPARAM, LPARAM);
+BOOL WINAPI						TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int reserved, HWND hwnd, const RECT* rect);
+INT_PTR WINAPI					DialogBox_hooked(HINSTANCE hinstance, LPCSTR template_name, HWND hwnd_parent, DLGPROC dlgproc, LPARAM init_param);
+BOOL CALLBACK					dialogproc_hooked(HWND, UINT, WPARAM, LPARAM);
 
 
 

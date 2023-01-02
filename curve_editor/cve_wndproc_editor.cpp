@@ -32,7 +32,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		GET_Y_LPARAM(lparam)
 	};
 
-	POINT			pt_graph;
+	POINT			pt_graph = { 0 };
 
 	//RECT
 	RECT			rect_wnd;
@@ -48,6 +48,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static cve::Bitmap_Buffer		bitmap_buffer;
 	static cve::Obj_Dialog_Buttons	obj_buttons;
 	static MENUITEMINFO				minfo;
+	static SYS_INFO*				sys_info;
 
 
 	//クライアント領域の矩形を取得
@@ -80,11 +81,11 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		if (g_config.notify_update)
 			::CreateThread(NULL, 0, cve::check_version, NULL, 0, &thread_id);
 
-		g_curve_bezier_previous = g_curve_bezier;
-		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
-		g_curve_elastic_previous = g_curve_elastic;
-		g_curve_bounce_previous = g_curve_bounce;
-		g_curve_value_previous = g_curve_value[g_config.current_id.value - 1];
+		g_curve_bezier_trace = g_curve_bezier;
+		g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
+		g_curve_elastic_trace = g_curve_elastic;
+		g_curve_bounce_trace = g_curve_bounce;
+		g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 
 		g_view_info.fit(rect_wnd);
 
@@ -131,16 +132,16 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			break;
 
 			// ベジェ(複数)モードのとき
-		case cve::Mode_Multibezier:
-			g_curve_mb[g_config.current_id.multibezier - 1].pt_in_ctpt(pt_client, &pt_address);
+		case cve::Mode_Bezier_Multi:
+			g_curve_bezier_multi[g_config.current_id.multi - 1].pt_in_ctpt(pt_client, &pt_address);
 
 			// 何らかの制御点をクリックしていた場合
 			if (pt_address.position != cve::Point_Address::Null) {
 				// ハンドルの座標を記憶
 				if (pt_address.position == cve::Point_Address::Center)
-					g_curve_mb[g_config.current_id.multibezier - 1].move_point(pt_address.index, pt_graph, true);
+					g_curve_bezier_multi[g_config.current_id.multi - 1].move_point(pt_address.index, pt_graph, true);
 				else
-					g_curve_mb[g_config.current_id.multibezier - 1].move_handle(pt_address, pt_graph, true);
+					g_curve_bezier_multi[g_config.current_id.multi - 1].move_handle(pt_address, pt_graph, true);
 
 				cve::trace_curve();
 				::InvalidateRect(hwnd, NULL, FALSE);
@@ -151,8 +152,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			break;
 
-			// 数値指定モードのとき
-		case cve::Mode_Value:
+			// 値指定モードのとき
+		case cve::Mode_Bezier_Value:
 			break;
 
 			// 振動モードのとき
@@ -169,7 +170,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			break;
 
-			// 弾性モードのとき
+			// バウンスモードのとき
 		case cve::Mode_Bounce:
 			g_curve_bounce.pt_in_ctpt(pt_client, &pt_address);
 
@@ -218,10 +219,25 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		pt_address.position = cve::Point_Address::Null;
 		is_dragging = false;
 
-		// Aviutlを再描画
-		if ((g_config.edit_mode == cve::Mode_Multibezier || g_config.edit_mode == cve::Mode_Value) && g_config.auto_apply)
-			::SendMessage(g_fp->hwnd, WM_COMMAND, CVE_CM_REDRAW_AVIUTL, 0);
+		// IDタイプのモードのとき
+		if (g_config.edit_mode == cve::Mode_Bezier_Multi || g_config.edit_mode == cve::Mode_Bezier_Value) {
+			// こまめに保存
+			if (1) {
+				if (g_fp->exfunc->get_sys_info(g_editp, sys_info)) {
+					if (sys_info->project_name) {
+
+					}
+				}
+			}
+
+			// 自動適用(AviUtlを再描画)
+			if (g_config.auto_apply)
+				::SendMessage(g_fp->hwnd, WM_COMMAND, CVE_CM_REDRAW_AVIUTL, 0);
+		}
+
+		// マウスキャプチャを開放
 		::ReleaseCapture();
+
 		return 0;
 
 		///////////////////////////////////////////
@@ -231,39 +247,45 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_LBUTTONDBLCLK:
 		// モード振り分け
 		switch (g_config.edit_mode) {
-			// マルチベジェモードのとき
-		case cve::Mode_Multibezier:
-			//カーソルが制御点上にあるかどうか
-			g_curve_mb[g_config.current_id.multibezier - 1].pt_in_ctpt(pt_client, &pt_address);
+			// ベジェ(複数)モードのとき
+		case cve::Mode_Bezier_Multi:
+			//カーソルが制御点・ハンドル上にあるかどうか
+			g_curve_bezier_multi[g_config.current_id.multi - 1].pt_in_ctpt(pt_client, &pt_address);
 
-			if (pt_address.position == cve::Point_Address::Center)
-				g_curve_mb[g_config.current_id.multibezier - 1].delete_point(pt_client);
-			else if (pt_address.position == cve::Point_Address::Left) {
-				g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index].pt_left = g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index].pt_center;
-				g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index - 1].pt_right = g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index - 1].pt_center;
+			if (pt_address.position == cve::Point_Address::Center) {
+				g_curve_bezier_multi[g_config.current_id.multi - 1].delete_point(pt_client);
+				pt_address.position = cve::Point_Address::Null;
 			}
-			else if (pt_address.position == cve::Point_Address::Right) {
-				g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index].pt_right = g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index].pt_center;
-				g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index + 1].pt_left = g_curve_mb[g_config.current_id.multibezier - 1].ctpts[pt_address.index + 1].pt_center;
+			else if (pt_address.position == cve::Point_Address::Left && g_config.linearize) {
+				g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index].pt_left = g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index].pt_center;
+				g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index - 1].pt_right = g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index - 1].pt_center;
+				pt_address.position = cve::Point_Address::Null;
+			}
+			else if (pt_address.position == cve::Point_Address::Right && g_config.linearize) {
+				g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index].pt_right = g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index].pt_center;
+				g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index + 1].pt_left = g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index + 1].pt_center;
+				pt_address.position = cve::Point_Address::Null;
 			}
 			else if (ISINRANGEEQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
 				cve::trace_curve();
-				g_curve_mb[g_config.current_id.multibezier - 1].add_point(pt_graph);
+				g_curve_bezier_multi[g_config.current_id.multi - 1].add_point(pt_graph);
+				// ダブルクリックしたまま制御点の移動を行えるようにするため
+				::SendMessage(hwnd, WM_LBUTTONDOWN, wparam, lparam);
 			}
 
 			::InvalidateRect(hwnd, NULL, FALSE);
 			break;
 
-			// 数値指定モードのとき
-		case cve::Mode_Value:
-			//カーソルが制御点上にあるかどうか
-			g_curve_value[g_config.current_id.value - 1].pt_in_ctpt(pt_client, &pt_address);
+			// 値指定モードのとき
+		case cve::Mode_Bezier_Value:
+			//カーソルが制御点・ハンドル上にあるかどうか
+			g_curve_bezier_value[g_config.current_id.value - 1].pt_in_ctpt(pt_client, &pt_address);
 
 			if (pt_address.position == cve::Point_Address::Center)
-				g_curve_value[g_config.current_id.value - 1].delete_point(pt_client);
+				g_curve_bezier_value[g_config.current_id.value - 1].delete_point(pt_client);
 			else if (ISINRANGEEQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
 				cve::trace_curve();
-				g_curve_value[g_config.current_id.value - 1].add_point(pt_graph);
+				g_curve_bezier_value[g_config.current_id.value - 1].add_point(pt_graph);
 			}
 
 			::InvalidateRect(hwnd, NULL, FALSE);
@@ -330,18 +352,18 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::PostMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_PARAM_REDRAW, 0);
 				break;
 
-				// マルチベジェモードのとき
-			case cve::Mode_Multibezier:
+				// ベジェ(複数)モードのとき
+			case cve::Mode_Bezier_Multi:
 				if (pt_address.position == cve::Point_Address::Center)
-					g_curve_mb[g_config.current_id.multibezier - 1].move_point(pt_address.index, pt_graph, false);
+					g_curve_bezier_multi[g_config.current_id.multi - 1].move_point(pt_address.index, pt_graph, false);
 				else
-					g_curve_mb[g_config.current_id.multibezier - 1].move_handle(pt_address, pt_graph, false);
+					g_curve_bezier_multi[g_config.current_id.multi - 1].move_handle(pt_address, pt_graph, false);
 
 				::InvalidateRect(hwnd, NULL, FALSE);
 				break;
 
-				// 数値指定モードのとき
-			case cve::Mode_Value:
+				// 値指定モードのとき
+			case cve::Mode_Bezier_Value:
 
 				break;
 
@@ -353,7 +375,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::PostMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_PARAM_REDRAW, 0);
 				break;
 
-				// 弾性モードのとき
+				// バウンスモードのとき
 			case cve::Mode_Bounce:
 				g_curve_bounce.move_handle(pt_graph);
 
@@ -374,13 +396,13 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				g_curve_bezier.pt_in_ctpt(pt_client, &tmp);
 				break;
 
-				// マルチベジェモードのとき
-			case cve::Mode_Multibezier:
-				g_curve_mb[g_config.current_id.multibezier - 1].pt_in_ctpt(pt_client, &tmp);
+				// ベジェ(複数)モードのとき
+			case cve::Mode_Bezier_Multi:
+				g_curve_bezier_multi[g_config.current_id.multi - 1].pt_in_ctpt(pt_client, &tmp);
 				break;
 
-				// 数値指定モードのとき
-			case cve::Mode_Value:
+				// 値指定モードのとき
+			case cve::Mode_Bezier_Value:
 
 				break;
 
@@ -389,7 +411,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				g_curve_elastic.pt_in_ctpt(pt_client, &tmp);
 				break;
 
-				// 弾性モードのとき
+				// バウンスモードのとき
 			case cve::Mode_Bounce:
 				g_curve_bounce.pt_in_ctpt(pt_client, &tmp);
 				break;
@@ -523,7 +545,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			if (wparam == edit_mode_menu_id[i]) {
 				g_config.edit_mode = (cve::Edit_Mode)i;
 				::InvalidateRect(hwnd, NULL, FALSE);
-				::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_NORMAL + i, 0);
+				::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BEZIER + i, 0);
 				return 0;
 			}
 		}
@@ -542,7 +564,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_config.hooked_popup = false;
 			g_config.hooked_dialog = false;
 
-			char exedit_path[1024];
+			char exedit_path[MAX_PATH];
 			FILTER* fp_exedit = auls::Exedit_GetFilter(g_fp);
 
 			// 拡張編集プラグインが存在する場合
@@ -586,7 +608,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// ハンドルを整列
 		case ID_MENU_ALIGNHANDLE:
 		case CVE_CT_ALIGN:
-			if (g_config.edit_mode == cve::Mode_Multibezier || g_config.edit_mode == cve::Mode_Value)
+			if (g_config.edit_mode == cve::Mode_Bezier_Multi || g_config.edit_mode == cve::Mode_Bezier_Value)
 				g_config.align_handle = g_config.align_handle ? 0 : 1;
 			return 0;
 
@@ -600,8 +622,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				g_curve_bezier.reverse_curve();
 				break;
 
-			case cve::Mode_Multibezier:
-				g_curve_mb[g_config.current_id.multibezier - 1].reverse_curve();
+			case cve::Mode_Bezier_Multi:
+				g_curve_bezier_multi[g_config.current_id.multi - 1].reverse_curve();
 				break;
 
 			case cve::Mode_Elastic:
@@ -630,7 +652,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_DELETE:
 		{
 			int response = IDOK;
-			if (g_config.alert)
+			if (g_config.show_popup)
 				response = ::MessageBox(
 					hwnd,
 					CVE_STR_WARNING_DELETE,
@@ -647,20 +669,20 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 					::PostMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_PARAM_REDRAW, 0);
 					break;
 
-				case cve::Mode_Multibezier:
-					g_curve_mb[g_config.current_id.multibezier - 1].clear();
+				case cve::Mode_Bezier_Multi:
+					g_curve_bezier_multi[g_config.current_id.multi - 1].clear();
 					break;
 
-				case cve::Mode_Value:
+				case cve::Mode_Bezier_Value:
 					break;
 
 				case cve::Mode_Elastic:
-					g_curve_elastic.initialize();
+					g_curve_elastic.init();
 					::PostMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_PARAM_REDRAW, 0);
 					break;
 
 				case cve::Mode_Bounce:
-					g_curve_bounce.initialize();
+					g_curve_bounce.init();
 					::PostMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_PARAM_REDRAW, 0);
 					break;
 				}
@@ -674,9 +696,9 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// すべてのカーブを削除
 		case ID_MENU_DELETE_ALL:
-			if (g_config.edit_mode == cve::Mode_Multibezier) {
+			if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
 				int response = IDOK;
-				if (g_config.alert && !lparam)
+				if (g_config.show_popup && !lparam)
 					response = ::MessageBox(
 						hwnd,
 						CVE_STR_WARNING_DELETE_ALL,
@@ -686,7 +708,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 				if (response == IDOK || lparam) {
 					for (int i = 0; i < CVE_CURVE_MAX; i++) {
-						g_curve_mb[i].clear();
+						g_curve_bezier_multi[i].clear();
 					}
 
 					::InvalidateRect(hwnd, NULL, FALSE);
@@ -700,8 +722,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_PROPERTY:
 		{
 			std::string info;
-			info = "ID : " + std::to_string(g_config.current_id.multibezier) + "\n"
-				+ "ポイント数 : " + std::to_string(g_curve_mb[g_config.current_id.multibezier - 1].ctpts.size);
+			info = "ID : " + std::to_string(g_config.current_id.multi) + "\n"
+				+ "ポイント数 : " + std::to_string(g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts.size);
 			::MessageBox(
 				hwnd,
 				info.c_str(),
@@ -733,6 +755,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			switch (g_config.edit_mode) {
 			case cve::Mode_Bezier:
 				result = g_curve_bezier.create_number();
+				break;
+
+			case cve::Mode_Bezier_Multi:
+				result = g_config.current_id.multi;
+				break;
+
+			case cve::Mode_Bezier_Value:
+				result = g_config.current_id.value;
 				break;
 
 			case cve::Mode_Elastic:

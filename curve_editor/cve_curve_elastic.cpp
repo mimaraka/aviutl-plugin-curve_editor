@@ -6,20 +6,16 @@
 
 #include "cve_header.hpp"
 
-#define CVE_ELASTIC_FREQ_DEFAULT		8.0
-#define CVE_ELASTIC_DECAY_DEFAULT		6.0
-#define CVE_ELASTIC_AMP_DEFAULT			1.0
-
 
 
 //---------------------------------------------------------------------
 //		初期化
 //---------------------------------------------------------------------
-void cve::Curve_Elastic::initialize()
+void cve::Curve_Elastic::init()
 {
-	freq = CVE_ELASTIC_FREQ_DEFAULT;
-	dec = CVE_ELASTIC_DECAY_DEFAULT;
-	ampl = CVE_ELASTIC_AMP_DEFAULT;
+	freq = DEF_FREQ;
+	dec = DEF_DECAY;
+	ampl = DEF_AMP;
 }
 
 
@@ -134,30 +130,30 @@ void cve::Curve_Elastic::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_ad
 	param_to_pt(&pt, 0);
 	// 振幅を調整するハンドル(左)
 	const RECT handle_amp_left = {
-		(LONG)to_client(pt).x - CVE_POINT_RANGE,
-		(LONG)to_client(pt).y - CVE_POINT_RANGE,
-		(LONG)to_client(pt).x + CVE_POINT_RANGE,
-		(LONG)to_client(pt).y + CVE_POINT_RANGE
+		(LONG)to_client(pt).x - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).x + CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y + CVE_POINT_BOX_WIDTH
 	};
 
 	param_to_pt(&pt, 1);
 
 	// 振幅を調整するハンドル(右)
 	const RECT handle_amp_right = {
-		(LONG)to_client(pt).x - CVE_POINT_RANGE,
-		(LONG)to_client(pt).y - CVE_POINT_RANGE,
-		(LONG)to_client(pt).x + CVE_POINT_RANGE,
-		(LONG)to_client(pt).y + CVE_POINT_RANGE
+		(LONG)to_client(pt).x - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).x + CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y + CVE_POINT_BOX_WIDTH
 	};
 
 	param_to_pt(&pt, 2);
 
 	// 振動数・減衰を調整するハンドル
 	const RECT pt_freq_decay = {
-		(LONG)to_client(pt).x - CVE_POINT_RANGE,
-		(LONG)to_client(pt).y - CVE_POINT_RANGE,
-		(LONG)to_client(pt).x + CVE_POINT_RANGE,
-		(LONG)to_client(pt).y + CVE_POINT_RANGE
+		(LONG)to_client(pt).x - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).x + CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y + CVE_POINT_BOX_WIDTH
 	};
 
 	if (::PtInRect(&handle_amp_left, pt_client) || ::PtInRect(&handle_amp_right, pt_client)) {

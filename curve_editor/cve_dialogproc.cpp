@@ -22,8 +22,8 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static COLORREF cust_colors[16];
 
 	RECT rect_color_curve = {
-		263, 64,
-		291, 85
+		403, 65,
+		436, 85
 	};
 
 
@@ -40,7 +40,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				BST_CHECKED, 0
 			);
 
-		if (g_config.alert)
+		if (g_config.show_popup)
 			::SendMessage(
 				::GetDlgItem(hwnd, IDC_ALERT),
 				BM_SETCHECK,
@@ -64,6 +64,13 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		if (g_config.auto_apply)
 			::SendMessage(
 				::GetDlgItem(hwnd, IDC_AUTO_APPLY),
+				BM_SETCHECK,
+				BST_CHECKED, 0
+			);
+
+		if (g_config.linearize)
+			::SendMessage(
+				::GetDlgItem(hwnd, IDC_LINEARIZE),
 				BM_SETCHECK,
 				BST_CHECKED, 0
 			);
@@ -95,7 +102,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
 				BM_GETCHECK, 0, 0
 			);
-			g_config.alert = ::SendMessage(
+			g_config.show_popup = ::SendMessage(
 				::GetDlgItem(hwnd, IDC_ALERT),
 				BM_GETCHECK, 0, 0
 			);
@@ -111,18 +118,55 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				::GetDlgItem(hwnd, IDC_AUTO_APPLY),
 				BM_GETCHECK, 0, 0
 			);
+			g_config.linearize = ::SendMessage(
+				::GetDlgItem(hwnd, IDC_LINEARIZE),
+				BM_GETCHECK, 0, 0
+			);
 			g_config.theme = ::SendMessage(
 				combo,
 				CB_GETCURSEL, 0, 0
 			);
 
-			g_fp->exfunc->ini_save_int(g_fp, "theme", g_config.theme);
-			g_fp->exfunc->ini_save_int(g_fp, "show_previous_curve", g_config.trace);
-			g_fp->exfunc->ini_save_int(g_fp, "show_alerts", g_config.alert);
-			g_fp->exfunc->ini_save_int(g_fp, "auto_copy", g_config.auto_copy);
-			g_fp->exfunc->ini_save_int(g_fp, "curve_color", g_config.curve_color);
-			g_fp->exfunc->ini_save_int(g_fp, "notify_update", g_config.notify_update);
-			g_fp->exfunc->ini_save_int(g_fp, "auto_apply", g_config.auto_apply);
+			// テーマ
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_THEME,
+				g_config.theme
+			);
+			// 1ステップ前のカーブを表示
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_SHOW_TRACE,
+				g_config.trace
+			);
+			// ポップアップを表示
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_SHOW_POPUP,
+				g_config.show_popup
+			);
+			// 自動コピー
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_AUTO_COPY,
+				g_config.auto_copy
+			);
+			// カーブの色
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_CURVE_COLOR,
+				g_config.curve_color
+			);
+			// アップデートを通知
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_NOTIFY_UPDATE,
+				g_config.notify_update
+			);
+			// 自動で適用
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_AUTO_APPLY,
+				g_config.auto_apply
+			);
+			// ベジェを直線にする
+			g_fp->exfunc->ini_save_int(g_fp,
+				CVE_INI_KEY_LINEARIZE,
+				g_config.linearize
+			);
 
 			::EndDialog(hwnd, 1);
 
@@ -148,7 +192,11 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			g_config.curve_color = cc.rgbResult;
 
 			::InvalidateRect(hwnd, NULL, FALSE);
+			return 0;
 		}
+		
+		case IDC_RESET_CONFIGS:
+
 			return 0;
 		}
 	}
@@ -160,7 +208,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（カーブのパラメータの設定）
 //---------------------------------------------------------------------
-BOOL CALLBACK dialogproc_param_normal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+BOOL CALLBACK dialogproc_bezier_param(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	TCHAR buffer[30];
 	std::regex re(CVE_REGEX_VALUE);
@@ -204,7 +252,7 @@ BOOL CALLBACK dialogproc_param_normal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 
 				::EndDialog(hwnd, 1);
 			}
-			else if (g_config.alert)
+			else if (g_config.show_popup)
 				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
 
 			return 0;
@@ -259,7 +307,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					value = std::stoi(str);
 				}
 				catch (std::out_of_range&) {
-					if (g_config.alert)
+					if (g_config.show_popup)
 						MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 					return 0;
@@ -282,7 +330,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				switch (g_config.edit_mode) {
 				case cve::Mode_Bezier:
 					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
-						if (g_config.alert)
+						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
@@ -290,19 +338,19 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					g_curve_bezier.read_number(value);
 					break;
 
-				case cve::Mode_Multibezier:
+				case cve::Mode_Bezier_Multi:
 					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
-						if (g_config.alert)
+						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
 					}
-					g_curve_mb[g_config.current_id.multibezier - 1].read_number(value);
+					g_curve_bezier_multi[g_config.current_id.multi - 1].read_number(value);
 					break;
 
 				case cve::Mode_Elastic:
 					if (!(ISINRANGEEQ(value, -10211201, -1) || ISINRANGEEQ(value, 1, 10211201))) {
-						if (g_config.alert)
+						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
@@ -312,7 +360,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 				case cve::Mode_Bounce:
 					if (!(ISINRANGEEQ(value, -11213202, -10211202) || ISINRANGEEQ(value, 10211202, 11213202))) {
-						if (g_config.alert)
+						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
@@ -323,7 +371,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 				::EndDialog(hwnd, 1);
 			}
-			else if (g_config.alert)
+			else if (g_config.show_popup)
 				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 			return 0;
@@ -366,17 +414,17 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			switch (g_config.edit_mode) {
 			case cve::Mode_Bezier:
 			{
-				const cve::Preset<cve::Curve_Bezier> preset_normal;
-				g_presets_normal_custom.PushBack(preset_normal);
-				g_presets_normal_custom[g_presets_normal_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_bezier, buffer);
+				const cve::Preset<cve::Curve_Bezier> preset_bezier;
+				g_presets_bezier_custom.PushBack(preset_bezier);
+				g_presets_bezier_custom[g_presets_bezier_custom.size - 1].init(g_window_preset_list.hwnd, g_curve_bezier, buffer);
 				break;
 			}
 
-			case cve::Mode_Multibezier:
+			case cve::Mode_Bezier_Multi:
 			{
-				const cve::Preset<cve::Curve_Multibezier> preset_mb;
-				g_presets_mb_custom.PushBack(preset_mb);
-				g_presets_mb_custom[g_presets_mb_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_mb[g_config.current_id.multibezier - 1], buffer);
+				const cve::Preset<cve::Curve_Bezier_Multi> preset_bezier_multi;
+				g_presets_bezier_multi_custom.PushBack(preset_bezier_multi);
+				g_presets_bezier_multi_custom[g_presets_bezier_multi_custom.size - 1].init(g_window_preset_list.hwnd, g_curve_bezier_multi[g_config.current_id.multi - 1], buffer);
 				break;
 			}
 
@@ -384,7 +432,7 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			{
 				const cve::Preset<cve::Curve_Elastic> preset_elastic;
 				g_presets_elastic_custom.PushBack(preset_elastic);
-				g_presets_elastic_custom[g_presets_elastic_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_elastic, buffer);
+				g_presets_elastic_custom[g_presets_elastic_custom.size - 1].init(g_window_preset_list.hwnd, g_curve_elastic, buffer);
 				break;
 			}
 
@@ -392,7 +440,7 @@ BOOL CALLBACK dialogproc_save(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			{
 				const cve::Preset<cve::Curve_Bounce> preset_bounce;
 				g_presets_bounce_custom.PushBack(preset_bounce);
-				g_presets_bounce_custom[g_presets_bounce_custom.size - 1].initialize(g_window_preset_list.hwnd, g_curve_bounce, buffer);
+				g_presets_bounce_custom[g_presets_bounce_custom.size - 1].init(g_window_preset_list.hwnd, g_curve_bounce, buffer);
 				break;
 			}
 
@@ -452,7 +500,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			::GetDlgItemText(hwnd, IDC_EDIT_ID, buffer, 5);
 
 			if (strlen(buffer) == 0) {
-				if (g_config.alert)
+				if (g_config.show_popup)
 					::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
@@ -462,7 +510,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			value = std::stoi(str);
 
 			if (!ISINRANGEEQ(value, 1, CVE_CURVE_MAX)) {
-				if (g_config.alert)
+				if (g_config.show_popup)
 					::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;

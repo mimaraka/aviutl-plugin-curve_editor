@@ -57,7 +57,7 @@
     <ClCompile Include="cve_curve_bezier.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="cve_curve_multibezier.cpp">
+    <ClCompile Include="cve_curve_bezier_multi.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cve_curve_elastic.cpp">
@@ -66,7 +66,7 @@
     <ClCompile Include="cve_curve_bounce.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="cve_curve_value.cpp">
+    <ClCompile Include="cve_curve_bezier_value.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cve_wndproc_main.cpp">

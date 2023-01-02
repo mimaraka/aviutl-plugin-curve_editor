@@ -50,26 +50,29 @@ END
 // Dialog
 //
 
-IDD_CONFIG DIALOGEX 0, 0, 253, 304
+IDD_CONFIG DIALOGEX 0, 0, 349, 221
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "設定"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,137,283,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,196,283,50,14
-    COMBOBOX        IDC_THEME,172,23,74,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,239,200,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,292,200,50,14
+    COMBOBOX        IDC_THEME,268,23,74,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "テーマ",IDC_STATIC,15,25,20,8
-    GROUPBOX        "全般",IDC_STATIC,7,7,239,134
+    GROUPBOX        "全般",IDC_STATIC,7,7,335,99
     CONTROL         "ポップアップを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,57,72,10
-    GROUPBOX        "編集",IDC_STATIC,7,147,239,129
+    GROUPBOX        "編集",IDC_STATIC,7,113,335,78
     CONTROL         "1ステップ前の編集状態を表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,111,10
-    CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモード)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,160,161,10
+    CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモード)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,125,161,10
     LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
     CONTROL         "アップデートを通知",IDC_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,73,10
-    PUSHBUTTON      "変更",IDC_CURVE_COLOR,196,39,50,14
+    PUSHBUTTON      "変更",IDC_CURVE_COLOR,292,39,50,14
     CONTROL         "ハンドルを動かしたときにカーブを自動で反映(ベジェ(複数)モード)",IDC_AUTO_APPLY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,174,218,10
-    LTEXT           "(AviUtlで重い編集をしている時などは、この設定をオフにすると\nCurve Editorの動作が軽くなります。)",IDC_STATIC,26,185,220,19
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,139,218,10
+    LTEXT           "(AviUtlで重い編集をしている時などは、この設定をオフにするとCurve Editorの動作が軽くなります。)",IDC_STATIC,25,150,305,8
+    CONTROL         "ハンドルをダブルクリックしたときにカーブを直線にする(ベジェ(複数)モード)",IDC_LINEARIZE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,163,238,10
+    PUSHBUTTON      "初期値に戻す",IDC_RESET_CONFIGS,7,200,60,14
 END
 
 IDD_SAVE DIALOGEX 0, 0, 228, 61
@@ -112,6 +115,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,199,156,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,253,156,50,14
+    CONTROL         "",IDC_TAB1,"SysTabControl32",0x0,7,7,296,145
 END
 
 IDD_ID DIALOGEX 0, 0, 181, 63
@@ -145,9 +149,9 @@ BEGIN
     IDD_CONFIG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 246
+        RIGHTMARGIN, 342
         TOPMARGIN, 7
-        BOTTOMMARGIN, 297
+        BOTTOMMARGIN, 214
     END
 
     IDD_SAVE, DIALOG
@@ -258,16 +262,16 @@ BEGIN
             MENUITEM "振動",                          ID_MENU_MODE_ELASTIC
             MENUITEM "バウンス",                        ID_MENU_MODE_BOUNCE
         END
-        MENUITEM SEPARATOR
-        MENUITEM "カーブの数値をコピー\tCtrl+C",          ID_MENU_COPY
-        MENUITEM "カーブの数値を読み取り",                 ID_MENU_READ
-        MENUITEM "プリセットとして保存\tCtrl+S",          ID_MENU_SAVE
-        MENUITEM SEPARATOR
         POPUP "カーブの適用モード"
         BEGIN
             MENUITEM "通常",                          ID_MENU_APPLY_NORMAL
             MENUITEM "中間点無視",                       ID_MENU_APPLY_IGNOREMID
         END
+        MENUITEM SEPARATOR
+        MENUITEM "カーブの数値をコピー\tCtrl+C",          ID_MENU_COPY
+        MENUITEM "カーブの数値を読み取り",                 ID_MENU_READ
+        MENUITEM "プリセットとして保存\tCtrl+S",          ID_MENU_SAVE
+        MENUITEM SEPARATOR
         MENUITEM "ベジェのパラメータをコピー",               ID_MENU_COPY4D
         MENUITEM "カーブを反転\tR",                   ID_MENU_REVERSE
         MENUITEM "カーブを初期化\tDel",                ID_MENU_DELETE

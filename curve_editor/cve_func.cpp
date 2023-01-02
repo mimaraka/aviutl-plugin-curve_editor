@@ -162,7 +162,7 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 		SetMenuItemInfo(menu, ID_MENU_ID_NEXT, FALSE, mi);
 		break;
 
-	case cve::Mode_Multibezier:
+	case cve::Mode_Bezier_Multi:
 		mi->fState |= MFS_ENABLED;
 		SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 
@@ -178,7 +178,7 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 		SetMenuItemInfo(menu, ID_MENU_READ, FALSE, mi);
 		break;
 
-	case cve::Mode_Value:
+	case cve::Mode_Bezier_Value:
 		mi->fState |= MFS_ENABLED;
 		SetMenuItemInfo(menu, ID_MENU_ALIGNHANDLE, FALSE, mi);
 
@@ -242,23 +242,23 @@ void cve::trace_curve()
 {
 	switch (g_config.edit_mode) {
 	case cve::Mode_Bezier:
-		g_curve_bezier_previous = g_curve_bezier;
+		g_curve_bezier_trace = g_curve_bezier;
 		break;
 
-	case cve::Mode_Multibezier:
-		g_curve_mb_previous = g_curve_mb[g_config.current_id.multibezier - 1];
+	case cve::Mode_Bezier_Multi:
+		g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 		break;
 
-	case cve::Mode_Value:
-		g_curve_value_previous = g_curve_value[g_config.current_id.value - 1];
+	case cve::Mode_Bezier_Value:
+		g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 		break;
 
 	case cve::Mode_Elastic:
-		g_curve_elastic_previous = g_curve_elastic;
+		g_curve_elastic_trace = g_curve_elastic;
 		break;
 
 	case cve::Mode_Bounce:
-		g_curve_bounce_previous = g_curve_bounce;
+		g_curve_bounce_trace = g_curve_bounce;
 		break;
 	}
 }
@@ -293,13 +293,13 @@ LRESULT cve::on_keydown(WPARAM wparam)
 
 		//[<]
 	case VK_LEFT:
-		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_menu.hwnd)
+		if (g_config.edit_mode == cve::Mode_Bezier_Multi && g_window_menu.hwnd)
 			::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_ID_BACK, 0);
 		return 0;
 
 		//[>]
 	case VK_RIGHT:
-		if (g_config.edit_mode == cve::Mode_Multibezier && g_window_menu.hwnd)
+		if (g_config.edit_mode == cve::Mode_Bezier_Multi && g_window_menu.hwnd)
 			::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CM_ID_NEXT, 0);
 		return 0;
 
@@ -468,7 +468,7 @@ DWORD WINAPI cve::check_version(LPVOID param)
 				str_notif = "アップデートが利用可能です。ダウンロードしますか？\nバージョン：" CVE_PLUGIN_VERSION " → v" + str_latest;
 				int responce = ::MessageBox(g_fp->hwnd, str_notif.c_str(), CVE_PLUGIN_NAME, MB_OKCANCEL | MB_ICONINFORMATION);
 				if (responce == IDOK) {
-					str_link = CVE_PLUGIN_LINK "/releases/tag/v" + str_latest;
+					str_link = CVE_PLUGIN_LINK "/releases/latest";
 					::ShellExecute(0, "open", str_link.c_str(), NULL, NULL, SW_SHOWNORMAL);
 				}
 				::ExitThread(TRUE);

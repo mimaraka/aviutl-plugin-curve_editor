@@ -35,12 +35,12 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		0,
 		0,
 		is_vertical ? rect_wnd.right : rect_wnd.right - g_config.separator - CVE_SEPARATOR_WIDTH,
-		CVE_HEADER_H
+		CVE_MENU_H
 	);
 
 	rect_editor.set(
 		0,
-		CVE_HEADER_H,
+		CVE_MENU_H,
 		is_vertical ? rect_wnd.right : rect_wnd.right - g_config.separator - CVE_SEPARATOR_WIDTH,
 		is_vertical ? rect_wnd.bottom - g_config.separator - CVE_SEPARATOR_WIDTH : rect_wnd.bottom
 	);
@@ -133,7 +133,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 		if (is_separator_moving) {
 			if (g_config.layout_mode == cve::Config::Vertical)
-				g_config.separator = MINMAX_LIMIT(rect_wnd.bottom - pt_client.y, CVE_SEPARATOR_WIDTH, rect_wnd.bottom - CVE_SEPARATOR_WIDTH - CVE_HEADER_H);
+				g_config.separator = MINMAX_LIMIT(rect_wnd.bottom - pt_client.y, CVE_SEPARATOR_WIDTH, rect_wnd.bottom - CVE_SEPARATOR_WIDTH - CVE_MENU_H);
 
 			else
 				g_config.separator = MINMAX_LIMIT(rect_wnd.right - pt_client.x, CVE_SEPARATOR_WIDTH, rect_wnd.right - CVE_SEPARATOR_WIDTH);

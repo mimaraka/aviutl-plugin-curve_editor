@@ -58,7 +58,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 #ifdef _DEBUG
 
-		search.initialize(
+		search.init(
 			hwnd,
 			"CVE_SEARCHBAR",
 			20,
@@ -156,12 +156,12 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 			case cve::Mode_Bezier:
 				break;
 
-			case cve::Mode_Multibezier:
+			case cve::Mode_Bezier_Multi:
 				break;
 			}
 			// å„Ç≈è¡Ç∑
-			for (int i = 0; i < (int)g_presets_normal_custom.size; i++) {
-				g_presets_normal_custom[i].move(rect_wnd.right, i);
+			for (int i = 0; i < (int)g_presets_bezier_custom.size; i++) {
+				g_presets_bezier_custom[i].move(rect_wnd.right, i);
 			}
 			return 0;
 		}

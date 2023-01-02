@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------------------
 //		Curve Editor
-//		ソースファイル (弾性モードのカーブ)
+//		ソースファイル (バウンスモードのカーブ)
 //		Visual C++ 2022
 //----------------------------------------------------------------------------------
 
@@ -11,10 +11,10 @@
 //---------------------------------------------------------------------
 //		初期化
 //---------------------------------------------------------------------
-void cve::Curve_Bounce::initialize()
+void cve::Curve_Bounce::init()
 {
-	coef_bounce = 0.6;
-	coef_time = 0.5;
+	coef_bounce = DEF_COEF_BOUNCE;
+	coef_time = DEF_COEF_TIME;
 }
 
 
@@ -67,10 +67,10 @@ void cve::Curve_Bounce::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_add
 	param_to_pt(&pt);
 	// 振幅を調整するハンドル(左)
 	const RECT rect_point = {
-		(LONG)to_client(pt).x - CVE_POINT_RANGE,
-		(LONG)to_client(pt).y - CVE_POINT_RANGE,
-		(LONG)to_client(pt).x + CVE_POINT_RANGE,
-		(LONG)to_client(pt).y + CVE_POINT_RANGE
+		(LONG)to_client(pt).x - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y - CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).x + CVE_POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y + CVE_POINT_BOX_WIDTH
 	};
 
 	pt_address->index = NULL;

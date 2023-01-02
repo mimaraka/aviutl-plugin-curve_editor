@@ -41,6 +41,9 @@
 #define IDC_NOTIFY_UPDATE               1016
 #define IDC_CURVE_COLOR                 1017
 #define IDC_AUTO_APPLY                  1018
+#define IDC_LINEARIZE                   1019
+#define IDC_TAB1                        1020
+#define IDC_RESET_CONFIGS               1021
 #define ID_MENU_ABOUT                   40011
 #define ID_MENU_CONFIG                  40012
 #define ID_MENU_SHOWHANDLE              40013
@@ -95,7 +98,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        142
 #define _APS_NEXT_COMMAND_VALUE         40097
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

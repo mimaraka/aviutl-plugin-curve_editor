@@ -12,15 +12,15 @@
 //		ÉOÉçÅ[ÉoÉãïœêî
 //---------------------------------------------------------------------
 cve::Curve_Bezier				g_curve_bezier,
-								g_curve_bezier_previous;
-cve::Curve_Multibezier			g_curve_mb[CVE_CURVE_MAX],
-								g_curve_mb_previous;
+								g_curve_bezier_trace;
+cve::Curve_Bezier_Multi			g_curve_bezier_multi[CVE_CURVE_MAX],
+								g_curve_bezier_multi_trace;
 cve::Curve_Elastic				g_curve_elastic,
-								g_curve_elastic_previous;
+								g_curve_elastic_trace;
 cve::Curve_Bounce				g_curve_bounce,
-								g_curve_bounce_previous;
-cve::Curve_Value				g_curve_value[CVE_CURVE_MAX],
-								g_curve_value_previous;
+								g_curve_bounce_trace;
+cve::Curve_Bezier_Value				g_curve_bezier_value[CVE_CURVE_MAX],
+								g_curve_bezier_value_trace;
 
 cve::Config						g_config;
 
@@ -33,12 +33,13 @@ cve::Window						g_window_main,
 cve::Graph_View_Info			g_view_info;
 
 FILTER*							g_fp;
+void*							g_editp;
 
-cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_DEFAULT> g_presets_normal_default;
-cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_CUSTOM> g_presets_normal_custom;
+cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_DEFAULT> g_presets_bezier_default;
+cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_CUSTOM> g_presets_bezier_custom;
 
-cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_DEFAULT> g_presets_mb_default;
-cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_CUSTOM> g_presets_mb_custom;
+cve::Static_Array<cve::Preset<cve::Curve_Bezier_Multi>, CVE_PRESET_NUM_DEFAULT> g_presets_bezier_multi_default;
+cve::Static_Array<cve::Preset<cve::Curve_Bezier_Multi>, CVE_PRESET_NUM_CUSTOM> g_presets_bezier_multi_custom;
 
 cve::Static_Array<cve::Preset<cve::Curve_Elastic>, CVE_PRESET_NUM_CUSTOM> g_presets_elastic_custom;
 
@@ -108,7 +109,7 @@ FILTER_DLL g_filter = {
 	NULL,NULL,
 	NULL,NULL,NULL,
 	NULL,
-	filter_initialize,
+	filter_init,
 	filter_exit,
 	NULL,
 	filter_wndproc,

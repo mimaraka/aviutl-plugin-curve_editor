@@ -348,39 +348,39 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 			// ベジェモードのとき
 		case Mode_Bezier:
 			if (g_config.trace)
-				g_curve_bezier_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+				g_curve_bezier_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
 			g_curve_bezier.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 			break;
 
-			// マルチベジェモードのとき
-		case Mode_Multibezier:
+			// ベジェ(複数)モードのとき
+		case Mode_Bezier_Multi:
 			if (g_config.trace)
-				g_curve_mb_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+				g_curve_bezier_multi_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
-			g_curve_mb[g_config.current_id.multibezier - 1].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			g_curve_bezier_multi[g_config.current_id.multi - 1].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 			break;
 
-			// 数値指定モードのとき
-		case Mode_Value:
+			// 値指定モードのとき
+		case Mode_Bezier_Value:
 			if (g_config.trace)
-				g_curve_value_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+				g_curve_bezier_value_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
-			g_curve_value[g_config.current_id.value].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
+			g_curve_bezier_value[g_config.current_id.value].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 			break;
 
 			// 振動モードのとき
 		case Mode_Elastic:
 			if (g_config.trace)
-				g_curve_elastic_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+				g_curve_elastic_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
 			g_curve_elastic.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 			break;
 
-			// 弾性モードのとき
+			// バウンスモードのとき
 		case Mode_Bounce:
 			if (g_config.trace)
-				g_curve_bounce_previous.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+				g_curve_bounce_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
 
 			g_curve_bounce.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
 			break;

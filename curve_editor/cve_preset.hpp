@@ -26,7 +26,7 @@ namespace cve {
 
 		Preset();
 
-		BOOL				initialize(HWND hwnd_p, const Curve_Class& cv, LPTSTR nm);
+		BOOL				init(HWND hwnd_p, const Curve_Class& cv, LPTSTR nm);
 
 		void				move(int panel_width, int index);
 	};
@@ -37,11 +37,11 @@ namespace cve {
 //----------------------------------------------------------------------------------
 //		extern宣言
 //----------------------------------------------------------------------------------
-extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_DEFAULT> g_presets_normal_default;
-extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_CUSTOM> g_presets_normal_custom;
+extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_DEFAULT> g_presets_bezier_default;
+extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_CUSTOM> g_presets_bezier_custom;
 
-extern cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_DEFAULT> g_presets_mb_default;
-extern cve::Static_Array<cve::Preset<cve::Curve_Multibezier>, CVE_PRESET_NUM_CUSTOM> g_presets_mb_custom;
+extern cve::Static_Array<cve::Preset<cve::Curve_Bezier_Multi>, CVE_PRESET_NUM_DEFAULT> g_presets_bezier_multi_default;
+extern cve::Static_Array<cve::Preset<cve::Curve_Bezier_Multi>, CVE_PRESET_NUM_CUSTOM> g_presets_bezier_multi_custom;
 
 extern cve::Static_Array<cve::Preset<cve::Curve_Elastic>, CVE_PRESET_NUM_CUSTOM> g_presets_elastic_custom;
 
@@ -66,8 +66,8 @@ cve::Preset<Curve_Class>::Preset()
 		is_id_available = true;
 
 		// 既存のプリセットのIDを検索
-		for (int i = 0; i < (int)g_presets_normal_custom.size; i++) {
-			if (count == g_presets_normal_custom[i].id) {
+		for (int i = 0; i < (int)g_presets_bezier_custom.size; i++) {
+			if (count == g_presets_bezier_custom[i].id) {
 				is_id_available = false;
 				break;
 			}
@@ -88,7 +88,7 @@ cve::Preset<Curve_Class>::Preset()
 //		プリセット(ウィンドウ)を作成
 //---------------------------------------------------------------------
 template <typename Curve_Class>
-BOOL cve::Preset<Curve_Class>::initialize(HWND hwnd_p, const Curve_Class& cv, LPTSTR nm)
+BOOL cve::Preset<Curve_Class>::init(HWND hwnd_p, const Curve_Class& cv, LPTSTR nm)
 {
 	strcpy_s(name, CVE_PRESET_NAME_MAX, nm);
 	std::string class_name = "cve_preset_" + std::to_string(id);
@@ -191,7 +191,7 @@ LRESULT cve::Preset<Curve_Class>::wndproc(HWND hw, UINT msg, WPARAM wparam, LPAR
 
 		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].preset_tx);
 
-		draw_content(bg, &rect_title, strcmp(name, "") == 0 ? "(noname)" : name, true);
+		draw_content(bg, &rect_title, strcmp(name, "") == 0 ? "(無題)" : name, true);
 
 		if (g_render_target != nullptr && g_d2d1_factory != nullptr) {
 			g_render_target->BeginDraw();

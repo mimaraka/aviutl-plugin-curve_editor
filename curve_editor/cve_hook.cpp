@@ -49,8 +49,8 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		}
 		switch (g_config.edit_mode) {
 		case cve::Mode_Bezier:
-		case cve::Mode_Multibezier:
-		case cve::Mode_Value:
+		case cve::Mode_Bezier_Multi:
+		case cve::Mode_Bezier_Value:
 			idx_edit_mode = 0;
 			break;
 
@@ -123,8 +123,8 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			data = g_curve_bezier.create_number();
 			break;
 
-		case cve::Mode_Multibezier:
-			data = g_config.current_id.multibezier;
+		case cve::Mode_Bezier_Multi:
+			data = g_config.current_id.multi;
 			break;
 
 		case cve::Mode_Elastic:
@@ -135,9 +135,12 @@ BOOL CALLBACK dialogproc_hooked(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			data = g_curve_bounce.create_number();
 			break;
 
-		case cve::Mode_Value:
+		case cve::Mode_Bezier_Value:
 			data = -g_config.current_id.value;
 			break;
+
+		default:
+			data = 0;
 		}
 
 		::_itoa_s(data, text, MAX_PATH, 10);
