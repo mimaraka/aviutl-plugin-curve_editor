@@ -98,20 +98,89 @@ BOOL CALLBACK					dialogproc_hooked(HWND, UINT, WPARAM, LPARAM);
 //		インライン関数
 //----------------------------------------------------------------------------------
 
+// Float_Point -> Double_Point
+//inline cve::Double_Point to_double_point(const cve::Float_Point& pt)
+//{
+//	return  {
+//		(double)pt.x,
+//		(double)pt.y
+//	};
+//}
+//
+//// POINT -> Double_Point
+//inline cve::Double_Point to_double_point(const POINT& pt)
+//{
+//	return  {
+//		(double)pt.x,
+//		(double)pt.y
+//	};
+//}
+//
+//// Float_Point -> Double_Point
+//inline cve::Float_Point to_float_point(const cve::Double_Point& pt)
+//{
+//	return  {
+//		(double)pt.x,
+//		(double)pt.y
+//	};
+//}
+//
+//// POINT -> Double_Point
+//inline cve::Float_Point to_float_point(const POINT& pt)
+//{
+//	return  {
+//		(float)pt.x,
+//		(float)pt.y
+//	};
+//}
+
 //グラフ -> クライアント
+inline cve::Double_Point to_client2(double graph_x, double graph_y)
+{
+	return {
+		g_view_info.origin.x + graph_x * g_view_info.scale.x,
+		g_view_info.origin.y + graph_y * g_view_info.scale.y,
+	};
+}
+
+inline cve::Double_Point to_client2(const cve::Double_Point& pt_graph)
+{
+	return {
+		to_client2(pt_graph.x, pt_graph.y).x,
+		to_client2(pt_graph.x, pt_graph.y).y
+	};
+}
+
+inline cve::Double_Point to_client2(const cve::Float_Point& pt_graph)
+{
+	return {
+		to_client2((double)pt_graph.x, (double)pt_graph.y).x,
+		to_client2((double)pt_graph.x, (double)pt_graph.y).y
+	};
+}
+
+
+inline cve::Double_Point to_client2(const POINT& pt_graph)
+{
+	return {
+		to_client2((double)pt_graph.x, (double)pt_graph.y).x,
+		to_client2((double)pt_graph.x, (double)pt_graph.y).y
+	};
+}
+
 inline cve::Float_Point to_client(int gr_x, int gr_y)
 {
 	return {
-		g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
-		g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
+		(float)g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
+		(float)g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
 	};
 }
 
 inline cve::Float_Point to_clientf(float gr_x, float gr_y)
 {
 	return {
-		g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
-		g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
+		(float)g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
+		(float)g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
 	};
 }
 

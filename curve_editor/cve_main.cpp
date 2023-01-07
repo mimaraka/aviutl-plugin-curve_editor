@@ -24,7 +24,7 @@ cve::Curve_Bezier_Value				g_curve_bezier_value[CVE_CURVE_MAX],
 
 cve::Config						g_config;
 
-cve::Window						g_window_main,
+aului::Window					g_window_main,
 								g_window_menu,
 								g_window_editor,
 								g_window_library,

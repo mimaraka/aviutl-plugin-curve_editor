@@ -28,7 +28,7 @@ extern const cve::Theme						g_theme[2];
 
 extern cve::Config							g_config;
 
-extern cve::Window							g_window_main,
+extern aului::Window						g_window_main,
 											g_window_menu,
 											g_window_editor,
 											g_window_library,

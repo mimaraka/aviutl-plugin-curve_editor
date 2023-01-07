@@ -97,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs\aviutl_exedit_sdk;C:\aviutl_libs;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
@@ -124,7 +124,7 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs\aviutl_exedit_sdk;C:\aviutl_libs;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
@@ -151,7 +151,7 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -177,7 +177,7 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -258,8 +258,6 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="cve_rectangle.cpp" />
-    <ClCompile Include="cve_window.cpp" />
     <ClCompile Include="cve_wndproc_editor.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>

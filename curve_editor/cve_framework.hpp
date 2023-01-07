@@ -18,6 +18,7 @@
 #include <aulslib/exedit.h>
 #include <aulslib/aviutl.h>
 #include <yulib/memory.h>
+#include <auluilib/aului.hpp>
 #include "cve_macro.hpp"
 #include "resource.h"
 

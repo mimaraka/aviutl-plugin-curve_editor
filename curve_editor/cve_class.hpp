@@ -235,39 +235,9 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		ウィンドウ
-	//---------------------------------------------------------------------
-	class Window {
-	protected:
-		static LRESULT CALLBACK wndproc_static(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-	public:
-		HWND hwnd;
-
-		BOOL				create(
-			HWND		hwnd_parent,
-			LPCTSTR		class_name,
-			WNDPROC		wndproc,
-			LONG		window_style,
-			LONG		class_style,
-			const RECT& rect,
-			LPVOID		lp_param
-		);
-
-		virtual void		move(const RECT& rect) const;
-		void				redraw() const;
-		BOOL				close() const;
-		BOOL				show() const;
-		BOOL				hide() const;
-	};
-
-
-
-	//---------------------------------------------------------------------
 	//		ボタン
 	//---------------------------------------------------------------------
-	class Button : public Window {
+	class Button : public aului::Window {
 	public:
 		enum Content_Type {
 			Null,
@@ -405,23 +375,6 @@ namespace cve {
 
 
 	//---------------------------------------------------------------------
-	//		矩形
-	//---------------------------------------------------------------------
-	class Rectangle {
-	public:
-		RECT rect;
-
-		void set(const RECT& rc);
-		void set(int left, int top, int right, int bottom);
-		void set_margin(int left, int top, int right, int bottom);
-		void divide(LPRECT rects_child[], float weights[], int n) const;
-		void client_to_screen(HWND hwnd);
-		void screen_to_client(HWND hwnd);
-	};
-
-
-
-	//---------------------------------------------------------------------
 	//		オブジェクト設定ダイアログのボタン
 	//---------------------------------------------------------------------
 	class Obj_Dialog_Buttons {
@@ -429,12 +382,12 @@ namespace cve {
 		HWND hwnd_obj;
 		HWND hwnd_button;
 
-		BOOL id_to_rect(int id_, Rectangle* rect);
+		BOOL id_to_rect(int id_, aului::Window_Rectangle* rect);
 
 	public:
 		int id = -1;
 		// オブジェクト設定ダイアログのクライアント座標
-		Rectangle rect_button;
+		aului::Window_Rectangle rect_button;
 
 		void	init(HWND hwnd) { hwnd_obj = hwnd; }
 		BOOL	is_hovered() const { return id >= 0; }
@@ -452,20 +405,20 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Graph_View_Info {
 	public:
-		Float_Point origin;
+		Double_Point origin;
 		Double_Point scale;
 
 		void fit(const RECT& rect)
 		{
-			origin.x = CVE_GRAPH_PADDING;
+			origin.x = (double)CVE_GRAPH_PADDING;
 			scale.x = ((double)rect.right - (int)(2 * CVE_GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
 
 			if (rect.right > rect.bottom && rect.bottom > CVE_GRAPH_PADDING * 2 + CVE_GRAPH_RESOLUTION * CVE_GRAPH_SCALE_MIN) {
-				origin.y = (float)(rect.bottom - CVE_GRAPH_PADDING);
+				origin.y = (double)(rect.bottom - CVE_GRAPH_PADDING);
 				scale.y = ((double)rect.bottom - (int)(2 * CVE_GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
 			}
 			else {
-				origin.y = (rect.bottom + rect.right) * 0.5f - CVE_GRAPH_PADDING;
+				origin.y = (rect.bottom + rect.right) * 0.5 - CVE_GRAPH_PADDING;
 				scale.y = scale.x;
 			}
 		}

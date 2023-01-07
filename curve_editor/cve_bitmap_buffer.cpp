@@ -293,28 +293,28 @@ void cve::Bitmap_Buffer::draw_panel_editor()
 	D2D1_RECT_F rect_left = {
 		0,
 		0,
-		g_view_info.origin.x,
+		(float)g_view_info.origin.x,
 		(float)rect.bottom
 	};
 
 	D2D1_RECT_F rect_right = {
-		g_view_info.origin.x + (float)(g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
+		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
 		0,
 		(float)rect.right,
 		(float)rect.bottom,
 	};
 
 	D2D1_RECT_F rect_up = {
-		g_view_info.origin.x,
+		(float)g_view_info.origin.x,
 		0,
-		g_view_info.origin.x + (float)(g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
+		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
 		to_client(0, (int)(CVE_CURVE_VALUE_MAX_Y * CVE_GRAPH_RESOLUTION)).y
 	};
 
 	D2D1_RECT_F rect_down = {
-		g_view_info.origin.x,
+		(float)g_view_info.origin.x,
 		to_client(0, (int)(CVE_CURVE_VALUE_MIN_Y * CVE_GRAPH_RESOLUTION)).y,
-		g_view_info.origin.x + (float)(g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
+		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
 		(float)rect.bottom
 	};
 

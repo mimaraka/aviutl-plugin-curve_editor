@@ -39,13 +39,7 @@
     <ClCompile Include="cve_lua.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="cve_window.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="cve_hook.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="cve_rectangle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="cve_obj_dialog_buttons.cpp">

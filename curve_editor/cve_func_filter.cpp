@@ -77,7 +77,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 		g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 
 		if (g_window_editor.hwnd) {
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			::SendMessage(g_window_editor.hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
 
 			for (int i = 0; i < CVE_CURVE_MAX; i++) {
 				if (!g_curve_bezier_multi[i].is_data_valid()) {
@@ -317,6 +317,7 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
 
 		g_window_main.create(
+			g_fp->dll_hinst,
 			hwnd,
 			"WINDOW_MAIN",
 			wndproc_main,

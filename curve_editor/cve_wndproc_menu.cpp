@@ -13,12 +13,12 @@
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	RECT rect_wnd;
+	RECT				rect_wnd;
 
-	static HMENU menu;
+	static HMENU		menu;
 	static MENUITEMINFO minfo;
 
-	static cve::Bitmap_Buffer bitmap_buffer;
+	static cve::Bitmap_Buffer	bitmap_buffer;
 	static cve::Button	copy,
 						read,
 						save,
@@ -28,11 +28,11 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 						id_back,
 						id_next;
 
-	static cve::Button_Param param;
-	static cve::Button_ID id_id;
+	static cve::Button_Param	param;
+	static cve::Button_ID		id_id;
 
-	cve::Rectangle		rect_lower_buttons,
-						rect_id_buttons;
+	aului::Window_Rectangle		rect_lower_buttons,
+								rect_id_buttons;
 
 	RECT				rect_copy,
 						rect_read,
@@ -44,12 +44,12 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 						rect_id_id,
 						rect_id_next;
 
-	POINT			pt_client = {
+	POINT				pt_client = {
 		GET_X_LPARAM(lparam),
 		GET_Y_LPARAM(lparam)
 	};
 
-	LPCTSTR str_mode[] = {
+	LPCTSTR				str_mode[] = {
 		CVE_STR_MODE_BEZIER,
 		CVE_STR_MODE_MULTIBEZIER,
 		CVE_STR_MODE_VALUE,
@@ -307,7 +307,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CVE_CM_REDRAW:
+		case aului::Window::COMMAND_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
 			mode.redraw();
 
@@ -485,7 +485,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			switch (g_config.edit_mode) {
 			case cve::Mode_Bezier:
 				::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PARAM), hwnd, dialogproc_bezier_param);
-				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+				g_window_editor.redraw();
 				break;
 
 			case cve::Mode_Elastic:

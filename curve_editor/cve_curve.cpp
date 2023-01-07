@@ -177,7 +177,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 	Point_Address tmp;
 	int left_side, right_side, top, bottom;
 
-	// その時点のキーの押下状態を調べることができる
+	// キーの押下状態
 	const bool move_symmetrically = ::GetAsyncKeyState(VK_SHIFT) < 0 && ::GetAsyncKeyState(VK_CONTROL) < 0;
 	const bool is_angle_locked = ::GetAsyncKeyState(VK_MENU) < 0;
 	const bool snapped = ::GetAsyncKeyState(VK_SHIFT) < 0 && ::GetAsyncKeyState(VK_CONTROL) >= 0;
@@ -217,7 +217,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 	}
 
 
-	// Altキー
+	// [Alt]キー
 	if (is_angle_locked) {
 		// 記録等の処理
 		if (!alt_key) {
@@ -248,7 +248,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 				pt_result.y = bottom + (int)((pt_result.x - left_side) * (pt_lock.y - bottom) / (double)(pt_lock.x - left_side));
 		}
 	}
-	// Ctrlキー
+	// [Ctrl]キー
 	else if (is_length_locked) {
 		if (!ctrl_key) {
 			ctrl_key = true;
@@ -295,7 +295,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 				pt_result.y = result_y;
 		}
 	}
-	// Shiftキー
+	// [Shift]キー
 	else if (snapped) {
 		if (!shift_key) {
 			shift_key = true;
@@ -928,8 +928,8 @@ void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_w
 
 	if (pt_idx > 0) {
 		g_render_target->DrawLine(
-			D2D1::Point2F(to_client(ctpts[pt_idx].pt_center).x, 0),
-			D2D1::Point2F(to_client(ctpts[pt_idx].pt_center).x, (float)rect_wnd.bottom),
+			D2D1::Point2F((float)to_client2(ctpts[pt_idx].pt_center).x, 0.0f),
+			D2D1::Point2F((float)to_client2(ctpts[pt_idx].pt_center).x, (float)rect_wnd.bottom),
 			bitmap_buffer->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
 		);
 	}

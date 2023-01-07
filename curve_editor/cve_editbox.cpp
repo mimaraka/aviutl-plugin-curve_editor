@@ -26,6 +26,7 @@ BOOL cve::Edit_Box::init(
 	line_height = l_height;
 
 	return create(
+		g_fp->dll_hinst,
 		hwnd_p,
 		name,
 		wndproc_static,
@@ -117,7 +118,7 @@ LRESULT cve::Edit_Box::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		// ƒRƒ}ƒ“ƒh
 	case WM_COMMAND:
 		switch (wparam) {
-		case CVE_CM_REDRAW:
+		case aului::Window::COMMAND_REDRAW:
 			::InvalidateRect(hw, NULL, FALSE);
 			::InvalidateRect(editbox, NULL, FALSE);
 			return 0;

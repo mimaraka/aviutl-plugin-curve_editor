@@ -16,7 +16,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 	static cve::Edit_Box search;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT rect_wnd;
-	cve::Rectangle rect_preset_list, rect_search_bar;
+	aului::Window_Rectangle rect_preset_list, rect_search_bar;
 	static cve::Bitmap_Buffer bitmap_buffer;
 
 	::GetClientRect(hwnd, &rect_wnd);
@@ -47,6 +47,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 		// プリセットのリスト
 		g_window_preset_list.create(
+			g_fp->dll_hinst,
 			hwnd,
 			"WINDOW_PRESET_LIST",
 			wndproc_preset_list,
@@ -85,7 +86,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CVE_CM_REDRAW:
+		case aului::Window::COMMAND_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
 			g_window_preset_list.redraw();
 			search.redraw();
@@ -147,7 +148,7 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CVE_CM_REDRAW:
+		case aului::Window::COMMAND_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 

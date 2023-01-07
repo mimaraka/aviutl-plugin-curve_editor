@@ -72,16 +72,14 @@
 
 
 //フラグ
-#define BIT(num)						((UINT)1 << num)
-
-#define CVE_EDGE_LT						BIT(0)
-#define CVE_EDGE_LB						BIT(1)
-#define CVE_EDGE_RT						BIT(2)
-#define CVE_EDGE_RB						BIT(3)
+#define CVE_EDGE_LT						1 << 0
+#define CVE_EDGE_LB						1 << 1
+#define CVE_EDGE_RT						1 << 2
+#define CVE_EDGE_RB						1 << 3
 #define CVE_EDGE_ALL					CVE_EDGE_LT | CVE_EDGE_LB | CVE_EDGE_RT | CVE_EDGE_RB
 
-#define CVE_BUTTON_ENABLED				BIT(0)
-#define CVE_BUTTON_DISABLED				BIT(1)
+#define CVE_BUTTON_ENABLED				1 << 0
+#define CVE_BUTTON_DISABLED				1 << 1
 
 
 
@@ -120,7 +118,6 @@
 //---------------------------------------------------------------------
 //		コマンド
 //---------------------------------------------------------------------
-#define CVE_CM_REDRAW					0x0800
 #define CVE_CM_COPY						0x0801
 #define CVE_CM_READ						0x0802
 #define CVE_CM_SAVE						0x0803

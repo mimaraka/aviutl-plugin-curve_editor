@@ -106,6 +106,7 @@ BOOL cve::Preset<Curve_Class>::init(HWND hwnd_p, const Curve_Class& cv, LPTSTR n
 	curve = cv;
 
 	return create(
+		g_fp->dll_hinst,
 		hwnd_p,
 		(LPTSTR)class_name.c_str(),
 		wndproc_static,

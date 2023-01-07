@@ -45,6 +45,7 @@ BOOL cve::Button::init(
 	}
 
 	return create(
+		g_fp->dll_hinst,
 		hwnd_p,
 		name,
 		wndproc_static,
@@ -76,6 +77,8 @@ void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content,
 	// •¶Žš—ñ‚ð•`‰æ
 	if (content_type == Button::String && content != nullptr) {
 		::SelectObject(bitmap_buffer.hdc_memory, font);
+
+		//g_render_target->DrawTextA();
 
 		::DrawText(
 			bitmap_buffer.hdc_memory,
@@ -161,7 +164,7 @@ void cve::Button::set_status(int flags)
 	else if (flags & CVE_BUTTON_DISABLED)
 		disabled = true;
 
-	::SendMessage(hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+	::SendMessage(hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
 }
 
 
@@ -280,7 +283,7 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	// ƒRƒ}ƒ“ƒh
 	case WM_COMMAND:
 		switch (wparam) {
-		case CVE_CM_REDRAW:
+		case aului::Window::COMMAND_REDRAW:
 			::InvalidateRect(hw, NULL, FALSE);
 			return 0;
 
@@ -498,7 +501,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 				break;
 			}
 
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			g_window_editor.redraw();
 		}
 		else ::SetCursor(::LoadCursor(NULL, IDC_HAND));
 

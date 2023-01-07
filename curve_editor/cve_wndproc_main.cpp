@@ -16,7 +16,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static bool is_separator_moving = false;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT	rect_wnd;
-	cve::Rectangle rect_sepr, rect_header, rect_editor, rect_library;
+	aului::Window_Rectangle rect_sepr, rect_header, rect_editor, rect_library;
 	static cve::Bitmap_Buffer bitmap_buffer;
 	const bool is_vertical = g_config.layout_mode == cve::Config::Vertical;
 
@@ -65,6 +65,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		// エディタパネル
 		g_window_editor.create(
+			g_fp->dll_hinst,
 			hwnd,
 			"WINDOW_EDITOR",
 			wndproc_editor,
@@ -76,6 +77,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		// ヘッダパネル
 		g_window_menu.create(
+			g_fp->dll_hinst,
 			hwnd,
 			"WINDOW_HEADER",
 			wndproc_menu,
@@ -87,6 +89,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		// プリセットパネル
 		g_window_library.create(
+			g_fp->dll_hinst,
 			hwnd,
 			"WINDOW_PRESET",
 			wndproc_library,
@@ -148,7 +151,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case CVE_CM_REDRAW:
+		case aului::Window::COMMAND_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
 			g_window_menu.move(rect_header.rect);
 			g_window_editor.move(rect_editor.rect);

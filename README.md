@@ -1,12 +1,10 @@
-# Curve Editor v1.0.4 for AviUtl
+# Curve Editor for AviUtl
 ![graph](https://user-images.githubusercontent.com/106879397/208284126-54f9caf2-8525-4a1b-8c89-6e3726afe3c1.png)  
 
 様々なイージングをウィンドウ上で編集できるAviUtlプラグイン&スクリプトです。  
 
 ## ダウンロード
-最新バージョン: **v1.0.4**
-
-<a href="https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/download/v1.0.4/curve_editor-v1.0.4.zip">![Download](https://user-images.githubusercontent.com/106879397/198503637-3f0ca637-08cf-47b0-afdc-10f9974c7b37.png)</a>
+[こちら](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)から最新バージョンのCurve Editor(`curve_editor-v*.zip`)をダウンロードしてください。
 
 ## インストール
 同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  
@@ -86,7 +84,7 @@ curve_editor.getcurve(モード番号, パラメータ値, 進捗(0~1), 開始�
 ## 動作環境
 | OS | AviUtl | 拡張編集 | 
 | :---: | :---: | :---: |
-| Windows 7~11 | 1.00, 1.10 | ~0.93rc(0.92推奨) |  
+| Windows 7~11 | 1.00, 1.10 | 0.92~ (0.92推奨) |  
 
 ※[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)が必要です。
 

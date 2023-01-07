@@ -22,7 +22,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	//double
 	static double	prev_scale_x, prev_scale_y;
-	static float	prev_o_x, prev_o_y;
+	static double	prev_o_x, prev_o_y;
 
 	//POINT
 	static POINT	pt_view;
@@ -221,14 +221,14 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		// IDタイプのモードのとき
 		if (g_config.edit_mode == cve::Mode_Bezier_Multi || g_config.edit_mode == cve::Mode_Bezier_Value) {
-			// こまめに保存
-			if (1) {
-				if (g_fp->exfunc->get_sys_info(g_editp, sys_info)) {
-					if (sys_info->project_name) {
+			//// こまめに保存
+			//if (1) {
+			//	if (g_fp->exfunc->get_sys_info(g_editp, sys_info)) {
+			//		if (sys_info->project_name) {
 
-					}
-				}
-			}
+			//		}
+			//	}
+			//}
 
 			// 自動適用(AviUtlを再描画)
 			if (g_config.auto_apply)
@@ -462,7 +462,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// 枠を描画
 			POINT sc_pt = pt_client;
 			::ClientToScreen(hwnd, &sc_pt);
-			cve::Rectangle old_rect;
+			aului::Window_Rectangle old_rect;
 
 			// 更新
 			int old_id = obj_buttons.update(&sc_pt, &old_rect.rect);
@@ -553,7 +553,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		switch (wparam) {
 			// 再描画
-		case CVE_CM_REDRAW:
+		case aului::Window::COMMAND_REDRAW:
 			::InvalidateRect(hwnd, NULL, FALSE);
 			return 0;
 
@@ -820,7 +820,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// セパレータの位置を初期化
 		case ID_MENU_RESET_SEPARATOR:
 			g_config.separator = CVE_SEPARATOR_WIDTH;
-			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			::SendMessage(g_window_main.hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
 			return 0;
 
 			// 前のIDに移動
@@ -837,7 +837,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_VERTICAL:
 			g_config.layout_mode = cve::Config::Vertical;
 
-			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			::SendMessage(g_window_main.hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
 			return 0;
 
@@ -845,7 +845,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_HORIZONTAL:
 			g_config.layout_mode = cve::Config::Horizontal;
 
-			::SendMessage(g_window_main.hwnd, WM_COMMAND, CVE_CM_REDRAW, 0);
+			::SendMessage(g_window_main.hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
 			::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
 			return 0;
 

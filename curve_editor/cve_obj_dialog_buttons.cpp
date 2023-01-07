@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------
 //		IDÇ©ÇÁRECT
 //---------------------------------------------------------------------
-BOOL cve::Obj_Dialog_Buttons::id_to_rect(int id_, Rectangle* rect)
+BOOL cve::Obj_Dialog_Buttons::id_to_rect(int id_, aului::Window_Rectangle* rect)
 {
 	HWND hwnd_bt = ::GetDlgItem(hwnd_obj, 4000 + id_);
 	if (::IsWindowVisible(hwnd_bt)) {
@@ -32,7 +32,7 @@ BOOL cve::Obj_Dialog_Buttons::id_to_rect(int id_, Rectangle* rect)
 //---------------------------------------------------------------------
 int cve::Obj_Dialog_Buttons::update(LPPOINT pt_sc, LPRECT old_rect)
 {
-	Rectangle rect_bt;
+	aului::Window_Rectangle rect_bt;
 	::ScreenToClient(hwnd_obj, pt_sc);
 	for (int i = 0; i < auls::EXEDIT_OBJECT::MAX_TRACK; i++) {
 		if (id_to_rect(i, &rect_bt) && ::PtInRect(&rect_bt.rect, *pt_sc)) {
@@ -132,7 +132,7 @@ void cve::Obj_Dialog_Buttons::highlight() const
 //---------------------------------------------------------------------
 void cve::Obj_Dialog_Buttons::invalidate(const LPRECT rect) const
 {
-	Rectangle rc;
+	aului::Window_Rectangle rc;
 
 	rc.rect = rect ? *rect : rect_button.rect;
 	rc.set_margin(-3, -3, -3, -3);
