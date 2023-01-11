@@ -6,7 +6,6 @@
 
 #include "cve_header.hpp"
 
-#define CVE_REGEX_VALUE					R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)"
 #define CVE_REGEX_FLOW_1				R"()"
 #define CVE_REGEX_FLOW_2				R"(^\s*\[\s*(\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\},)+\s*\{\s*"name"\s*:\s*".*"\s*,\s*"curve"\s*:\s*\[\s*(\s*-?\d\.?\d+\s*,){3}\s*-?\d\.?\d+\s*\]\s*\}\s*\]\s*$)"
 #define CVE_REGEX_CEP					R"(^(\s*\{\s*".*"(\s*\[\s*-?\d?\.?\d+\s*,\s*-?\d?\.?\d+\s*\]\s*)+\s*\}\s*)+$)"
@@ -206,12 +205,11 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 
 //---------------------------------------------------------------------
-//		ダイアログプロシージャ（カーブのパラメータの設定）
+//		ダイアログプロシージャ（ベジェのパラメータの設定）
 //---------------------------------------------------------------------
 BOOL CALLBACK dialogproc_bezier_param(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	TCHAR buffer[30];
-	std::regex re(CVE_REGEX_VALUE);
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -226,34 +224,11 @@ BOOL CALLBACK dialogproc_bezier_param(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		switch (LOWORD(wparam)) {
 		case IDOK:
 			::GetDlgItemText(hwnd, IDC_EDIT_VALUE, buffer, 30);
-			if (std::regex_match(buffer, re)) {
-				std::string str = buffer;
-				std::vector<std::string> vec = cve::split(buffer, ',');
 
-				float values[4];
-
-				values[0] = MINMAX_LIMIT(std::stof(vec[0]), 0, 1);
-				values[1] = MINMAX_LIMIT(
-					std::stof(vec[1]),
-					CVE_CURVE_VALUE_MIN_Y,
-					CVE_CURVE_VALUE_MAX_Y
-				);
-				values[2] = MINMAX_LIMIT(std::stof(vec[2]), 0, 1);
-				values[3] = MINMAX_LIMIT(
-					std::stof(vec[3]),
-					CVE_CURVE_VALUE_MIN_Y,
-					CVE_CURVE_VALUE_MAX_Y
-				);
-
-				g_curve_bezier.ctpts[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
-				g_curve_bezier.ctpts[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);
-				g_curve_bezier.ctpts[1].pt_left.x = (int)(values[2] * CVE_GRAPH_RESOLUTION);
-				g_curve_bezier.ctpts[1].pt_left.y = (int)(values[3] * CVE_GRAPH_RESOLUTION);
-
+			if (g_curve_bezier.read_parameters(buffer))
 				::EndDialog(hwnd, 1);
-			}
 			else if (g_config.show_popup)
-				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 
 			return 0;
 
@@ -308,7 +283,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				}
 				catch (std::out_of_range&) {
 					if (g_config.show_popup)
-						MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+						MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 					return 0;
 				}
@@ -331,7 +306,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				case cve::Mode_Bezier:
 					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
 						if (g_config.show_popup)
-							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
 					}
@@ -341,7 +316,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				case cve::Mode_Bezier_Multi:
 					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
 						if (g_config.show_popup)
-							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
 					}
@@ -351,7 +326,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				case cve::Mode_Elastic:
 					if (!(ISINRANGEEQ(value, -10211201, -1) || ISINRANGEEQ(value, 1, 10211201))) {
 						if (g_config.show_popup)
-							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
 					}
@@ -361,7 +336,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				case cve::Mode_Bounce:
 					if (!(ISINRANGEEQ(value, -11213202, -10211202) || ISINRANGEEQ(value, 10211202, 11213202))) {
 						if (g_config.show_popup)
-							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 						return 0;
 					}
@@ -372,7 +347,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				::EndDialog(hwnd, 1);
 			}
 			else if (g_config.show_popup)
-				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+				::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 			return 0;
 		case IDCANCEL:
@@ -501,7 +476,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if (strlen(buffer) == 0) {
 				if (g_config.show_popup)
-					::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+					::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
 			}
@@ -511,7 +486,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if (!ISINRANGEEQ(value, 1, CVE_CURVE_MAX)) {
 				if (g_config.show_popup)
-					::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+					::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
 				return 0;
 			}

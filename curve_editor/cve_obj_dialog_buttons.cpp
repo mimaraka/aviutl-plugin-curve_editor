@@ -96,7 +96,7 @@ void cve::Obj_Dialog_Buttons::highlight() const
 		HDC hdc = ::GetDC(hwnd_obj);
 		static ID2D1SolidColorBrush* brush = nullptr;
 
-		if (g_render_target != nullptr && g_d2d1_factory != nullptr) {
+		if (g_render_target != nullptr && g_factory != nullptr) {
 			g_render_target->BindDC(hdc, &rect_wnd);
 			g_render_target->BeginDraw();
 			g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());

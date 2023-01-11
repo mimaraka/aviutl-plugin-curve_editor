@@ -11,9 +11,10 @@
 //---------------------------------------------------------------------
 //		Direct2Dを初期化
 //---------------------------------------------------------------------
-void cve::d2d_init()
+bool cve::d2d_init()
 {
-	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &g_d2d1_factory);
+	HRESULT hresult;
+	D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &g_factory);
 	D2D1_RENDER_TARGET_PROPERTIES prop;
 	prop = D2D1::RenderTargetProperties(
 		D2D1_RENDER_TARGET_TYPE_DEFAULT,
@@ -24,7 +25,12 @@ void cve::d2d_init()
 		D2D1_RENDER_TARGET_USAGE_NONE,
 		D2D1_FEATURE_LEVEL_DEFAULT
 	);
-	g_d2d1_factory->CreateDCRenderTarget(&prop, &g_render_target);
+	hresult = g_factory->CreateDCRenderTarget(&prop, &g_render_target);
+
+	if (FAILED(hresult))
+		return false;
+	else
+		return true;
 }
 
 
@@ -229,7 +235,7 @@ void cve::apply_config_to_menu(HMENU menu, MENUITEMINFO* mi) {
 
 	//プラグイン名の反映
 	mi->fMask = MIIM_TYPE;
-	mi->dwTypeData = CVE_PLUGIN_NAME "について";
+	mi->dwTypeData = CVE_FILTER_NAME "について";
 	SetMenuItemInfo(menu, ID_MENU_ABOUT, FALSE, mi);
 }
 
@@ -341,7 +347,7 @@ int is_url_valid(LPCSTR url)
 	DWORD status_code = 0;
 
 	hinet = ::InternetOpen(
-		CVE_PLUGIN_NAME,
+		CVE_FILTER_NAME,
 		INTERNET_OPEN_TYPE_PRECONFIG,
 		NULL, NULL, NULL
 	);
@@ -465,10 +471,10 @@ DWORD WINAPI cve::check_version(LPVOID param)
 				if (ver_latest[2] != 0)
 					str_latest += "." + std::to_string(ver_latest[2]);
 
-				str_notif = "アップデートが利用可能です。ダウンロードしますか？\nバージョン：" CVE_PLUGIN_VERSION " → v" + str_latest;
-				int responce = ::MessageBox(g_fp->hwnd, str_notif.c_str(), CVE_PLUGIN_NAME, MB_OKCANCEL | MB_ICONINFORMATION);
+				str_notif = "アップデートが利用可能です。ダウンロードしますか？\nバージョン：" CVE_FILTER_VERSION " → v" + str_latest;
+				int responce = ::MessageBox(g_fp->hwnd, str_notif.c_str(), CVE_FILTER_NAME, MB_OKCANCEL | MB_ICONINFORMATION);
 				if (responce == IDOK) {
-					str_link = CVE_PLUGIN_LINK "/releases/latest";
+					str_link = CVE_FILTER_LINK "/releases/latest";
 					::ShellExecute(0, "open", str_link.c_str(), NULL, NULL, SW_SHOWNORMAL);
 				}
 				::ExitThread(TRUE);
@@ -479,13 +485,13 @@ DWORD WINAPI cve::check_version(LPVOID param)
 		}
 		if (param) {
 			::EndDialog((HWND)param, 1);
-			::MessageBox(g_fp->hwnd, CVE_STR_INFO_LATEST_VERSION, CVE_PLUGIN_NAME, MB_OK | MB_ICONINFORMATION);
+			::MessageBox(g_fp->hwnd, CVE_STR_INFO_LATEST_VERSION, CVE_FILTER_NAME, MB_OK | MB_ICONINFORMATION);
 		}
 	}
 	// 最新バージョンの取得に失敗した場合
 	else if (param) {
 		::EndDialog((HWND)param, 1);
-		::MessageBox(g_fp->hwnd, CVE_STR_ERROR_CONNECTION_FAILED, CVE_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+		::MessageBox(g_fp->hwnd, CVE_STR_ERROR_CONNECTION_FAILED, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 	}
 
 	::ExitThread(TRUE);

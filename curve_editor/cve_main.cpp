@@ -88,7 +88,7 @@ const cve::Theme g_theme[2] = {
 };
 
 //Direct2D
-ID2D1Factory*					g_d2d1_factory;
+ID2D1Factory*					g_factory;
 ID2D1DCRenderTarget*			g_render_target;
 
 
@@ -104,7 +104,7 @@ FILTER_DLL g_filter = {
 	FILTER_FLAG_EX_INFORMATION,
 	CVE_DEF_W,
 	CVE_DEF_H,
-	CVE_PLUGIN_NAME,
+	CVE_FILTER_NAME,
 	NULL,NULL,NULL,
 	NULL,NULL,
 	NULL,NULL,NULL,
@@ -116,7 +116,7 @@ FILTER_DLL g_filter = {
 	NULL,NULL,
 	NULL,
 	NULL,
-	CVE_PLUGIN_INFO,
+	CVE_FILTER_INFO,
 	NULL,NULL,
 	NULL,NULL,NULL,NULL,
 	NULL,

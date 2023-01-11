@@ -25,8 +25,8 @@ BOOL cve::Button::init(
 )
 {
 	id = ct_id;
-	description = (LPTSTR)desc;
-	edge_flag = flag;
+	text_tooltip = (LPTSTR)desc;
+	flag_edge = flag;
 	hwnd_parent = hwnd_p;
 	content_type = cont_type;
 	hovered = false;
@@ -125,7 +125,7 @@ void cve::Button::draw_edge()
 			bitmap_buffer.brush->SetOpacity(1);
 		}
 
-		bitmap_buffer.draw_rounded_edge(edge_flag, CVE_ROUND_RADIUS);
+		bitmap_buffer.draw_rounded_edge(flag_edge, CVE_ROUND_RADIUS);
 
 		g_render_target->EndDraw();
 	}
@@ -159,10 +159,10 @@ void cve::Button::set_font(int font_height, LPTSTR font_name)
 //---------------------------------------------------------------------
 void cve::Button::set_status(int flags)
 {
-	if (flags & CVE_BUTTON_ENABLED)
-		disabled = false;
-	else if (flags & CVE_BUTTON_DISABLED)
+	if (flags & FLAG_DISABLED)
 		disabled = true;
+	else
+		disabled = false;
 
 	::SendMessage(hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
 }
@@ -201,7 +201,7 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 			tool_info.uFlags = TTF_SUBCLASS;
 			tool_info.hwnd = hw;
 			tool_info.uId = id;
-			tool_info.lpszText = (LPTSTR)description;
+			tool_info.lpszText = (LPTSTR)text_tooltip;
 			::SendMessage(hwnd_tooltip, TTM_ADDTOOL, 0, (LPARAM)&tool_info);
 		}
 
@@ -210,10 +210,6 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		tme.hwndTrack = hw;
 
 		set_font(CVE_CT_FONT_H, CVE_FONT_SEMIBOLD);
-		return 0;
-
-	case WM_CLOSE:
-		bitmap_buffer.exit();
 		return 0;
 
 	case WM_SIZE:

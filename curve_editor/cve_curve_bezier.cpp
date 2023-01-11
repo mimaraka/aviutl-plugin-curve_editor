@@ -106,6 +106,44 @@ std::string cve::Curve_Bezier::create_parameters()
 
 
 //---------------------------------------------------------------------
+//		パラメータを読み取り
+//---------------------------------------------------------------------
+bool cve::Curve_Bezier::read_parameters(LPCTSTR param, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
+{
+	const std::regex regex_param(R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)");
+
+	if (std::regex_match(param, regex_param)) {
+		std::vector<std::string> vec = cve::split(param, ',');
+
+		float values[4];
+
+		values[0] = MINMAX_LIMIT(std::stof(vec[0]), 0, 1);
+		values[1] = MINMAX_LIMIT(
+			std::stof(vec[1]),
+			CVE_CURVE_VALUE_MIN_Y,
+			CVE_CURVE_VALUE_MAX_Y
+		);
+		values[2] = MINMAX_LIMIT(std::stof(vec[2]), 0, 1);
+		values[3] = MINMAX_LIMIT(
+			std::stof(vec[3]),
+			CVE_CURVE_VALUE_MIN_Y,
+			CVE_CURVE_VALUE_MAX_Y
+		);
+
+		points[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
+		points[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);
+		points[1].pt_left.x = (int)(values[2] * CVE_GRAPH_RESOLUTION);
+		points[1].pt_left.y = (int)(values[3] * CVE_GRAPH_RESOLUTION);
+
+		return true;
+	}
+	else
+		return false;
+}
+
+
+
+//---------------------------------------------------------------------
 //		スクリプトに渡す値を生成
 //---------------------------------------------------------------------
 double cve::Curve_Bezier::create_result(int number, double ratio, double st, double ed)

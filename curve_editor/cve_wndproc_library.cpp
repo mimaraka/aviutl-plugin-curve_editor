@@ -37,10 +37,6 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 
 	switch (msg) {
-	case WM_CLOSE:
-		bitmap_buffer.exit();
-		return 0;
-
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);
@@ -112,10 +108,6 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 	::GetClientRect(hwnd, &rect_wnd);
 
 	switch (msg) {
-	case WM_CLOSE:
-		bitmap_buffer.exit();
-		return 0;
-
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);

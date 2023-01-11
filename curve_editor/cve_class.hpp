@@ -39,15 +39,43 @@ namespace cve {
 
 	public:
 		HDC hdc_memory;
-		ID2D1SolidColorBrush* brush = nullptr;
+		ID2D1SolidColorBrush* brush;
 		RECT rect;
 
+		Bitmap_Buffer();
+		~Bitmap_Buffer();
+
 		void init(HWND hw);
-		void exit() const;
 		void transfer() const;
 		bool d2d_setup(COLORREF cr);
 		void set_size(const RECT& rect_wnd);
 
+		void draw_panel();
+		void draw_panel_main(const RECT& rect_sepr);
+		void draw_panel_editor();
+
+		void draw_rounded_edge(int flag, float radius);
+
+		template <class Interface>
+		void release(Interface** object)
+		{
+			if (*object != nullptr) {
+				(*object)->Release();
+				(*object) = nullptr;
+			}
+		}
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		Direct2D描画オブジェクト(継承)
+	//---------------------------------------------------------------------
+	class My_D2D_Paint_Object : public aului::Direct2d_Paint_Object {
+	private:
+		void draw_grid();
+
+	public:
 		void draw_panel();
 		void draw_panel_main(const RECT& rect_sepr);
 		void draw_panel_editor();
@@ -143,6 +171,8 @@ namespace cve {
 		int					create_number();
 		double				create_result(int number, double ratio, double st, double ed);
 		std::string			create_parameters();
+		bool				read_parameters(LPCTSTR param, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
+		bool				read_parameters(LPCTSTR param) { return read_parameters(param, ctpts); }
 	};
 
 
@@ -239,6 +269,8 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Button : public aului::Window {
 	public:
+		static constexpr int FLAG_DISABLED = 1 << 0;
+		static constexpr int FLAG_USE_ICON = 1 << 1;
 		enum Content_Type {
 			Null,
 			Icon,
@@ -246,6 +278,7 @@ namespace cve {
 		};
 
 		int					id;
+		int					status;
 
 		virtual BOOL		init(
 			HWND hwnd_p,
@@ -275,8 +308,8 @@ namespace cve {
 		HICON				icon_dark;
 		HICON				icon_light;
 		HFONT				font;
-		LPTSTR				description;
-		int					edge_flag;
+		LPTSTR				text_tooltip;
+		int					flag_edge;
 
 		void				draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content, bool change_color);
 		void				draw_edge();

@@ -55,10 +55,6 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 
 	switch (msg) {
-	case WM_CLOSE:
-		bitmap_buffer.exit();
-		return 0;
-
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);

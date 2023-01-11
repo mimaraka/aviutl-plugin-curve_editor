@@ -101,7 +101,7 @@ BOOL cve::Preset<Curve_Class>::init(HWND hwnd_p, const Curve_Class& cv, LPTSTR n
 		g_config.preset_size + CVE_PRESET_TITLE_HEIGHT
 	};
 
-	edge_flag = CVE_EDGE_ALL;
+	flag_edge = CVE_EDGE_ALL;
 
 	curve = cv;
 
@@ -165,9 +165,7 @@ LRESULT cve::Preset<Curve_Class>::wndproc(HWND hw, UINT msg, WPARAM wparam, LPAR
 
 	switch (msg) {
 	case WM_CREATE:
-		bitmap_buffer.init(hw);
-		bitmap_buffer.set_size(rect_wnd);
-
+		bitmap_buffer.init(hwnd);
 		font = ::CreateFont(
 			14, 0,
 			0, 0,
@@ -194,7 +192,7 @@ LRESULT cve::Preset<Curve_Class>::wndproc(HWND hw, UINT msg, WPARAM wparam, LPAR
 
 		draw_content(bg, &rect_title, strcmp(name, "") == 0 ? "(–³‘è)" : name, true);
 
-		if (g_render_target != nullptr && g_d2d1_factory != nullptr) {
+		if (g_render_target != nullptr && g_factory != nullptr) {
 			g_render_target->BeginDraw();
 
 			curve.draw_curve(&bitmap_buffer, rect_wnd, CVE_DRAW_CURVE_PRESET);

@@ -102,10 +102,6 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	rect_id_buttons.divide(id_buttons, NULL, 3);
 
 	switch (msg) {
-	case WM_CLOSE:
-		bitmap_buffer.exit();
-		return 0;
-
 	case WM_CREATE:
 		bitmap_buffer.init(hwnd);
 		bitmap_buffer.set_size(rect_wnd);
@@ -264,8 +260,8 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		case cve::Mode_Bezier_Value:
 			param.hide();
-			read.set_status(CVE_BUTTON_DISABLED);
-			save.set_status(CVE_BUTTON_DISABLED);
+			read.set_status(cve::Button::FLAG_DISABLED);
+			save.set_status(cve::Button::FLAG_DISABLED);
 			break;
 
 		case cve::Mode_Elastic:
@@ -358,8 +354,8 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
-			read.set_status(CVE_BUTTON_ENABLED);
-			save.set_status(CVE_BUTTON_ENABLED);
+			read.set_status(NULL);
+			save.set_status(NULL);
 			param.redraw();
 			g_window_editor.redraw();
 
@@ -374,8 +370,8 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			id_id.show();
 			id_back.show();
 			id_next.show();
-			read.set_status(CVE_BUTTON_ENABLED);
-			save.set_status(CVE_BUTTON_ENABLED);
+			read.set_status(NULL);
+			save.set_status(NULL);
 			g_window_editor.redraw();
 
 			return 0;
@@ -389,8 +385,8 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			id_id.show();
 			id_back.show();
 			id_next.show();
-			read.set_status(CVE_BUTTON_DISABLED);
-			save.set_status(CVE_BUTTON_DISABLED);
+			read.set_status(cve::Button::FLAG_DISABLED);
+			save.set_status(cve::Button::FLAG_DISABLED);
 			g_window_editor.redraw();
 
 			return 0;
@@ -404,8 +400,8 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
-			read.set_status(CVE_BUTTON_ENABLED);
-			save.set_status(CVE_BUTTON_ENABLED);
+			read.set_status(NULL);
+			save.set_status(NULL);
 			param.redraw();
 			g_window_editor.redraw();
 
@@ -420,8 +416,8 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			id_id.hide();
 			id_back.hide();
 			id_next.hide();
-			read.set_status(CVE_BUTTON_ENABLED);
-			save.set_status(CVE_BUTTON_ENABLED);
+			read.set_status(NULL);
+			save.set_status(NULL);
 			param.redraw();
 			g_window_editor.redraw();
 

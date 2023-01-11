@@ -40,7 +40,7 @@ extern FILTER*								g_fp;
 extern void*								g_editp;
 extern FILTER_DLL							g_filter;
 //Direct2D
-extern ID2D1Factory*						g_d2d1_factory;
+extern ID2D1Factory*						g_factory;
 extern ID2D1DCRenderTarget*					g_render_target;
 
 //ƒtƒbƒN

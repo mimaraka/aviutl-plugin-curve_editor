@@ -23,7 +23,7 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		int idx_edit_mode;
 		int idx_apply_mode;
 		int id_script;
-		LPCSTR script_name_top = "Type1@" CVE_PLUGIN_NAME;
+		LPCSTR script_name_top = "Type1@" CVE_FILTER_NAME;
 		TCHAR menu_label[MAX_PATH];
 
 		static MENUITEMINFO minfo;

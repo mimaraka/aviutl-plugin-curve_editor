@@ -7,7 +7,7 @@
 [こちら](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)から最新バージョンのCurve Editor(`curve_editor-v*.zip`)をダウンロードしてください。
 
 ## インストール
-同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  
+`curve_editor-v*.zip`を解凍し、同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  
 (※scriptフォルダ直下に入れないと、ドラッグ&ドロップ機能を使用することができません。)  
 [Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)をインストールしていない場合は、こちらもインストールしてください。  
 
@@ -99,6 +99,13 @@ AviUtl 1.00, 1.10
 
 ## バグ報告
 バグ報告はこのリポジトリのIssuesまたはTwitter([@mimaraka](https://twitter.com/mimaraka))のDMにてお願いします。  
+
+## その他
+当プラグイン・スクリプトは以下のプラグイン・スクリプトを参考にして作成されました：  
+- [ベジェ軌道T](https://www.nicovideo.jp/watch/sm20632293)
+- [Aulsグラフエディタ](https://auls.client.jp/)
+- [イージング設定時短プラグイン](https://github.com/kumrnm/aviutl-easing-quick-setup)
+- [イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)
 
 ## 免責事項
 当プラグイン・スクリプトを使用したことによっていかなる損害が生じても、製作者は一切の責任を負わないものとします。  

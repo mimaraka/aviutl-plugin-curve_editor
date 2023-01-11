@@ -60,10 +60,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 
 	switch (msg) {
-	case WM_CLOSE:
-		bitmap_buffer.exit();
-		return 0;
-
 		///////////////////////////////////////////
 		//		WM_CREATE
 		//		(ウィンドウが作成されたとき)
@@ -587,7 +583,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 			// 存在しない場合
 			else
-				::MessageBox(g_fp->hwnd, CVE_STR_ERROR_EXEDIT_NOT_FOUND, CVE_PLUGIN_NAME, MB_OK);
+				::MessageBox(g_fp->hwnd, CVE_STR_ERROR_EXEDIT_NOT_FOUND, CVE_FILTER_NAME, MB_OK);
 
 			// 拡張編集とオブジェクト設定ダイアログのウィンドウハンドルの取得
 			hwnd_exedit = auls::Exedit_GetWindow(g_fp);
@@ -656,7 +652,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				response = ::MessageBox(
 					hwnd,
 					CVE_STR_WARNING_DELETE,
-					CVE_PLUGIN_NAME,
+					CVE_FILTER_NAME,
 					MB_OKCANCEL | MB_ICONEXCLAMATION
 				);
 
@@ -702,7 +698,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 					response = ::MessageBox(
 						hwnd,
 						CVE_STR_WARNING_DELETE_ALL,
-						CVE_PLUGIN_NAME,
+						CVE_FILTER_NAME,
 						MB_OKCANCEL | MB_ICONEXCLAMATION
 					);
 
@@ -727,7 +723,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			::MessageBox(
 				hwnd,
 				info.c_str(),
-				CVE_PLUGIN_NAME,
+				CVE_FILTER_NAME,
 				MB_OK | MB_ICONINFORMATION
 			);
 
@@ -742,10 +738,10 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			// 本プラグインについて
 		case ID_MENU_ABOUT:
-			::MessageBox(hwnd, CVE_STR_ABOUT, CVE_PLUGIN_NAME, MB_ICONINFORMATION);
+			::MessageBox(hwnd, CVE_STR_ABOUT, CVE_FILTER_NAME, MB_ICONINFORMATION);
 			return 0;
 
-			// 値をコピー
+			// カーブの数値・IDをコピー
 		case ID_MENU_COPY:
 		case CVE_CM_COPY:
 		{
@@ -808,13 +804,13 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 #ifdef _DEBUG
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_SAVE), hwnd, dialogproc_save);
 #else
-			::MessageBox(hwnd, "プリセット機能は現在未実装です。完成までもうしばらくお待ちください。", CVE_PLUGIN_NAME, MB_ICONINFORMATION);
+			::MessageBox(hwnd, "プリセット機能は現在未実装です。完成までもうしばらくお待ちください。", CVE_FILTER_NAME, MB_ICONINFORMATION);
 #endif
 			return 0;
 			
 			// ヘルプ
 		case ID_MENU_HELP:
-			::ShellExecute(0, "open", CVE_PLUGIN_LINK_HELP, NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(0, "open", CVE_FILTER_LINK_HELP, NULL, NULL, SW_SHOWNORMAL);
 			return 0;
 
 			// セパレータの位置を初期化

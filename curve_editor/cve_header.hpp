@@ -36,7 +36,17 @@ BOOL							filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 
 namespace cve {
 	// Direct2D初期化
-	void						d2d_init();
+	bool						d2d_init();
+
+	// オブジェクト開放
+	template <class Interface>
+	inline void					d2d_release(Interface** pp_interface)
+	{
+		if (*pp_interface != nullptr) {
+			(*pp_interface)->Release();
+			(*pp_interface) = nullptr;
+		}
+	}
 
 	//文字列の分割
 	std::vector<std::string>	split(const std::string& s, TCHAR c);

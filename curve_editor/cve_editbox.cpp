@@ -21,7 +21,7 @@ BOOL cve::Edit_Box::init(
 )
 {
 	id = ct_id;
-	edge_flag = flag;
+	flag_edge = flag;
 	hwnd_parent = hwnd_p;
 	line_height = l_height;
 
@@ -71,10 +71,6 @@ LRESULT cve::Edit_Box::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		set_font(line_height, CVE_FONT_REGULAR);
 		::SendMessage(editbox, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
 
-		return 0;
-
-	case WM_CLOSE:
-		bitmap_buffer.exit();
 		return 0;
 
 	case WM_SIZE:

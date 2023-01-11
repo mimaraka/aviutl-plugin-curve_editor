@@ -785,26 +785,25 @@ void cve::Curve::draw_bezier(
 	float thickness
 )
 {
-	ID2D1GeometrySink* sink;
-	ID2D1PathGeometry* bezier;
-	static ID2D1StrokeStyle* style = nullptr;
+	ID2D1GeometrySink* sink = nullptr;
+	ID2D1PathGeometry* bezier = nullptr;
+	ID2D1StrokeStyle* style = nullptr;
 
-	if (style == nullptr) {
-		g_d2d1_factory->CreateStrokeStyle(
-			D2D1::StrokeStyleProperties(
-				D2D1_CAP_STYLE_ROUND,
-				D2D1_CAP_STYLE_ROUND,
-				D2D1_CAP_STYLE_ROUND,
-				D2D1_LINE_JOIN_MITER,
-				10.0f,
-				D2D1_DASH_STYLE_SOLID,
-				0.0f),
-			NULL, NULL,
-			&style
-		);
-	}
+	g_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.0f,
+			D2D1_DASH_STYLE_SOLID,
+			0.0f),
+		NULL, NULL,
+		&style
+	);
+	
 
-	g_d2d1_factory->CreatePathGeometry(&bezier);
+	g_factory->CreatePathGeometry(&bezier);
 	bezier->Open(&sink);
 	sink->BeginFigure(D2D1::Point2F(stpt.x, stpt.y), D2D1_FIGURE_BEGIN_HOLLOW);
 	sink->AddBezier(D2D1::BezierSegment(
@@ -817,6 +816,10 @@ void cve::Curve::draw_bezier(
 
 	if (bezier)
 		g_render_target->DrawGeometry(bezier, bitmap_buffer->brush, thickness, style);
+
+	bitmap_buffer->release(&sink);
+	bitmap_buffer->release(&bezier);
+	bitmap_buffer->release(&style);
 }
 
 
@@ -831,7 +834,7 @@ void cve::Curve::draw_handle(
 	int drawing_mode,
 	int draw_option)
 {
-	static ID2D1StrokeStyle* style = nullptr;
+	ID2D1StrokeStyle* style = nullptr;
 
 	Float_Point st_new = st;
 	Float_Point ed_new = ed;
@@ -846,7 +849,7 @@ void cve::Curve::draw_handle(
 		subtract_length(&ed_new, st_new, ed, CVE_SUBTRACT_LENGTH);
 	}
 
-	g_d2d1_factory->CreateStrokeStyle(
+	g_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
@@ -895,6 +898,7 @@ void cve::Curve::draw_handle(
 			);
 		}
 	}
+	bitmap_buffer->release(&style);
 }
 
 
@@ -904,24 +908,22 @@ void cve::Curve::draw_handle(
 //---------------------------------------------------------------------
 void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int pt_idx)
 {
-	static ID2D1StrokeStyle* style_dash;
+	ID2D1StrokeStyle* style_dash = nullptr;
 	const float dashes[] = { CVE_GRAPH_POINT_DASH, CVE_GRAPH_POINT_DASH_BLANK };
 
-	if (style_dash == nullptr) {
-		g_d2d1_factory->CreateStrokeStyle(
-			D2D1::StrokeStyleProperties(
-				D2D1_CAP_STYLE_FLAT,
-				D2D1_CAP_STYLE_FLAT,
-				D2D1_CAP_STYLE_ROUND,
-				D2D1_LINE_JOIN_MITER,
-				10.0f,
-				D2D1_DASH_STYLE_CUSTOM,
-				0.0f),
-			dashes,
-			ARRAYSIZE(dashes),
-			&style_dash
-		);
-	}
+	g_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_FLAT,
+			D2D1_CAP_STYLE_FLAT,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.0f,
+			D2D1_DASH_STYLE_CUSTOM,
+			0.0f),
+		dashes,
+		ARRAYSIZE(dashes),
+		&style_dash
+	);
 
 	// 端点以外の制御点に引かれる点線
 	bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
@@ -933,6 +935,7 @@ void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_w
 			bitmap_buffer->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
 		);
 	}
+	bitmap_buffer->release(&style_dash);
 }
 
 

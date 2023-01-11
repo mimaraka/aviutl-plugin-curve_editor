@@ -34,7 +34,8 @@ BOOL filter_init(FILTER* fp)
 	ini_load_configs(fp);
 
 	// Direct2Dの初期化
-	cve::d2d_init();
+	if (!cve::d2d_init())
+		::MessageBox(NULL, CVE_STR_ERROR_DRAWING_FAILED, CVE_FILTER_NAME, MB_OK);
 
 	return TRUE;
 }
@@ -50,12 +51,9 @@ BOOL filter_exit(FILTER* fp)
 	ini_write_configs(fp);
 
 	// Direct2Dオブジェクト開放
-	if (NULL != g_render_target) {
-		g_render_target->Release();
-	}
-	if (NULL != g_d2d1_factory) {
-		g_d2d1_factory->Release();
-	}
+	cve::d2d_release(&g_render_target);
+	cve::d2d_release(&g_factory);
+
 	return TRUE;
 }
 
@@ -86,7 +84,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 					response = ::MessageBox(
 						fp->hwnd,
 						CVE_STR_WARNING_DATA_INVALID,
-						CVE_PLUGIN_NAME,
+						CVE_FILTER_NAME,
 						MB_OKCANCEL | MB_ICONEXCLAMATION
 					);
 

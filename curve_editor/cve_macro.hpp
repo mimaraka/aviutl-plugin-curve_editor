@@ -184,16 +184,16 @@
 //---------------------------------------------------------------------
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
-#define CVE_PLUGIN_NAME						"Curve Editor"
-#define CVE_PLUGIN_VERSION					"v1.1"
+#define CVE_FILTER_NAME						"Curve Editor"
+#define CVE_FILTER_VERSION					"v1.1"
 #define CVE_VERSION_MAJOR					1
 #define CVE_VERSION_MINOR					1
 #define CVE_VERSION_REVISION				0
-#define CVE_PLUGIN_DEVELOPER				"mimaraka"
-#define CVE_PLUGIN_YEAR						"2022"
-#define CVE_PLUGIN_INFO						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION " by " CVE_PLUGIN_DEVELOPER
-#define CVE_PLUGIN_LINK						"https://github.com/mimaraka/aviutl-plugin-curve_editor"
-#define CVE_PLUGIN_LINK_HELP				CVE_PLUGIN_LINK "/wiki"
+#define CVE_FILTER_DEVELOPER				"mimaraka"
+#define CVE_FILTER_YEAR						"2022"
+#define CVE_FILTER_INFO						CVE_FILTER_NAME " " CVE_FILTER_VERSION " by " CVE_FILTER_DEVELOPER
+#define CVE_FILTER_LINK						"https://github.com/mimaraka/aviutl-plugin-curve_editor"
+#define CVE_FILTER_LINK_HELP				CVE_FILTER_LINK "/wiki"
 
 
 
@@ -208,12 +208,13 @@
 #define CVE_STR_WARNING_DELETE				"編集中のIDのカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DATA_INVALID		"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
-#define CVE_STR_ABOUT						CVE_PLUGIN_NAME " " CVE_PLUGIN_VERSION "\n(" CVE_PLUGIN_YEAR " " CVE_PLUGIN_DEVELOPER ")"
+#define CVE_STR_ABOUT						CVE_FILTER_NAME " " CVE_FILTER_VERSION "\n(" CVE_FILTER_YEAR " " CVE_FILTER_DEVELOPER ")"
 #define CVE_STR_ERROR_OUTOFRANGE			"値が範囲外です。"
 #define CVE_STR_ERROR_INPUT_INVALID			"無効な入力値です。"
 #define CVE_STR_ERROR_EXEDIT_NOT_FOUND		"拡張編集プラグイン(exedit.auf)が見つかりません。"
-#define CVE_STR_INFO_LATEST_VERSION			"お使いのバージョン (" CVE_PLUGIN_VERSION ") は最新です。"
+#define CVE_STR_INFO_LATEST_VERSION			"お使いのバージョン (" CVE_FILTER_VERSION ") は最新です。"
 #define CVE_STR_ERROR_CONNECTION_FAILED		"接続に失敗しました。"
+#define CVE_STR_ERROR_DRAWING_FAILED		"描画に失敗しました。"
 
 
 
