@@ -24,8 +24,8 @@ void cve::Curve::init(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 	pt_add[0].type = Curve_Points::Default_Left;
 	pt_add[0].pt_center = { 0, 0 };
 	pt_add[0].pt_right = {
-		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1),
-		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_1)
+		(int)(CVE_GRAPH_RESOLUTION * HANDLE_DEFAULT_1),
+		(int)(CVE_GRAPH_RESOLUTION * HANDLE_DEFAULT_1)
 	};
 	pt_add[0].pt_left = { 0, 0 };
 
@@ -40,8 +40,8 @@ void cve::Curve::init(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 	};
 
 	pt_add[1].pt_left = {
-		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2),
-		(int)(CVE_GRAPH_RESOLUTION * CVE_POINT_DEFAULT_2)
+		(int)(CVE_GRAPH_RESOLUTION * HANDLE_DEFAULT_2),
+		(int)(CVE_GRAPH_RESOLUTION * HANDLE_DEFAULT_2)
 	};
 
 	pt_add[1].pt_right = {
@@ -476,11 +476,11 @@ void cve::Curve_Type_ID::add_point(const POINT& pt_graph)
 
 	//ビューの縮尺に合わせてハンドルのデフォルトの長さを変更
 	pt_add.pt_left = {
-		pt_graph.x - (int)(CVE_HANDLE_LENGTH_DEFAULT / g_view_info.scale.x),
+		pt_graph.x - (int)(HANDLE_LENGTH_DEFAULT / g_view_info.scale.x),
 		pt_graph.y
 	};
 	pt_add.pt_right = {
-		pt_graph.x + (int)(CVE_HANDLE_LENGTH_DEFAULT / g_view_info.scale.x),
+		pt_graph.x + (int)(HANDLE_LENGTH_DEFAULT / g_view_info.scale.x),
 		pt_graph.y
 	};
 
@@ -516,7 +516,7 @@ void cve::Curve_Type_ID::add_point(const POINT& pt_graph)
 void cve::Curve_Type_ID::delete_point(const POINT& pt_client)
 {
 	Point_Address pt_address;
-	pt_in_ctpt(pt_client, &pt_address);
+	pt_on_ctpt(pt_client, &pt_address);
 	if (pt_address.position == Point_Address::Null)
 		return;
 	for (int i = 1; i < (int)ctpts.size - 1; i++) {
@@ -543,70 +543,63 @@ void cve::Curve::clear(Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 //---------------------------------------------------------------------
 //		指定した座標がポイント・ハンドルの内部に存在しているか
 //---------------------------------------------------------------------
-void cve::Curve::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
+void cve::Curve::pt_on_ctpt(const POINT& pt_client, Point_Address* pt_address, bool prioritize_point)
 {
 	RECT center, left, right;
+	Point_Address result = {
+		NULL,
+		Point_Address::Null
+	};
 
 	for (int i = 0; i < (int)ctpts.size; i++) {
 		center = {
-			(LONG)to_client(ctpts[i].pt_center).x - CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_center).y - CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_center).x + CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_center).y + CVE_POINT_BOX_WIDTH
+			(LONG)to_client(ctpts[i].pt_center).x - POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_center).y - POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_center).x + POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_center).y + POINT_BOX_WIDTH
 		};
 		left = {
-			(LONG)to_client(ctpts[i].pt_left).x - CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_left).y - CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_left).x + CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_left).y + CVE_POINT_BOX_WIDTH
+			(LONG)to_client(ctpts[i].pt_left).x - POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_left).y - POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_left).x + POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_left).y + POINT_BOX_WIDTH
 		};
 		right = {
-			(LONG)to_client(ctpts[i].pt_right).x - CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_right).y - CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_right).x + CVE_POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_right).y + CVE_POINT_BOX_WIDTH
+			(LONG)to_client(ctpts[i].pt_right).x - POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_right).y - POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_right).x + POINT_BOX_WIDTH,
+			(LONG)to_client(ctpts[i].pt_right).y + POINT_BOX_WIDTH
 		};
 
-		// ポイント上かつハンドル上のとき
-		if (::PtInRect(&center, pt_client) && ctpts[i].type == Curve_Points::Extended) {
-			if (::PtInRect(&left, pt_client) && ctpts[i].type != Curve_Points::Default_Left) {
-				if (ctpts[i].pt_center.x == ctpts[i].pt_left.x && ctpts[i].pt_center.y == ctpts[i].pt_left.y) {
-					if (::GetAsyncKeyState(VK_CONTROL) < 0) {
-						pt_address->index = i;
-						pt_address->position = Point_Address::Center;
-						return;
-					}
+		bool is_on_point = ::PtInRect(&center, pt_client) && ctpts[i].type == Curve_Points::Extended;
+		bool is_on_lhandle = ::PtInRect(&left, pt_client) && ctpts[i].type != Curve_Points::Default_Left;
+		bool is_on_rhandle = ::PtInRect(&right, pt_client) && ctpts[i].type != Curve_Points::Default_Right;
+
+		// ポイントとハンドルの両方の上にあったとき
+		
+		if (is_on_point || is_on_lhandle || is_on_rhandle) {
+			if (is_on_point && (is_on_lhandle || is_on_rhandle)) {
+				if (prioritize_point)
+					result.position = Point_Address::Center;
+				else {
+					if (is_on_lhandle)
+						result.position = Point_Address::Left;
+					else
+						result.position = Point_Address::Right;
 				}
 			}
-			else if (::PtInRect(&right, pt_client) && ctpts[i].type != Curve_Points::Default_Right) {
-				if (ctpts[i].pt_center.x == ctpts[i].pt_right.x && ctpts[i].pt_center.y == ctpts[i].pt_right.y) {
-					if (::GetAsyncKeyState(VK_CONTROL) < 0) {
-						pt_address->index = i;
-						pt_address->position = Point_Address::Center;
-						return;
-					}
-				}
-			}
-			else {
-				pt_address->index = i;
-				pt_address->position = Point_Address::Center;
-				return;
-			}
-		}
-		// ハンドル上のとき
-		if (::PtInRect(&left, pt_client) && ctpts[i].type != Curve_Points::Default_Left) {
-			pt_address->index = i;
-			pt_address->position = Point_Address::Left;
-			return;
-		}
-		else if (::PtInRect(&right, pt_client) && ctpts[i].type != Curve_Points::Default_Right) {
-			pt_address->index = i;
-			pt_address->position = Point_Address::Right;
-			return;
+			else if (is_on_point)
+				result.position = Point_Address::Center;
+			else if (is_on_lhandle)
+				result.position = Point_Address::Left;
+			else if (is_on_rhandle)
+				result.position = Point_Address::Right;
+			result.index = i;
+			break;
 		}
 	}
-	pt_address->index = NULL;
-	pt_address->position = Point_Address::Null;
+
+	*pt_address = result;
 }
 
 
@@ -777,7 +770,7 @@ void cve::Curve::reverse_curve()
 //		ベジェ曲線を描画
 //---------------------------------------------------------------------
 void cve::Curve::draw_bezier(
-	Bitmap_Buffer* bitmap_buffer,
+	aului::Direct2d_Paint_Object* paint_object,
 	const Float_Point& stpt,
 	const Float_Point& ctpt1,
 	const Float_Point& ctpt2,
@@ -789,7 +782,7 @@ void cve::Curve::draw_bezier(
 	ID2D1PathGeometry* bezier = nullptr;
 	ID2D1StrokeStyle* style = nullptr;
 
-	g_factory->CreateStrokeStyle(
+	g_p_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
@@ -803,7 +796,7 @@ void cve::Curve::draw_bezier(
 	);
 	
 
-	g_factory->CreatePathGeometry(&bezier);
+	g_p_factory->CreatePathGeometry(&bezier);
 	bezier->Open(&sink);
 	sink->BeginFigure(D2D1::Point2F(stpt.x, stpt.y), D2D1_FIGURE_BEGIN_HOLLOW);
 	sink->AddBezier(D2D1::BezierSegment(
@@ -815,11 +808,11 @@ void cve::Curve::draw_bezier(
 	sink->Close();
 
 	if (bezier)
-		g_render_target->DrawGeometry(bezier, bitmap_buffer->brush, thickness, style);
+		paint_object->p_render_target->DrawGeometry(bezier, paint_object->brush, thickness, style);
 
-	bitmap_buffer->release(&sink);
-	bitmap_buffer->release(&bezier);
-	bitmap_buffer->release(&style);
+	paint_object->release(&sink);
+	paint_object->release(&bezier);
+	paint_object->release(&style);
 }
 
 
@@ -828,7 +821,7 @@ void cve::Curve::draw_bezier(
 //		ハンドルを描画
 //---------------------------------------------------------------------
 void cve::Curve::draw_handle(
-	Bitmap_Buffer* bitmap_buffer,
+	aului::Direct2d_Paint_Object* paint_object,
 	const Float_Point& st,
 	const Float_Point& ed,
 	int drawing_mode,
@@ -839,17 +832,17 @@ void cve::Curve::draw_handle(
 	Float_Point st_new = st;
 	Float_Point ed_new = ed;
 
-	const float handle_thickness = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_HANDLE_THICKNESS : CVE_HANDLE_THICKNESS_PRESET;
-	const float point_size = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_POINT_SIZE : CVE_PONINT_SIZE_PRESET;
-	const float handle_size = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_HANDLE_SIZE : CVE_HANDLE_SIZE_PRESET;
-	const float handle_circle_line = (drawing_mode == CVE_DRAW_CURVE_REGULAR) ? CVE_HANDLE_CIRCLE_LINE : CVE_HANDLE_CIRCLE_LINE_PRESET;
+	const float handle_thickness = (drawing_mode == DRAW_CURVE_NORMAL) ? HANDLE_THICKNESS : HANDLE_THICKNESS_PRESET;
+	const float point_size = (drawing_mode == DRAW_CURVE_NORMAL) ? POINT_SIZE : POINT_SIZE_PRESET;
+	const float handle_size = (drawing_mode == DRAW_CURVE_NORMAL) ? HANDLE_SIZE : HANDLE_SIZE_PRESET;
+	const float handle_circle_line = (drawing_mode == DRAW_CURVE_NORMAL) ? HANDLE_BORDER_THICKNESS : HANDLE_BORDER_THICKNESS;
 
-	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
-		subtract_length(&st_new, ed, st, draw_option == CVE_DRAW_HANDLE_ONLY ? CVE_SUBTRACT_LENGTH : CVE_SUBTRACT_LENGTH_2);
+	if (drawing_mode == DRAW_CURVE_NORMAL) {
+		subtract_length(&st_new, ed, st, draw_option == DRAW_HANDLE_ONLY ? CVE_SUBTRACT_LENGTH : CVE_SUBTRACT_LENGTH_2);
 		subtract_length(&ed_new, st_new, ed, CVE_SUBTRACT_LENGTH);
 	}
 
-	g_factory->CreateStrokeStyle(
+	g_p_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
@@ -862,43 +855,43 @@ void cve::Curve::draw_handle(
 		&style
 	);
 
-	if (drawing_mode != CVE_DRAW_CURVE_TRACE) {
-		if (draw_option != CVE_DRAW_POINT_ONLY) {
+	if (drawing_mode != DRAW_CURVE_TRACE) {
+		if (draw_option != DRAW_POINT_ONLY) {
 			// ハンドルの直線
-			g_render_target->DrawLine(
+			paint_object->p_render_target->DrawLine(
 				D2D1::Point2F(st_new.x, st_new.y),
 				D2D1::Point2F(ed_new.x, ed_new.y),
-				bitmap_buffer->brush, handle_thickness
+				paint_object->brush, handle_thickness
 			);
 
 			// ハンドルの先端
-			g_render_target->DrawEllipse(
+			paint_object->p_render_target->DrawEllipse(
 				D2D1::Ellipse(
 					D2D1::Point2F(ed.x, ed.y),
 					handle_size, handle_size),
-				bitmap_buffer->brush, CVE_HANDLE_CIRCLE_LINE
+				paint_object->brush, HANDLE_BORDER_THICKNESS
 			);
 		}
 
 		// ハンドルの根元
-		if (draw_option == CVE_DRAW_HANDLE_ONLY) {
-			g_render_target->DrawEllipse(
+		if (draw_option == DRAW_HANDLE_ONLY) {
+			paint_object->p_render_target->DrawEllipse(
 				D2D1::Ellipse(
 					D2D1::Point2F(st.x, st.y),
 					handle_size, handle_size),
-				bitmap_buffer->brush, CVE_HANDLE_CIRCLE_LINE
+				paint_object->brush, HANDLE_BORDER_THICKNESS
 			);
 		}
 		else {
-			g_render_target->FillEllipse(
+			paint_object->p_render_target->FillEllipse(
 				D2D1::Ellipse(
 					D2D1::Point2F(st.x, st.y),
 					point_size, point_size),
-				bitmap_buffer->brush
+				paint_object->brush
 			);
 		}
 	}
-	bitmap_buffer->release(&style);
+	paint_object->release(&style);
 }
 
 
@@ -906,12 +899,15 @@ void cve::Curve::draw_handle(
 //---------------------------------------------------------------------
 //		ポイントに引かれる点線を描画
 //---------------------------------------------------------------------
-void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int pt_idx)
+void cve::Curve::draw_dash_line(
+	aului::Direct2d_Paint_Object* paint_object,
+	const RECT& rect_wnd,
+	int pt_idx)
 {
 	ID2D1StrokeStyle* style_dash = nullptr;
 	const float dashes[] = { CVE_GRAPH_POINT_DASH, CVE_GRAPH_POINT_DASH_BLANK };
 
-	g_factory->CreateStrokeStyle(
+	g_p_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
 			D2D1_CAP_STYLE_FLAT,
 			D2D1_CAP_STYLE_FLAT,
@@ -926,16 +922,16 @@ void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_w
 	);
 
 	// 端点以外の制御点に引かれる点線
-	bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
+	paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
 
 	if (pt_idx > 0) {
-		g_render_target->DrawLine(
+		paint_object->p_render_target->DrawLine(
 			D2D1::Point2F((float)to_client2(ctpts[pt_idx].pt_center).x, 0.0f),
 			D2D1::Point2F((float)to_client2(ctpts[pt_idx].pt_center).x, (float)rect_wnd.bottom),
-			bitmap_buffer->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
+			paint_object->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
 		);
 	}
-	bitmap_buffer->release(&style_dash);
+	paint_object->release(&style_dash);
 }
 
 
@@ -943,18 +939,21 @@ void cve::Curve::draw_dash_line(Bitmap_Buffer* bitmap_buffer, const RECT& rect_w
 //---------------------------------------------------------------------
 //		カーブを描画
 //---------------------------------------------------------------------
-void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode)
+void cve::Curve::draw_curve(
+	aului::Direct2d_Paint_Object* paint_object,
+	const RECT& rect_wnd,
+	int drawing_mode)
 {
 	COLORREF handle_color;
 	COLORREF curve_color;
 
-	const bool is_preset = drawing_mode == CVE_DRAW_CURVE_PRESET;
+	const bool is_preset = drawing_mode == DRAW_CURVE_PRESET;
 
-	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
+	if (drawing_mode == DRAW_CURVE_NORMAL) {
 		handle_color = g_theme[g_config.theme].handle;
 		curve_color = g_config.curve_color;
 	}
-	else if (drawing_mode == CVE_DRAW_CURVE_TRACE) {
+	else if (drawing_mode == DRAW_CURVE_TRACE) {
 		handle_color = g_theme[g_config.theme].handle;
 		curve_color = g_theme[g_config.theme].curve_trace;
 	}
@@ -967,29 +966,29 @@ void cve::Curve::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, 
 	for (int i = 0; i < (int)ctpts.size - 1; i++)
 	{
 		// 端点以外の制御点に引かれる点線
-		if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
-			draw_dash_line(bitmap_buffer, rect_wnd, i);
+		if (drawing_mode == DRAW_CURVE_NORMAL) {
+			draw_dash_line(paint_object, rect_wnd, i);
 		}
 
 		// ベジェ曲線を描画
-		bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
-		draw_bezier(bitmap_buffer,
+		paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
+		draw_bezier(paint_object,
 			is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
 			is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
 			is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
 			is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
-			CVE_CURVE_THICKNESS
+			CURVE_THICKNESS
 		);
 
 		//ハンドルの描画
 		if (g_config.show_handle) {
-			bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
-			draw_handle(bitmap_buffer,
+			paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
+			draw_handle(paint_object,
 				is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
 				is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
 				drawing_mode, NULL
 			);
-			draw_handle(bitmap_buffer,
+			draw_handle(paint_object,
 				is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
 				is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
 				drawing_mode, NULL

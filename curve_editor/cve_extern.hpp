@@ -40,8 +40,9 @@ extern FILTER*								g_fp;
 extern void*								g_editp;
 extern FILTER_DLL							g_filter;
 //Direct2D
-extern ID2D1Factory*						g_factory;
-extern ID2D1DCRenderTarget*					g_render_target;
+extern ID2D1Factory*						g_p_factory;
+extern IDWriteFactory*						g_p_write_factory;
+extern ID2D1DCRenderTarget*					g_p_render_target;
 
 //ƒtƒbƒN
 extern BOOL									(WINAPI* TrackPopupMenu_original)(HMENU, UINT, int, int, int, HWND, const RECT*);

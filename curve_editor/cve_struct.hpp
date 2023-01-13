@@ -105,6 +105,7 @@ namespace cve {
 	//		ê›íË
 	//---------------------------------------------------------------------
 	struct Config {
+		static constexpr COLORREF CURVE_COLOR_DEFAULT = RGB(148, 158, 197);
 		enum Layout_Mode {
 			Vertical,
 			Horizontal
@@ -141,5 +142,17 @@ namespace cve {
 		Layout_Mode	layout_mode;
 		Apply_Mode	apply_mode;
 		COLORREF	curve_color;
+
+		void reset_configs()
+		{
+			show_popup = true;
+			trace = true;
+			auto_copy = false;
+			auto_apply = true;
+			linearize = false;
+			notify_update = false;
+			theme = 0;
+			curve_color = CURVE_COLOR_DEFAULT;
+		}
 	};
 }

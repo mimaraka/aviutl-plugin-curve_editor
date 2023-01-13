@@ -15,9 +15,134 @@
 //---------------------------------------------------------------------
 //		ダイアログプロシージャ（設定ダイアログ）
 //---------------------------------------------------------------------
+void load_configs(HWND hwnd, HWND* combo_theme)
+{
+	if (g_config.trace)
+		::SendMessage(
+			::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
+			BM_SETCHECK,
+			BST_CHECKED, 0
+		);
+
+	if (g_config.show_popup)
+		::SendMessage(
+			::GetDlgItem(hwnd, IDC_ALERT),
+			BM_SETCHECK,
+			BST_CHECKED, 0
+		);
+
+	if (g_config.auto_copy)
+		::SendMessage(
+			::GetDlgItem(hwnd, IDC_AUTOCOPY),
+			BM_SETCHECK,
+			BST_CHECKED, 0
+		);
+
+	if (g_config.notify_update)
+		::SendMessage(
+			::GetDlgItem(hwnd, IDC_NOTIFY_UPDATE),
+			BM_SETCHECK,
+			BST_CHECKED, 0
+		);
+
+	if (g_config.auto_apply)
+		::SendMessage(
+			::GetDlgItem(hwnd, IDC_AUTO_APPLY),
+			BM_SETCHECK,
+			BST_CHECKED, 0
+		);
+
+	if (g_config.linearize)
+		::SendMessage(
+			::GetDlgItem(hwnd, IDC_LINEARIZE),
+			BM_SETCHECK,
+			BST_CHECKED, 0
+		);
+
+	*combo_theme = ::GetDlgItem(hwnd, IDC_THEME);
+	if (!::SendMessage(*combo_theme, CB_GETCOUNT, 0, 0)) {
+		::SendMessage(*combo_theme, CB_ADDSTRING, 0, (LPARAM)"ダーク");
+		::SendMessage(*combo_theme, CB_ADDSTRING, 0, (LPARAM)"ライト");
+	}
+	::SendMessage(*combo_theme, CB_SETCURSEL, g_config.theme, 0);
+}
+
+void write_configs(HWND hwnd, HWND combo_theme)
+{
+	g_config.trace = ::SendMessage(
+		::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
+		BM_GETCHECK, 0, 0
+	);
+	g_config.show_popup = ::SendMessage(
+		::GetDlgItem(hwnd, IDC_ALERT),
+		BM_GETCHECK, 0, 0
+	);
+	g_config.auto_copy = ::SendMessage(
+		::GetDlgItem(hwnd, IDC_AUTOCOPY),
+		BM_GETCHECK, 0, 0
+	);
+	g_config.notify_update = ::SendMessage(
+		::GetDlgItem(hwnd, IDC_NOTIFY_UPDATE),
+		BM_GETCHECK, 0, 0
+	);
+	g_config.auto_apply = ::SendMessage(
+		::GetDlgItem(hwnd, IDC_AUTO_APPLY),
+		BM_GETCHECK, 0, 0
+	);
+	g_config.linearize = ::SendMessage(
+		::GetDlgItem(hwnd, IDC_LINEARIZE),
+		BM_GETCHECK, 0, 0
+	);
+	g_config.theme = ::SendMessage(
+		combo_theme,
+		CB_GETCURSEL, 0, 0
+	);
+
+	// テーマ
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_THEME,
+		g_config.theme
+	);
+	// 1ステップ前のカーブを表示
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_SHOW_TRACE,
+		g_config.trace
+	);
+	// ポップアップを表示
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_SHOW_POPUP,
+		g_config.show_popup
+	);
+	// 自動コピー
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_AUTO_COPY,
+		g_config.auto_copy
+	);
+	// カーブの色
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_CURVE_COLOR,
+		g_config.curve_color
+	);
+	// アップデートを通知
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_NOTIFY_UPDATE,
+		g_config.notify_update
+	);
+	// 自動で適用
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_AUTO_APPLY,
+		g_config.auto_apply
+	);
+	// ベジェを直線にする
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_LINEARIZE,
+		g_config.linearize
+	);
+}
+
 BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	static HWND combo;
+	static HWND combo_theme;
 	static COLORREF cust_colors[16];
 
 	RECT rect_color_curve = {
@@ -25,60 +150,13 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		436, 85
 	};
 
-
 	switch (msg) {
 	case WM_CLOSE:
 		::EndDialog(hwnd, 1);
 		return 0;
 
 	case WM_INITDIALOG:
-		if (g_config.trace)
-			::SendMessage(
-				::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
-				BM_SETCHECK,
-				BST_CHECKED, 0
-			);
-
-		if (g_config.show_popup)
-			::SendMessage(
-				::GetDlgItem(hwnd, IDC_ALERT),
-				BM_SETCHECK,
-				BST_CHECKED, 0
-			);
-
-		if (g_config.auto_copy)
-			::SendMessage(
-				::GetDlgItem(hwnd, IDC_AUTOCOPY),
-				BM_SETCHECK,
-				BST_CHECKED, 0
-			);
-
-		if (g_config.notify_update)
-			::SendMessage(
-				::GetDlgItem(hwnd, IDC_NOTIFY_UPDATE),
-				BM_SETCHECK,
-				BST_CHECKED, 0
-			);
-
-		if (g_config.auto_apply)
-			::SendMessage(
-				::GetDlgItem(hwnd, IDC_AUTO_APPLY),
-				BM_SETCHECK,
-				BST_CHECKED, 0
-			);
-
-		if (g_config.linearize)
-			::SendMessage(
-				::GetDlgItem(hwnd, IDC_LINEARIZE),
-				BM_SETCHECK,
-				BST_CHECKED, 0
-			);
-
-		combo = ::GetDlgItem(hwnd, IDC_THEME);
-		::SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ダーク");
-		::SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)"ライト");
-		::SendMessage(combo, CB_SETCURSEL, g_config.theme, 0);
-
+		::load_configs(hwnd, &combo_theme);
 		return 0;
 
 	case WM_PAINT:
@@ -97,75 +175,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			g_config.trace = ::SendMessage(
-				::GetDlgItem(hwnd, IDC_PREVIOUSCURVE),
-				BM_GETCHECK, 0, 0
-			);
-			g_config.show_popup = ::SendMessage(
-				::GetDlgItem(hwnd, IDC_ALERT),
-				BM_GETCHECK, 0, 0
-			);
-			g_config.auto_copy = ::SendMessage(
-				::GetDlgItem(hwnd, IDC_AUTOCOPY),
-				BM_GETCHECK, 0, 0
-			);
-			g_config.notify_update = ::SendMessage(
-				::GetDlgItem(hwnd, IDC_NOTIFY_UPDATE),
-				BM_GETCHECK, 0, 0
-			);
-			g_config.auto_apply = ::SendMessage(
-				::GetDlgItem(hwnd, IDC_AUTO_APPLY),
-				BM_GETCHECK, 0, 0
-			);
-			g_config.linearize = ::SendMessage(
-				::GetDlgItem(hwnd, IDC_LINEARIZE),
-				BM_GETCHECK, 0, 0
-			);
-			g_config.theme = ::SendMessage(
-				combo,
-				CB_GETCURSEL, 0, 0
-			);
-
-			// テーマ
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_THEME,
-				g_config.theme
-			);
-			// 1ステップ前のカーブを表示
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_SHOW_TRACE,
-				g_config.trace
-			);
-			// ポップアップを表示
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_SHOW_POPUP,
-				g_config.show_popup
-			);
-			// 自動コピー
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_AUTO_COPY,
-				g_config.auto_copy
-			);
-			// カーブの色
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_CURVE_COLOR,
-				g_config.curve_color
-			);
-			// アップデートを通知
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_NOTIFY_UPDATE,
-				g_config.notify_update
-			);
-			// 自動で適用
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_AUTO_APPLY,
-				g_config.auto_apply
-			);
-			// ベジェを直線にする
-			g_fp->exfunc->ini_save_int(g_fp,
-				CVE_INI_KEY_LINEARIZE,
-				g_config.linearize
-			);
+			::write_configs(hwnd, combo_theme);
 
 			::EndDialog(hwnd, 1);
 
@@ -195,8 +205,24 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		}
 		
 		case IDC_RESET_CONFIGS:
-
+		{
+			int response = IDOK;
+			if (g_config.show_popup) {
+				response = ::MessageBox(
+					hwnd,
+					CVE_STR_WARNING_RESET_CONFIGS,
+					CVE_FILTER_NAME,
+					MB_OKCANCEL | MB_ICONWARNING
+				);
+			}
+			if (response == IDOK) {
+				g_config.reset_configs();
+				::load_configs(hwnd, &combo_theme);
+				::write_configs(hwnd, combo_theme);
+				::InvalidateRect(hwnd, NULL, FALSE);
+			}
 			return 0;
+		}
 		}
 	}
 	return 0;

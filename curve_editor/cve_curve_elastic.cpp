@@ -123,37 +123,37 @@ void cve::Curve_Elastic::param_to_pt(POINT* pt_graph, int idx_pt)
 //---------------------------------------------------------------------
 //		指定した座標がポイント・ハンドルの内部に存在しているか
 //---------------------------------------------------------------------
-void cve::Curve_Elastic::pt_in_ctpt(const POINT& pt_client, Point_Address* pt_address)
+void cve::Curve_Elastic::pt_on_ctpt(const POINT& pt_client, Point_Address* pt_address)
 {
 	POINT pt;
 
 	param_to_pt(&pt, 0);
 	// 振幅を調整するハンドル(左)
 	const RECT handle_amp_left = {
-		(LONG)to_client(pt).x - CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y - CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).x + CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y + CVE_POINT_BOX_WIDTH
+		(LONG)to_client(pt).x - POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y - POINT_BOX_WIDTH,
+		(LONG)to_client(pt).x + POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y + POINT_BOX_WIDTH
 	};
 
 	param_to_pt(&pt, 1);
 
 	// 振幅を調整するハンドル(右)
 	const RECT handle_amp_right = {
-		(LONG)to_client(pt).x - CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y - CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).x + CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y + CVE_POINT_BOX_WIDTH
+		(LONG)to_client(pt).x - POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y - POINT_BOX_WIDTH,
+		(LONG)to_client(pt).x + POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y + POINT_BOX_WIDTH
 	};
 
 	param_to_pt(&pt, 2);
 
 	// 振動数・減衰を調整するハンドル
 	const RECT pt_freq_decay = {
-		(LONG)to_client(pt).x - CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y - CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).x + CVE_POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y + CVE_POINT_BOX_WIDTH
+		(LONG)to_client(pt).x - POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y - POINT_BOX_WIDTH,
+		(LONG)to_client(pt).x + POINT_BOX_WIDTH,
+		(LONG)to_client(pt).y + POINT_BOX_WIDTH
 	};
 
 	if (::PtInRect(&handle_amp_left, pt_client) || ::PtInRect(&handle_amp_right, pt_client)) {
@@ -206,17 +206,20 @@ void cve::Curve_Elastic::reverse_curve()
 //---------------------------------------------------------------------
 //		カーブを描画
 //---------------------------------------------------------------------
-void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& rect_wnd, int drawing_mode)
+void cve::Curve_Elastic::draw_curve(
+	aului::Direct2d_Paint_Object* paint_object,
+	const RECT& rect_wnd,
+	int drawing_mode)
 {
 	COLORREF handle_color;
 	COLORREF curve_color;
 	POINT pt_graph;
 
-	if (drawing_mode == CVE_DRAW_CURVE_REGULAR) {
+	if (drawing_mode == DRAW_CURVE_NORMAL) {
 		handle_color = g_theme[g_config.theme].handle;
 		curve_color = g_config.curve_color;
 	}
-	else if (drawing_mode == CVE_DRAW_CURVE_TRACE) {
+	else if (drawing_mode == DRAW_CURVE_TRACE) {
 		handle_color = g_theme[g_config.theme].handle;
 		curve_color = g_theme[g_config.theme].curve_trace;
 	}
@@ -239,49 +242,49 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 		right_side = (float)rect_wnd.right;
 	}
 
-	bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
+	paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
 
 	double y1, y2;
 
-	for (float x = left_side; x < right_side; x += CVE_DRAW_GRAPH_INCREASEMENT) {
+	for (float x = left_side; x < right_side; x += DRAW_GRAPH_STEP) {
 		if (reverse) {
 			y1 = func_elastic(1.0 - to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1.0, 0.5);
-			y2 = func_elastic(1.0 - to_graphf(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1.0, 0.5);
+			y2 = func_elastic(1.0 - to_graphf(x + DRAW_GRAPH_STEP, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1.0, 0.5);
 		}
 		else {
 			y1 = func_elastic(to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5);
-			y2 = func_elastic(to_graphf(x + CVE_DRAW_GRAPH_INCREASEMENT, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5);
+			y2 = func_elastic(to_graphf(x + DRAW_GRAPH_STEP, 0).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0.0, 0.5);
 		}
-		g_render_target->DrawLine(
+		paint_object->p_render_target->DrawLine(
 			D2D1::Point2F(
 				x,
 				(float)(to_clientf(0.0f, (float)(y1 * CVE_GRAPH_RESOLUTION)).y)),
 			D2D1::Point2F(
-				x + CVE_DRAW_GRAPH_INCREASEMENT,
+				x + DRAW_GRAPH_STEP,
 				(float)(to_clientf(0.0f, (float)(y2 * CVE_GRAPH_RESOLUTION)).y)),
-			bitmap_buffer->brush, CVE_CURVE_THICKNESS
+			paint_object->brush, CURVE_THICKNESS
 		);
 	}
 
 	// ハンドル・ポイントを描画
 	if (g_config.show_handle) {
-		bitmap_buffer->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
+		paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
 
 		param_to_pt(&pt_graph, 0);
 
 		// 振幅を調整するハンドル
 		draw_handle(
-			bitmap_buffer,
+			paint_object,
 			to_client(pt_graph),
 			to_client(CVE_GRAPH_RESOLUTION, pt_graph.y),
-			drawing_mode, CVE_DRAW_HANDLE_ONLY
+			drawing_mode, DRAW_HANDLE_ONLY
 		);
 
 		param_to_pt(&pt_graph, 2);
 
 		// 振動数・減衰を調整するハンドル
 		draw_handle(
-			bitmap_buffer,
+			paint_object,
 			to_client(pt_graph.x, (int)(CVE_GRAPH_RESOLUTION * 0.5)),
 			to_client(pt_graph),
 			drawing_mode, NULL
@@ -289,17 +292,17 @@ void cve::Curve_Elastic::draw_curve(Bitmap_Buffer* bitmap_buffer, const RECT& re
 
 		// 始点
 		draw_handle(
-			bitmap_buffer,
+			paint_object,
 			to_client(0, reverse ? (int)(CVE_GRAPH_RESOLUTION * 0.5) : 0),
 			to_client(0, reverse ? (int)(CVE_GRAPH_RESOLUTION * 0.5) : 0),
-			drawing_mode, CVE_DRAW_POINT_ONLY
+			drawing_mode, DRAW_POINT_ONLY
 		);
 		// 終点
 		draw_handle(
-			bitmap_buffer,
+			paint_object,
 			to_client(CVE_GRAPH_RESOLUTION, reverse ? CVE_GRAPH_RESOLUTION : (int)(CVE_GRAPH_RESOLUTION * 0.5)),
 			to_client(CVE_GRAPH_RESOLUTION, reverse ? CVE_GRAPH_RESOLUTION : (int)(CVE_GRAPH_RESOLUTION * 0.5)),
-			drawing_mode, CVE_DRAW_POINT_ONLY
+			drawing_mode, DRAW_POINT_ONLY
 		);
 	}
 }

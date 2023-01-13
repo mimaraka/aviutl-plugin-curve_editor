@@ -17,7 +17,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT rect_wnd;
 	aului::Window_Rectangle rect_preset_list, rect_search_bar;
-	static cve::Bitmap_Buffer bitmap_buffer;
+	static cve::My_Direct2d_Paint_Object bitmap_buffer;
 
 	::GetClientRect(hwnd, &rect_wnd);
 
@@ -38,8 +38,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 	switch (msg) {
 	case WM_CREATE:
-		bitmap_buffer.init(hwnd);
-		bitmap_buffer.set_size(rect_wnd);
+		bitmap_buffer.init(hwnd, g_p_factory, g_p_write_factory);
 
 		// プリセットのリスト
 		g_window_preset_list.create(
@@ -68,8 +67,12 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
 		return 0;
 
+	case WM_CLOSE:
+		bitmap_buffer.exit();
+		return 0;
+
 	case WM_SIZE:
-		bitmap_buffer.set_size(rect_wnd);
+		bitmap_buffer.resize();
 		g_window_preset_list.move(rect_preset_list.rect);
 #ifdef _DEBUG
 		search.move(rect_search_bar.rect);
@@ -77,17 +80,18 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 		return 0;
 
 	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		::BeginPaint(hwnd, &ps);
 		bitmap_buffer.draw_panel();
+		::EndPaint(hwnd, &ps);
 		return 0;
+	}
 
-	case WM_COMMAND:
-		switch (wparam) {
-		case aului::Window::COMMAND_REDRAW:
-			::InvalidateRect(hwnd, NULL, FALSE);
-			g_window_preset_list.redraw();
-			search.redraw();
-			return 0;
-		}
+	case aului::Window::WM_REDRAW:
+		::InvalidateRect(hwnd, NULL, FALSE);
+		g_window_preset_list.redraw();
+		search.redraw();
 		return 0;
 
 	default:
@@ -103,26 +107,34 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
-	static cve::Bitmap_Buffer bitmap_buffer;
+	static cve::My_Direct2d_Paint_Object bitmap_buffer;
 
 	::GetClientRect(hwnd, &rect_wnd);
 
 	switch (msg) {
 	case WM_CREATE:
-		bitmap_buffer.init(hwnd);
-		bitmap_buffer.set_size(rect_wnd);
+		bitmap_buffer.init(hwnd, g_p_factory, g_p_write_factory);
 
 		return 0;
 
+	case WM_CLOSE:
+		bitmap_buffer.exit();
+		return 0;
+
 	case WM_SIZE:
-		bitmap_buffer.set_size(rect_wnd);
+		bitmap_buffer.resize();
 		::PostMessage(hwnd, WM_COMMAND, CVE_CM_PRESET_MOVE, 0);
 
 		return 0;
 
 	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		::BeginPaint(hwnd, &ps);
 		bitmap_buffer.draw_panel();
+		::EndPaint(hwnd, &ps);
 		return 0;
+	}
 
 	case WM_MOUSEWHEEL:
 		::ScrollWindowEx(
@@ -138,12 +150,12 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 		);
 		return 0;
 
+	case aului::Window::WM_REDRAW:
+		::InvalidateRect(hwnd, NULL, FALSE);
+		return 0;
+
 	case WM_COMMAND:
 		switch (wparam) {
-		case aului::Window::COMMAND_REDRAW:
-			::InvalidateRect(hwnd, NULL, FALSE);
-			return 0;
-
 		case CVE_CM_PRESET_MOVE:
 			switch (g_config.edit_mode) {
 			case cve::Mode_Bezier:

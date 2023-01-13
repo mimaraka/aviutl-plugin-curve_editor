@@ -78,15 +78,99 @@ void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content,
 	if (content_type == Button::String && content != nullptr) {
 		::SelectObject(bitmap_buffer.hdc_memory, font);
 
-		//g_render_target->DrawTextA();
+		D2D1_RECT_F rectf = D2D1::RectF(
+			(float)rect_content->left,
+			(float)rect_content->top,
+			(float)rect_content->right,
+			(float)rect_content->bottom
+		);
 
-		::DrawText(
+		/*::DrawText(
 			bitmap_buffer.hdc_memory,
 			content,
 			strlen(content),
 			rect_content,
 			DT_CENTER | DT_VCENTER | DT_NOCLIP | DT_SINGLELINE
+		);*/
+
+		IDWriteTextFormat* p_text_format = nullptr;
+		IDWriteTextLayout* p_text_layout = nullptr;
+		DWRITE_TEXT_METRICS metrics;
+		float font_size = 15.f;
+
+		g_p_write_factory->CreateTextFormat(
+			L"" CVE_FONT_SEMIBOLD,
+			NULL,
+			DWRITE_FONT_WEIGHT_MEDIUM,
+			DWRITE_FONT_STYLE_NORMAL,
+			DWRITE_FONT_STRETCH_NORMAL,
+			font_size,
+			L"",
+			&p_text_format
 		);
+
+		wchar_t* wc_content = new wchar_t[strlen(content) + 1];
+
+		MultiByteToWideChar(
+			CP_ACP,
+			MB_PRECOMPOSED,
+			content,
+			-1,
+			wc_content,
+			strlen(content) + 1
+		);
+
+		g_p_write_factory->CreateTextLayout(
+			wc_content,
+			wcslen(wc_content),
+			p_text_format,
+			(float)0xffffff,
+			(float)0xffffff,
+			&p_text_layout
+		);
+
+		p_text_layout->GetMetrics(&metrics);
+
+		if (metrics.width > rect_content->right)
+			font_size *= (rect_content->right - CVE_MARGIN) / metrics.width;
+
+		font_size = MIN_LIMIT(font_size, 0.1f);
+		
+		if (p_text_format)
+			p_text_format->Release();
+
+		g_p_write_factory->CreateTextFormat(
+			L"" CVE_FONT_SEMIBOLD,
+			NULL,
+			DWRITE_FONT_WEIGHT_MEDIUM,
+			DWRITE_FONT_STYLE_NORMAL,
+			DWRITE_FONT_STRETCH_NORMAL,
+			font_size,
+			L"",
+			&p_text_format
+		);
+
+		p_text_format->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		p_text_format->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+		bitmap_buffer.brush->SetColor(D2D1::ColorF(g_theme[g_config.theme].bt_tx));
+
+		g_p_render_target->BeginDraw();
+		if (p_text_format != nullptr)
+			g_p_render_target->DrawText(
+				wc_content,
+				wcslen(wc_content),
+				p_text_format,
+				&rectf,
+				bitmap_buffer.brush,
+				D2D1_DRAW_TEXT_OPTIONS_CLIP | D2D1_DRAW_TEXT_OPTIONS_DISABLE_COLOR_BITMAP_SNAPPING
+			);
+		g_p_render_target->EndDraw();
+
+		if (p_text_format) {
+			p_text_format->Release();
+			p_text_format = nullptr;
+		}
 
 		::DeleteObject(font);
 	}
@@ -108,13 +192,13 @@ void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content,
 //---------------------------------------------------------------------
 void cve::Button::draw_edge()
 {
-	if (g_render_target != nullptr) {
-		g_render_target->BeginDraw();
+	if (g_p_render_target != nullptr) {
+		g_p_render_target->BeginDraw();
 
 		if (disabled) {
 			bitmap_buffer.brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
 			bitmap_buffer.brush->SetOpacity(0.5f);
-			g_render_target->FillRectangle(
+			g_p_render_target->FillRectangle(
 				D2D1::RectF(
 					(float)bitmap_buffer.rect.left,
 					(float)bitmap_buffer.rect.top,
@@ -127,7 +211,7 @@ void cve::Button::draw_edge()
 
 		bitmap_buffer.draw_rounded_edge(flag_edge, CVE_ROUND_RADIUS);
 
-		g_render_target->EndDraw();
+		g_p_render_target->EndDraw();
 	}
 }
 
@@ -164,7 +248,7 @@ void cve::Button::set_status(int flags)
 	else
 		disabled = false;
 
-	::SendMessage(hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
+	redraw();
 }
 
 
@@ -181,7 +265,6 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg) {
 	case WM_CREATE:
 		bitmap_buffer.init(hw);
-		bitmap_buffer.set_size(rect_wnd);
 
 		// アイコンだった場合
 		if (content_type == Button::Icon) {
@@ -212,8 +295,12 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		set_font(CVE_CT_FONT_H, CVE_FONT_SEMIBOLD);
 		return 0;
 
+	case WM_CLOSE:
+		bitmap_buffer.exit();
+		return 0;
+
 	case WM_SIZE:
-		bitmap_buffer.set_size(rect_wnd);
+		bitmap_buffer.resize();
 
 		if (content_type == Button::Icon) {
 			tool_info.rect = rect_wnd;
@@ -276,13 +363,13 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		::InvalidateRect(hw, NULL, FALSE);
 		return 0;
 
+	case WM_REDRAW:
+		::InvalidateRect(hw, NULL, FALSE);
+		return 0;
+
 	// コマンド
 	case WM_COMMAND:
 		switch (wparam) {
-		case aului::Window::COMMAND_REDRAW:
-			::InvalidateRect(hw, NULL, FALSE);
-			return 0;
-
 		case CVE_CM_CHANGE_LABEL:
 		{
 			strcpy_s(label, CVE_CT_LABEL_MAX, (LPTSTR)lparam);

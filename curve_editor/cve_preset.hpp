@@ -101,7 +101,7 @@ BOOL cve::Preset<Curve_Class>::init(HWND hwnd_p, const Curve_Class& cv, LPTSTR n
 		g_config.preset_size + CVE_PRESET_TITLE_HEIGHT
 	};
 
-	flag_edge = CVE_EDGE_ALL;
+	flag_edge = FLAG_EDGE_ALL;
 
 	curve = cv;
 
@@ -192,12 +192,12 @@ LRESULT cve::Preset<Curve_Class>::wndproc(HWND hw, UINT msg, WPARAM wparam, LPAR
 
 		draw_content(bg, &rect_title, strcmp(name, "") == 0 ? "(–³‘è)" : name, true);
 
-		if (g_render_target != nullptr && g_factory != nullptr) {
-			g_render_target->BeginDraw();
+		if (g_p_render_target != nullptr && g_p_factory != nullptr) {
+			g_p_render_target->BeginDraw();
 
-			curve.draw_curve(&bitmap_buffer, rect_wnd, CVE_DRAW_CURVE_PRESET);
+			// curve.draw_curve(&bitmap_buffer, rect_wnd, DRAW_CURVE_PRESET);
 
-			g_render_target->EndDraw();
+			g_p_render_target->EndDraw();
 		}
 
 		draw_edge();

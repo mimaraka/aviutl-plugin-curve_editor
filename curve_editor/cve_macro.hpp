@@ -17,10 +17,11 @@
 #define CVE_MARGIN_PRESET				8
 #define CVE_MAX_W						1920
 #define CVE_MAX_H						1080
-#define CVE_DEF_W						360
+#define CVE_MIN_W						100
+#define CVE_MIN_H						200
+#define CVE_DEF_W						320
 #define CVE_DEF_H						540
 #define CVE_ROUND_RADIUS				4.0f
-#define CVE_NON_CLIENT_H				36
 
 // セパレータ
 #define CVE_SEPARATOR_WIDTH				8
@@ -28,7 +29,7 @@
 #define CVE_SEPARATOR_LINE_LENGTH		32
 
 // グラフ
-#define CVE_GRAPH_PADDING				20
+#define CVE_GRAPH_PADDING				18
 #define CVE_GRAPH_WHEEL_COEF_SCALE		0.1
 #define CVE_GRAPH_WHEEL_COEF_POS		0.2
 #define CVE_GRAPH_GRID_NUM				2
@@ -38,48 +39,11 @@
 #define CVE_GRAPH_SCALE_MIN				0.001
 
 // ハンドル・カーブ・制御点
-#define CVE_HANDLE_LENGTH_DEFAULT		50
-#define CVE_HANDLE_THICKNESS			2.0f
-#define CVE_HANDLE_THICKNESS_PRESET		0.8f
-#define CVE_HANDLE_SIZE					5.0f
-#define CVE_HANDLE_SIZE_PRESET			0.7f
-#define CVE_HANDLE_CIRCLE_LINE			2.2f
-#define CVE_HANDLE_CIRCLE_LINE_PRESET	0.5f
-#define CVE_POINT_BOX_WIDTH				10
-#define CVE_POINT_SIZE					4.4f
-#define CVE_PONINT_SIZE_PRESET			2.0f
-#define CVE_CURVE_THICKNESS				1.2f
 #define CVE_SUBTRACT_LENGTH				10.0f
 #define CVE_SUBTRACT_LENGTH_2			8.0f
-#define CVE_CURVE_VALUE_MIN_Y			-2.73f
-#define CVE_CURVE_VALUE_MAX_Y			3.73f
-#define CVE_POINT_DEFAULT_1				0.3f
-#define CVE_POINT_DEFAULT_2				0.7f
 #define CVE_NUM_BEZIER_LINER			145674282
 #define CVE_NUM_ELASTIC_DEFAULT			1575600
 #define CVE_NUM_BOUNCE_DEFAULT			10612242
-
-// カーブ描画
-#define CVE_DRAW_CURVE_REGULAR			0
-#define CVE_DRAW_CURVE_TRACE			1
-#define CVE_DRAW_CURVE_PRESET			2
-#define CVE_DRAW_POINT_ONLY				1
-#define CVE_DRAW_HANDLE_ONLY			2
-
-#define CVE_DRAW_GRAPH_INCREASEMENT		1.0f
-
-#define CVE_CURVE_COLOR_DEFAULT			RGB(148, 158, 197)
-
-
-//フラグ
-#define CVE_EDGE_LT						1 << 0
-#define CVE_EDGE_LB						1 << 1
-#define CVE_EDGE_RT						1 << 2
-#define CVE_EDGE_RB						1 << 3
-#define CVE_EDGE_ALL					CVE_EDGE_LT | CVE_EDGE_LB | CVE_EDGE_RT | CVE_EDGE_RB
-
-#define CVE_BUTTON_ENABLED				1 << 0
-#define CVE_BUTTON_DISABLED				1 << 1
 
 
 
@@ -104,7 +68,7 @@
 #define CVE_CT_SEARCHBAR				0x0419
 
 #define CVE_CT_UPPER_H					30
-#define CVE_CT_LOWER_H					40
+#define CVE_CT_LOWER_H					30
 #define CVE_CT_FONT_H					20
 #define CVE_MENU_H						(CVE_CT_UPPER_H + CVE_CT_LOWER_H + CVE_MARGIN * 2 + CVE_MARGIN_CONTROL)
 
@@ -185,10 +149,10 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CVE_FILTER_NAME						"Curve Editor"
-#define CVE_FILTER_VERSION					"v1.1"
+#define CVE_FILTER_VERSION					"v1.0.5"
 #define CVE_VERSION_MAJOR					1
-#define CVE_VERSION_MINOR					1
-#define CVE_VERSION_REVISION				0
+#define CVE_VERSION_MINOR					0
+#define CVE_VERSION_REVISION				5
 #define CVE_FILTER_DEVELOPER				"mimaraka"
 #define CVE_FILTER_YEAR						"2022"
 #define CVE_FILTER_INFO						CVE_FILTER_NAME " " CVE_FILTER_VERSION " by " CVE_FILTER_DEVELOPER
@@ -201,12 +165,14 @@
 //		文字列
 //---------------------------------------------------------------------
 #define CVE_STR_MODE_BEZIER					"ベジェ"
-#define CVE_STR_MODE_MULTIBEZIER			"ベジェ(複数)"
-#define CVE_STR_MODE_VALUE					"ベジェ(値指定)"
+#define CVE_STR_MODE_BEZIER_MULTI			"ベジェ(複数)"
+#define CVE_STR_MODE_BEZIER_VALUE			"ベジェ(値指定)"
 #define CVE_STR_MODE_ELASTIC				"振動"
 #define CVE_STR_MODE_BOUNCE					"バウンス"
+
 #define CVE_STR_WARNING_DELETE				"編集中のIDのカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
+#define CVE_STR_WARNING_RESET_CONFIGS		"すべての設定を初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DATA_INVALID		"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
 #define CVE_STR_ABOUT						CVE_FILTER_NAME " " CVE_FILTER_VERSION "\n(" CVE_FILTER_YEAR " " CVE_FILTER_DEVELOPER ")"
 #define CVE_STR_ERROR_OUTOFRANGE			"値が範囲外です。"

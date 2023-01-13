@@ -24,8 +24,7 @@ int cve::Curve_Bezier::create_number()
 
 	ptf[0].y = MINMAX_LIMIT(
 		ctpts[0].pt_right.y / (float)CVE_GRAPH_RESOLUTION,
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
+		MIN_Y, MAX_Y
 	);
 
 	ptf[1].x = MINMAX_LIMIT(
@@ -35,8 +34,7 @@ int cve::Curve_Bezier::create_number()
 
 	ptf[1].y = MINMAX_LIMIT(
 		ctpts[1].pt_left.y / (float)CVE_GRAPH_RESOLUTION,
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
+		MIN_Y, MAX_Y
 	);
 
 	for (int i = 0; i < 2; i++) {
@@ -66,8 +64,7 @@ std::string cve::Curve_Bezier::create_parameters()
 	);
 	pt.y = MINMAX_LIMIT(
 		(float)(std::round(ctpts[0].pt_right.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
+		MIN_Y, MAX_Y
 	);
 
 	strx = std::to_string(pt.x);
@@ -86,8 +83,7 @@ std::string cve::Curve_Bezier::create_parameters()
 	);
 	pt.y = MINMAX_LIMIT(
 		(float)(std::round(ctpts[1].pt_left.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		CVE_CURVE_VALUE_MIN_Y,
-		CVE_CURVE_VALUE_MAX_Y
+		MIN_Y, MAX_Y
 	);
 
 	strx = std::to_string(pt.x);
@@ -120,14 +116,12 @@ bool cve::Curve_Bezier::read_parameters(LPCTSTR param, Static_Array<Curve_Points
 		values[0] = MINMAX_LIMIT(std::stof(vec[0]), 0, 1);
 		values[1] = MINMAX_LIMIT(
 			std::stof(vec[1]),
-			CVE_CURVE_VALUE_MIN_Y,
-			CVE_CURVE_VALUE_MAX_Y
+			MIN_Y, MAX_Y
 		);
 		values[2] = MINMAX_LIMIT(std::stof(vec[2]), 0, 1);
 		values[3] = MINMAX_LIMIT(
 			std::stof(vec[3]),
-			CVE_CURVE_VALUE_MIN_Y,
-			CVE_CURVE_VALUE_MAX_Y
+			MIN_Y, MAX_Y
 		);
 
 		points[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);

@@ -9,12 +9,21 @@
 
 
 //---------------------------------------------------------------------
-//		Direct2Dを初期化
+//		DirectXオブジェクト初期化
 //---------------------------------------------------------------------
-bool cve::d2d_init()
+bool cve::dx_init()
 {
 	HRESULT hresult;
-	D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &g_factory);
+	hresult = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &g_p_factory);
+
+	if (FAILED(hresult))
+		return false;
+
+	hresult = ::DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&g_p_write_factory));
+
+	if (FAILED(hresult))
+		return false;
+
 	D2D1_RENDER_TARGET_PROPERTIES prop;
 	prop = D2D1::RenderTargetProperties(
 		D2D1_RENDER_TARGET_TYPE_DEFAULT,
@@ -25,12 +34,33 @@ bool cve::d2d_init()
 		D2D1_RENDER_TARGET_USAGE_NONE,
 		D2D1_FEATURE_LEVEL_DEFAULT
 	);
-	hresult = g_factory->CreateDCRenderTarget(&prop, &g_render_target);
+	hresult = g_p_factory->CreateDCRenderTarget(&prop, &g_p_render_target);
 
 	if (FAILED(hresult))
 		return false;
-	else
-		return true;
+	
+	return true;
+}
+
+
+
+//---------------------------------------------------------------------
+//		DirectXオブジェクト開放
+//---------------------------------------------------------------------
+template <class Interface>
+inline void dx_release(Interface** pp_interface)
+{
+	if (*pp_interface != nullptr) {
+		(*pp_interface)->Release();
+		(*pp_interface) = nullptr;
+	}
+}
+
+void cve::dx_exit()
+{
+	dx_release(&g_p_render_target);
+	dx_release(&g_p_write_factory);
+	dx_release(&g_p_factory);
 }
 
 

@@ -11,6 +11,8 @@
 (※scriptフォルダ直下に入れないと、ドラッグ&ドロップ機能を使用することができません。)  
 [Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)をインストールしていない場合は、こちらもインストールしてください。  
 
+![image](https://user-images.githubusercontent.com/106879397/212220660-598f0b11-a317-42c7-99cb-0795f56af998.png)
+
 ## 使用方法
 AviUtlを起動後、メインウィンドウの「表示」メニューから「Curve Editorの表示」をクリックすると、Curve Editorのウィンドウが表示されます。
 
@@ -102,6 +104,7 @@ AviUtl 1.00, 1.10
 
 ## その他
 当プラグイン・スクリプトは以下のプラグイン・スクリプトを参考にして作成されました：  
+- [Flow](https://aescripts.com/flow/)
 - [ベジェ軌道T](https://www.nicovideo.jp/watch/sm20632293)
 - [Aulsグラフエディタ](https://auls.client.jp/)
 - [イージング設定時短プラグイン](https://github.com/kumrnm/aviutl-easing-quick-setup)

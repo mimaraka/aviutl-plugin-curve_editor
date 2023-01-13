@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------
 //		グラフのグリッドを描画
 //---------------------------------------------------------------------
-void cve::My_D2D_Paint_Object::draw_grid()
+void cve::My_Direct2d_Paint_Object::draw_grid()
 {
 	brush->SetColor(D2D1::ColorF(CHANGE_BRIGHTNESS(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GRID)));
 	// 
@@ -76,7 +76,7 @@ void cve::My_D2D_Paint_Object::draw_grid()
 //---------------------------------------------------------------------
 //		ラウンドエッジを描画
 //---------------------------------------------------------------------
-void cve::My_D2D_Paint_Object::draw_rounded_edge(int flag, float radius) {
+void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* edge;
 	D2D1_POINT_2F pt_1, pt_2, pt_3;
@@ -102,7 +102,7 @@ void cve::My_D2D_Paint_Object::draw_rounded_edge(int flag, float radius) {
 		D2D1::Point2F((float)rect.right - radius, (float)rect.bottom)
 	};
 
-	(*pp_factory)->CreatePathGeometry(&edge);
+	p_factory->CreatePathGeometry(&edge);
 	edge->Open(&sink);
 
 	for (int i = 0; i < 4; i++) {
@@ -137,11 +137,11 @@ void cve::My_D2D_Paint_Object::draw_rounded_edge(int flag, float radius) {
 //---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void cve::My_D2D_Paint_Object::draw_panel_main(const RECT& rect_sepr)
+void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 {
 	ID2D1StrokeStyle* style = nullptr;
 
-	(*pp_factory)->CreateStrokeStyle(
+	p_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
@@ -172,11 +172,10 @@ void cve::My_D2D_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 			(rect_sepr.top + rect_sepr.bottom) * 0.5f + CVE_SEPARATOR_LINE_LENGTH
 	};
 
-	//Direct2D初期化
-	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
-
 	if (p_render_target != nullptr) {
 		p_render_target->BeginDraw();
+		// 背景を描画
+		p_render_target->Clear(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
 
 		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
 
@@ -187,10 +186,9 @@ void cve::My_D2D_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 				brush, CVE_SEPARATOR_LINE_WIDTH, style
 			);
 
-		// brush->Release();
-
 		p_render_target->EndDraw();
 	}
+	release(&style);
 }
 
 
@@ -198,7 +196,7 @@ void cve::My_D2D_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 //---------------------------------------------------------------------
 //		パネルを描画
 //---------------------------------------------------------------------
-void cve::My_D2D_Paint_Object::draw_panel()
+void cve::My_Direct2d_Paint_Object::draw_panel()
 {
 	//Direct2D初期化
 	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
@@ -209,7 +207,7 @@ void cve::My_D2D_Paint_Object::draw_panel()
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void cve::My_D2D_Paint_Object::draw_panel_editor()
+void cve::My_Direct2d_Paint_Object::draw_panel_editor()
 {
 	D2D1_RECT_F rect_left = {
 		0,
@@ -229,23 +227,22 @@ void cve::My_D2D_Paint_Object::draw_panel_editor()
 		(float)g_view_info.origin.x,
 		0,
 		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
-		to_client(0, (int)(CVE_CURVE_VALUE_MAX_Y * CVE_GRAPH_RESOLUTION)).y
+		to_client(0, (int)(Curve_Bezier::MAX_Y * CVE_GRAPH_RESOLUTION)).y
 	};
 
 	D2D1_RECT_F rect_down = {
 		(float)g_view_info.origin.x,
-		to_client(0, (int)(CVE_CURVE_VALUE_MIN_Y * CVE_GRAPH_RESOLUTION)).y,
+		to_client(0, (int)(Curve_Bezier::MIN_Y * CVE_GRAPH_RESOLUTION)).y,
 		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
 		(float)rect.bottom
 	};
 
 
-	//Direct2D初期化
-	d2d_setup(TO_BGR(g_theme[g_config.theme].bg_graph));
-
 	//描画
 	if (is_safe(&p_render_target)) {
 		p_render_target->BeginDraw();
+		// 背景を描画
+		p_render_target->Clear(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg_graph)));
 
 		//グリッド
 		draw_grid();
@@ -265,47 +262,47 @@ void cve::My_D2D_Paint_Object::draw_panel_editor()
 		brush->SetOpacity(1);
 
 		// 編集モード振り分け
-		//switch (g_config.edit_mode) {
-		//	// ベジェモードのとき
-		//case Mode_Bezier:
-		//	if (g_config.trace)
-		//		g_curve_bezier_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+		switch (g_config.edit_mode) {
+			// ベジェモードのとき
+		case Mode_Bezier:
+			if (g_config.trace)
+				g_curve_bezier_trace.draw_curve(this, rect, Curve::DRAW_CURVE_TRACE);
 
-		//	g_curve_bezier.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-		//	break;
+			g_curve_bezier.draw_curve(this, rect, Curve::DRAW_CURVE_NORMAL);
+			break;
 
-		//	// ベジェ(複数)モードのとき
-		//case Mode_Bezier_Multi:
-		//	if (g_config.trace)
-		//		g_curve_bezier_multi_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+			// ベジェ(複数)モードのとき
+		case Mode_Bezier_Multi:
+			if (g_config.trace)
+				g_curve_bezier_multi_trace.draw_curve(this, rect, Curve::DRAW_CURVE_TRACE);
 
-		//	g_curve_bezier_multi[g_config.current_id.multi - 1].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-		//	break;
+			g_curve_bezier_multi[g_config.current_id.multi - 1].draw_curve(this, rect, Curve::DRAW_CURVE_NORMAL);
+			break;
 
-		//	// 値指定モードのとき
-		//case Mode_Bezier_Value:
-		//	if (g_config.trace)
-		//		g_curve_bezier_value_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+			// 値指定モードのとき
+		case Mode_Bezier_Value:
+			if (g_config.trace)
+				g_curve_bezier_value_trace.draw_curve(this, rect, Curve::DRAW_CURVE_TRACE);
 
-		//	g_curve_bezier_value[g_config.current_id.value].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-		//	break;
+			g_curve_bezier_value[g_config.current_id.value].draw_curve(this, rect, Curve::DRAW_CURVE_NORMAL);
+			break;
 
-		//	// 振動モードのとき
-		//case Mode_Elastic:
-		//	if (g_config.trace)
-		//		g_curve_elastic_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+			// 振動モードのとき
+		case Mode_Elastic:
+			if (g_config.trace)
+				g_curve_elastic_trace.draw_curve(this, rect, Curve::DRAW_CURVE_TRACE);
 
-		//	g_curve_elastic.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-		//	break;
+			g_curve_elastic.draw_curve(this, rect, Curve::DRAW_CURVE_NORMAL);
+			break;
 
-		//	// バウンスモードのとき
-		//case Mode_Bounce:
-		//	if (g_config.trace)
-		//		g_curve_bounce_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
+			// バウンスモードのとき
+		case Mode_Bounce:
+			if (g_config.trace)
+				g_curve_bounce_trace.draw_curve(this, rect, Curve::DRAW_CURVE_TRACE);
 
-		//	g_curve_bounce.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-		//	break;
-		//}
+			g_curve_bounce.draw_curve(this, rect, Curve::DRAW_CURVE_NORMAL);
+			break;
+		}
 
 		p_render_target->EndDraw();
 	}

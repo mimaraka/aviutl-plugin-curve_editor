@@ -63,7 +63,6 @@
 #define ID_PRESET_REMOVE                40029
 #define ID_MENU_CLEAR_ALL               40030
 #define ID_MENU_DELETE_ALL              40031
-#define ID_MENU_RESET_SEPARATOR         40032
 #define ID_MENU_ID_NEXT                 40033
 #define ID_MENU_ID_BACK                 40034
 #define ID_MENU_VERTICAL                40063

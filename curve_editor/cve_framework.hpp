@@ -11,6 +11,9 @@
 #include <wininet.h>
 #include <commctrl.h>
 #include <d2d1.h>
+#include <dwrite.h>
+#include <wincodec.h>
+#include <wincodecsdk.h>
 #include <lua.hpp>
 #include <fstream>
 #include <regex>
@@ -23,5 +26,6 @@
 #include "resource.h"
 
 #pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
 #pragma comment(lib, "comctl32.lib")
 #pragma comment(lib, "wininet.lib")

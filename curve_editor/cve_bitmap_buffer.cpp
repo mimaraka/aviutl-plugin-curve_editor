@@ -26,12 +26,14 @@ cve::Bitmap_Buffer::Bitmap_Buffer() :
 
 
 //---------------------------------------------------------------------
-//		デストラクタ
+//		
 //---------------------------------------------------------------------
-cve::Bitmap_Buffer::~Bitmap_Buffer()
+void cve::Bitmap_Buffer::exit()
 {
-	DeleteDC(hdc_memory);
-	DeleteObject(bitmap);
+	if (hdc_memory)
+		::DeleteDC(hdc_memory);
+	if (bitmap)
+		::DeleteObject(bitmap);
 
 	release(&brush);
 }
@@ -41,15 +43,16 @@ cve::Bitmap_Buffer::~Bitmap_Buffer()
 void cve::Bitmap_Buffer::init(HWND hw)
 {
 	hwnd = hw;
-	HDC hdc = GetDC(hw);
-	hdc_memory = CreateCompatibleDC(hdc);
-	bitmap = CreateCompatibleBitmap(hdc, CVE_MAX_W, CVE_MAX_H);
-	SelectObject(hdc_memory, bitmap);
-	ReleaseDC(hw, hdc);
+	HDC hdc = ::GetDC(hw);
+	hdc_memory = ::CreateCompatibleDC(hdc);
+	bitmap = ::CreateCompatibleBitmap(hdc, CVE_MAX_W, CVE_MAX_H);
+	::SelectObject(hdc_memory, bitmap);
+	::ReleaseDC(hw, hdc);
 
+	resize();
 
-	if (g_render_target != nullptr && brush == nullptr)
-		g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+	if (g_p_render_target != nullptr && brush == nullptr)
+		g_p_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
 }
 
 
@@ -59,12 +62,12 @@ void cve::Bitmap_Buffer::init(HWND hw)
 //---------------------------------------------------------------------
 bool cve::Bitmap_Buffer::d2d_setup(COLORREF cr)
 {
-	if (g_render_target != nullptr && g_factory != nullptr) {
-		g_render_target->BindDC(hdc_memory, &rect);
-		g_render_target->BeginDraw();
-		g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
-		g_render_target->Clear(D2D1::ColorF(cr));
-		g_render_target->EndDraw();
+	if (g_p_render_target != nullptr && g_p_factory != nullptr) {
+		g_p_render_target->BindDC(hdc_memory, &rect);
+		g_p_render_target->BeginDraw();
+		g_p_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
+		g_p_render_target->Clear(D2D1::ColorF(cr));
+		g_p_render_target->EndDraw();
 		return true;
 	}
 	else
@@ -79,10 +82,10 @@ bool cve::Bitmap_Buffer::d2d_setup(COLORREF cr)
 void cve::Bitmap_Buffer::transfer() const
 {
 	PAINTSTRUCT ps;
-	HDC hdc = BeginPaint(hwnd, &ps);
-	BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdc_memory, 0, 0, SRCCOPY);
-	EndPaint(hwnd, &ps);
-	DeleteDC(hdc);
+	HDC hdc = ::BeginPaint(hwnd, &ps);
+	::BitBlt(hdc, 0, 0, rect.right, rect.bottom, hdc_memory, 0, 0, SRCCOPY);
+	::EndPaint(hwnd, &ps);
+	::DeleteDC(hdc);
 }
 
 
@@ -90,9 +93,9 @@ void cve::Bitmap_Buffer::transfer() const
 //---------------------------------------------------------------------
 //		サイズを更新
 //---------------------------------------------------------------------
-void cve::Bitmap_Buffer::set_size(const RECT& rect_wnd)
+void cve::Bitmap_Buffer::resize()
 {
-	rect = rect_wnd;
+	::GetClientRect(hwnd, &rect);
 }
 
 
@@ -134,7 +137,7 @@ void cve::Bitmap_Buffer::draw_grid()
 			thickness = CVE_GR_GRID_TH_B;
 		else
 			thickness = CVE_GR_GRID_TH_L;
-		g_render_target->DrawLine(
+		g_p_render_target->DrawLine(
 			D2D1::Point2F(ax + dx * i, 0),
 			D2D1::Point2F(ax + dx * i, (float)rect.bottom),
 			brush, thickness, NULL
@@ -148,7 +151,7 @@ void cve::Bitmap_Buffer::draw_grid()
 		else
 			thickness = CVE_GR_GRID_TH_L;
 
-		g_render_target->DrawLine(
+		g_p_render_target->DrawLine(
 			D2D1::Point2F(0, ay + dy * i),
 			D2D1::Point2F((float)rect.right, ay + dy * i),
 			brush, thickness, NULL
@@ -187,7 +190,7 @@ void cve::Bitmap_Buffer::draw_rounded_edge(int flag, float radius) {
 		D2D1::Point2F((float)rect.right - radius, (float)rect.bottom)
 	};
 
-	g_factory->CreatePathGeometry(&edge);
+	g_p_factory->CreatePathGeometry(&edge);
 	edge->Open(&sink);
 
 	for (int i = 0; i < 4; i++) {
@@ -215,7 +218,7 @@ void cve::Bitmap_Buffer::draw_rounded_edge(int flag, float radius) {
 	brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
 
 	if (edge != nullptr)
-		g_render_target->FillGeometry(edge, brush, NULL);
+		g_p_render_target->FillGeometry(edge, brush, NULL);
 	
 	release(&edge);
 	release(&sink);
@@ -230,7 +233,7 @@ void cve::Bitmap_Buffer::draw_panel_main(const RECT& rect_sepr)
 {
 	ID2D1StrokeStyle* style = nullptr;
 
-	g_factory->CreateStrokeStyle(
+	g_p_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
@@ -264,18 +267,18 @@ void cve::Bitmap_Buffer::draw_panel_main(const RECT& rect_sepr)
 	//Direct2D初期化
 	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
 
-	if (g_render_target != nullptr) {
-		g_render_target->BeginDraw();
+	if (g_p_render_target != nullptr) {
+		g_p_render_target->BeginDraw();
 
 		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
 
-		if (brush) g_render_target->DrawLine(
+		if (brush) g_p_render_target->DrawLine(
 			line_start,
 			line_end,
 			brush, CVE_SEPARATOR_LINE_WIDTH, style
 		);
 
-		g_render_target->EndDraw();
+		g_p_render_target->EndDraw();
 	}
 	release(&style);
 
@@ -292,117 +295,6 @@ void cve::Bitmap_Buffer::draw_panel()
 {
 	//Direct2D初期化
 	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
-
-	//ビットマップをバッファから画面に転送
-	transfer();
-}
-
-
-
-//---------------------------------------------------------------------
-//		エディタパネルを描画
-//---------------------------------------------------------------------
-void cve::Bitmap_Buffer::draw_panel_editor()
-{
-	D2D1_RECT_F rect_left = {
-		0,
-		0,
-		(float)g_view_info.origin.x,
-		(float)rect.bottom
-	};
-
-	D2D1_RECT_F rect_right = {
-		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
-		0,
-		(float)rect.right,
-		(float)rect.bottom,
-	};
-
-	D2D1_RECT_F rect_up = {
-		(float)g_view_info.origin.x,
-		0,
-		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
-		to_client(0, (int)(CVE_CURVE_VALUE_MAX_Y * CVE_GRAPH_RESOLUTION)).y
-	};
-
-	D2D1_RECT_F rect_down = {
-		(float)g_view_info.origin.x,
-		to_client(0, (int)(CVE_CURVE_VALUE_MIN_Y * CVE_GRAPH_RESOLUTION)).y,
-		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
-		(float)rect.bottom
-	};
-
-
-	//Direct2D初期化
-	d2d_setup(TO_BGR(g_theme[g_config.theme].bg_graph));
-
-	//描画
-	if (g_render_target != nullptr && g_factory != nullptr) {
-		g_render_target->BeginDraw();
-
-		//グリッド
-		draw_grid();
-
-		brush->SetColor(D2D1::ColorF(CHANGE_BRIGHTNESS(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GR_INVALID)));
-		brush->SetOpacity(0.5f);
-		if (brush) {
-			// Xが0未満1より大の部分を暗くする
-			g_render_target->FillRectangle(&rect_left, brush);
-			g_render_target->FillRectangle(&rect_right, brush);
-			// ベジェモードのとき
-			if (g_config.edit_mode == cve::Mode_Bezier) {
-				g_render_target->FillRectangle(&rect_up, brush);
-				g_render_target->FillRectangle(&rect_down, brush);
-			}
-		}
-		brush->SetOpacity(1);
-
-		// 編集モード振り分け
-		switch (g_config.edit_mode) {
-			// ベジェモードのとき
-		case Mode_Bezier:
-			if (g_config.trace)
-				g_curve_bezier_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
-
-			g_curve_bezier.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-			break;
-
-			// ベジェ(複数)モードのとき
-		case Mode_Bezier_Multi:
-			if (g_config.trace)
-				g_curve_bezier_multi_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
-
-			g_curve_bezier_multi[g_config.current_id.multi - 1].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-			break;
-
-			// 値指定モードのとき
-		case Mode_Bezier_Value:
-			if (g_config.trace)
-				g_curve_bezier_value_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
-
-			g_curve_bezier_value[g_config.current_id.value].draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-			break;
-
-			// 振動モードのとき
-		case Mode_Elastic:
-			if (g_config.trace)
-				g_curve_elastic_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
-
-			g_curve_elastic.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-			break;
-
-			// バウンスモードのとき
-		case Mode_Bounce:
-			if (g_config.trace)
-				g_curve_bounce_trace.draw_curve(this, rect, CVE_DRAW_CURVE_TRACE);
-
-			g_curve_bounce.draw_curve(this, rect, CVE_DRAW_CURVE_REGULAR);
-			break;
-		}
-
-		g_render_target->EndDraw();
-	}
-
 
 	//ビットマップをバッファから画面に転送
 	transfer();

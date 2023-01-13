@@ -19,7 +19,7 @@ cve::Curve_Elastic				g_curve_elastic,
 								g_curve_elastic_trace;
 cve::Curve_Bounce				g_curve_bounce,
 								g_curve_bounce_trace;
-cve::Curve_Bezier_Value				g_curve_bezier_value[CVE_CURVE_MAX],
+cve::Curve_Bezier_Value			g_curve_bezier_value[CVE_CURVE_MAX],
 								g_curve_bezier_value_trace;
 
 cve::Config						g_config;
@@ -88,8 +88,9 @@ const cve::Theme g_theme[2] = {
 };
 
 //Direct2D
-ID2D1Factory*					g_factory;
-ID2D1DCRenderTarget*			g_render_target;
+ID2D1Factory*					g_p_factory = nullptr;
+IDWriteFactory*					g_p_write_factory = nullptr;
+ID2D1DCRenderTarget*			g_p_render_target = nullptr;
 
 
 

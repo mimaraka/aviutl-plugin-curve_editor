@@ -51,7 +51,6 @@ LRESULT cve::Edit_Box::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg) {
 	case WM_CREATE:
 		bitmap_buffer.init(hw);
-		bitmap_buffer.set_size(rect_wnd);
 
 		editbox = ::CreateWindowEx(
 			NULL,
@@ -73,8 +72,12 @@ LRESULT cve::Edit_Box::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		return 0;
 
+	case WM_CLOSE:
+		bitmap_buffer.exit();
+		return 0;
+
 	case WM_SIZE:
-		bitmap_buffer.set_size(rect_wnd);
+		bitmap_buffer.resize();
 		::MoveWindow(editbox,
 			CVE_MARGIN,
 			(rect_wnd.bottom - line_height) / 2,
@@ -111,14 +114,9 @@ LRESULT cve::Edit_Box::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		::SetCursor(::LoadCursor(NULL, IDC_IBEAM));
 		return 0;
 
-		// ƒRƒ}ƒ“ƒh
-	case WM_COMMAND:
-		switch (wparam) {
-		case aului::Window::COMMAND_REDRAW:
-			::InvalidateRect(hw, NULL, FALSE);
-			::InvalidateRect(editbox, NULL, FALSE);
-			return 0;
-		}
+	case WM_REDRAW:
+		::InvalidateRect(hw, NULL, FALSE);
+		::InvalidateRect(editbox, NULL, FALSE);
 		return 0;
 
 	default:

@@ -18,7 +18,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static HMENU		menu;
 	static MENUITEMINFO minfo;
 
-	static cve::Bitmap_Buffer	bitmap_buffer;
+	static cve::My_Direct2d_Paint_Object	paint_object;
 	static cve::Button	copy,
 						read,
 						save,
@@ -51,8 +51,8 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	LPCTSTR				str_mode[] = {
 		CVE_STR_MODE_BEZIER,
-		CVE_STR_MODE_MULTIBEZIER,
-		CVE_STR_MODE_VALUE,
+		CVE_STR_MODE_BEZIER_MULTI,
+		CVE_STR_MODE_BEZIER_VALUE,
 		CVE_STR_MODE_ELASTIC,
 		CVE_STR_MODE_BOUNCE
 	};
@@ -103,8 +103,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	switch (msg) {
 	case WM_CREATE:
-		bitmap_buffer.init(hwnd);
-		bitmap_buffer.set_size(rect_wnd);
+		paint_object.init(hwnd, g_p_factory, g_p_write_factory);
 
 		// メニュー
 		menu = ::GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU_MODE)), 0);
@@ -120,7 +119,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			str_mode[g_config.edit_mode],
 			CVE_CT_EDIT_MODE,
 			rect_mode,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// 値
@@ -133,7 +132,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_PARAM,
 			rect_id_buttons.rect,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// 前のIDのカーブに移動
@@ -147,7 +146,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_ID_BACK,
 			rect_id_back,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// ID表示ボタン
@@ -160,7 +159,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			NULL,
 			rect_id_id,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// 次のIDのカーブに移動
@@ -174,7 +173,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_ID_NEXT,
 			rect_id_next,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// コピー
@@ -188,7 +187,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_COPY,
 			rect_copy,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// 読み取り
@@ -202,7 +201,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_READ,
 			rect_read,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// 保存
@@ -216,7 +215,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_SAVE,
 			rect_save,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// 初期化
@@ -230,7 +229,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_CLEAR,
 			rect_clear,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		// フィット
@@ -244,7 +243,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			NULL,
 			CVE_CM_FIT,
 			rect_fit,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 		switch (g_config.edit_mode) {
@@ -279,8 +278,12 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 		return 0;
 
+	case WM_CLOSE:
+		paint_object.exit();
+		return 0;
+
 	case WM_SIZE:
-		bitmap_buffer.set_size(rect_wnd);
+		paint_object.resize();
 
 		mode.move(rect_mode);
 
@@ -298,28 +301,33 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_PAINT:
-		bitmap_buffer.draw_panel();
+	{
+		PAINTSTRUCT ps;
+		::BeginPaint(hwnd, &ps);
+		paint_object.draw_panel();
+		::EndPaint(hwnd, &ps);
+	}
+		return 0;
+
+	case aului::Window::WM_REDRAW:
+		::InvalidateRect(hwnd, NULL, FALSE);
+		mode.redraw();
+
+		param.redraw();
+
+		id_back.redraw();
+		id_id.redraw();
+		id_next.redraw();
+
+		copy.redraw();
+		read.redraw();
+		save.redraw();
+		clear.redraw();
+		fit.redraw();
 		return 0;
 
 	case WM_COMMAND:
 		switch (wparam) {
-		case aului::Window::COMMAND_REDRAW:
-			::InvalidateRect(hwnd, NULL, FALSE);
-			mode.redraw();
-
-			param.redraw();
-
-			id_back.redraw();
-			id_id.redraw();
-			id_next.redraw();
-
-			copy.redraw();
-			read.redraw();
-			save.redraw();
-			clear.redraw();
-			fit.redraw();
-			return 0;
-
 			// 編集モード選択ボタン
 		case CVE_CT_EDIT_MODE:
 		{

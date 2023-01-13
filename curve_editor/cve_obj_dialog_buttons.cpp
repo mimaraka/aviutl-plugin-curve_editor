@@ -96,12 +96,12 @@ void cve::Obj_Dialog_Buttons::highlight() const
 		HDC hdc = ::GetDC(hwnd_obj);
 		static ID2D1SolidColorBrush* brush = nullptr;
 
-		if (g_render_target != nullptr && g_factory != nullptr) {
-			g_render_target->BindDC(hdc, &rect_wnd);
-			g_render_target->BeginDraw();
-			g_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
+		if (g_p_render_target != nullptr && g_p_factory != nullptr) {
+			g_p_render_target->BindDC(hdc, &rect_wnd);
+			g_p_render_target->BeginDraw();
+			g_p_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
 
-			if (brush == nullptr) g_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
+			if (brush == nullptr) g_p_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
 			brush->SetColor(color);
 
 			D2D1_ROUNDED_RECT d2d_rect = D2D1::RoundedRect(
@@ -114,12 +114,12 @@ void cve::Obj_Dialog_Buttons::highlight() const
 			);
 
 			brush->SetOpacity(0.3f);
-			g_render_target->FillRoundedRectangle(d2d_rect, brush);
+			g_p_render_target->FillRoundedRectangle(d2d_rect, brush);
 
 			brush->SetOpacity(0.7f);
-			g_render_target->DrawRoundedRectangle(d2d_rect, brush, 2.0f);
+			g_p_render_target->DrawRoundedRectangle(d2d_rect, brush, 2.0f);
 
-			g_render_target->EndDraw();
+			g_p_render_target->EndDraw();
 		}
 		::ReleaseDC(hwnd_obj, hdc);
 	}

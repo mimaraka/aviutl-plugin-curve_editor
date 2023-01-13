@@ -34,7 +34,7 @@ BOOL filter_init(FILTER* fp)
 	ini_load_configs(fp);
 
 	// Direct2Dの初期化
-	if (!cve::d2d_init())
+	if (!cve::dx_init())
 		::MessageBox(NULL, CVE_STR_ERROR_DRAWING_FAILED, CVE_FILTER_NAME, MB_OK);
 
 	return TRUE;
@@ -50,9 +50,8 @@ BOOL filter_exit(FILTER* fp)
 	// aviutl.iniに設定を書き込み
 	ini_write_configs(fp);
 
-	// Direct2Dオブジェクト開放
-	cve::d2d_release(&g_render_target);
-	cve::d2d_release(&g_factory);
+	// DirectXオブジェクト開放
+	cve::dx_exit();
 
 	return TRUE;
 }
@@ -75,7 +74,7 @@ BOOL on_project_load(FILTER* fp, void* editp, void* data, int size)
 		g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 
 		if (g_window_editor.hwnd) {
-			::SendMessage(g_window_editor.hwnd, WM_COMMAND, aului::Window::COMMAND_REDRAW, 0);
+			g_window_editor.redraw();
 
 			for (int i = 0; i < CVE_CURVE_MAX; i++) {
 				if (!g_curve_bezier_multi[i].is_data_valid()) {
@@ -202,7 +201,7 @@ void ini_load_configs(FILTER* fp)
 	// カーブの色
 	g_config.curve_color = (COLORREF)fp->exfunc->ini_load_int(fp,
 		CVE_INI_KEY_CURVE_COLOR,
-		CVE_CURVE_COLOR_DEFAULT
+		cve::Config::CURVE_COLOR_DEFAULT
 	);
 	// アップデートを通知
 	g_config.notify_update = fp->exfunc->ini_load_int(fp,
@@ -334,16 +333,13 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 		return 0;
 
 	case WM_SIZE:
-		g_window_main.move(rect_wnd);
+	{
+		RECT rect_wnd_main = rect_wnd;
+		rect_wnd_main.right = MIN_LIMIT(rect_wnd_main.right, CVE_MIN_W);
+		rect_wnd_main.bottom = MIN_LIMIT(rect_wnd_main.bottom, CVE_SEPARATOR_WIDTH * 2 + CVE_MENU_H);
+		g_window_main.move(rect_wnd_main);
 		return 0;
-
-	case WM_GETMINMAXINFO:
-		MINMAXINFO* mmi;
-		mmi = (MINMAXINFO*)lparam;
-		mmi->ptMaxTrackSize.x = CVE_MAX_W;
-		mmi->ptMaxTrackSize.y = CVE_MAX_H;
-		mmi->ptMinTrackSize.y = g_config.separator + CVE_SEPARATOR_WIDTH + CVE_MENU_H + CVE_NON_CLIENT_H;
-		return 0;
+	}
 
 	case WM_KEYDOWN:
 		return cve::on_keydown(wparam);
