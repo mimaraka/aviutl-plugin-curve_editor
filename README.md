@@ -100,7 +100,7 @@ AviUtl 1.00, 1.10
 [イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)との共存を確認。  
 
 ## バグ報告
-バグ報告はこのリポジトリのIssuesまたは[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(匿名回答可)からお願いします。  
+バグ報告はこのリポジトリの[Issues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues)または[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(匿名回答可)からお願いします。  
 
 ## その他
 当プラグイン・スクリプトは以下のプラグイン・スクリプトを参考にして作成されました：  
