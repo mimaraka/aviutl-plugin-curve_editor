@@ -14,25 +14,25 @@
 int cve::Curve_Bezier::create_number()
 {
 	int result;
-	Float_Point ptf[2];
+	aului::Point<float> ptf[2];
 	POINT pt[2];
 
-	ptf[0].x = MINMAX_LIMIT(
+	ptf[0].x = std::clamp(
 		ctpts[0].pt_right.x / (float)CVE_GRAPH_RESOLUTION,
-		0, 1
+		0.f, 1.f
 	);
 
-	ptf[0].y = MINMAX_LIMIT(
+	ptf[0].y = std::clamp(
 		ctpts[0].pt_right.y / (float)CVE_GRAPH_RESOLUTION,
 		MIN_Y, MAX_Y
 	);
 
-	ptf[1].x = MINMAX_LIMIT(
+	ptf[1].x = std::clamp(
 		ctpts[1].pt_left.x / (float)CVE_GRAPH_RESOLUTION,
-		0, 1
+		0.f, 1.f
 	);
 
-	ptf[1].y = MINMAX_LIMIT(
+	ptf[1].y = std::clamp(
 		ctpts[1].pt_left.y / (float)CVE_GRAPH_RESOLUTION,
 		MIN_Y, MAX_Y
 	);
@@ -55,14 +55,14 @@ int cve::Curve_Bezier::create_number()
 //---------------------------------------------------------------------
 std::string cve::Curve_Bezier::create_parameters()
 {
-	Float_Point pt;
+	aului::Point<float> pt;
 	std::string strx, stry, result;
 
-	pt.x = MINMAX_LIMIT(
+	pt.x = std::clamp(
 		(float)(std::round(ctpts[0].pt_right.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		0, 1
+		0.f, 1.f
 	);
-	pt.y = MINMAX_LIMIT(
+	pt.y = std::clamp(
 		(float)(std::round(ctpts[0].pt_right.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
 		MIN_Y, MAX_Y
 	);
@@ -77,11 +77,11 @@ std::string cve::Curve_Bezier::create_parameters()
 		stry.erase(4);
 	result += strx + ", " + stry + ", ";
 
-	pt.x = MINMAX_LIMIT(
+	pt.x = std::clamp(
 		(float)(std::round(ctpts[1].pt_left.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
-		0, 1
+		0.f, 1.f
 	);
-	pt.y = MINMAX_LIMIT(
+	pt.y = std::clamp(
 		(float)(std::round(ctpts[1].pt_left.y * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
 		MIN_Y, MAX_Y
 	);
@@ -113,13 +113,13 @@ bool cve::Curve_Bezier::read_parameters(LPCTSTR param, Static_Array<Curve_Points
 
 		float values[4];
 
-		values[0] = MINMAX_LIMIT(std::stof(vec[0]), 0, 1);
-		values[1] = MINMAX_LIMIT(
+		values[0] = std::clamp(std::stof(vec[0]), 0.f, 1.f);
+		values[1] = std::clamp(
 			std::stof(vec[1]),
 			MIN_Y, MAX_Y
 		);
-		values[2] = MINMAX_LIMIT(std::stof(vec[2]), 0, 1);
-		values[3] = MINMAX_LIMIT(
+		values[2] = std::clamp(std::stof(vec[2]), 0.f, 1.f);
+		values[3] = std::clamp(
 			std::stof(vec[3]),
 			MIN_Y, MAX_Y
 		);
@@ -151,7 +151,7 @@ double cve::Curve_Bezier::create_result(int number, double ratio, double st, dou
 	
 	Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_buffer;
 
-	ratio = MINMAX_LIMIT(ratio, 0.0, 1.0);
+	ratio = std::clamp(ratio, 0., 1.);
 
 	if (!read_number(number, ctpts_buffer))
 		return st + (ed - st) * ratio;

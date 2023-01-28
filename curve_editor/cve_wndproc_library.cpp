@@ -60,7 +60,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 			20,
 			CVE_CT_SEARCHBAR,
 			rect_search_bar.rect,
-			CVE_EDGE_ALL
+			cve::Button::FLAG_EDGE_ALL
 		);
 
 #endif
@@ -137,17 +137,23 @@ LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 	}
 
 	case WM_MOUSEWHEEL:
-		::ScrollWindowEx(
-			hwnd,
-			0,
-			GET_Y_LPARAM(wparam) / 3,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			//MAKEWPARAM(SW_INVALIDATE | SW_SCROLLCHILDREN | SW_SMOOTHSCROLL, 100)
-			SW_INVALIDATE | SW_SCROLLCHILDREN
-		);
+		if (::GetAsyncKeyState(VK_CONTROL) < 0) {
+			g_config.preset_size += GET_Y_LPARAM(wparam) / 60;
+			::SendMessage(hwnd, WM_COMMAND, CVE_CM_PRESET_MOVE, 0);
+			::InvalidateRect(hwnd, NULL, FALSE);
+		}
+		else
+			::ScrollWindowEx(
+				hwnd,
+				0,
+				GET_Y_LPARAM(wparam) / 3,
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				//MAKEWPARAM(SW_INVALIDATE | SW_SCROLLCHILDREN | SW_SMOOTHSCROLL, 100)
+				SW_INVALIDATE | SW_SCROLLCHILDREN
+			);
 		return 0;
 
 	case aului::Window::WM_REDRAW:

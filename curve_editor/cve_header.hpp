@@ -35,7 +35,7 @@ BOOL							filter_wndproc(HWND, UINT, WPARAM, LPARAM, void*, FILTER*);
 //----------------------------------------------------------------------------------
 
 namespace cve {
-	// Direct2D初期化
+	// DirectX初期化・終了
 	bool						dx_init();
 	void						dx_exit();
 
@@ -46,7 +46,7 @@ namespace cve {
 	BOOL						copy_to_clipboard(HWND, LPCTSTR);
 
 	// 長さを減算
-	void						subtract_length(cve::Float_Point* pt, const cve::Float_Point& st, const cve::Float_Point& ed, float length);
+	void						subtract_length(aului::Point<float>* pt, const aului::Point<float>& st, const aului::Point<float>& ed, float length);
 
 	// 設定をメニューに反映
 	void						apply_config_to_menu(HMENU menu, MENUITEMINFO* mi);
@@ -82,6 +82,7 @@ BOOL CALLBACK					dialogproc_bezier_param(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK					dialogproc_read(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK					dialogproc_save(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK					dialogproc_id(HWND, UINT, WPARAM, LPARAM);
+BOOL CALLBACK					dialogproc_about(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK					dialogproc_check_update(HWND, UINT, WPARAM, LPARAM);
 
 
@@ -99,146 +100,50 @@ BOOL CALLBACK					dialogproc_hooked(HWND, UINT, WPARAM, LPARAM);
 //		インライン関数
 //----------------------------------------------------------------------------------
 
-// Float_Point -> Double_Point
-//inline cve::Double_Point to_double_point(const cve::Float_Point& pt)
-//{
-//	return  {
-//		(double)pt.x,
-//		(double)pt.y
-//	};
-//}
-//
-//// POINT -> Double_Point
-//inline cve::Double_Point to_double_point(const POINT& pt)
-//{
-//	return  {
-//		(double)pt.x,
-//		(double)pt.y
-//	};
-//}
-//
-//// Float_Point -> Double_Point
-//inline cve::Float_Point to_float_point(const cve::Double_Point& pt)
-//{
-//	return  {
-//		(double)pt.x,
-//		(double)pt.y
-//	};
-//}
-//
-//// POINT -> Double_Point
-//inline cve::Float_Point to_float_point(const POINT& pt)
-//{
-//	return  {
-//		(float)pt.x,
-//		(float)pt.y
-//	};
-//}
-
-//グラフ -> クライアント
-inline cve::Double_Point to_client2(double graph_x, double graph_y)
+// グラフ -> クライアント
+template <typename T>
+inline aului::Point<T> to_client(T graph_x, T graph_y)
 {
 	return {
-		g_view_info.origin.x + graph_x * g_view_info.scale.x,
-		g_view_info.origin.y + graph_y * g_view_info.scale.y,
+		(T)(g_view_info.origin.x + graph_x * g_view_info.scale.x),
+		(T)(g_view_info.origin.y - graph_y * g_view_info.scale.y),
 	};
 }
 
-inline cve::Double_Point to_client2(const cve::Double_Point& pt_graph)
+template <typename T>
+inline aului::Point<T> to_client(const aului::Point<T>& pt_graph)
+{
+	return to_client(pt_graph.x, pt_graph.y);
+}
+
+// クライアント -> グラフ
+template <typename T>
+inline aului::Point<T> to_graph(T client_x, T client_y)
 {
 	return {
-		to_client2(pt_graph.x, pt_graph.y).x,
-		to_client2(pt_graph.x, pt_graph.y).y
+		(T)((client_x - g_view_info.origin.x) / g_view_info.scale.x),
+		(T)((-client_y + g_view_info.origin.y) / g_view_info.scale.y)
 	};
 }
 
-inline cve::Double_Point to_client2(const cve::Float_Point& pt_graph)
+template <typename T>
+inline aului::Point<T> to_graph(const aului::Point<T>& pt_client)
+{
+	return to_graph(pt_client.x, pt_client.y);
+}
+
+// グラフ -> プリセット
+template <typename T>
+inline aului::Point<T> to_preset(T graph_x, T graph_y)
 {
 	return {
-		to_client2((double)pt_graph.x, (double)pt_graph.y).x,
-		to_client2((double)pt_graph.x, (double)pt_graph.y).y
+		(T)(CVE_MARGIN_PRESET + (graph_x / (double)CVE_GRAPH_RESOLUTION) * (g_config.preset_size - CVE_MARGIN_PRESET * 2)),
+		(T)(g_config.preset_size - CVE_MARGIN_PRESET - (graph_y / (double)CVE_GRAPH_RESOLUTION) * (g_config.preset_size - CVE_MARGIN_PRESET * 2))
 	};
 }
 
-
-inline cve::Double_Point to_client2(const POINT& pt_graph)
+template <typename T>
+inline aului::Point<T> to_preset(const aului::Point<T>& pt_graph)
 {
-	return {
-		to_client2((double)pt_graph.x, (double)pt_graph.y).x,
-		to_client2((double)pt_graph.x, (double)pt_graph.y).y
-	};
-}
-
-inline cve::Float_Point to_client(int gr_x, int gr_y)
-{
-	return {
-		(float)g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
-		(float)g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
-	};
-}
-
-inline cve::Float_Point to_clientf(float gr_x, float gr_y)
-{
-	return {
-		(float)g_view_info.origin.x + (float)(gr_x * g_view_info.scale.x),
-		(float)g_view_info.origin.y - (float)(gr_y * g_view_info.scale.y)
-	};
-}
-
-inline cve::Float_Point to_client(const POINT& pt_graph)
-{
-	return {
-		to_client(pt_graph.x, pt_graph.y).x,
-		to_client(pt_graph.x, pt_graph.y).y
-	};
-}
-
-inline cve::Float_Point to_client(const cve::Float_Point& pt_graph)
-{
-	return {
-		to_clientf(pt_graph.x, pt_graph.y).x,
-		to_clientf(pt_graph.x, pt_graph.y).y
-	};
-}
-
-//クライアント -> グラフ
-inline POINT to_graph(double cl_x, double cl_y)
-{
-	return {
-		(int)((cl_x - g_view_info.origin.x) / g_view_info.scale.x),
-		(int)((-cl_y + g_view_info.origin.y) / g_view_info.scale.y)
-	};
-}
-
-inline cve::Float_Point to_graphf(double cl_x, double cl_y)
-{
-	return {
-		(float)((cl_x - g_view_info.origin.x) / g_view_info.scale.x),
-		(float)((-cl_y + g_view_info.origin.y) / g_view_info.scale.y)
-	};
-}
-
-inline POINT to_graph(const POINT& pt_client)
-{
-	return {
-		to_graph(pt_client.x, pt_client.y).x,
-		to_graph(pt_client.x, pt_client.y).y
-	};
-}
-
-//グラフ -> プリセット
-inline cve::Float_Point to_preset(int gr_x, int gr_y)
-{
-	return {
-		(float)CVE_MARGIN_PRESET + (gr_x / (float)CVE_GRAPH_RESOLUTION) * (g_config.preset_size - CVE_MARGIN_PRESET * 2),
-		g_config.preset_size - (float)CVE_MARGIN_PRESET - (gr_y / (float)CVE_GRAPH_RESOLUTION) * (g_config.preset_size - CVE_MARGIN_PRESET * 2)
-	};
-}
-
-inline cve::Float_Point to_preset(const POINT& pt_graph)
-{
-	return {
-		to_preset(pt_graph.x, pt_graph.y).x,
-		to_preset(pt_graph.x, pt_graph.y).y
-	};
+	return to_preset(pt_graph.x, pt_graph.y);
 }

@@ -14,6 +14,11 @@
 //---------------------------------------------------------------------
 LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	// constexpr
+	constexpr double GRAPH_WHEEL_COEF_SCALE = 0.1;
+	constexpr double GRAPH_WHEEL_COEF_POS = 0.2;
+	constexpr double GRAPH_SCALE_BASE = 1.01;
+
 	//int
 	static bool		move_view		= false;
 	static bool		is_dragging		= false;
@@ -56,7 +61,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	//グラフ座標
 	if (g_view_info.origin.x != NULL)
-		pt_graph = to_graph(pt_client);
+		pt_graph = to_graph(aului::to_point<LONG>(pt_client)).to_win32_point();
 
 
 	switch (msg) {
@@ -267,7 +272,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index + 1].pt_left = g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index + 1].pt_center;
 				pt_address.position = cve::Point_Address::Null;
 			}
-			else if (ISINRANGEEQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
+			else if (IN_RANGE_EQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
 				cve::trace_curve();
 				g_curve_bezier_multi[g_config.current_id.multi - 1].add_point(pt_graph);
 				// ダブルクリックしたまま制御点の移動を行えるようにするため
@@ -284,7 +289,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			if (pt_address.position == cve::Point_Address::Center)
 				g_curve_bezier_value[g_config.current_id.value - 1].delete_point(pt_client);
-			else if (ISINRANGEEQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
+			else if (IN_RANGE_EQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
 				cve::trace_curve();
 				g_curve_bezier_value[g_config.current_id.value - 1].add_point(pt_graph);
 			}
@@ -427,13 +432,13 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				// 拡大縮小
 				if ((::GetAsyncKeyState(VK_CONTROL) < 0 && move_or_scale == 0) || move_or_scale == 2) {
 					double coef_x, coef_y;
-					coef_x = MINMAX_LIMIT(std::pow(CVE_GRAPH_SCALE_BASE, pt_client.x - pt_view.x),
-						CVE_GRAPH_SCALE_MIN / prev_scale_x, CVE_GRAPH_SCALE_MAX / prev_scale_x);
-					coef_y = MINMAX_LIMIT(std::pow(CVE_GRAPH_SCALE_BASE, pt_view.y - pt_client.y),
-						CVE_GRAPH_SCALE_MIN / prev_scale_y, CVE_GRAPH_SCALE_MAX / prev_scale_y);
+					coef_x = std::clamp(std::pow(GRAPH_SCALE_BASE, pt_client.x - pt_view.x),
+						cve::Graph_View_Info::SCALE_MIN / prev_scale_x, cve::Graph_View_Info::SCALE_MAX / prev_scale_x);
+					coef_y = std::clamp(std::pow(GRAPH_SCALE_BASE, pt_view.y - pt_client.y),
+						cve::Graph_View_Info::SCALE_MIN / prev_scale_y, cve::Graph_View_Info::SCALE_MAX / prev_scale_y);
 					if (::GetAsyncKeyState(VK_SHIFT) < 0) {
-						coef_x = coef_y = LARGER(coef_x, coef_y);
-						prev_scale_x = prev_scale_y = LARGER(prev_scale_x, prev_scale_y);
+						coef_x = coef_y = std::max(coef_x, coef_y);
+						prev_scale_x = prev_scale_y = std::max(prev_scale_x, prev_scale_y);
 					}
 					g_view_info.scale.x = prev_scale_x * coef_x;
 					g_view_info.scale.y = prev_scale_y * coef_y;
@@ -490,22 +495,22 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	{
 		// Ctrlキーが押されているとき(横に移動)
 		if (::GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(VK_SHIFT) >= 0)
-			g_view_info.origin.x += (float)(GET_Y_LPARAM(wparam) * CVE_GRAPH_WHEEL_COEF_POS);
+			g_view_info.origin.x += (float)(GET_Y_LPARAM(wparam) * GRAPH_WHEEL_COEF_POS);
 
 		// Shiftキーが押されているとき(縦に移動)
 		else if (::GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) >= 0)
-			g_view_info.origin.y += (float)(GET_Y_LPARAM(wparam) * CVE_GRAPH_WHEEL_COEF_POS);
+			g_view_info.origin.y += (float)(GET_Y_LPARAM(wparam) * GRAPH_WHEEL_COEF_POS);
 
 		// 縮尺の上限下限を設定
 		else {
-			double coef = std::pow(CVE_GRAPH_SCALE_BASE, GET_Y_LPARAM(wparam) * CVE_GRAPH_WHEEL_COEF_SCALE);
+			double coef = std::pow(GRAPH_SCALE_BASE, GET_Y_LPARAM(wparam) * GRAPH_WHEEL_COEF_SCALE);
 			double scale_after_x, scale_after_y;
 
-			if (LARGER(g_view_info.scale.x, g_view_info.scale.y) > CVE_GRAPH_SCALE_MAX / coef) {
-				coef = CVE_GRAPH_SCALE_MAX / LARGER(g_view_info.scale.x, g_view_info.scale.y);
+			if (std::max(g_view_info.scale.x, g_view_info.scale.y) > cve::Graph_View_Info::SCALE_MAX / coef) {
+				coef = cve::Graph_View_Info::SCALE_MAX / std::max(g_view_info.scale.x, g_view_info.scale.y);
 			}
-			else if (SMALLER(g_view_info.scale.x, g_view_info.scale.y) < CVE_GRAPH_SCALE_MIN / coef) {
-				coef = CVE_GRAPH_SCALE_MIN / SMALLER(g_view_info.scale.x, g_view_info.scale.y);
+			else if (std::min(g_view_info.scale.x, g_view_info.scale.y) < cve::Graph_View_Info::SCALE_MIN / coef) {
+				coef = cve::Graph_View_Info::SCALE_MIN / std::min(g_view_info.scale.x, g_view_info.scale.y);
 			}
 
 			scale_after_x = g_view_info.scale.x * coef;
@@ -746,7 +751,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			// 本プラグインについて
 		case ID_MENU_ABOUT:
-			::MessageBox(hwnd, CVE_STR_ABOUT, CVE_FILTER_NAME, MB_ICONINFORMATION);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, dialogproc_about);
 			return 0;
 
 			// カーブの数値・IDをコピー
@@ -802,7 +807,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case CVE_CM_READ:
 		case ID_MENU_READ:
 			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
-			::InvalidateRect(hwnd, NULL, FALSE);
+			g_window_main.redraw();
 
 			return 0;
 
@@ -818,7 +823,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			
 			// ヘルプ
 		case ID_MENU_HELP:
-			::ShellExecute(0, "open", CVE_FILTER_LINK_HELP, NULL, NULL, SW_SHOWNORMAL);
+			::ShellExecute(NULL, "open", CVE_FILTER_LINK_HELP, NULL, NULL, SW_SHOWNORMAL);
 			return 0;
 
 			// 前のIDに移動
@@ -855,10 +860,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// 適用モードを中間点無視にする
 		case ID_MENU_APPLY_IGNOREMID:
 			g_config.apply_mode = cve::Config::Ignore_Mid_Point;
-			return 0;
-
-		case ID_MENU_CHECK_UPDATE:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_LATEST_VERSION), hwnd, dialogproc_check_update);
 			return 0;
 		}
 

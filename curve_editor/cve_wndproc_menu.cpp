@@ -435,14 +435,14 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case CVE_CM_ID_BACK:
 			if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
 				g_config.current_id.multi--;
-				g_config.current_id.multi = MINMAX_LIMIT(g_config.current_id.multi, 1, CVE_CURVE_MAX);
+				g_config.current_id.multi = std::clamp(g_config.current_id.multi, 1, CVE_CURVE_MAX);
 				g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 				id_id.redraw();
 				g_window_editor.redraw();
 			}
 			else if (g_config.edit_mode == cve::Mode_Bezier_Value) {
 				g_config.current_id.value--;
-				g_config.current_id.value = MINMAX_LIMIT(g_config.current_id.value, 1, CVE_CURVE_MAX);
+				g_config.current_id.value = std::clamp(g_config.current_id.value, 1, CVE_CURVE_MAX);
 				g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 			}
 			id_id.redraw();
@@ -453,14 +453,14 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case CVE_CM_ID_NEXT:
 			if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
 				g_config.current_id.multi++;
-				g_config.current_id.multi = MINMAX_LIMIT(g_config.current_id.multi, 1, CVE_CURVE_MAX);
+				g_config.current_id.multi = std::clamp(g_config.current_id.multi, 1, CVE_CURVE_MAX);
 				g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 				id_id.redraw();
 				g_window_editor.redraw();
 			}
 			else if (g_config.edit_mode == cve::Mode_Bezier_Value) {
 				g_config.current_id.value++;
-				g_config.current_id.value = MINMAX_LIMIT(g_config.current_id.value, 1, CVE_CURVE_MAX);
+				g_config.current_id.value = std::clamp(g_config.current_id.value, 1, CVE_CURVE_MAX);
 				g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 			}
 			id_id.redraw();
@@ -470,11 +470,11 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			// IDを変更
 		case CVE_CM_CHANGE_ID:
 			if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
-				g_config.current_id.multi = MINMAX_LIMIT(lparam, 1, CVE_CURVE_MAX);
+				g_config.current_id.multi = std::clamp((int)lparam, 1, CVE_CURVE_MAX);
 				g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 			}
 			else if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
-				g_config.current_id.value = MINMAX_LIMIT(lparam, 1, CVE_CURVE_MAX);
+				g_config.current_id.value = std::clamp((int)lparam, 1, CVE_CURVE_MAX);
 				g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 			}
 			id_id.redraw();
@@ -485,11 +485,12 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			param.redraw();
 			return 0;
 
+			// パラメータ表示パネル
 		case CVE_CM_PARAM:
 			switch (g_config.edit_mode) {
 			case cve::Mode_Bezier:
 				::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_PARAM), hwnd, dialogproc_bezier_param);
-				g_window_editor.redraw();
+				g_window_main.redraw();
 				break;
 
 			case cve::Mode_Elastic:

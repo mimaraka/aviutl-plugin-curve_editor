@@ -12,24 +12,6 @@
 
 namespace cve {
 	//---------------------------------------------------------------------
-	//		Float Point (floatの点)
-	//---------------------------------------------------------------------
-	struct Float_Point {
-		float x, y;
-	};
-
-
-
-	//---------------------------------------------------------------------
-	//		Double Point (doubleの点)
-	//---------------------------------------------------------------------
-	struct Double_Point {
-		double x, y;
-	};
-
-
-
-	//---------------------------------------------------------------------
 	//		エディットモード
 	//---------------------------------------------------------------------
 	enum Edit_Mode {
@@ -46,20 +28,20 @@ namespace cve {
 	//		テーマ
 	//---------------------------------------------------------------------
 	struct Theme {
-		COLORREF	bg,
-					bg_graph,
-					bg_editbox,
-					sepr,
-					curve_trace,
-					curve_preset,
-					handle,
-					handle_preset,
-					bt_selected,
-					bt_unselected,
-					bt_tx,
-					bt_tx_selected,
-					preset_tx,
-					editbox_tx;
+		aului::Color	bg,
+						bg_graph,
+						bg_editbox,
+						sepr,
+						curve_trace,
+						curve_preset,
+						handle,
+						handle_preset,
+						bt_selected,
+						bt_unselected,
+						bt_tx,
+						bt_tx_selected,
+						preset_tx,
+						editbox_tx;
 	};
 
 
@@ -137,11 +119,11 @@ namespace cve {
 				separator,
 				preset_size;
 
-		Curve_ID	current_id;
-		Edit_Mode	edit_mode;
-		Layout_Mode	layout_mode;
-		Apply_Mode	apply_mode;
-		COLORREF	curve_color;
+		Curve_ID		current_id;
+		Edit_Mode		edit_mode;
+		Layout_Mode		layout_mode;
+		Apply_Mode		apply_mode;
+		aului::Color	curve_color;
 
 		void reset_configs()
 		{
@@ -153,6 +135,35 @@ namespace cve {
 			notify_update = false;
 			theme = 0;
 			curve_color = CURVE_COLOR_DEFAULT;
+		}
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		グラフ表示
+	//---------------------------------------------------------------------
+	struct Graph_View_Info {
+		static constexpr int GRAPH_PADDING = 18;
+		static constexpr double SCALE_MIN = 0.001;
+		static constexpr double SCALE_MAX = 512.;
+
+		aului::Point<double> origin;
+		aului::Point<double> scale;
+
+		void fit(const RECT& rect)
+		{
+			origin.x = (double)GRAPH_PADDING;
+			scale.x = ((double)rect.right - (int)(2 * GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
+
+			if (rect.right > rect.bottom && rect.bottom > GRAPH_PADDING * 2 + CVE_GRAPH_RESOLUTION * SCALE_MIN) {
+				origin.y = (double)(rect.bottom - GRAPH_PADDING);
+				scale.y = ((double)rect.bottom - (int)(2 * GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
+			}
+			else {
+				origin.y = (rect.bottom + rect.right) * 0.5 - GRAPH_PADDING;
+				scale.y = scale.x;
+			}
 		}
 	};
 }

@@ -29,19 +29,19 @@ double func1(double ratio, double e)
 
 double func2(double ratio, double e)
 {
-	return ratio + 0.5 + 1.0 / (e - 1.0) - (e + 1.0) * std::pow(e, func1(ratio + 0.5, e)) / (2.0 * e - 2.0);
+	return ratio + 0.5 + 1. / (e - 1.) - (e + 1.) * std::pow(e, func1(ratio + 0.5, e)) / (2. * e - 2.);
 }
 
 double cve::Curve_Bounce::func_bounce(double ratio, double e, double t, double st, double ed)
 {
-	ratio = MINMAX_LIMIT(ratio, 0, 1);
-	const double lim_val = t * (1 / (1.0 - e) - 0.5);
+	ratio = std::clamp(ratio, 0., 1.);
+	const double lim_val = t * (1 / (1. - e) - 0.5);
 	double result;
-	e = MAX_LIMIT(e, 0.999);
+	e = std::min(e, 0.999);
 
-	if (lim_val > 1.0) {
-		int n = (int)(std::log(1 + (e - 1.0) * (1 / t + 0.5)) / std::log(e));
-		if (ratio < t * ((std::pow(e, n) - 1.0) / (e - 1.0) - 0.5))
+	if (lim_val > 1.) {
+		int n = (int)(std::log(1 + (e - 1.) * (1 / t + 0.5)) / std::log(e));
+		if (ratio < t * ((std::pow(e, n) - 1.) / (e - 1.) - 0.5))
 			result = (ed - st) * (4 * std::pow(func2(ratio / t, e), 2) - std::pow(e, 2 * func1(ratio / t + 0.5, e))) + ed;
 		else
 			result = ed;
@@ -67,10 +67,10 @@ void cve::Curve_Bounce::pt_on_ctpt(const POINT& pt_client, Point_Address* pt_add
 	param_to_pt(&pt);
 	// 振幅を調整するハンドル(左)
 	const RECT rect_point = {
-		(LONG)to_client(pt).x - POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y - POINT_BOX_WIDTH,
-		(LONG)to_client(pt).x + POINT_BOX_WIDTH,
-		(LONG)to_client(pt).y + POINT_BOX_WIDTH
+		(LONG)to_client(aului::to_point<LONG>(pt)).x - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::to_point<LONG>(pt)).y - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::to_point<LONG>(pt)).x + POINT_BOX_WIDTH,
+		(LONG)to_client(aului::to_point<LONG>(pt)).y + POINT_BOX_WIDTH
 	};
 
 	pt_address->index = NULL;
@@ -110,7 +110,7 @@ void cve::Curve_Bounce::move_handle(const POINT& pt_graph)
 void cve::Curve_Bounce::param_to_pt(POINT* pt_graph)
 {
 	pt_graph->x = (int)((coef_time * (coef_bounce + 1) * 0.5) * CVE_GRAPH_RESOLUTION);
-	pt_graph->y = (int)((1.0 - std::pow(coef_bounce, 2)) * CVE_GRAPH_RESOLUTION);
+	pt_graph->y = (int)((1. - std::pow(coef_bounce, 2)) * CVE_GRAPH_RESOLUTION);
 	if (reverse) {
 		pt_graph->x = CVE_GRAPH_RESOLUTION - pt_graph->x;
 		pt_graph->y = CVE_GRAPH_RESOLUTION - pt_graph->y;
@@ -133,8 +133,8 @@ double cve::Curve_Bounce::pt_to_param(const POINT& pt_graph, int idx_param)
 	else
 		pt = pt_graph;
 
-	double e = std::sqrt(1.0 - MINMAX_LIMIT(pt.y, 1, CVE_GRAPH_RESOLUTION) / (double)CVE_GRAPH_RESOLUTION);
-	double t = 2.0 * MINMAX_LIMIT(pt.x, 1, CVE_GRAPH_RESOLUTION) / ((e + 1.0) * CVE_GRAPH_RESOLUTION);
+	double e = std::sqrt(1. - std::clamp((int)pt.y, 1, CVE_GRAPH_RESOLUTION) / (double)CVE_GRAPH_RESOLUTION);
+	double t = 2. * std::clamp((int)pt.x, 1, CVE_GRAPH_RESOLUTION) / ((e + 1.) * CVE_GRAPH_RESOLUTION);
 	if (idx_param == 0)
 		return e;
 	else
@@ -151,8 +151,8 @@ void cve::Curve_Bounce::draw_curve(
 	const RECT& rect_wnd,
 	int drawing_mode)
 {
-	COLORREF handle_color;
-	COLORREF curve_color;
+	aului::Color handle_color;
+	aului::Color curve_color;
 	POINT pt_graph;
 
 	if (drawing_mode == DRAW_CURVE_NORMAL) {
@@ -168,8 +168,8 @@ void cve::Curve_Bounce::draw_curve(
 		curve_color = g_theme[g_config.theme].curve_preset;
 	}
 
-	float left_side = to_client(0, 0).x;
-	float right_side = to_client(CVE_GRAPH_RESOLUTION, 0).x;
+	float left_side = to_client(0.f, 0.f).x;
+	float right_side = to_client((float)CVE_GRAPH_RESOLUTION, 0.f).x;
 
 	// カーブを描画
 	if (right_side < 0 || left_side > rect_wnd.right) {
@@ -182,56 +182,56 @@ void cve::Curve_Bounce::draw_curve(
 		right_side = (float)rect_wnd.right;
 	}
 
-	paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
+	paint_object->brush->SetColor(D2D1::ColorF(curve_color.d2dcolor()));
 
 	double y1, y2;
 
-	for (float x = left_side; x < right_side; x += DRAW_GRAPH_STEP) {
+	for (double x = left_side; x < right_side; x += DRAW_GRAPH_STEP) {
 		if (reverse) {
-			y1 = func_bounce(1.0 - to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1.0, 0.0);
-			y2 = func_bounce(1.0 - to_graphf(x + DRAW_GRAPH_STEP, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1.0, 0.0);
+			y1 = func_bounce(1. - to_graph(x, 0.).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1., 0.);
+			y2 = func_bounce(1. - to_graph(x + DRAW_GRAPH_STEP, 0.).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 1., 0.);
 		}
 		else {
-			y1 = func_bounce(to_graphf(x, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0.0, 1.0);
-			y2 = func_bounce(to_graphf(x + DRAW_GRAPH_STEP, 0).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0.0, 1.0);
+			y1 = func_bounce(to_graph(x, 0.).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0., 1.);
+			y2 = func_bounce(to_graph(x + DRAW_GRAPH_STEP, 0.).x / (double)CVE_GRAPH_RESOLUTION, coef_bounce, coef_time, 0., 1.);
 		}
 		paint_object->p_render_target->DrawLine(
 			D2D1::Point2F(
-				x,
-				(to_clientf(0.0f, (float)(y1 * CVE_GRAPH_RESOLUTION)).y)),
+				(float)x,
+				(to_client(0.f, (float)(y1 * CVE_GRAPH_RESOLUTION)).y)),
 			D2D1::Point2F(
-				x + DRAW_GRAPH_STEP,
-				(to_clientf(0.0f, (float)(y2 * CVE_GRAPH_RESOLUTION)).y)),
+				(float)(x + DRAW_GRAPH_STEP),
+				(to_client(0.f, (float)(y2 * CVE_GRAPH_RESOLUTION)).y)),
 			paint_object->brush, CURVE_THICKNESS
 		);
 	}
 
 	// ハンドル・ポイントを描画
 	if (g_config.show_handle) {
-		paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
+		paint_object->brush->SetColor(D2D1::ColorF(handle_color.d2dcolor()));
 
 		param_to_pt(&pt_graph);
 
 		// 振動数・減衰を調整するハンドル
 		draw_handle(
 			paint_object,
-			to_client(pt_graph),
-			to_client(pt_graph),
+			to_client(aului::to_point<float>(pt_graph)),
+			to_client(aului::to_point<float>(pt_graph)),
 			drawing_mode, DRAW_HANDLE_ONLY
 		);
 
 		// 始点
 		draw_handle(
 			paint_object,
-			to_client(0, 0),
-			to_client(0, 0),
+			to_client(0.f, 0.f),
+			to_client(0.f, 0.f),
 			drawing_mode, DRAW_POINT_ONLY
 		);
 		// 終点
 		draw_handle(
 			paint_object,
-			to_client(CVE_GRAPH_RESOLUTION, CVE_GRAPH_RESOLUTION),
-			to_client(CVE_GRAPH_RESOLUTION, CVE_GRAPH_RESOLUTION),
+			to_client((float)CVE_GRAPH_RESOLUTION, (float)CVE_GRAPH_RESOLUTION),
+			to_client((float)CVE_GRAPH_RESOLUTION, (float)CVE_GRAPH_RESOLUTION),
 			drawing_mode, DRAW_POINT_ONLY
 		);
 	}
@@ -246,7 +246,7 @@ int cve::Curve_Bounce::create_number()
 {
 	int result;
 	int x = (int)((coef_time * (coef_bounce + 1) * 0.5) * 1000);
-	int y = (int)((1.0 - std::pow(coef_bounce, 2)) * 1000);
+	int y = (int)((1. - std::pow(coef_bounce, 2)) * 1000);
 	result = y + 1001 * x + 10211202;
 	if (reverse)
 		result *= -1;
@@ -269,11 +269,11 @@ bool cve::Curve_Bounce::read_number(int number, double* e, double* t, bool* rev)
 	//    11213203 ~ 2147483647：不使用
 	int num;
 
-	if (ISINRANGEEQ(number, -11213202, -10211202)) {
+	if (IN_RANGE_EQ(number, -11213202, -10211202)) {
 		*rev = true;
 		num = -number - 10211202;
 	}
-	else if (ISINRANGEEQ(number, 10211202, 11213202)) {
+	else if (IN_RANGE_EQ(number, 10211202, 11213202)) {
 		*rev = false;
 		num = number - 10211202;
 	}
@@ -283,8 +283,8 @@ bool cve::Curve_Bounce::read_number(int number, double* e, double* t, bool* rev)
 
 	x = num / 1001;
 	y = num - x * 1001;
-	*e = std::sqrt(1.0 - y * 0.001);
-	*t = 2.0 * 0.001 * x / (*e + 1.0);
+	*e = std::sqrt(1. - y * 0.001);
+	*t = 2. * 0.001 * x / (*e + 1.);
 
 	return true;
 }
@@ -299,13 +299,13 @@ double cve::Curve_Bounce::create_result(int number, double ratio, double st, dou
 	double e, t;
 	bool rev;
 
-	ratio = MINMAX_LIMIT(ratio, 0.0, 1.0);
+	ratio = std::clamp(ratio, 0., 1.);
 
 	if (!read_number(number, &e, &t, &rev))
 		return st + (ed - st) * ratio;
 
 	if (rev)
-		return func_bounce(1.0 - ratio, e, t, ed, st);
+		return func_bounce(1. - ratio, e, t, ed, st);
 	else
 		return func_bounce(ratio, e, t, st, ed);
 }

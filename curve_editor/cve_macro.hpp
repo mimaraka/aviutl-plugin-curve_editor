@@ -21,7 +21,7 @@
 #define CVE_MIN_H						200
 #define CVE_DEF_W						320
 #define CVE_DEF_H						540
-#define CVE_ROUND_RADIUS				4.0f
+#define CVE_ROUND_RADIUS				4.f
 
 // セパレータ
 #define CVE_SEPARATOR_WIDTH				8
@@ -29,18 +29,12 @@
 #define CVE_SEPARATOR_LINE_LENGTH		32
 
 // グラフ
-#define CVE_GRAPH_PADDING				18
-#define CVE_GRAPH_WHEEL_COEF_SCALE		0.1
-#define CVE_GRAPH_WHEEL_COEF_POS		0.2
 #define CVE_GRAPH_GRID_NUM				2
 #define CVE_GRAPH_RESOLUTION			10000				// 変更不可
-#define CVE_GRAPH_SCALE_BASE			1.01
-#define CVE_GRAPH_SCALE_MAX				512
-#define CVE_GRAPH_SCALE_MIN				0.001
 
 // ハンドル・カーブ・制御点
-#define CVE_SUBTRACT_LENGTH				10.0f
-#define CVE_SUBTRACT_LENGTH_2			8.0f
+#define CVE_SUBTRACT_LENGTH				10.f
+#define CVE_SUBTRACT_LENGTH_2			8.f
 #define CVE_NUM_BEZIER_LINER			145674282
 #define CVE_NUM_ELASTIC_DEFAULT			1575600
 #define CVE_NUM_BOUNCE_DEFAULT			10612242
@@ -71,11 +65,6 @@
 #define CVE_CT_LOWER_H					30
 #define CVE_CT_FONT_H					20
 #define CVE_MENU_H						(CVE_CT_UPPER_H + CVE_CT_LOWER_H + CVE_MARGIN * 2 + CVE_MARGIN_CONTROL)
-
-#define CVE_COEF_MOVE_DEFAULT			9
-#define CVE_COEF_MOVE_FAST				1
-
-#define CVE_CT_LABEL_MAX				64
 
 
 
@@ -141,8 +130,6 @@
 #define CVE_CURVE_MAX					1024				// 変更不可
 #define CVE_VALUE_RESOLUTION			1000
 
-#define CVE_MATH_PI						3.14159265
-
 
 
 //---------------------------------------------------------------------
@@ -158,6 +145,8 @@
 #define CVE_FILTER_INFO						CVE_FILTER_NAME " " CVE_FILTER_VERSION " by " CVE_FILTER_DEVELOPER
 #define CVE_FILTER_LINK						"https://github.com/mimaraka/aviutl-plugin-curve_editor"
 #define CVE_FILTER_LINK_HELP				CVE_FILTER_LINK "/wiki"
+#define CVE_FILTER_LINK_FORM				"https://forms.gle/mhv96DSYVhhKPkYQ8"
+#define CVE_FILTER_LINK_LICENSE				"https://github.com/mimaraka/aviutl-plugin-curve_editor/blob/master/LICENSE"
 
 
 
@@ -170,7 +159,7 @@
 #define CVE_STR_MODE_ELASTIC				"振動"
 #define CVE_STR_MODE_BOUNCE					"バウンス"
 
-#define CVE_STR_WARNING_DELETE				"編集中のIDのカーブを初期化します。よろしいですか？"
+#define CVE_STR_WARNING_DELETE				"編集中のカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DELETE_ALL			"すべてのカーブを初期化します。よろしいですか？"
 #define CVE_STR_WARNING_RESET_CONFIGS		"すべての設定を初期化します。よろしいですか？"
 #define CVE_STR_WARNING_DATA_INVALID		"互換性のないバージョンでカーブが読み込まれたか、データが破損しています。\nすべてのカーブを初期化しますか？"
@@ -212,15 +201,5 @@
 //---------------------------------------------------------------------
 //		マクロ関数
 //---------------------------------------------------------------------
-#define TO_BGR(ref)							(RGB(GetBValue(ref), GetGValue(ref), GetRValue(ref)))
-#define DISTANCE(pt1,pt2)					(std::sqrt(std::pow(pt2.x - pt1.x, 2) + std::pow(pt2.y - pt1.y, 2)))
-#define MAX_LIMIT(value,maxv)				(((value) > (maxv))? (maxv): (value))
-#define MIN_LIMIT(value,minv)				(((value) < (minv))? (minv): (value))
-#define MINMAX_LIMIT(value,minv,maxv)		(((value) < (minv))? (minv): (((value) > (maxv))? (maxv): (value)))
-#define ISINRANGE(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
-#define ISINRANGEEQ(value,minv,maxv)		(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)
-#define CHANGE_BRIGHTNESS(ref,num)			(RGB(MINMAX_LIMIT(GetRValue(ref) + num, 0, 255), MINMAX_LIMIT(GetGValue(ref) + num, 0, 255), MINMAX_LIMIT(GetBValue(ref) + num, 0, 255)))
-#define INVERT(ref)							(RGB(255 - GetRValue(ref), 255 - GetGValue(ref), 255 - GetBValue(ref)))
-#define CONTRAST(ref,val)					(RGB(MINMAX_LIMIT(127 + (GetRValue(ref) - 127) * val, 0, 255), MINMAX_LIMIT(127 + (GetGValue(ref) - 127) * val, 0, 255), MINMAX_LIMIT(127 + (GetBValue(ref) - 127) * val, 0, 255)))
-#define LARGER(val1, val2)					(((val1) > (val2))? (val1) : (val2))
-#define SMALLER(val1, val2)					(((val1) < (val2))? (val1) : (val2))
+#define IN_RANGE(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
+#define IN_RANGE_EQ(value,minv,maxv)		(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)

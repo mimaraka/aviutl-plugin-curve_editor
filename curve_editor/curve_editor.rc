@@ -108,14 +108,15 @@ BEGIN
     LTEXT           "カーブの数値を入力してください。",IDC_STATIC,7,7,104,8
 END
 
-IDD_ABOUT DIALOGEX 0, 0, 310, 177
+IDD_ABOUT DIALOGEX 0, 0, 219, 159
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Curve Editor"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,199,156,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,253,156,50,14
-    CONTROL         "",IDC_TAB1,"SysTabControl32",0x0,7,7,296,145
+    DEFPUSHBUTTON   "OK",IDOK,162,138,50,14
+    PUSHBUTTON      "アップデートを確認",IDC_CHECK_UPDATE,133,94,79,14
+    PUSHBUTTON      "バグを報告",IDC_REPORT_BUGS,133,109,79,14
+    PUSHBUTTON      "ライセンス",IDC_ABOUT_LICENSE,133,79,79,14
 END
 
 IDD_ID DIALOGEX 0, 0, 181, 63
@@ -181,9 +182,9 @@ BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 303
+        RIGHTMARGIN, 212
         TOPMARGIN, 7
-        BOTTOMMARGIN, 170
+        BOTTOMMARGIN, 152
     END
 
     IDD_ID, DIALOG
@@ -293,7 +294,6 @@ BEGIN
         MENUITEM "設定",                          ID_MENU_CONFIG
         MENUITEM "ヘルプ",                         ID_MENU_HELP
         MENUITEM "About",                       ID_MENU_ABOUT
-        MENUITEM "アップデートを確認",                   ID_MENU_CHECK_UPDATE
     END
 END
 

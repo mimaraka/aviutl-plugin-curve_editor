@@ -13,7 +13,7 @@
 //---------------------------------------------------------------------
 double cve::Curve_Bezier_Multi::create_result(double ratio, double st, double ed)
 {
-	ratio = MINMAX_LIMIT(ratio, 0.0, 1.0);
+	ratio = std::clamp(ratio, 0., 1.);
 
 	return st + get_bezier_value(ratio, ctpts) * (ed - st) / (double)CVE_GRAPH_RESOLUTION;
 }

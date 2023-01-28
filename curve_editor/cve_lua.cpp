@@ -31,11 +31,11 @@ int get_result(lua_State* L)
 		break;
 
 	case cve::Mode_Bezier_Multi:
-		result = g_curve_bezier_multi[MINMAX_LIMIT(num, 1, CVE_CURVE_MAX) - 1].create_result(ratio, st, ed);
+		result = g_curve_bezier_multi[std::clamp(num, 1, CVE_CURVE_MAX) - 1].create_result(ratio, st, ed);
 		break;
 
 	case cve::Mode_Bezier_Value:
-		//result = g_curve_bezier_value[MINMAX_LIMIT(num, 1, CVE_CURVE_MAX) - 1].create_result(ratio, st, ed);
+		//result = g_curve_bezier_value[std::clamp(num, 1, CVE_CURVE_MAX) - 1].create_result(ratio, st, ed);
 		result = (ed - st) * ratio + st;
 		break;
 

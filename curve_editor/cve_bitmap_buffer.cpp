@@ -7,7 +7,7 @@
 #include "cve_header.hpp"
 
 #define CVE_GR_GRID_TH_L				0.5f
-#define CVE_GR_GRID_TH_B				1.0f
+#define CVE_GR_GRID_TH_B				1.f
 #define CVE_GR_GRID_MIN					36
 
 
@@ -60,13 +60,13 @@ void cve::Bitmap_Buffer::init(HWND hw)
 //---------------------------------------------------------------------
 //		RenderTargetをDCにバインド & 背景を塗りつぶし
 //---------------------------------------------------------------------
-bool cve::Bitmap_Buffer::d2d_setup(COLORREF cr)
+bool cve::Bitmap_Buffer::d2d_setup(const aului::Color& col)
 {
 	if (g_p_render_target != nullptr && g_p_factory != nullptr) {
 		g_p_render_target->BindDC(hdc_memory, &rect);
 		g_p_render_target->BeginDraw();
 		g_p_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
-		g_p_render_target->Clear(D2D1::ColorF(cr));
+		g_p_render_target->Clear(D2D1::ColorF(col.d2dcolor()));
 		g_p_render_target->EndDraw();
 		return true;
 	}
@@ -105,13 +105,15 @@ void cve::Bitmap_Buffer::resize()
 //---------------------------------------------------------------------
 void cve::Bitmap_Buffer::draw_grid()
 {
-	brush->SetColor(D2D1::ColorF(CHANGE_BRIGHTNESS(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GRID)));
+	aului::Color grid_color = g_theme[g_config.theme].bg_graph;
+	grid_color.change_brightness(CVE_BR_GRID);
+	brush->SetColor(D2D1::ColorF(grid_color.d2dcolor()));
 	// 
 	int kx = (int)std::floor(std::log(CVE_GRAPH_RESOLUTION * g_view_info.scale.x / (double)CVE_GR_GRID_MIN) / std::log(CVE_GRAPH_GRID_NUM));
 	int ky = (int)std::floor(std::log(CVE_GRAPH_RESOLUTION * g_view_info.scale.y / (double)CVE_GR_GRID_MIN) / std::log(CVE_GRAPH_GRID_NUM));
 	// グラフの枠内に表示されるグリッドの本数
-	int nx = MIN_LIMIT((int)std::pow(CVE_GRAPH_GRID_NUM, kx), 1);
-	int ny = MIN_LIMIT((int)std::pow(CVE_GRAPH_GRID_NUM, ky), 1);
+	int nx = std::max((int)std::pow(CVE_GRAPH_GRID_NUM, kx), 1);
+	int ny = std::max((int)std::pow(CVE_GRAPH_GRID_NUM, ky), 1);
 	// 
 	float dx = (float)(CVE_GRAPH_RESOLUTION * g_view_info.scale.x) / (float)nx;
 	float dy = (float)(CVE_GRAPH_RESOLUTION * g_view_info.scale.y) / (float)ny;
@@ -127,8 +129,8 @@ void cve::Bitmap_Buffer::draw_grid()
 	else
 		ly = (int)std::ceil(to_graph(0, 0).y * ny / (double)CVE_GRAPH_RESOLUTION);
 
-	float ax = to_client((int)(lx * CVE_GRAPH_RESOLUTION / (float)nx), 0).x;
-	float ay = to_client(0, (int)(ly * CVE_GRAPH_RESOLUTION / (float)ny)).y;
+	float ax = to_client(lx * CVE_GRAPH_RESOLUTION / (float)nx, 0.f).x;
+	float ay = to_client(0.f, ly * CVE_GRAPH_RESOLUTION / (float)ny).y;
 	float thickness;
 
 	// 縦方向
@@ -168,6 +170,7 @@ void cve::Bitmap_Buffer::draw_rounded_edge(int flag, float radius) {
 	ID2D1GeometrySink* sink = nullptr;
 	ID2D1PathGeometry* edge = nullptr;
 	D2D1_POINT_2F pt_1, pt_2, pt_3;
+	aului::Color fill_color = g_theme[g_config.theme].bg;
 
 	D2D1_POINT_2F pts_1[] = {
 		D2D1::Point2F((float)rect.left, (float)rect.top),
@@ -205,7 +208,7 @@ void cve::Bitmap_Buffer::draw_rounded_edge(int flag, float radius) {
 				D2D1::ArcSegment(
 					pt_3,
 					D2D1::SizeF(radius, radius),
-					0.0f,
+					0.f,
 					D2D1_SWEEP_DIRECTION_CLOCKWISE,
 					D2D1_ARC_SIZE_SMALL
 				)
@@ -215,7 +218,8 @@ void cve::Bitmap_Buffer::draw_rounded_edge(int flag, float radius) {
 	}
 
 	sink->Close();
-	brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
+	
+	brush->SetColor(D2D1::ColorF(fill_color.d2dcolor()));
 
 	if (edge != nullptr)
 		g_p_render_target->FillGeometry(edge, brush, NULL);
@@ -227,74 +231,13 @@ void cve::Bitmap_Buffer::draw_rounded_edge(int flag, float radius) {
 
 
 //---------------------------------------------------------------------
-//		メインウィンドウを描画
-//---------------------------------------------------------------------
-void cve::Bitmap_Buffer::draw_panel_main(const RECT& rect_sepr)
-{
-	ID2D1StrokeStyle* style = nullptr;
-
-	g_p_factory->CreateStrokeStyle(
-		D2D1::StrokeStyleProperties(
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_LINE_JOIN_MITER,
-			10.0f,
-			D2D1_DASH_STYLE_SOLID,
-			0.0f),
-		NULL, NULL,
-		&style
-	);
-
-	const D2D1_POINT_2F line_start = {
-		g_config.layout_mode == cve::Config::Vertical ?
-			(rect_sepr.right + rect_sepr.left) * 0.5f - CVE_SEPARATOR_LINE_LENGTH : 
-			(float)(rect_sepr.left + CVE_SEPARATOR_WIDTH),
-		g_config.layout_mode == cve::Config::Vertical ?
-			(float)(rect_sepr.top + CVE_SEPARATOR_WIDTH) :
-			(rect_sepr.top + rect_sepr.bottom) * 0.5f - CVE_SEPARATOR_LINE_LENGTH
-	};
-
-	const D2D1_POINT_2F line_end = {
-		g_config.layout_mode == cve::Config::Vertical ?
-			(rect_sepr.right + rect_sepr.left) * 0.5f + CVE_SEPARATOR_LINE_LENGTH :
-			(float)(rect_sepr.left + CVE_SEPARATOR_WIDTH),
-		g_config.layout_mode == cve::Config::Vertical ?
-			(float)(rect_sepr.top + CVE_SEPARATOR_WIDTH) :
-			(rect_sepr.top + rect_sepr.bottom) * 0.5f + CVE_SEPARATOR_LINE_LENGTH
-	};
-
-	//Direct2D初期化
-	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
-
-	if (g_p_render_target != nullptr) {
-		g_p_render_target->BeginDraw();
-
-		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
-
-		if (brush) g_p_render_target->DrawLine(
-			line_start,
-			line_end,
-			brush, CVE_SEPARATOR_LINE_WIDTH, style
-		);
-
-		g_p_render_target->EndDraw();
-	}
-	release(&style);
-
-	//ビットマップをバッファから画面に転送
-	transfer();
-}
-
-
-
-//---------------------------------------------------------------------
 //		パネルを描画
 //---------------------------------------------------------------------
 void cve::Bitmap_Buffer::draw_panel()
 {
+	aului::Color bg_color = g_theme[g_config.theme].bg;
 	//Direct2D初期化
-	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(bg_color);
 
 	//ビットマップをバッファから画面に転送
 	transfer();

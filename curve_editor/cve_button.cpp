@@ -35,7 +35,7 @@ BOOL cve::Button::init(
 
 	if (content_type == Button::String) {
 		if (lb != nullptr)
-			strcpy_s(label, CVE_CT_LABEL_MAX, lb);
+			strcpy_s(label, LABEL_MAX_CHAR, lb);
 		else
 			label[0] = NULL;
 	}
@@ -61,18 +61,18 @@ BOOL cve::Button::init(
 //---------------------------------------------------------------------
 //		ƒRƒ“ƒgƒ[ƒ‹•`‰æ—p‚ÌŠÖ”
 //---------------------------------------------------------------------
-void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content, bool change_color)
+void cve::Button::draw_content(aului::Color col_bg, RECT* rect_content, LPCTSTR content, bool change_color)
 {
 	if (change_color) {
 		if (clicked)
-			bg = CHANGE_BRIGHTNESS(bg, CVE_CT_BR_CLICKED);
+			col_bg.change_brightness(CVE_CT_BR_CLICKED);
 		else if (hovered)
-			bg = CHANGE_BRIGHTNESS(bg, CVE_CT_BR_HOVERED);
+			col_bg.change_brightness(CVE_CT_BR_HOVERED);
 	}
 
-	bitmap_buffer.d2d_setup(TO_BGR(bg));
+	bitmap_buffer.d2d_setup(col_bg);
 
-	::SetBkColor(bitmap_buffer.hdc_memory, bg);
+	::SetBkColor(bitmap_buffer.hdc_memory, col_bg.colorref());
 
 	// •¶Žš—ñ‚ð•`‰æ
 	if (content_type == Button::String && content != nullptr) {
@@ -134,7 +134,7 @@ void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content,
 		if (metrics.width > rect_content->right)
 			font_size *= (rect_content->right - CVE_MARGIN) / metrics.width;
 
-		font_size = MIN_LIMIT(font_size, 0.1f);
+		font_size = std::max(font_size, 0.1f);
 		
 		if (p_text_format)
 			p_text_format->Release();
@@ -153,7 +153,7 @@ void cve::Button::draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content,
 		p_text_format->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 		p_text_format->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
-		bitmap_buffer.brush->SetColor(D2D1::ColorF(g_theme[g_config.theme].bt_tx));
+		bitmap_buffer.brush->SetColor(D2D1::ColorF(g_theme[g_config.theme].bt_tx.d2dcolor()));
 
 		g_p_render_target->BeginDraw();
 		if (p_text_format != nullptr)
@@ -196,7 +196,7 @@ void cve::Button::draw_edge()
 		g_p_render_target->BeginDraw();
 
 		if (disabled) {
-			bitmap_buffer.brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
+			bitmap_buffer.brush->SetColor(D2D1::ColorF(g_theme[g_config.theme].bg.d2dcolor()));
 			bitmap_buffer.brush->SetOpacity(0.5f);
 			g_p_render_target->FillRectangle(
 				D2D1::RectF(
@@ -311,11 +311,11 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	// •`‰æ
 	case WM_PAINT:
 	{
-		COLORREF bg = g_theme[g_config.theme].bg;
+		aului::Color col_bg = g_theme[g_config.theme].bg;
 
-		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx.colorref());
 
-		draw_content(bg, &rect_wnd, label, true);
+		draw_content(col_bg, &rect_wnd, label, true);
 
 		draw_edge();
 		bitmap_buffer.transfer();
@@ -372,7 +372,7 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (wparam) {
 		case CVE_CM_CHANGE_LABEL:
 		{
-			strcpy_s(label, CVE_CT_LABEL_MAX, (LPTSTR)lparam);
+			strcpy_s(label, LABEL_MAX_CHAR, (LPTSTR)lparam);
 			::InvalidateRect(hw, NULL, FALSE);
 			return 0;
 		}
@@ -403,31 +403,29 @@ LRESULT cve::Button_Switch::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpa
 	// •`‰æ
 	case WM_PAINT:
 	{
-		COLORREF bg;
+		aului::Color col_bg;
 		// ‘I‘ðŽž
 		if (is_selected) {
+			col_bg = g_theme[g_config.theme].bt_selected;
 			if (clicked)
-				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_selected, CVE_CT_BR_CLICKED);
+				col_bg.change_brightness(CVE_CT_BR_CLICKED);
 			else if (hovered)
-				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_selected, CVE_CT_BR_HOVERED);
-			else
-				bg = g_theme[g_config.theme].bt_selected;
+				col_bg.change_brightness(CVE_CT_BR_HOVERED);
 
-			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx_selected);
+			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx_selected.colorref());
 		}
 		// ”ñ‘I‘ðŽž
 		else {
+			col_bg = g_theme[g_config.theme].bt_unselected;
 			if (clicked)
-				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_CLICKED);
+				col_bg.change_brightness(CVE_CT_BR_CLICKED);
 			else if (hovered)
-				bg = CHANGE_BRIGHTNESS(g_theme[g_config.theme].bt_unselected, CVE_CT_BR_HOVERED);
-			else
-				bg = g_theme[g_config.theme].bt_unselected;
+				col_bg.change_brightness(CVE_CT_BR_HOVERED);
 
-			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
+			::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx.colorref());
 		}
 
-		draw_content(bg, &rect_wnd, label, false);
+		draw_content(col_bg, &rect_wnd, label, false);
 		draw_edge();
 		bitmap_buffer.transfer();
 
@@ -473,11 +471,11 @@ LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 	switch (msg) {
 	case WM_PAINT:
 	{
-		COLORREF bg = g_theme[g_config.theme].bg;
+		aului::Color col_bg = g_theme[g_config.theme].bg;
 		std::string str_param;
 		LPTSTR param = "";
 
-		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx.colorref());
 
 		switch (g_config.edit_mode) {
 		case cve::Mode_Bezier:
@@ -496,7 +494,7 @@ LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 			break;
 		}
 
-		draw_content(bg, &rect_wnd, param, true);
+		draw_content(col_bg, &rect_wnd, param, true);
 		draw_edge();
 		bitmap_buffer.transfer();
 
@@ -513,6 +511,9 @@ LRESULT cve::Button_Param::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 //---------------------------------------------------------------------
 LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 {
+	constexpr int COEF_MOVE_DEFAULT = 9;
+	constexpr int COEF_MOVE_FAST = 1;
+
 	RECT rect_wnd;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	int* current_id = nullptr;
@@ -533,14 +534,14 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg) {
 	case WM_PAINT:
 	{
-		COLORREF bg = g_theme[g_config.theme].bg;
+		aului::Color col_bg = g_theme[g_config.theme].bg;
 		TCHAR id_text[5];
 
 		::_itoa_s(g_config.current_id.multi, id_text, 5, 10);
 
-		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx.colorref());
 
-		draw_content(bg, &rect_wnd, id_text, true);
+		draw_content(col_bg, &rect_wnd, id_text, true);
 		draw_edge();
 		bitmap_buffer.transfer();
 
@@ -555,9 +556,9 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		::SetCursor(LoadCursor(NULL, IDC_HAND));
 
 		if (::GetAsyncKeyState(VK_CONTROL) < 0)
-			coef_move = CVE_COEF_MOVE_FAST;
+			coef_move = COEF_MOVE_FAST;
 		else
-			coef_move = CVE_COEF_MOVE_DEFAULT;
+			coef_move = COEF_MOVE_DEFAULT;
 
 		clicked = true;
 
@@ -573,7 +574,7 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 
-			*current_id = MINMAX_LIMIT(id_buffer + (pt_client.x - pt_lock.x) / coef_move, 1, CVE_CURVE_MAX);
+			*current_id = std::clamp(id_buffer + (int)(pt_client.x - pt_lock.x) / coef_move, 1, CVE_CURVE_MAX);
 			switch (g_config.edit_mode) {
 			case Mode_Bezier_Multi:
 				g_curve_bezier_multi_trace = g_curve_bezier_multi[*current_id - 1];
@@ -634,19 +635,17 @@ LRESULT cve::Button_Category::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM l
 
 	case WM_PAINT:
 	{
-		COLORREF bg = g_theme[g_config.theme].bg;
-		COLORREF text_color;
+		aului::Color col_bg = g_theme[g_config.theme].bg;
+		aului::Color col_text = g_theme[g_config.theme].preset_tx;
 
 		if (clicked)
-			text_color = CHANGE_BRIGHTNESS(g_theme[g_config.theme].preset_tx, CVE_CT_BR_CLICKED);
+			col_text.change_brightness(CVE_CT_BR_CLICKED);
 		else if (hovered)
-			text_color = CHANGE_BRIGHTNESS(g_theme[g_config.theme].preset_tx, CVE_CT_BR_HOVERED);
-		else
-			text_color = g_theme[g_config.theme].preset_tx;
+			col_text.change_brightness(CVE_CT_BR_HOVERED);
 
-		::SetTextColor(bitmap_buffer.hdc_memory, text_color);
+		::SetTextColor(bitmap_buffer.hdc_memory, col_text.colorref());
 
-		draw_content(bg, &rect_wnd, "¥ Default(23)", false);
+		draw_content(col_bg, &rect_wnd, "¥ Default(23)", false);
 		bitmap_buffer.transfer();
 
 		return 0;
@@ -681,7 +680,7 @@ LRESULT cve::Button_Color::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lpar
 	{
 		COLORREF bg = bg_color;
 
-		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx);
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].bt_tx.colorref());
 
 		draw_content(bg, &rect_wnd, label, true);
 		draw_edge();

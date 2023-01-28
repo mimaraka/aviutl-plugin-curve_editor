@@ -335,8 +335,8 @@ BOOL filter_wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam, void* edi
 	case WM_SIZE:
 	{
 		RECT rect_wnd_main = rect_wnd;
-		rect_wnd_main.right = MIN_LIMIT(rect_wnd_main.right, CVE_MIN_W);
-		rect_wnd_main.bottom = MIN_LIMIT(rect_wnd_main.bottom, CVE_SEPARATOR_WIDTH * 2 + CVE_MENU_H);
+		rect_wnd_main.right = std::max((int)rect_wnd_main.right, CVE_MIN_W);
+		rect_wnd_main.bottom = std::max((int)rect_wnd_main.bottom, CVE_SEPARATOR_WIDTH * 2 + CVE_MENU_H);
 		g_window_main.move(rect_wnd_main);
 		return 0;
 	}

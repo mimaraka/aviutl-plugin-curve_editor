@@ -117,9 +117,9 @@ BOOL cve::copy_to_clipboard(HWND hwnd, LPCTSTR text)
 //---------------------------------------------------------------------
 //		’·‚³‚ðŒ¸ŽZ
 //---------------------------------------------------------------------
-void cve::subtract_length(cve::Float_Point* pt, const cve::Float_Point& st, const cve::Float_Point& ed, float length)
+void cve::subtract_length(aului::Point<float>* pt, const aului::Point<float>& st, const aului::Point<float>& ed, float length)
 {
-	float old_length = (float)DISTANCE(st, ed);
+	float old_length = (float)aului::distance(st, ed);
 
 	if (old_length == 0) {
 		pt->x = ed.x;

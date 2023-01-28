@@ -7,7 +7,7 @@
 [こちら](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)から最新バージョンのCurve Editor(`curve_editor-v*.zip`)をダウンロードしてください。
 
 ## インストール
-`curve_editor-v*.zip`を解凍し、同梱されている`curve_editor.auf`を`exedit.auf`のあるフォルダもしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  
+`curve_editor-v*.zip`を解凍し、同梱されている`curve_editor.auf`をAviUtlのディレクトリ直下もしくは`plugins`フォルダ内に入れ、`@Curve Editor.tra`を`script`フォルダ**直下**に入れてください。  
 (※scriptフォルダ直下に入れないと、ドラッグ&ドロップ機能を使用することができません。)  
 [Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)をインストールしていない場合は、こちらもインストールしてください。  
 

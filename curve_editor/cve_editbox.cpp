@@ -90,9 +90,9 @@ LRESULT cve::Edit_Box::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		// •`‰æ
 	case WM_PAINT:
 	{
-		COLORREF bg = g_theme[g_config.theme].bg_editbox;
+		aului::Color col_bg = g_theme[g_config.theme].bg_editbox;
 
-		bitmap_buffer.d2d_setup(TO_BGR(bg));
+		bitmap_buffer.d2d_setup(col_bg);
 
 		draw_edge();
 		bitmap_buffer.transfer();
@@ -104,8 +104,8 @@ LRESULT cve::Edit_Box::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 		HDC hdc_edit = (HDC)wparam;
 		if (editbox == (HWND)lparam) {
-			SetBkColor(hdc_edit, g_theme[g_config.theme].bg_editbox);
-			SetTextColor(hdc_edit, g_theme[g_config.theme].editbox_tx);
+			SetBkColor(hdc_edit, g_theme[g_config.theme].bg_editbox.colorref());
+			SetTextColor(hdc_edit, g_theme[g_config.theme].editbox_tx.colorref());
 		}
 	}
 		return 0;

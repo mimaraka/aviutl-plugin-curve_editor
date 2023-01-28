@@ -6,11 +6,6 @@
 
 #include "cve_header.hpp"
 
-#define CVE_GR_POINT_LINE_THICKNESS		0.2f
-#define CVE_GRAPH_POINT_CONTRAST		3
-#define CVE_GRAPH_POINT_DASH			42
-#define CVE_GRAPH_POINT_DASH_BLANK		24
-
 
 
 //---------------------------------------------------------------------
@@ -117,7 +112,7 @@ void cve::Curve_Type_ID::move_point(int index, const POINT& pt_graph, bool init)
 
 
 	// 中央    ---o---
-	ctpts[index].pt_center.x = MINMAX_LIMIT(
+	ctpts[index].pt_center.x = std::clamp(
 		pt_graph.x,
 		ctpts[index - 1].pt_center.x + 1,
 		ctpts[index + 1].pt_center.x - 1
@@ -192,12 +187,12 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 	// 記録
 	if (init) {
 		if (pt_address.position == Point_Address::Left)
-			length = DISTANCE(
+			length = aului::distance(
 				ctpts[pt_address.index].pt_center,
 				ctpts[pt_address.index].pt_right
 			);
 		else if (pt_address.position == Point_Address::Right)
-			length = DISTANCE(
+			length = aului::distance(
 				ctpts[pt_address.index].pt_center,
 				ctpts[pt_address.index].pt_left
 			);
@@ -228,8 +223,8 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 			pt_lock = pt_graph;
 		}
 
-		pt_result.x = MINMAX_LIMIT(
-			pt_graph.x,
+		pt_result.x = std::clamp(
+			(int)pt_graph.x,
 			left_side,
 			right_side
 		);
@@ -260,7 +255,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 
 		float angle;
 		int result_y;
-		const double handle_len = DISTANCE(pt_lock, ctpts[pt_address.index].pt_center);
+		const double handle_len = aului::distance(pt_lock, ctpts[pt_address.index].pt_center);
 
 		if (pt_address.position == Point_Address::Left) {
 			angle = (float)std::atan2(top - pt_graph.y, right_side - pt_graph.x);
@@ -269,10 +264,10 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 
 			result_y = top - (int)(handle_len * std::sin(angle));
 
-			if (angle > CVE_MATH_PI * 0.5)
+			if (angle > std::numbers::pi * 0.5)
 				pt_result.y = top - (int)(handle_len);
 
-			else if (angle < -CVE_MATH_PI * 0.5)
+			else if (angle < -std::numbers::pi * 0.5)
 				pt_result.y = top + (int)(handle_len);
 
 			else
@@ -285,10 +280,10 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 
 			result_y = bottom + (int)(handle_len * std::sin(angle));
 
-			if (angle > CVE_MATH_PI * 0.5)
+			if (angle > std::numbers::pi * 0.5)
 				pt_result.y = bottom + (int)(handle_len);
 
-			else if (angle < -CVE_MATH_PI * 0.5)
+			else if (angle < -std::numbers::pi * 0.5)
 				pt_result.y = bottom - (int)(handle_len);
 
 			else
@@ -342,7 +337,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 				ctrl_shift_key = true;
 
 				// 向かいのハンドルのペアのハンドルの長さを記録
-				length_opposite = DISTANCE(
+				length_opposite = aului::distance(
 					ctpts[pt_address.index - 1].pt_center,
 					ctpts[pt_address.index - 1].pt_left
 				);
@@ -363,7 +358,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 				ctrl_shift_key = true;
 
 				// 向かいのハンドルのペアのハンドルの長さを記録
-				length_opposite = DISTANCE(
+				length_opposite = aului::distance(
 					ctpts[pt_address.index + 1].pt_center,
 					ctpts[pt_address.index + 1].pt_right
 				);
@@ -402,7 +397,7 @@ void cve::Curve::set_handle_position(const Point_Address& pt_address, const POIN
 			return;
 
 		// ハンドルを動かす
-		ctpts[pt_address.index].pt_left.x = MINMAX_LIMIT(
+		ctpts[pt_address.index].pt_left.x = std::clamp(
 			pt_graph.x,
 			ctpts[pt_address.index - 1].pt_center.x,
 			ctpts[pt_address.index].pt_center.x
@@ -414,7 +409,7 @@ void cve::Curve::set_handle_position(const Point_Address& pt_address, const POIN
 			tmp.index = pt_address.index;
 			tmp.position = Point_Address::Right;
 
-			set_handle_angle(tmp, agl_tmp + CVE_MATH_PI, TRUE, length);
+			set_handle_angle(tmp, agl_tmp + std::numbers::pi, TRUE, length);
 		}
 		break;
 
@@ -424,7 +419,7 @@ void cve::Curve::set_handle_position(const Point_Address& pt_address, const POIN
 			return;
 
 		// ハンドルを動かす
-		ctpts[pt_address.index].pt_right.x = MINMAX_LIMIT(
+		ctpts[pt_address.index].pt_right.x = std::clamp(
 			pt_graph.x,
 			ctpts[pt_address.index].pt_center.x,
 			ctpts[pt_address.index + 1].pt_center.x
@@ -436,7 +431,7 @@ void cve::Curve::set_handle_position(const Point_Address& pt_address, const POIN
 			tmp.index = pt_address.index;
 			tmp.position = Point_Address::Left;
 
-			set_handle_angle(tmp, agl_tmp + CVE_MATH_PI, TRUE, length);
+			set_handle_angle(tmp, agl_tmp + std::numbers::pi, TRUE, length);
 		}
 		break;
 	}
@@ -455,7 +450,7 @@ void cve::Curve_Type_ID::add_point(const POINT& pt_graph)
 	// ・追加するポイントのX座標が範囲外
 	// のいずれかの場合
 	if (ctpts.size >= CVE_POINT_MAX ||
-		!ISINRANGE(pt_graph.x, 0, CVE_GRAPH_RESOLUTION))
+		!IN_RANGE(pt_graph.x, 0, CVE_GRAPH_RESOLUTION))
 		return;
 
 	// 追加するポイントが左から何番目になるか
@@ -553,22 +548,22 @@ void cve::Curve::pt_on_ctpt(const POINT& pt_client, Point_Address* pt_address, b
 
 	for (int i = 0; i < (int)ctpts.size; i++) {
 		center = {
-			(LONG)to_client(ctpts[i].pt_center).x - POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_center).y - POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_center).x + POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_center).y + POINT_BOX_WIDTH
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).x - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).y - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).x + POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).y + POINT_BOX_WIDTH
 		};
 		left = {
-			(LONG)to_client(ctpts[i].pt_left).x - POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_left).y - POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_left).x + POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_left).y + POINT_BOX_WIDTH
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).x - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).y - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).x + POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).y + POINT_BOX_WIDTH
 		};
 		right = {
-			(LONG)to_client(ctpts[i].pt_right).x - POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_right).y - POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_right).x + POINT_BOX_WIDTH,
-			(LONG)to_client(ctpts[i].pt_right).y + POINT_BOX_WIDTH
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).x - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).y - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).x + POINT_BOX_WIDTH,
+			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).y + POINT_BOX_WIDTH
 		};
 
 		bool is_on_point = ::PtInRect(&center, pt_client) && ctpts[i].type == Curve_Points::Extended;
@@ -633,7 +628,7 @@ double cve::Curve::get_handle_angle(const Point_Address& pt_address)
 	if (dstx == 0 && dsty == 0) {
 		// 左
 		if (pt_address.position == Point_Address::Left)
-			return CVE_MATH_PI;
+			return std::numbers::pi;
 		// 右
 		else if (pt_address.position == Point_Address::Right)
 			return 0;
@@ -655,7 +650,7 @@ void cve::Curve::set_handle_angle(const Point_Address& pt_address, double angle,
 	//左
 	if (pt_address.position == Point_Address::Left &&
 		ctpts[pt_address.index].type != 0) {
-		length = use_length ? lgth : DISTANCE(
+		length = use_length ? lgth : aului::distance(
 			ctpts[pt_address.index].pt_center,
 			ctpts[pt_address.index].pt_left
 		);
@@ -670,7 +665,7 @@ void cve::Curve::set_handle_angle(const Point_Address& pt_address, double angle,
 	//右
 	else if (pt_address.position == Point_Address::Right &&
 		ctpts[pt_address.index].type != 1) {
-		length = use_length ? lgth : DISTANCE(
+		length = use_length ? lgth : aului::distance(
 			ctpts[pt_address.index].pt_center,
 			ctpts[pt_address.index].pt_right
 		);
@@ -728,7 +723,7 @@ void cve::Curve::correct_handle(const Point_Address& pt_address, double angle)
 void cve::Curve::reverse_curve()
 {
 	Static_Array<Curve_Points, CVE_POINT_MAX> ctpts_old;
-	for (int i = 0; i < ctpts.size / 2.0f; i++) {
+	for (int i = 0; i < ctpts.size / 2.f; i++) {
 		ctpts_old.PushBack(ctpts[i]);
 
 		ctpts[i].pt_center = {
@@ -771,10 +766,10 @@ void cve::Curve::reverse_curve()
 //---------------------------------------------------------------------
 void cve::Curve::draw_bezier(
 	aului::Direct2d_Paint_Object* paint_object,
-	const Float_Point& stpt,
-	const Float_Point& ctpt1,
-	const Float_Point& ctpt2,
-	const Float_Point& edpt,
+	const aului::Point<float>& stpt,
+	const aului::Point<float>& ctpt1,
+	const aului::Point<float>& ctpt2,
+	const aului::Point<float>& edpt,
 	float thickness
 )
 {
@@ -788,9 +783,9 @@ void cve::Curve::draw_bezier(
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_LINE_JOIN_MITER,
-			10.0f,
+			10.f,
 			D2D1_DASH_STYLE_SOLID,
-			0.0f),
+			0.f),
 		NULL, NULL,
 		&style
 	);
@@ -822,15 +817,15 @@ void cve::Curve::draw_bezier(
 //---------------------------------------------------------------------
 void cve::Curve::draw_handle(
 	aului::Direct2d_Paint_Object* paint_object,
-	const Float_Point& st,
-	const Float_Point& ed,
+	const aului::Point<float>& st,
+	const aului::Point<float>& ed,
 	int drawing_mode,
 	int draw_option)
 {
 	ID2D1StrokeStyle* style = nullptr;
 
-	Float_Point st_new = st;
-	Float_Point ed_new = ed;
+	aului::Point<float> st_new = st;
+	aului::Point<float> ed_new = ed;
 
 	const float handle_thickness = (drawing_mode == DRAW_CURVE_NORMAL) ? HANDLE_THICKNESS : HANDLE_THICKNESS_PRESET;
 	const float point_size = (drawing_mode == DRAW_CURVE_NORMAL) ? POINT_SIZE : POINT_SIZE_PRESET;
@@ -848,9 +843,9 @@ void cve::Curve::draw_handle(
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_LINE_JOIN_MITER,
-			10.0f,
+			10.f,
 			D2D1_DASH_STYLE_SOLID,
-			0.0f),
+			0.f),
 		NULL, NULL,
 		&style
 	);
@@ -904,8 +899,13 @@ void cve::Curve::draw_dash_line(
 	const RECT& rect_wnd,
 	int pt_idx)
 {
+	constexpr double DASH_CONTRAST = 3.;
+	constexpr int DASH_LENGTH = 42;
+	constexpr int DASH_BLANK_LENGTH = 24;
+	constexpr float LINE_THICKNESS = .2f;
 	ID2D1StrokeStyle* style_dash = nullptr;
-	const float dashes[] = { CVE_GRAPH_POINT_DASH, CVE_GRAPH_POINT_DASH_BLANK };
+	const float dashes[] = { DASH_LENGTH, DASH_BLANK_LENGTH };
+	aului::Color dash_color;
 
 	g_p_factory->CreateStrokeStyle(
 		D2D1::StrokeStyleProperties(
@@ -913,22 +913,24 @@ void cve::Curve::draw_dash_line(
 			D2D1_CAP_STYLE_FLAT,
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_LINE_JOIN_MITER,
-			10.0f,
+			10.f,
 			D2D1_DASH_STYLE_CUSTOM,
-			0.0f),
+			0.f),
 		dashes,
 		ARRAYSIZE(dashes),
 		&style_dash
 	);
 
 	// 端点以外の制御点に引かれる点線
-	paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(CONTRAST(INVERT(g_theme[g_config.theme].bg_graph), CVE_GRAPH_POINT_CONTRAST))));
+	dash_color.invert();
+	dash_color.change_contrast(DASH_CONTRAST);
+	paint_object->brush->SetColor(D2D1::ColorF(dash_color.d2dcolor()));
 
 	if (pt_idx > 0) {
 		paint_object->p_render_target->DrawLine(
-			D2D1::Point2F((float)to_client2(ctpts[pt_idx].pt_center).x, 0.0f),
-			D2D1::Point2F((float)to_client2(ctpts[pt_idx].pt_center).x, (float)rect_wnd.bottom),
-			paint_object->brush, CVE_GR_POINT_LINE_THICKNESS, style_dash
+			D2D1::Point2F(to_client(aului::to_point<float>(ctpts[pt_idx].pt_center)).x, 0.f),
+			D2D1::Point2F(to_client(aului::to_point<float>(ctpts[pt_idx].pt_center)).x, (float)rect_wnd.bottom),
+			paint_object->brush, LINE_THICKNESS, style_dash
 		);
 	}
 	paint_object->release(&style_dash);
@@ -944,8 +946,8 @@ void cve::Curve::draw_curve(
 	const RECT& rect_wnd,
 	int drawing_mode)
 {
-	COLORREF handle_color;
-	COLORREF curve_color;
+	aului::Color handle_color;
+	aului::Color curve_color;
 
 	const bool is_preset = drawing_mode == DRAW_CURVE_PRESET;
 
@@ -971,26 +973,26 @@ void cve::Curve::draw_curve(
 		}
 
 		// ベジェ曲線を描画
-		paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(curve_color)));
+		paint_object->brush->SetColor(D2D1::ColorF(curve_color.d2dcolor()));
 		draw_bezier(paint_object,
-			is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
-			is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
-			is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
-			is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
+			is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_center)) : to_client(aului::to_point<float>(ctpts[i].pt_center)),
+			is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_right)) : to_client(aului::to_point<float>(ctpts[i].pt_right)),
+			is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_left)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_left)),
+			is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_center)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_center)),
 			CURVE_THICKNESS
 		);
 
 		//ハンドルの描画
 		if (g_config.show_handle) {
-			paint_object->brush->SetColor(D2D1::ColorF(TO_BGR(handle_color)));
+			paint_object->brush->SetColor(D2D1::ColorF(handle_color.d2dcolor()));
 			draw_handle(paint_object,
-				is_preset ? to_preset(ctpts[i].pt_center) : to_client(ctpts[i].pt_center),
-				is_preset ? to_preset(ctpts[i].pt_right) : to_client(ctpts[i].pt_right),
+				is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_center)) : to_client(aului::to_point<float>(ctpts[i].pt_center)),
+				is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_right)) : to_client(aului::to_point<float>(ctpts[i].pt_right)),
 				drawing_mode, NULL
 			);
 			draw_handle(paint_object,
-				is_preset ? to_preset(ctpts[i + 1].pt_center) : to_client(ctpts[i + 1].pt_center),
-				is_preset ? to_preset(ctpts[i + 1].pt_left) : to_client(ctpts[i + 1].pt_left),
+				is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_center)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_center)),
+				is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_left)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_left)),
 				drawing_mode, NULL
 			);
 		}
@@ -1004,7 +1006,7 @@ void cve::Curve::draw_curve(
 //---------------------------------------------------------------------
 bool cve::Curve::is_data_valid()
 {
-	return ISINRANGEEQ(ctpts.size, 2, CVE_POINT_MAX);
+	return IN_RANGE_EQ(ctpts.size, 2, CVE_POINT_MAX);
 }
 
 
@@ -1054,12 +1056,12 @@ bool cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MA
 double cve::Curve::get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
 	// 進捗が0~1の範囲外であった場合
-	if (!ISINRANGEEQ(ratio, 0, 1))
+	if (!IN_RANGE_EQ(ratio, 0, 1))
 		return 0;
 
 	// 進捗に相当する区間を調べる
 	for (int i = 0; i < (int)points.size - 1; i++) {
-		if (ISINRANGEEQ(ratio, points[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, points[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
+		if (IN_RANGE_EQ(ratio, points[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, points[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
 			// 区間の長さ(ratioと同じスケール)
 			double range = (points[i + 1].pt_center.x - points[i].pt_center.x) / (double)CVE_GRAPH_RESOLUTION;
 			// 区間ごとの進捗の相対値(0~1)
@@ -1080,13 +1082,13 @@ double cve::Curve::get_bezier_value(double ratio, Static_Array<Curve_Points, CVE
 			// ベジェの計算
 			double tl = 0;
 			double tr = 1;
-			double ta = 0.5 * (tl + tr);
+			double ta = .5 * (tl + tr);
 			double xta;
 			for (int j = 0; j < 10; j++) {
 				xta = (1 - 3 * x2 + 3 * x1) * std::pow(ta, 3) + (x2 - 2 * x1) * 3 * std::pow(ta, 2) + 3 * x1 * ta;
 				if (ratio2 < xta) tr = ta;
 				else tl = ta;
-				ta = 0.5 * (tl + tr);
+				ta = .5 * (tl + tr);
 			}
 			return std::pow(ta, 3) * (ed2 - st2 - 3 * y2 + 3 * y1) + 3 * std::pow(ta, 2) * (y2 - 2 * y1 + st2) + 3 * ta * (y1 - st2) + st2;
 		}

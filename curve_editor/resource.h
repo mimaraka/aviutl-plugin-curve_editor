@@ -44,6 +44,10 @@
 #define IDC_LINEARIZE                   1019
 #define IDC_TAB1                        1020
 #define IDC_RESET_CONFIGS               1021
+#define IDC_CHECK_UPDATE                1022
+#define IDC_REPORT_BUGS                 1023
+#define IDC_ABOUT_LISENCE               1024
+#define IDC_ABOUT_LICENSE               1024
 #define ID_MENU_ABOUT                   40011
 #define ID_MENU_CONFIG                  40012
 #define ID_MENU_SHOWHANDLE              40013
@@ -95,9 +99,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        142
+#define _APS_NEXT_RESOURCE_VALUE        144
 #define _APS_NEXT_COMMAND_VALUE         40097
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

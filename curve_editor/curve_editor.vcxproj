@@ -99,6 +99,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -126,6 +128,8 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

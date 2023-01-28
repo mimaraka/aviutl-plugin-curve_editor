@@ -121,7 +121,7 @@ void write_configs(HWND hwnd, HWND combo_theme)
 	// カーブの色
 	g_fp->exfunc->ini_save_int(g_fp,
 		CVE_INI_KEY_CURVE_COLOR,
-		g_config.curve_color
+		g_config.curve_color.colorref()
 	);
 	// アップデートを通知
 	g_fp->exfunc->ini_save_int(g_fp,
@@ -163,7 +163,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = ::BeginPaint(hwnd, &ps);
-		HBRUSH brush = ::CreateSolidBrush(g_config.curve_color);
+		HBRUSH brush = ::CreateSolidBrush(g_config.curve_color.colorref());
 		::SelectObject(hdc, brush);
 		::Rectangle(hdc, rect_color_curve.left, rect_color_curve.top, rect_color_curve.right, rect_color_curve.bottom);
 		::DeleteObject(brush);
@@ -192,7 +192,7 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			cc.lStructSize = sizeof(CHOOSECOLOR);
 			cc.hwndOwner = hwnd;
-			cc.rgbResult = g_config.curve_color;
+			cc.rgbResult = g_config.curve_color.colorref();
 			cc.lpCustColors = cust_colors;
 			cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 
@@ -330,7 +330,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				
 				switch (g_config.edit_mode) {
 				case cve::Mode_Bezier:
-					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
+					if (!(IN_RANGE_EQ(value, -2147483647, -12368443) || IN_RANGE_EQ(value, 12368443, 2147483646))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -340,7 +340,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 
 				case cve::Mode_Bezier_Multi:
-					if (!(ISINRANGEEQ(value, -2147483647, -12368443) || ISINRANGEEQ(value, 12368443, 2147483646))) {
+					if (!(IN_RANGE_EQ(value, -2147483647, -12368443) || IN_RANGE_EQ(value, 12368443, 2147483646))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -350,7 +350,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 
 				case cve::Mode_Elastic:
-					if (!(ISINRANGEEQ(value, -10211201, -1) || ISINRANGEEQ(value, 1, 10211201))) {
+					if (!(IN_RANGE_EQ(value, -10211201, -1) || IN_RANGE_EQ(value, 1, 10211201))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -360,7 +360,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 
 				case cve::Mode_Bounce:
-					if (!(ISINRANGEEQ(value, -11213202, -10211202) || ISINRANGEEQ(value, 10211202, 11213202))) {
+					if (!(IN_RANGE_EQ(value, -11213202, -10211202) || IN_RANGE_EQ(value, 10211202, 11213202))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -510,7 +510,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			str = buffer;
 			value = std::stoi(str);
 
-			if (!ISINRANGEEQ(value, 1, CVE_CURVE_MAX)) {
+			if (!IN_RANGE_EQ(value, 1, CVE_CURVE_MAX)) {
 				if (g_config.show_popup)
 					::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -523,6 +523,90 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case IDCANCEL:
 			::EndDialog(hwnd, 1);
 			return 0;
+		}
+	}
+	return 0;
+}
+
+
+
+//---------------------------------------------------------------------
+//		ダイアログプロシージャ（Curve Editorについて）
+//---------------------------------------------------------------------
+BOOL CALLBACK dialogproc_about(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	switch (msg) {
+	case WM_CLOSE:
+		::EndDialog(hwnd, 1);
+		return 0;
+
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = ::BeginPaint(hwnd, &ps);
+		HFONT font_title = ::CreateFont(
+			64, 0,
+			0, 0,
+			FW_REGULAR,
+			FALSE, FALSE, FALSE,
+			SHIFTJIS_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			CLIP_DEFAULT_PRECIS,
+			DEFAULT_QUALITY,
+			NULL,
+			CVE_FONT_SEMIBOLD
+		);
+		HFONT font_description = ::CreateFont(
+			18, 0,
+			0, 0,
+			FW_REGULAR,
+			FALSE, FALSE, FALSE,
+			SHIFTJIS_CHARSET,
+			OUT_DEFAULT_PRECIS,
+			CLIP_DEFAULT_PRECIS,
+			DEFAULT_QUALITY,
+			NULL,
+			CVE_FONT_REGULAR
+		);
+		RECT rect_title = {
+			10, 0,
+			300, 60
+		};
+
+		RECT rect_description = {
+			10, 65,
+			300, 110
+		};
+		LPCTSTR version = "バージョン : " CVE_FILTER_VERSION "\n" "Developed by " CVE_FILTER_DEVELOPER;
+
+		::SelectObject(hdc, font_title);
+		::SetBkMode(hdc, TRANSPARENT);
+		::DrawText(hdc, CVE_FILTER_NAME, strlen(CVE_FILTER_NAME), &rect_title, DT_SINGLELINE);
+		::DeleteObject(font_title);
+		::SelectObject(hdc, font_description);
+		::DrawText(hdc, version, strlen(version), &rect_description, NULL);
+		::DeleteObject(font_description);
+		::EndPaint(hwnd, &ps);
+
+		return 0;
+	}
+
+	case WM_COMMAND:
+		switch (wparam) {
+		case IDOK:
+			::EndDialog(hwnd, 1);
+			return 0;
+
+		case IDC_ABOUT_LICENSE:
+			::ShellExecute(NULL, "open", CVE_FILTER_LINK_LICENSE, NULL, NULL, SW_SHOWNORMAL);
+			return 0;
+
+		case IDC_CHECK_UPDATE:
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_LATEST_VERSION), hwnd, dialogproc_check_update);
+			return 0;
+
+		case IDC_REPORT_BUGS:
+			::ShellExecute(NULL, "open", CVE_FILTER_LINK_FORM, NULL, NULL, SW_SHOWNORMAL);
 		}
 	}
 	return 0;

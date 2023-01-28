@@ -47,11 +47,10 @@ namespace cve {
 		void init(HWND hw);
 		void exit();
 		void transfer() const;
-		bool d2d_setup(COLORREF cr);
+		bool d2d_setup(const aului::Color& col);
 		void resize();
 
 		void draw_panel();
-		void draw_panel_main(const RECT& rect_sepr);
 
 		void draw_rounded_edge(int flag, float radius);
 
@@ -100,7 +99,7 @@ namespace cve {
 		static constexpr float POINT_SIZE_PRESET				= 2.f;
 		static constexpr float CURVE_THICKNESS					= 1.2f;
 
-		static constexpr float DRAW_GRAPH_STEP					= 1.f;
+		static constexpr double DRAW_GRAPH_STEP					= 1.;
 
 		double				get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
 		void				set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle);
@@ -114,16 +113,16 @@ namespace cve {
 		void				draw_dash_line(aului::Direct2d_Paint_Object* paint_object, const RECT& rect_wnd, int pt_idx);
 		void				draw_bezier(
 								aului::Direct2d_Paint_Object* paint_object,
-								const Float_Point& stpt,
-								const Float_Point& ctpt1,
-								const Float_Point& ctpt2,
-								const Float_Point& edpt,
+								const aului::Point<float>& stpt,
+								const aului::Point<float>& ctpt1,
+								const aului::Point<float>& ctpt2,
+								const aului::Point<float>& edpt,
 								float thickness
 							);
 		void				draw_handle(
 								aului::Direct2d_Paint_Object* paint_object,
-								const Float_Point& st,
-								const Float_Point& ed,
+								const aului::Point<float>& st,
+								const aului::Point<float>& ed,
 								int drawing_mode,
 								int draw_option
 							);
@@ -136,6 +135,7 @@ namespace cve {
 		static constexpr int DRAW_CURVE_PRESET	= 2;
 		static constexpr int DRAW_POINT_ONLY	= 1;
 		static constexpr int DRAW_HANDLE_ONLY	= 2;
+
 
 		// サイズ固定
 		Static_Array<Curve_Points, CVE_POINT_MAX> ctpts;
@@ -228,9 +228,9 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Curve_Elastic : public Curve_Type_Numeric {
 	private:
-		static constexpr double DEF_FREQ		= 8.0;
-		static constexpr double DEF_DECAY		= 6.0;
-		static constexpr double DEF_AMP			= 1.0;
+		static constexpr double DEF_FREQ		= 8.;
+		static constexpr double DEF_DECAY		= 6.;
+		static constexpr double DEF_AMP			= 1.;
 
 		double				func_elastic(double ratio, double f, double k, double a, double st, double ed);
 		double				pt_to_param(int pt_graph_val, int idx_param);
@@ -301,6 +301,7 @@ namespace cve {
 		static constexpr int FLAG_EDGE_RT = 1 << 2;
 		static constexpr int FLAG_EDGE_RB = 1 << 3;
 		static constexpr int FLAG_EDGE_ALL = FLAG_EDGE_LT | FLAG_EDGE_LB | FLAG_EDGE_RT | FLAG_EDGE_RB;
+		static constexpr int LABEL_MAX_CHAR = 64;
 		enum Content_Type {
 			Null,
 			Icon,
@@ -328,7 +329,7 @@ namespace cve {
 		LPTSTR				icon_res_dark;
 		LPTSTR				icon_res_light;
 		Content_Type		content_type;
-		char				label[CVE_CT_LABEL_MAX];
+		char				label[LABEL_MAX_CHAR];
 		Bitmap_Buffer		bitmap_buffer;
 		HWND				hwnd_parent;
 		HWND				hwnd_tooltip;
@@ -341,7 +342,7 @@ namespace cve {
 		LPTSTR				text_tooltip;
 		int					flag_edge;
 
-		void				draw_content(COLORREF bg, RECT* rect_content, LPCTSTR content, bool change_color);
+		void				draw_content(const aului::Color col_bg, RECT* rect_content, LPCTSTR content, bool change_color);
 		void				draw_edge();
 		void				set_font(int font_height, LPTSTR font_name);
 		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -459,31 +460,5 @@ namespace cve {
 		void	click();
 		void	highlight() const;
 		void	invalidate(const LPRECT rect) const;
-	};
-
-
-
-	//---------------------------------------------------------------------
-	//		グラフ表示
-	//---------------------------------------------------------------------
-	class Graph_View_Info {
-	public:
-		Double_Point origin;
-		Double_Point scale;
-
-		void fit(const RECT& rect)
-		{
-			origin.x = (double)CVE_GRAPH_PADDING;
-			scale.x = ((double)rect.right - (int)(2 * CVE_GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
-
-			if (rect.right > rect.bottom && rect.bottom > CVE_GRAPH_PADDING * 2 + CVE_GRAPH_RESOLUTION * CVE_GRAPH_SCALE_MIN) {
-				origin.y = (double)(rect.bottom - CVE_GRAPH_PADDING);
-				scale.y = ((double)rect.bottom - (int)(2 * CVE_GRAPH_PADDING)) / (double)CVE_GRAPH_RESOLUTION;
-			}
-			else {
-				origin.y = (rect.bottom + rect.right) * 0.5 - CVE_GRAPH_PADDING;
-				scale.y = scale.x;
-			}
-		}
 	};
 }

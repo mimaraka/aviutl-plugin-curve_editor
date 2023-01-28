@@ -39,12 +39,9 @@ namespace cve {
 //----------------------------------------------------------------------------------
 extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_DEFAULT> g_presets_bezier_default;
 extern cve::Static_Array<cve::Preset<cve::Curve_Bezier>, CVE_PRESET_NUM_CUSTOM> g_presets_bezier_custom;
-
 extern cve::Static_Array<cve::Preset<cve::Curve_Bezier_Multi>, CVE_PRESET_NUM_DEFAULT> g_presets_bezier_multi_default;
 extern cve::Static_Array<cve::Preset<cve::Curve_Bezier_Multi>, CVE_PRESET_NUM_CUSTOM> g_presets_bezier_multi_custom;
-
 extern cve::Static_Array<cve::Preset<cve::Curve_Elastic>, CVE_PRESET_NUM_CUSTOM> g_presets_elastic_custom;
-
 extern cve::Static_Array<cve::Preset<cve::Curve_Bounce>, CVE_PRESET_NUM_CUSTOM> g_presets_bounce_custom;
 
 
@@ -186,11 +183,11 @@ LRESULT cve::Preset<Curve_Class>::wndproc(HWND hw, UINT msg, WPARAM wparam, LPAR
 
 	case WM_PAINT:
 	{
-		COLORREF bg = g_theme[g_config.theme].bg;
+		aului::Color col_bg = g_theme[g_config.theme].bg;
 
-		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].preset_tx);
+		::SetTextColor(bitmap_buffer.hdc_memory, g_theme[g_config.theme].preset_tx.colorref());
 
-		draw_content(bg, &rect_title, strcmp(name, "") == 0 ? "(–³‘è)" : name, true);
+		draw_content(col_bg, &rect_title, strcmp(name, "") == 0 ? "(–³‘è)" : name, true);
 
 		if (g_p_render_target != nullptr && g_p_factory != nullptr) {
 			g_p_render_target->BeginDraw();

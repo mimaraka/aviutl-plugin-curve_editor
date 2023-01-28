@@ -16,7 +16,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static bool is_separator_moving = false;
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT	rect_wnd;
-	aului::Window_Rectangle rect_sepr, rect_header, rect_editor, rect_library;
+	aului::Window_Rectangle rect_sepr, rect_menu, rect_editor, rect_library;
 	static cve::My_Direct2d_Paint_Object bitmap_buffer;
 	const bool is_vertical = g_config.layout_mode == cve::Config::Vertical;
 	static bool is_sepr_invalid_ver = false;
@@ -44,7 +44,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				is_sepr_invalid_ver = false;
 			}
 		}
-		g_config.separator = MIN_LIMIT(g_config.separator, CVE_SEPARATOR_WIDTH);
+		g_config.separator = std::max(g_config.separator, CVE_SEPARATOR_WIDTH);
 	}
 	// 横レイアウトのとき
 	else {
@@ -64,7 +64,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				is_sepr_invalid_hor = false;
 			}
 		}
-		g_config.separator = MIN_LIMIT(g_config.separator, CVE_SEPARATOR_WIDTH);
+		g_config.separator = std::max(g_config.separator, CVE_SEPARATOR_WIDTH);
 	}
 
 	rect_sepr.set(
@@ -74,7 +74,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		is_vertical ? rect_wnd.bottom - g_config.separator + CVE_SEPARATOR_WIDTH : rect_wnd.bottom
 	);
 
-	rect_header.set(
+	rect_menu.set(
 		0,
 		0,
 		is_vertical ? rect_wnd.right : rect_wnd.right - g_config.separator - CVE_SEPARATOR_WIDTH,
@@ -121,7 +121,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			wndproc_menu,
 			NULL,
 			NULL,
-			rect_header.rect,
+			rect_menu.rect,
 			NULL
 		);
 
@@ -153,7 +153,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	case WM_SIZE:
 		bitmap_buffer.resize();
-		g_window_menu.move(rect_header.rect);
+		g_window_menu.move(rect_menu.rect);
 		g_window_editor.move(rect_editor.rect);
 		g_window_library.move(rect_library.rect);
 
@@ -188,23 +188,66 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 		if (is_separator_moving) {
 			if (is_vertical)
-				g_config.separator = MINMAX_LIMIT(rect_wnd.bottom - pt_client.y, CVE_SEPARATOR_WIDTH, rect_wnd.bottom - CVE_SEPARATOR_WIDTH - CVE_MENU_H);
+				g_config.separator = std::clamp(
+					(int)(rect_wnd.bottom - pt_client.y),
+					CVE_SEPARATOR_WIDTH,
+					(int)rect_wnd.bottom - CVE_SEPARATOR_WIDTH - CVE_MENU_H
+				);
 			else
-				g_config.separator = MINMAX_LIMIT(rect_wnd.right - pt_client.x, CVE_SEPARATOR_WIDTH, rect_wnd.right - CVE_MIN_W + CVE_SEPARATOR_WIDTH);
+				g_config.separator = std::clamp(
+					(int)(rect_wnd.right - pt_client.x),
+					CVE_SEPARATOR_WIDTH,
+					(int)rect_wnd.right - CVE_MIN_W + CVE_SEPARATOR_WIDTH
+				);
 
 			g_window_main.redraw();
 		}
 		return 0;
 
 	case aului::Window::WM_REDRAW:
+	{
+		HDWP dwp;
 		::InvalidateRect(hwnd, NULL, FALSE);
-		g_window_menu.move(rect_header.rect);
+		dwp = ::BeginDeferWindowPos(3);
+		::DeferWindowPos(
+			dwp,
+			g_window_menu.hwnd,
+			NULL,
+			rect_menu.rect.left,
+			rect_menu.rect.top,
+			rect_menu.rect.right - rect_menu.rect.left,
+			rect_menu.rect.bottom - rect_menu.rect.top,
+			SWP_NOZORDER | SWP_NOACTIVATE
+		);
+		::DeferWindowPos(
+			dwp,
+			g_window_editor.hwnd,
+			NULL,
+			rect_editor.rect.left,
+			rect_editor.rect.top,
+			rect_editor.rect.right - rect_editor.rect.left,
+			rect_editor.rect.bottom - rect_editor.rect.top,
+			SWP_NOZORDER | SWP_NOACTIVATE
+		);
+		::DeferWindowPos(
+			dwp,
+			g_window_library.hwnd,
+			NULL,
+			rect_library.rect.left,
+			rect_library.rect.top,
+			rect_library.rect.right - rect_library.rect.left,
+			rect_library.rect.bottom - rect_library.rect.top,
+			SWP_NOZORDER | SWP_NOACTIVATE
+		);
+		::EndDeferWindowPos(dwp);
+		/*g_window_menu.move(rect_menu.rect);
 		g_window_editor.move(rect_editor.rect);
-		g_window_library.move(rect_library.rect);
+		g_window_library.move(rect_library.rect);*/
 		g_window_menu.redraw();
 		g_window_editor.redraw();
 		g_window_library.redraw();
 		return 0;
+	}
 
 	default:
 		return ::DefWindowProc(hwnd, msg, wparam, lparam);

@@ -16,6 +16,7 @@
 #include <wincodecsdk.h>
 #include <lua.hpp>
 #include <fstream>
+#include <numbers>
 #include <regex>
 #include <filter.h>
 #include <aulslib/exedit.h>

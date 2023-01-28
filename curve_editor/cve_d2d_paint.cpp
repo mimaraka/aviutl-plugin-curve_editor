@@ -7,7 +7,7 @@
 #include "cve_header.hpp"
 
 #define CVE_GR_GRID_TH_L				0.5f
-#define CVE_GR_GRID_TH_B				1.0f
+#define CVE_GR_GRID_TH_B				1.f
 #define CVE_GR_GRID_MIN					36
 
 
@@ -17,13 +17,15 @@
 //---------------------------------------------------------------------
 void cve::My_Direct2d_Paint_Object::draw_grid()
 {
-	brush->SetColor(D2D1::ColorF(CHANGE_BRIGHTNESS(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GRID)));
+	aului::Color col_grid = g_theme[g_config.theme].bg_graph;
+	col_grid.change_brightness(CVE_BR_GRID);
+	brush->SetColor(D2D1::ColorF(col_grid.d2dcolor()));
 	// 
 	int kx = (int)std::floor(std::log(CVE_GRAPH_RESOLUTION * g_view_info.scale.x / (double)CVE_GR_GRID_MIN) / std::log(CVE_GRAPH_GRID_NUM));
 	int ky = (int)std::floor(std::log(CVE_GRAPH_RESOLUTION * g_view_info.scale.y / (double)CVE_GR_GRID_MIN) / std::log(CVE_GRAPH_GRID_NUM));
 	// ƒOƒ‰ƒt‚Ì˜g“à‚É•\Ž¦‚³‚ê‚éƒOƒŠƒbƒh‚Ì–{”
-	int nx = MIN_LIMIT((int)std::pow(CVE_GRAPH_GRID_NUM, kx), 1);
-	int ny = MIN_LIMIT((int)std::pow(CVE_GRAPH_GRID_NUM, ky), 1);
+	int nx = std::max((int)std::pow(CVE_GRAPH_GRID_NUM, kx), 1);
+	int ny = std::max((int)std::pow(CVE_GRAPH_GRID_NUM, ky), 1);
 	// 
 	float dx = (float)(CVE_GRAPH_RESOLUTION * g_view_info.scale.x) / (float)nx;
 	float dy = (float)(CVE_GRAPH_RESOLUTION * g_view_info.scale.y) / (float)ny;
@@ -39,8 +41,8 @@ void cve::My_Direct2d_Paint_Object::draw_grid()
 	else
 		ly = (int)std::ceil(to_graph(0, 0).y * ny / (double)CVE_GRAPH_RESOLUTION);
 
-	float ax = to_client((int)(lx * CVE_GRAPH_RESOLUTION / (float)nx), 0).x;
-	float ay = to_client(0, (int)(ly * CVE_GRAPH_RESOLUTION / (float)ny)).y;
+	float ax = to_client(lx * CVE_GRAPH_RESOLUTION / (float)nx, 0.f).x;
+	float ay = to_client(0.f, ly * CVE_GRAPH_RESOLUTION / (float)ny).y;
 	float thickness;
 
 	// c•ûŒü
@@ -80,6 +82,7 @@ void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
 	ID2D1GeometrySink* sink;
 	ID2D1PathGeometry* edge;
 	D2D1_POINT_2F pt_1, pt_2, pt_3;
+	aului::Color col_edge = g_theme[g_config.theme].bg;
 
 	D2D1_POINT_2F pts_1[] = {
 		D2D1::Point2F((float)rect.left, (float)rect.top),
@@ -117,7 +120,7 @@ void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
 				D2D1::ArcSegment(
 					pt_3,
 					D2D1::SizeF(radius, radius),
-					0.0f,
+					0.f,
 					D2D1_SWEEP_DIRECTION_CLOCKWISE,
 					D2D1_ARC_SIZE_SMALL
 				)
@@ -127,7 +130,7 @@ void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
 	}
 
 	sink->Close();
-	brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
+	brush->SetColor(D2D1::ColorF(col_edge.d2dcolor()));
 	if (edge)
 		p_render_target->FillGeometry(edge, brush, NULL);
 }
@@ -147,9 +150,9 @@ void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_CAP_STYLE_ROUND,
 			D2D1_LINE_JOIN_MITER,
-			10.0f,
+			10.f,
 			D2D1_DASH_STYLE_SOLID,
-			0.0f),
+			0.f),
 		NULL, NULL,
 		&style
 	);
@@ -175,9 +178,9 @@ void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 	if (p_render_target != nullptr) {
 		p_render_target->BeginDraw();
 		// ”wŒi‚ð•`‰æ
-		p_render_target->Clear(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg)));
+		p_render_target->Clear(D2D1::ColorF(g_theme[g_config.theme].bg.d2dcolor()));
 
-		brush->SetColor(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].sepr)));
+		brush->SetColor(D2D1::ColorF(g_theme[g_config.theme].sepr.d2dcolor()));
 
 		if (brush)
 			p_render_target->DrawLine(
@@ -199,7 +202,7 @@ void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 void cve::My_Direct2d_Paint_Object::draw_panel()
 {
 	//Direct2D‰Šú‰»
-	d2d_setup(TO_BGR(g_theme[g_config.theme].bg));
+	d2d_setup(g_theme[g_config.theme].bg);
 }
 
 
@@ -209,30 +212,31 @@ void cve::My_Direct2d_Paint_Object::draw_panel()
 //---------------------------------------------------------------------
 void cve::My_Direct2d_Paint_Object::draw_panel_editor()
 {
+	aului::Color col_overlay = g_theme[g_config.theme].bg_graph;
 	D2D1_RECT_F rect_left = {
-		0,
-		0,
+		0.f,
+		0.f,
 		(float)g_view_info.origin.x,
 		(float)rect.bottom
 	};
 
 	D2D1_RECT_F rect_right = {
 		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
-		0,
+		0.f,
 		(float)rect.right,
 		(float)rect.bottom,
 	};
 
 	D2D1_RECT_F rect_up = {
 		(float)g_view_info.origin.x,
-		0,
+		0.f,
 		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
-		to_client(0, (int)(Curve_Bezier::MAX_Y * CVE_GRAPH_RESOLUTION)).y
+		to_client(0.f, Curve_Bezier::MAX_Y * CVE_GRAPH_RESOLUTION).y
 	};
 
 	D2D1_RECT_F rect_down = {
 		(float)g_view_info.origin.x,
-		to_client(0, (int)(Curve_Bezier::MIN_Y * CVE_GRAPH_RESOLUTION)).y,
+		to_client(0.f, Curve_Bezier::MIN_Y * CVE_GRAPH_RESOLUTION).y,
 		(float)(g_view_info.origin.x + g_view_info.scale.x * CVE_GRAPH_RESOLUTION),
 		(float)rect.bottom
 	};
@@ -242,12 +246,13 @@ void cve::My_Direct2d_Paint_Object::draw_panel_editor()
 	if (is_safe(&p_render_target)) {
 		p_render_target->BeginDraw();
 		// ”wŒi‚ð•`‰æ
-		p_render_target->Clear(D2D1::ColorF(TO_BGR(g_theme[g_config.theme].bg_graph)));
+		p_render_target->Clear(D2D1::ColorF(g_theme[g_config.theme].bg_graph.d2dcolor()));
 
 		//ƒOƒŠƒbƒh
 		draw_grid();
 
-		brush->SetColor(D2D1::ColorF(CHANGE_BRIGHTNESS(TO_BGR(g_theme[g_config.theme].bg_graph), CVE_BR_GR_INVALID)));
+		col_overlay.change_brightness(CVE_BR_GR_INVALID);
+		brush->SetColor(D2D1::ColorF(col_overlay.d2dcolor()));
 		brush->SetOpacity(0.5f);
 		if (brush) {
 			// X‚ª0–¢–ž1‚æ‚è‘å‚Ì•”•ª‚ðˆÃ‚­‚·‚é

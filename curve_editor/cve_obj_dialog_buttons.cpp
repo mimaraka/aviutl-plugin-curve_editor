@@ -74,19 +74,20 @@ void cve::Obj_Dialog_Buttons::click()
 //---------------------------------------------------------------------
 void cve::Obj_Dialog_Buttons::highlight() const
 {
-	D2D1_COLOR_F color;
+	aului::Color color;
 
 	switch (g_config.apply_mode) {
 	case Config::Normal:
-		color = D2D1::ColorF(TO_BGR(RGB(45, 140, 235)));
+		color.change_color(45, 140, 235);
 		break;
 
 	case Config::Ignore_Mid_Point:
-		color = D2D1::ColorF(INVERT(TO_BGR(RGB(45, 140, 235))));
+		color.change_color(45, 140, 235);
+		color.invert();
 		break;
 
 	default:
-		color = D2D1::ColorF(TO_BGR(RGB(45, 140, 235)));
+		color.change_color(45, 140, 235);
 	}
 
 	if (id >= 0) {
@@ -102,7 +103,7 @@ void cve::Obj_Dialog_Buttons::highlight() const
 			g_p_render_target->SetTransform(D2D1::Matrix3x2F::Identity());
 
 			if (brush == nullptr) g_p_render_target->CreateSolidColorBrush(D2D1::ColorF(0, 0, 0), &brush);
-			brush->SetColor(color);
+			brush->SetColor(D2D1::ColorF(color.d2dcolor()));
 
 			D2D1_ROUNDED_RECT d2d_rect = D2D1::RoundedRect(
 				D2D1::RectF(
@@ -117,7 +118,7 @@ void cve::Obj_Dialog_Buttons::highlight() const
 			g_p_render_target->FillRoundedRectangle(d2d_rect, brush);
 
 			brush->SetOpacity(0.7f);
-			g_p_render_target->DrawRoundedRectangle(d2d_rect, brush, 2.0f);
+			g_p_render_target->DrawRoundedRectangle(d2d_rect, brush, 2.f);
 
 			g_p_render_target->EndDraw();
 		}
