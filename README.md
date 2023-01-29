@@ -1,5 +1,10 @@
 # Curve Editor for AviUtl
 
+![GitHub](https://img.shields.io/github/license/mimaraka/aviutl-plugin-curve_editor)
+![GitHub issues](https://img.shields.io/github/issues/mimaraka/aviutl-plugin-curve_editor)
+![GitHub all releases](https://img.shields.io/github/downloads/mimaraka/aviutl-plugin-curve_editor/total)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/mimaraka/aviutl-plugin-curve_editor)
+
 ![graph2 6](https://user-images.githubusercontent.com/106879397/215328583-e5772f69-0134-4bd4-9913-ed74e156297e.png)  
 
 様々なイージングをウィンドウ上で編集できるAviUtlプラグイン&スクリプトです。  
