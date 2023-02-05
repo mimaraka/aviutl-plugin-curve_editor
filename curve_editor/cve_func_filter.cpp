@@ -35,7 +35,7 @@ BOOL filter_init(FILTER* fp)
 
 	// Direct2DÇÃèâä˙âª
 	if (!cve::dx_init())
-		::MessageBox(NULL, CVE_STR_ERROR_DRAWING_FAILED, CVE_FILTER_NAME, MB_OK);
+		::MessageBox(NULL, CVE_STR_ERROR_D2D_INIT_FAILED, CVE_FILTER_NAME, MB_OK);
 
 	return TRUE;
 }

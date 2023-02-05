@@ -330,7 +330,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				
 				switch (g_config.edit_mode) {
 				case cve::Mode_Bezier:
-					if (!(IN_RANGE_EQ(value, -2147483647, -12368443) || IN_RANGE_EQ(value, 12368443, 2147483646))) {
+					if (!(aului::in_range(value, -2147483647, -12368443, true) || aului::in_range(value, 12368443, 2147483646, true))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -340,7 +340,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 
 				case cve::Mode_Bezier_Multi:
-					if (!(IN_RANGE_EQ(value, -2147483647, -12368443) || IN_RANGE_EQ(value, 12368443, 2147483646))) {
+					if (!(aului::in_range(value, -2147483647, -12368443, true) || aului::in_range(value, 12368443, 2147483646, true))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -350,7 +350,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 
 				case cve::Mode_Elastic:
-					if (!(IN_RANGE_EQ(value, -10211201, -1) || IN_RANGE_EQ(value, 1, 10211201))) {
+					if (!(aului::in_range(value, -10211201, -1, true) || aului::in_range(value, 1, 10211201, true))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -360,7 +360,7 @@ BOOL CALLBACK dialogproc_read(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					break;
 
 				case cve::Mode_Bounce:
-					if (!(IN_RANGE_EQ(value, -11213202, -10211202) || IN_RANGE_EQ(value, 10211202, 11213202))) {
+					if (!(aului::in_range(value, -11213202, -10211202, true) || aului::in_range(value, 10211202, 11213202, true))) {
 						if (g_config.show_popup)
 							::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -510,7 +510,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			str = buffer;
 			value = std::stoi(str);
 
-			if (!IN_RANGE_EQ(value, 1, CVE_CURVE_MAX)) {
+			if (!aului::in_range(value, 1, CVE_CURVE_MAX, true)) {
 				if (g_config.show_popup)
 					::MessageBox(hwnd, CVE_STR_ERROR_OUTOFRANGE, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 
@@ -581,10 +581,10 @@ BOOL CALLBACK dialogproc_about(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 		::SelectObject(hdc, font_title);
 		::SetBkMode(hdc, TRANSPARENT);
-		::DrawText(hdc, CVE_FILTER_NAME, strlen(CVE_FILTER_NAME), &rect_title, DT_SINGLELINE);
+		::DrawText(hdc, CVE_FILTER_NAME, ::strlen(CVE_FILTER_NAME), &rect_title, DT_SINGLELINE);
 		::DeleteObject(font_title);
 		::SelectObject(hdc, font_description);
-		::DrawText(hdc, version, strlen(version), &rect_description, NULL);
+		::DrawText(hdc, version, ::strlen(version), &rect_description, NULL);
 		::DeleteObject(font_description);
 		::EndPaint(hwnd, &ps);
 

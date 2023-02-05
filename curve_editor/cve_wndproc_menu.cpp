@@ -347,7 +347,9 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				SetMenuItemInfo(menu, edit_mode_menu_id[i], FALSE, &minfo);
 			}
 
-			::ClientToScreen(hwnd, &pt_client);
+			pt_client = { 0, 0 };
+
+			::ClientToScreen(mode.hwnd, &pt_client);
 			::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN, pt_client.x, pt_client.y, 0, hwnd, NULL);
 
 			return 0;

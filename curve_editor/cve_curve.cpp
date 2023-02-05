@@ -449,8 +449,10 @@ void cve::Curve_Type_ID::add_point(const POINT& pt_graph)
 	// ・ポイントの個数が最大
 	// ・追加するポイントのX座標が範囲外
 	// のいずれかの場合
-	if (ctpts.size >= CVE_POINT_MAX ||
-		!IN_RANGE(pt_graph.x, 0, CVE_GRAPH_RESOLUTION))
+	if (
+		ctpts.size >= CVE_POINT_MAX ||
+		!aului::in_range((int)pt_graph.x, 0, CVE_GRAPH_RESOLUTION, false)
+	)
 		return;
 
 	// 追加するポイントが左から何番目になるか
@@ -548,22 +550,22 @@ void cve::Curve::pt_on_ctpt(const POINT& pt_client, Point_Address* pt_address, b
 
 	for (int i = 0; i < (int)ctpts.size; i++) {
 		center = {
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).x - POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).y - POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).x + POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_center)).y + POINT_BOX_WIDTH
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_center)).x - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_center)).y - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_center)).x + POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_center)).y + POINT_BOX_WIDTH
 		};
 		left = {
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).x - POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).y - POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).x + POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_left)).y + POINT_BOX_WIDTH
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_left)).x - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_left)).y - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_left)).x + POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_left)).y + POINT_BOX_WIDTH
 		};
 		right = {
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).x - POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).y - POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).x + POINT_BOX_WIDTH,
-			(LONG)to_client(aului::to_point<LONG>(ctpts[i].pt_right)).y + POINT_BOX_WIDTH
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_right)).x - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_right)).y - POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_right)).x + POINT_BOX_WIDTH,
+			(LONG)to_client(aului::Point<LONG>(ctpts[i].pt_right)).y + POINT_BOX_WIDTH
 		};
 
 		bool is_on_point = ::PtInRect(&center, pt_client) && ctpts[i].type == Curve_Points::Extended;
@@ -928,8 +930,8 @@ void cve::Curve::draw_dash_line(
 
 	if (pt_idx > 0) {
 		paint_object->p_render_target->DrawLine(
-			D2D1::Point2F(to_client(aului::to_point<float>(ctpts[pt_idx].pt_center)).x, 0.f),
-			D2D1::Point2F(to_client(aului::to_point<float>(ctpts[pt_idx].pt_center)).x, (float)rect_wnd.bottom),
+			D2D1::Point2F(to_client(aului::Point<float>(ctpts[pt_idx].pt_center)).x, 0.f),
+			D2D1::Point2F(to_client(aului::Point<float>(ctpts[pt_idx].pt_center)).x, (float)rect_wnd.bottom),
 			paint_object->brush, LINE_THICKNESS, style_dash
 		);
 	}
@@ -975,10 +977,10 @@ void cve::Curve::draw_curve(
 		// ベジェ曲線を描画
 		paint_object->brush->SetColor(D2D1::ColorF(curve_color.d2dcolor()));
 		draw_bezier(paint_object,
-			is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_center)) : to_client(aului::to_point<float>(ctpts[i].pt_center)),
-			is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_right)) : to_client(aului::to_point<float>(ctpts[i].pt_right)),
-			is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_left)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_left)),
-			is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_center)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_center)),
+			is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_center)) : to_client(aului::Point<float>(ctpts[i].pt_center)),
+			is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_right)) : to_client(aului::Point<float>(ctpts[i].pt_right)),
+			is_preset ? to_preset(aului::Point<float>(ctpts[i + 1].pt_left)) : to_client(aului::Point<float>(ctpts[i + 1].pt_left)),
+			is_preset ? to_preset(aului::Point<float>(ctpts[i + 1].pt_center)) : to_client(aului::Point<float>(ctpts[i + 1].pt_center)),
 			CURVE_THICKNESS
 		);
 
@@ -986,13 +988,13 @@ void cve::Curve::draw_curve(
 		if (g_config.show_handle) {
 			paint_object->brush->SetColor(D2D1::ColorF(handle_color.d2dcolor()));
 			draw_handle(paint_object,
-				is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_center)) : to_client(aului::to_point<float>(ctpts[i].pt_center)),
-				is_preset ? to_preset(aului::to_point<float>(ctpts[i].pt_right)) : to_client(aului::to_point<float>(ctpts[i].pt_right)),
+				is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_center)) : to_client(aului::Point<float>(ctpts[i].pt_center)),
+				is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_right)) : to_client(aului::Point<float>(ctpts[i].pt_right)),
 				drawing_mode, NULL
 			);
 			draw_handle(paint_object,
-				is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_center)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_center)),
-				is_preset ? to_preset(aului::to_point<float>(ctpts[i + 1].pt_left)) : to_client(aului::to_point<float>(ctpts[i + 1].pt_left)),
+				is_preset ? to_preset(aului::Point<float>(ctpts[i + 1].pt_center)) : to_client(aului::Point<float>(ctpts[i + 1].pt_center)),
+				is_preset ? to_preset(aului::Point<float>(ctpts[i + 1].pt_left)) : to_client(aului::Point<float>(ctpts[i + 1].pt_left)),
 				drawing_mode, NULL
 			);
 		}
@@ -1006,7 +1008,7 @@ void cve::Curve::draw_curve(
 //---------------------------------------------------------------------
 bool cve::Curve::is_data_valid()
 {
-	return IN_RANGE_EQ(ctpts.size, 2, CVE_POINT_MAX);
+	return aului::in_range((int)ctpts.size, 2, CVE_POINT_MAX, true);
 }
 
 
@@ -1056,12 +1058,12 @@ bool cve::Curve::read_number(int number, Static_Array<Curve_Points, CVE_POINT_MA
 double cve::Curve::get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
 	// 進捗が0~1の範囲外であった場合
-	if (!IN_RANGE_EQ(ratio, 0, 1))
+	if (!aului::in_range(ratio, 0., 1., true))
 		return 0;
 
 	// 進捗に相当する区間を調べる
 	for (int i = 0; i < (int)points.size - 1; i++) {
-		if (IN_RANGE_EQ(ratio, points[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, points[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION)) {
+		if (aului::in_range(ratio, points[i].pt_center.x / (double)CVE_GRAPH_RESOLUTION, points[i + 1].pt_center.x / (double)CVE_GRAPH_RESOLUTION, true)) {
 			// 区間の長さ(ratioと同じスケール)
 			double range = (points[i + 1].pt_center.x - points[i].pt_center.x) / (double)CVE_GRAPH_RESOLUTION;
 			// 区間ごとの進捗の相対値(0~1)

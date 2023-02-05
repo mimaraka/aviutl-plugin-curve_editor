@@ -35,6 +35,7 @@
 // ハンドル・カーブ・制御点
 #define CVE_SUBTRACT_LENGTH				10.f
 #define CVE_SUBTRACT_LENGTH_2			8.f
+
 #define CVE_NUM_BEZIER_LINER			145674282
 #define CVE_NUM_ELASTIC_DEFAULT			1575600
 #define CVE_NUM_BOUNCE_DEFAULT			10612242
@@ -136,10 +137,10 @@
 //		プラグイン(フィルタ)の情報
 //---------------------------------------------------------------------
 #define CVE_FILTER_NAME						"Curve Editor"
-#define CVE_FILTER_VERSION					"v1.0.5"
+#define CVE_FILTER_VERSION					"v1.0.6"
 #define CVE_VERSION_MAJOR					1
 #define CVE_VERSION_MINOR					0
-#define CVE_VERSION_REVISION				5
+#define CVE_VERSION_REVISION				6
 #define CVE_FILTER_DEVELOPER				"mimaraka"
 #define CVE_FILTER_YEAR						"2022"
 #define CVE_FILTER_INFO						CVE_FILTER_NAME " " CVE_FILTER_VERSION " by " CVE_FILTER_DEVELOPER
@@ -155,7 +156,7 @@
 //---------------------------------------------------------------------
 #define CVE_STR_MODE_BEZIER					"ベジェ"
 #define CVE_STR_MODE_BEZIER_MULTI			"ベジェ(複数)"
-#define CVE_STR_MODE_BEZIER_VALUE			"ベジェ(値指定)"
+#define CVE_STR_MODE_BEZIER_VALUE			"Bezier(値指定)"
 #define CVE_STR_MODE_ELASTIC				"振動"
 #define CVE_STR_MODE_BOUNCE					"バウンス"
 
@@ -169,7 +170,7 @@
 #define CVE_STR_ERROR_EXEDIT_NOT_FOUND		"拡張編集プラグイン(exedit.auf)が見つかりません。"
 #define CVE_STR_INFO_LATEST_VERSION			"お使いのバージョン (" CVE_FILTER_VERSION ") は最新です。"
 #define CVE_STR_ERROR_CONNECTION_FAILED		"接続に失敗しました。"
-#define CVE_STR_ERROR_DRAWING_FAILED		"描画に失敗しました。"
+#define CVE_STR_ERROR_D2D_INIT_FAILED		"Direct2Dの初期化に失敗しました。"
 
 
 
@@ -195,11 +196,3 @@
 #define CVE_INI_KEY_NUM_BEZIER				"num_bezier"
 #define CVE_INI_KEY_NUM_ELASTIC				"num_elastic"
 #define CVE_INI_KEY_NUM_BOUNCE				"num_bounce"
-
-
-
-//---------------------------------------------------------------------
-//		マクロ関数
-//---------------------------------------------------------------------
-#define IN_RANGE(value,minv,maxv)			(((value) > (minv))? (((value) < (maxv))? 1 : 0) : 0)
-#define IN_RANGE_EQ(value,minv,maxv)		(((value) >= (minv))? (((value) <= (maxv))? 1 : 0) : 0)

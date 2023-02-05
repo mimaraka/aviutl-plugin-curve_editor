@@ -130,30 +130,30 @@ void cve::Curve_Elastic::pt_on_ctpt(const POINT& pt_client, Point_Address* pt_ad
 	param_to_pt(&pt, 0);
 	// 振幅を調整するハンドル(左)
 	const RECT handle_amp_left = {
-		(LONG)to_client(aului::to_point<LONG>(pt)).x - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).x + POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y + POINT_BOX_WIDTH
+		(LONG)to_client(aului::Point<LONG>(pt)).x - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).x + POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y + POINT_BOX_WIDTH
 	};
 
 	param_to_pt(&pt, 1);
 
 	// 振幅を調整するハンドル(右)
 	const RECT handle_amp_right = {
-		(LONG)to_client(aului::to_point<LONG>(pt)).x - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).x + POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y + POINT_BOX_WIDTH
+		(LONG)to_client(aului::Point<LONG>(pt)).x - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).x + POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y + POINT_BOX_WIDTH
 	};
 
 	param_to_pt(&pt, 2);
 
 	// 振動数・減衰を調整するハンドル
 	const RECT pt_freq_decay = {
-		(LONG)to_client(aului::to_point<LONG>(pt)).x - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).x + POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y + POINT_BOX_WIDTH
+		(LONG)to_client(aului::Point<LONG>(pt)).x - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).x + POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y + POINT_BOX_WIDTH
 	};
 
 	if (::PtInRect(&handle_amp_left, pt_client) || ::PtInRect(&handle_amp_right, pt_client)) {
@@ -275,7 +275,7 @@ void cve::Curve_Elastic::draw_curve(
 		// 振幅を調整するハンドル
 		draw_handle(
 			paint_object,
-			to_client(aului::to_point<float>(pt_graph)),
+			to_client(aului::Point<float>(pt_graph)),
 			to_client((float)CVE_GRAPH_RESOLUTION, (float)pt_graph.y),
 			drawing_mode, DRAW_HANDLE_ONLY
 		);
@@ -286,7 +286,7 @@ void cve::Curve_Elastic::draw_curve(
 		draw_handle(
 			paint_object,
 			to_client((float)pt_graph.x, CVE_GRAPH_RESOLUTION * 0.5f),
-			to_client(aului::to_point<float>(pt_graph)),
+			to_client(aului::Point<float>(pt_graph)),
 			drawing_mode, NULL
 		);
 
@@ -341,11 +341,11 @@ bool cve::Curve_Elastic::read_number(int number, double* f, double* k, double* a
 
 	int num;
 
-	if (IN_RANGE_EQ(number, -10211201, -1)) {
+	if (aului::in_range(number, -10211201, -1, true)) {
 		*rev = true;
 		num = -number - 1;
 	}
-	else if (IN_RANGE_EQ(number, 1, 10211201)) {
+	else if (aului::in_range(number, 1, 10211201, true)) {
 		*rev = false;
 		num = number - 1;
 	}

@@ -9,6 +9,85 @@
 
 
 
+// ビュー変更用クラス
+class Change_View {
+	static constexpr double GRAPH_SCALE_BASE = 1.01;
+public:
+	static constexpr int MOVING = 1;
+	static constexpr int SCALING = 2;
+	int mode;
+	aului::Point<double> scale_prev;
+	aului::Point<double> origin_prev;
+	aului::Point<LONG> pt_client_prev;
+
+	Change_View() :
+		mode(NULL)
+	{}
+
+	bool start(const POINT& pt_client)
+	{
+		if (!mode) {
+			if (::GetAsyncKeyState(VK_CONTROL) < 0)
+				mode = SCALING;
+			else
+				mode = MOVING;
+
+			pt_client_prev = aului::Point<LONG>(pt_client);
+			scale_prev = g_view_info.scale;
+			origin_prev = g_view_info.origin;
+
+			return true;
+		}
+		else return false;
+	}
+
+	bool move(const POINT& pt_client, const RECT& rect_wnd)
+	{
+		// スケーリング
+		if (mode == SCALING) {
+			double coef_x, coef_y;
+			coef_x = std::clamp(std::pow(GRAPH_SCALE_BASE, pt_client.x - pt_client_prev.x),
+				cve::Graph_View_Info::SCALE_MIN / scale_prev.x, cve::Graph_View_Info::SCALE_MAX / scale_prev.x);
+			coef_y = std::clamp(std::pow(GRAPH_SCALE_BASE, pt_client_prev.y - pt_client.y),
+				cve::Graph_View_Info::SCALE_MIN / scale_prev.y, cve::Graph_View_Info::SCALE_MAX / scale_prev.y);
+			if (::GetAsyncKeyState(VK_SHIFT) < 0) {
+				coef_x = coef_y = std::max(coef_x, coef_y);
+				scale_prev.x = scale_prev.y = std::max(scale_prev.x, scale_prev.y);
+			}
+			g_view_info.scale.x = scale_prev.x * coef_x;
+			g_view_info.scale.y = scale_prev.y * coef_y;
+			g_view_info.origin.x = rect_wnd.right * 0.5f + (float)(coef_x * (origin_prev.x - rect_wnd.right * 0.5f));
+			g_view_info.origin.y = rect_wnd.bottom * 0.5f + (float)(coef_y * (origin_prev.y - rect_wnd.bottom * 0.5f));
+
+			return true;
+		}
+		// 移動
+		else if (mode == MOVING) {
+			g_view_info.origin.x = origin_prev.x + pt_client.x - pt_client_prev.x;
+			g_view_info.origin.y = origin_prev.y + pt_client.y - pt_client_prev.y;
+
+			return true;
+		}
+		else return false;
+	}
+
+	bool end()
+	{
+		if (mode) {
+			mode = NULL;
+			return true;
+		}
+		else return false;
+	}
+
+	bool is_moving()
+	{
+		return mode;
+	}
+};
+
+
+
 //---------------------------------------------------------------------
 //		ウィンドウプロシージャ（エディタパネル）
 //---------------------------------------------------------------------
@@ -20,17 +99,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	constexpr double GRAPH_SCALE_BASE = 1.01;
 
 	//int
-	static bool		move_view		= false;
 	static bool		is_dragging		= false;
-	// 0: NULL, 1: 移動, 2: 拡大縮小
-	static int		move_or_scale = NULL;
-
-	//double
-	static double	prev_scale_x, prev_scale_y;
-	static double	prev_o_x, prev_o_y;
-
-	//POINT
-	static POINT	pt_view;
 
 	POINT			pt_client = {
 		GET_X_LPARAM(lparam),
@@ -49,11 +118,11 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static DWORD	thread_id;
 
 	//その他
-	static cve::Point_Address		pt_address;
+	static cve::Point_Address				pt_address;
 	static cve::My_Direct2d_Paint_Object	paint_object;
-	static cve::Obj_Dialog_Buttons	obj_buttons;
-	static MENUITEMINFO				minfo;
-	static SYS_INFO*				sys_info;
+	static cve::Obj_Dialog_Buttons			obj_buttons;
+	static MENUITEMINFO						minfo;
+	static Change_View						change_view;
 
 
 	//クライアント領域の矩形を取得
@@ -61,7 +130,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	//グラフ座標
 	if (g_view_info.origin.x != NULL)
-		pt_graph = to_graph(aului::to_point<LONG>(pt_client)).to_win32_point();
+		pt_graph = to_graph(aului::Point<LONG>(pt_client)).to_win32_point();
 
 
 	switch (msg) {
@@ -197,10 +266,18 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			break;
 		}
 
-
-		// カーブのD&D処理
-		if (!move_view)
-			is_dragging = true;
+		// ビュー移動中でなく、どのポイントにもホバーしていないとき
+		if (!change_view.is_moving() && pt_address.position == cve::Point_Address::Null) {
+			// ビュー移動・拡大縮小準備
+			// Altキーが押されているとき
+			if (::GetAsyncKeyState(VK_MENU) < 0) {
+				change_view.start(pt_client);
+				::SetCursor(::LoadCursor(NULL, IDC_SIZEALL));
+			}
+			// カーブのD&D処理
+			else
+				is_dragging = true;
+		}
 
 		::SetCapture(hwnd);
 		return 0;
@@ -229,6 +306,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				obj_buttons.invalidate(NULL);
 			}
 		}
+
+		change_view.end();
 
 		pt_address.position = cve::Point_Address::Null;
 		is_dragging = false;
@@ -272,7 +351,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index + 1].pt_left = g_curve_bezier_multi[g_config.current_id.multi - 1].ctpts[pt_address.index + 1].pt_center;
 				pt_address.position = cve::Point_Address::Null;
 			}
-			else if (IN_RANGE_EQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
+			else if (aului::in_range((int)pt_graph.x, 0, CVE_GRAPH_RESOLUTION, true)) {
 				cve::trace_curve();
 				g_curve_bezier_multi[g_config.current_id.multi - 1].add_point(pt_graph);
 				// ダブルクリックしたまま制御点の移動を行えるようにするため
@@ -289,7 +368,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			if (pt_address.position == cve::Point_Address::Center)
 				g_curve_bezier_value[g_config.current_id.value - 1].delete_point(pt_client);
-			else if (IN_RANGE_EQ(pt_graph.x, 0, CVE_GRAPH_RESOLUTION)) {
+			else if (aului::in_range((int)pt_graph.x, 0, CVE_GRAPH_RESOLUTION, true)) {
 				cve::trace_curve();
 				g_curve_bezier_value[g_config.current_id.value - 1].add_point(pt_graph);
 			}
@@ -316,14 +395,8 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(マウスの中央ボタンが押されたとき)
 		///////////////////////////////////////////
 	case WM_MBUTTONDOWN:
-		if (pt_address.position == cve::Point_Address::Null && !is_dragging) {
-			move_view = true;
-			pt_view = pt_client;
-			prev_scale_x = g_view_info.scale.x;
-			prev_scale_y = g_view_info.scale.y;
-			prev_o_x = g_view_info.origin.x;
-			prev_o_y = g_view_info.origin.y;
-
+		if (pt_address.position == cve::Point_Address::Null && !is_dragging && !change_view.is_moving()) {
+			change_view.start(pt_client);
 			::SetCursor(::LoadCursor(NULL, IDC_SIZEALL));
 			::SetCapture(hwnd);
 		}
@@ -334,9 +407,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		//		(マウスの中央ボタンが離されたとき)
 		///////////////////////////////////////////
 	case WM_MBUTTONUP:
-		move_view = false;
-		move_or_scale = NULL;
-
+		change_view.end();
 		::ReleaseCapture();
 		return 0;
 
@@ -391,9 +462,10 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			}
 		}
 
-		//制御点ホバー時にカーソルを変更
+		// 制御点ホバー時にカーソルを変更
+		// ドラッグ中でないとき
 		if (!is_dragging) {
-			cve::Point_Address tmp;
+			cve::Point_Address tmp = { 0 };
 
 			// モード振り分け
 			switch (g_config.edit_mode) {
@@ -408,9 +480,9 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				break;
 
 				// 値指定モードのとき
-			case cve::Mode_Bezier_Value:
+			/*case cve::Mode_Bezier_Value:
 
-				break;
+				break;*/
 
 				// 振動モードのとき
 			case cve::Mode_Elastic:
@@ -421,41 +493,17 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			case cve::Mode_Bounce:
 				g_curve_bounce.pt_on_ctpt(pt_client, &tmp);
 				break;
+
+			default:
+				return 0;
 			}
 
 			if (tmp.position != cve::Point_Address::Null)
 				::SetCursor(::LoadCursor(NULL, IDC_HAND));
 
-
-			// ビュー移動・拡大縮小
-			if (move_view) {
-				// 拡大縮小
-				if ((::GetAsyncKeyState(VK_CONTROL) < 0 && move_or_scale == 0) || move_or_scale == 2) {
-					double coef_x, coef_y;
-					coef_x = std::clamp(std::pow(GRAPH_SCALE_BASE, pt_client.x - pt_view.x),
-						cve::Graph_View_Info::SCALE_MIN / prev_scale_x, cve::Graph_View_Info::SCALE_MAX / prev_scale_x);
-					coef_y = std::clamp(std::pow(GRAPH_SCALE_BASE, pt_view.y - pt_client.y),
-						cve::Graph_View_Info::SCALE_MIN / prev_scale_y, cve::Graph_View_Info::SCALE_MAX / prev_scale_y);
-					if (::GetAsyncKeyState(VK_SHIFT) < 0) {
-						coef_x = coef_y = std::max(coef_x, coef_y);
-						prev_scale_x = prev_scale_y = std::max(prev_scale_x, prev_scale_y);
-					}
-					g_view_info.scale.x = prev_scale_x * coef_x;
-					g_view_info.scale.y = prev_scale_y * coef_y;
-					g_view_info.origin.x = rect_wnd.right * 0.5f + (float)(coef_x * (prev_o_x - rect_wnd.right * 0.5f));
-					g_view_info.origin.y = rect_wnd.bottom * 0.5f + (float)(coef_y * (prev_o_y - rect_wnd.bottom * 0.5f));
-					if (move_or_scale == 0)
-						move_or_scale = 2;
-				}
-				// 移動
-				else {
-					g_view_info.origin.x = prev_o_x + pt_client.x - pt_view.x;
-					g_view_info.origin.y = prev_o_y + pt_client.y - pt_view.y;
-					if (move_or_scale == 0)
-						move_or_scale = 1;
-				}
+			if (change_view.is_moving()) {
+				change_view.move(pt_client, rect_wnd);
 				::SetCursor(::LoadCursor(NULL, IDC_SIZEALL));
-				// 再描画
 				::InvalidateRect(hwnd, NULL, FALSE);
 			}
 		}

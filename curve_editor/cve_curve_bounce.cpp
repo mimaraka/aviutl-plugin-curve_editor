@@ -67,10 +67,10 @@ void cve::Curve_Bounce::pt_on_ctpt(const POINT& pt_client, Point_Address* pt_add
 	param_to_pt(&pt);
 	// 振幅を調整するハンドル(左)
 	const RECT rect_point = {
-		(LONG)to_client(aului::to_point<LONG>(pt)).x - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y - POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).x + POINT_BOX_WIDTH,
-		(LONG)to_client(aului::to_point<LONG>(pt)).y + POINT_BOX_WIDTH
+		(LONG)to_client(aului::Point<LONG>(pt)).x - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y - POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).x + POINT_BOX_WIDTH,
+		(LONG)to_client(aului::Point<LONG>(pt)).y + POINT_BOX_WIDTH
 	};
 
 	pt_address->index = NULL;
@@ -215,8 +215,8 @@ void cve::Curve_Bounce::draw_curve(
 		// 振動数・減衰を調整するハンドル
 		draw_handle(
 			paint_object,
-			to_client(aului::to_point<float>(pt_graph)),
-			to_client(aului::to_point<float>(pt_graph)),
+			to_client(aului::Point<float>(pt_graph)),
+			to_client(aului::Point<float>(pt_graph)),
 			drawing_mode, DRAW_HANDLE_ONLY
 		);
 
@@ -269,11 +269,11 @@ bool cve::Curve_Bounce::read_number(int number, double* e, double* t, bool* rev)
 	//    11213203 ~ 2147483647：不使用
 	int num;
 
-	if (IN_RANGE_EQ(number, -11213202, -10211202)) {
+	if (aului::in_range(number, -11213202, -10211202, true)) {
 		*rev = true;
 		num = -number - 10211202;
 	}
-	else if (IN_RANGE_EQ(number, 10211202, 11213202)) {
+	else if (aului::in_range(number, 10211202, 11213202, true)) {
 		*rev = false;
 		num = number - 10211202;
 	}

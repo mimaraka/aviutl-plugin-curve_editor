@@ -79,8 +79,8 @@ void cve::My_Direct2d_Paint_Object::draw_grid()
 //		ラウンドエッジを描画
 //---------------------------------------------------------------------
 void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
-	ID2D1GeometrySink* sink;
-	ID2D1PathGeometry* edge;
+	ID2D1GeometrySink* sink = nullptr;
+	ID2D1PathGeometry* edge = nullptr;
 	D2D1_POINT_2F pt_1, pt_2, pt_3;
 	aului::Color col_edge = g_theme[g_config.theme].bg;
 
@@ -131,8 +131,11 @@ void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
 
 	sink->Close();
 	brush->SetColor(D2D1::ColorF(col_edge.d2dcolor()));
-	if (edge)
+	if (is_safe(&edge))
 		p_render_target->FillGeometry(edge, brush, NULL);
+
+	release(&sink);
+	release(&edge);
 }
 
 
