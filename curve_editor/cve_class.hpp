@@ -103,7 +103,7 @@ namespace cve {
 
 		double				get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
 		void				set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle);
-		void				correct_handle(const Point_Address& pt_address, double angle);
+		void				correct_handle(const Point_Address& pt_address);
 
 		// ƒnƒ“ƒhƒ‹‚ÌŠp“x‚ğæ“¾&İ’è
 		double				get_handle_angle(const Point_Address& pt_address);

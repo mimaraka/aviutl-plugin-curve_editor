@@ -133,12 +133,12 @@ void cve::Curve_Type_ID::move_point(int index, const POINT& pt_graph, bool init)
 	//左   O-----o--
 	tmp.index = index;
 	tmp.position = Point_Address::Left;
-	correct_handle(tmp, agl_left);
+	correct_handle(tmp);
 
 	// 右       --o-----O
 	tmp.index = index;
 	tmp.position = Point_Address::Right;
-	correct_handle(tmp, agl_right);
+	correct_handle(tmp);
 
 	ctpts[index - 1].pt_right = handle_prev_right;
 	ctpts[index + 1].pt_left = handle_next_left;
@@ -148,14 +148,14 @@ void cve::Curve_Type_ID::move_point(int index, const POINT& pt_graph, bool init)
 	tmp.index = index - 1;
 	tmp.position = Point_Address::Right;
 
-	correct_handle(tmp, agl_prev);
+	correct_handle(tmp);
 
 	// 左   O-----o--
 	// (次の制御点群)
 	tmp.index = index + 1;
 	tmp.position = Point_Address::Left;
 
-	correct_handle(tmp, agl_next);
+	correct_handle(tmp);
 }
 
 
@@ -383,7 +383,7 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 void cve::Curve::set_handle_position(const Point_Address& pt_address, const POINT& pt_graph, double length, bool use_angle, double angle)
 {
 	Point_Address		tmp;
-	double				agl_tmp = use_angle ? angle : get_handle_angle(pt_address);
+	double				agl_tmp;
 
 	// 中央の点なら弾く
 	if (pt_address.position == Point_Address::Center)
@@ -408,6 +408,7 @@ void cve::Curve::set_handle_position(const Point_Address& pt_address, const POIN
 		if (g_config.align_handle && ctpts[pt_address.index].type == Curve_Points::Extended) {
 			tmp.index = pt_address.index;
 			tmp.position = Point_Address::Right;
+			agl_tmp = use_angle ? angle : get_handle_angle(pt_address);
 
 			set_handle_angle(tmp, agl_tmp + std::numbers::pi, TRUE, length);
 		}
@@ -430,6 +431,7 @@ void cve::Curve::set_handle_position(const Point_Address& pt_address, const POIN
 		if (g_config.align_handle && ctpts[pt_address.index].type == Curve_Points::Extended) {
 			tmp.index = pt_address.index;
 			tmp.position = Point_Address::Left;
+			agl_tmp = use_angle ? angle : get_handle_angle(pt_address);
 
 			set_handle_angle(tmp, agl_tmp + std::numbers::pi, TRUE, length);
 		}
@@ -496,12 +498,12 @@ void cve::Curve_Type_ID::add_point(const POINT& pt_graph)
 	tmp.index = index - 1;
 	tmp.position = Point_Address::Right;
 
-	correct_handle(tmp, get_handle_angle(tmp));
+	correct_handle(tmp);
 
 	tmp.index = index + 1;
 	tmp.position = Point_Address::Left;
 
-	correct_handle(tmp, get_handle_angle(tmp));
+	correct_handle(tmp);
 
 }
 
@@ -662,7 +664,7 @@ void cve::Curve::set_handle_angle(const Point_Address& pt_address, double angle,
 		ctpts[pt_address.index].pt_left.y =
 			(LONG)(ctpts[pt_address.index].pt_center.y + std::sin(angle) * length);
 
-		correct_handle(pt_address, angle);
+		correct_handle(pt_address);
 	}
 	//右
 	else if (pt_address.position == Point_Address::Right &&
@@ -677,7 +679,7 @@ void cve::Curve::set_handle_angle(const Point_Address& pt_address, double angle,
 		ctpts[pt_address.index].pt_right.y =
 			(LONG)(ctpts[pt_address.index].pt_center.y + std::sin(angle) * length);
 
-		correct_handle(pt_address, angle);
+		correct_handle(pt_address);
 	}
 	else return;
 }
@@ -690,8 +692,9 @@ void cve::Curve::set_handle_angle(const Point_Address& pt_address, double angle,
 //		pt_address:	指定する制御点のアドレス
 //		angle:		設定する角度
 //---------------------------------------------------------------------
-void cve::Curve::correct_handle(const Point_Address& pt_address, double angle)
+void cve::Curve::correct_handle(const Point_Address& pt_address)
 {
+	double angle = get_handle_angle(pt_address);
 
 	if (pt_address.position == Point_Address::Left) {
 		//左の制御点が前の制御点群の中央の点より左側にあったとき

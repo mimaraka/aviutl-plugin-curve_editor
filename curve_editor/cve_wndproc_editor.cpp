@@ -63,8 +63,7 @@ public:
 		}
 		// ˆÚ“®
 		else if (mode == MOVING) {
-			g_view_info.origin.x = origin_prev.x + pt_client.x - pt_client_prev.x;
-			g_view_info.origin.y = origin_prev.y + pt_client.y - pt_client_prev.y;
+			g_view_info.origin = origin_prev + pt_client - pt_client_prev;
 
 			return true;
 		}
