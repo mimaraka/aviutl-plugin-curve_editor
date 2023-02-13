@@ -16,37 +16,25 @@ BOOL(WINAPI* TrackPopupMenu_original)(HMENU, UINT, int, int, int, HWND, const RE
 BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int reserved, HWND hwnd, const RECT* rect)
 {
 	if (g_config.hooked_popup) {
-		constexpr int NUM_APPLY_MODE = 2;
-		int count = 0;
-		int idx_separator = -1;
-		int idx_script;
-		int idx_edit_mode;
-		int idx_apply_mode;
-		int id_script;
+		constexpr unsigned NUM_APPLY_MODE = 2u;
+		unsigned menu_id = 16u;
+		unsigned idx_edit_mode;
+		unsigned idx_apply_mode;
+		unsigned result;
 		LPCSTR script_name_top = "Type1@" CVE_FILTER_NAME;
 		TCHAR menu_label[MAX_PATH];
 
-		static MENUITEMINFO minfo;
-		minfo.cbSize = sizeof(MENUITEMINFO);
-		minfo.fMask = MIIM_TYPE;
-
 		g_config.hooked_popup = false;
 
-		// スクリプトのメニューIDを取得
 		while (true) {
-			BOOL result = ::GetMenuItemInfo(menu, count, MF_BYPOSITION, &minfo);
-			::GetMenuString(menu, count, menu_label, MAX_PATH, MF_BYPOSITION);
-
-			if (!result)
+			if (!::GetMenuString(menu, menu_id, menu_label, MAX_PATH, MF_BYCOMMAND))
 				return 0;
-			else if (minfo.fType & MFT_SEPARATOR) {
-				idx_separator = count;
-			}
-			else if (strcmp(menu_label, script_name_top) == 0) {
+			if (strcmp(menu_label, script_name_top) == 0) {
 				break;
 			}
-			count++;
+			menu_id += 65536;
 		}
+
 		switch (g_config.edit_mode) {
 		case cve::Mode_Bezier:
 		case cve::Mode_Bezier_Multi:
@@ -63,24 +51,10 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 			idx_edit_mode = 0;
 		}
 
-		switch (g_config.apply_mode) {
-		case cve::Config::Normal:
-			idx_apply_mode = 0;
-			break;
-
-		case cve::Config::Ignore_Mid_Point:
-			idx_apply_mode = 1;
-			break;
-
-		default:
-			idx_apply_mode = 0;
-		}
-
-		idx_script = count - idx_separator - 10 + idx_edit_mode * NUM_APPLY_MODE + idx_apply_mode;
-
-		id_script = 16 + 65536 * idx_script;
+		idx_apply_mode = std::clamp((unsigned)g_config.apply_mode, 0u, NUM_APPLY_MODE - 1u);
+		result = menu_id + 65536 * (idx_edit_mode * NUM_APPLY_MODE + idx_apply_mode);
 		
-		return id_script;
+		return result;
 	}
 	else return TrackPopupMenu_original(menu, flags, x, y, reserved, hwnd, rect);
 }

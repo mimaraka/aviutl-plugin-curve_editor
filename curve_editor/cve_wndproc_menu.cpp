@@ -106,7 +106,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		paint_object.init(hwnd, g_p_factory, g_p_write_factory);
 
 		// メニュー
-		menu = ::GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU_MODE)), 0);
+		menu = ::GetSubMenu(::LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU_MODE)), 0);
 		minfo.cbSize = sizeof(MENUITEMINFO);
 
 		// モード選択ボタン

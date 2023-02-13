@@ -142,7 +142,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		paint_object.init(hwnd, g_p_factory, g_p_write_factory);
 
 		// ƒƒjƒ…[
-		menu = ::GetSubMenu(LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU_EDITOR)), 0);
+		menu = ::GetSubMenu(::LoadMenu(g_fp->dll_hinst, MAKEINTRESOURCE(IDR_MENU_EDITOR)), 0);
 
 		minfo.cbSize = sizeof(MENUITEMINFO);
 
