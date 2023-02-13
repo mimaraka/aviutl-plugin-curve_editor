@@ -10,7 +10,8 @@
 様々なイージングをウィンドウ上で編集できるAviUtlプラグイン&スクリプトです。  
 
 ## ダウンロード
-[こちら](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)から最新バージョンのCurve Editor(`curve_editor-v*.zip`)をダウンロードしてください。
+下のリンクから最新バージョンのCurve Editor(`curve_editor-v*.zip`)をダウンロードしてください。  
+[**Curve Editorをダウンロード**](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)
 
 ## インストール
 `curve_editor-v*.zip`を解凍し、同梱されている`curve_editor.auf`をAviUtlのディレクトリ直下もしくは`plugins`フォルダ内に入れ、  
