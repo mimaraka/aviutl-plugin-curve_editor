@@ -118,7 +118,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 	//その他
 	static cve::Point_Address				pt_address;
-	static cve::My_Direct2d_Paint_Object	paint_object;
+	static cve::Cve_Paint_Object	paint_object;
 	static cve::Obj_Dialog_Buttons			obj_buttons;
 	static MENUITEMINFO						minfo;
 	static Change_View						change_view;
@@ -199,6 +199,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			// 何らかの制御点をクリックしていた場合
 			if (pt_address.position != cve::Point_Address::Null) {
+				g_curve_bezier.move_handle(pt_address, pt_graph, true);
 				cve::trace_curve();
 				::InvalidateRect(hwnd, NULL, FALSE);
 				::SetCursor(LoadCursor(NULL, IDC_HAND));
@@ -792,13 +793,13 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 		//設定
 		case ID_MENU_CONFIG:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, dialogproc_config);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_CONFIG), hwnd, ::dialogproc_config);
 			g_window_main.redraw();
 			return 0;
 
 			// 本プラグインについて
 		case ID_MENU_ABOUT:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, dialogproc_about);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_ABOUT), hwnd, ::dialogproc_about);
 			return 0;
 
 			// カーブの数値・IDをコピー
@@ -853,7 +854,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			// 値を読み取り
 		case CVE_CM_READ:
 		case ID_MENU_READ:
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, dialogproc_read);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_READ), hwnd, ::dialogproc_read);
 			g_window_main.redraw();
 
 			return 0;
@@ -862,7 +863,7 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		case ID_MENU_SAVE:
 		case CVE_CM_SAVE:
 #ifdef _DEBUG
-			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_SAVE), hwnd, dialogproc_save);
+			::DialogBox(g_fp->dll_hinst, MAKEINTRESOURCE(IDD_SAVE), hwnd, ::dialogproc_save);
 #else
 			::MessageBox(hwnd, "プリセット機能は現在未実装です。完成までもうしばらくお待ちください。", CVE_FILTER_NAME, MB_ICONINFORMATION);
 #endif

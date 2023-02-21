@@ -90,6 +90,7 @@ const cve::Theme g_theme[2] = {
 //Direct2D
 ID2D1Factory*					g_p_factory = nullptr;
 IDWriteFactory*					g_p_write_factory = nullptr;
+IWICImagingFactory*				g_p_imaging_factory = nullptr;
 ID2D1DCRenderTarget*			g_p_render_target = nullptr;
 
 

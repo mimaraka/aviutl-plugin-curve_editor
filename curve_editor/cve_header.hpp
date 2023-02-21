@@ -39,9 +39,6 @@ namespace cve {
 	bool						dx_init();
 	void						dx_exit();
 
-	//文字列の分割
-	std::vector<std::string>	split(const std::string& s, TCHAR c);
-
 	//クリップボードにテキストをコピー
 	BOOL						copy_to_clipboard(HWND, LPCTSTR);
 

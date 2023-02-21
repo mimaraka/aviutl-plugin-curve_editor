@@ -24,6 +24,11 @@ bool cve::dx_init()
 	if (FAILED(hresult))
 		return false;
 
+	hresult = ::CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, reinterpret_cast<void**>(&g_p_imaging_factory));
+
+	if (FAILED(hresult))
+		return false;
+
 	D2D1_RENDER_TARGET_PROPERTIES prop;
 	prop = D2D1::RenderTargetProperties(
 		D2D1_RENDER_TARGET_TYPE_DEFAULT,
@@ -59,32 +64,9 @@ inline void dx_release(Interface** pp_interface)
 void cve::dx_exit()
 {
 	dx_release(&g_p_render_target);
+	dx_release(&g_p_imaging_factory);
 	dx_release(&g_p_write_factory);
 	dx_release(&g_p_factory);
-}
-
-
-
-//---------------------------------------------------------------------
-//		splitä÷êî
-//---------------------------------------------------------------------
-std::vector<std::string> cve::split(const std::string& s, TCHAR c)
-{
-	std::vector<std::string> elems;
-	std::string item;
-	for (TCHAR ch : s) {
-		if (ch == c) {
-			if (!item.empty()) {
-				elems.emplace_back(item);
-				item.clear();
-			}
-		}
-		else item += ch;
-	}
-	if (!item.empty())
-		elems.emplace_back(item);
-
-	return elems;
 }
 
 
@@ -97,11 +79,11 @@ BOOL cve::copy_to_clipboard(HWND hwnd, LPCTSTR text)
 	HGLOBAL memory;
 	LPTSTR buffer;
 
-	if (!OpenClipboard(hwnd))
+	if (!::OpenClipboard(hwnd))
 		return FALSE;
 
 	::EmptyClipboard();
-	memory = GlobalAlloc(GHND | GMEM_SHARE, strlen(text) + 1);
+	memory = ::GlobalAlloc(GHND | GMEM_SHARE, ::strlen(text) + 1);
 	buffer = (PTSTR)::GlobalLock(memory);
 	::lstrcpy(buffer, text);
 

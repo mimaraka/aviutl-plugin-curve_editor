@@ -196,6 +196,9 @@ void cve::Curve::move_handle(const Point_Address& pt_address, const POINT& pt_gr
 				ctpts[pt_address.index].pt_center,
 				ctpts[pt_address.index].pt_left
 			);
+		shift_key = false;
+		alt_key = false;
+		ctrl_key = false;
 	}
 
 	if (pt_address.position == Point_Address::Left) {
@@ -767,136 +770,6 @@ void cve::Curve::reverse_curve()
 
 
 //---------------------------------------------------------------------
-//		ベジェ曲線を描画
-//---------------------------------------------------------------------
-void cve::Curve::draw_bezier(
-	aului::Direct2d_Paint_Object* paint_object,
-	const aului::Point<float>& stpt,
-	const aului::Point<float>& ctpt1,
-	const aului::Point<float>& ctpt2,
-	const aului::Point<float>& edpt,
-	float thickness
-)
-{
-	ID2D1GeometrySink* sink = nullptr;
-	ID2D1PathGeometry* bezier = nullptr;
-	ID2D1StrokeStyle* style = nullptr;
-
-	g_p_factory->CreateStrokeStyle(
-		D2D1::StrokeStyleProperties(
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_LINE_JOIN_MITER,
-			10.f,
-			D2D1_DASH_STYLE_SOLID,
-			0.f),
-		NULL, NULL,
-		&style
-	);
-	
-
-	g_p_factory->CreatePathGeometry(&bezier);
-	bezier->Open(&sink);
-	sink->BeginFigure(D2D1::Point2F(stpt.x, stpt.y), D2D1_FIGURE_BEGIN_HOLLOW);
-	sink->AddBezier(D2D1::BezierSegment(
-		D2D1::Point2F(ctpt1.x, ctpt1.y),
-		D2D1::Point2F(ctpt2.x, ctpt2.y),
-		D2D1::Point2F(edpt.x, edpt.y)
-	));
-	sink->EndFigure(D2D1_FIGURE_END_OPEN);
-	sink->Close();
-
-	if (bezier)
-		paint_object->p_render_target->DrawGeometry(bezier, paint_object->brush, thickness, style);
-
-	paint_object->release(&sink);
-	paint_object->release(&bezier);
-	paint_object->release(&style);
-}
-
-
-
-//---------------------------------------------------------------------
-//		ハンドルを描画
-//---------------------------------------------------------------------
-void cve::Curve::draw_handle(
-	aului::Direct2d_Paint_Object* paint_object,
-	const aului::Point<float>& st,
-	const aului::Point<float>& ed,
-	int drawing_mode,
-	int draw_option)
-{
-	ID2D1StrokeStyle* style = nullptr;
-
-	aului::Point<float> st_new = st;
-	aului::Point<float> ed_new = ed;
-
-	const float handle_thickness = (drawing_mode == DRAW_CURVE_NORMAL) ? HANDLE_THICKNESS : HANDLE_THICKNESS_PRESET;
-	const float point_size = (drawing_mode == DRAW_CURVE_NORMAL) ? POINT_SIZE : POINT_SIZE_PRESET;
-	const float handle_size = (drawing_mode == DRAW_CURVE_NORMAL) ? HANDLE_SIZE : HANDLE_SIZE_PRESET;
-	const float handle_circle_line = (drawing_mode == DRAW_CURVE_NORMAL) ? HANDLE_BORDER_THICKNESS : HANDLE_BORDER_THICKNESS;
-
-	if (drawing_mode == DRAW_CURVE_NORMAL) {
-		subtract_length(&st_new, ed, st, draw_option == DRAW_HANDLE_ONLY ? CVE_SUBTRACT_LENGTH : CVE_SUBTRACT_LENGTH_2);
-		subtract_length(&ed_new, st_new, ed, CVE_SUBTRACT_LENGTH);
-	}
-
-	g_p_factory->CreateStrokeStyle(
-		D2D1::StrokeStyleProperties(
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_CAP_STYLE_ROUND,
-			D2D1_LINE_JOIN_MITER,
-			10.f,
-			D2D1_DASH_STYLE_SOLID,
-			0.f),
-		NULL, NULL,
-		&style
-	);
-
-	if (drawing_mode != DRAW_CURVE_TRACE) {
-		if (draw_option != DRAW_POINT_ONLY) {
-			// ハンドルの直線
-			paint_object->p_render_target->DrawLine(
-				D2D1::Point2F(st_new.x, st_new.y),
-				D2D1::Point2F(ed_new.x, ed_new.y),
-				paint_object->brush, handle_thickness
-			);
-
-			// ハンドルの先端
-			paint_object->p_render_target->DrawEllipse(
-				D2D1::Ellipse(
-					D2D1::Point2F(ed.x, ed.y),
-					handle_size, handle_size),
-				paint_object->brush, HANDLE_BORDER_THICKNESS
-			);
-		}
-
-		// ハンドルの根元
-		if (draw_option == DRAW_HANDLE_ONLY) {
-			paint_object->p_render_target->DrawEllipse(
-				D2D1::Ellipse(
-					D2D1::Point2F(st.x, st.y),
-					handle_size, handle_size),
-				paint_object->brush, HANDLE_BORDER_THICKNESS
-			);
-		}
-		else {
-			paint_object->p_render_target->FillEllipse(
-				D2D1::Ellipse(
-					D2D1::Point2F(st.x, st.y),
-					point_size, point_size),
-				paint_object->brush
-			);
-		}
-	}
-	paint_object->release(&style);
-}
-
-
-
-//---------------------------------------------------------------------
 //		ポイントに引かれる点線を描画
 //---------------------------------------------------------------------
 void cve::Curve::draw_dash_line(
@@ -947,7 +820,7 @@ void cve::Curve::draw_dash_line(
 //		カーブを描画
 //---------------------------------------------------------------------
 void cve::Curve::draw_curve(
-	aului::Direct2d_Paint_Object* paint_object,
+	Cve_Paint_Object* paint_object,
 	const RECT& rect_wnd,
 	int drawing_mode)
 {
@@ -979,7 +852,7 @@ void cve::Curve::draw_curve(
 
 		// ベジェ曲線を描画
 		paint_object->brush->SetColor(D2D1::ColorF(curve_color.d2dcolor()));
-		draw_bezier(paint_object,
+		paint_object->draw_bezier(
 			is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_center)) : to_client(aului::Point<float>(ctpts[i].pt_center)),
 			is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_right)) : to_client(aului::Point<float>(ctpts[i].pt_right)),
 			is_preset ? to_preset(aului::Point<float>(ctpts[i + 1].pt_left)) : to_client(aului::Point<float>(ctpts[i + 1].pt_left)),
@@ -990,12 +863,12 @@ void cve::Curve::draw_curve(
 		//ハンドルの描画
 		if (g_config.show_handle) {
 			paint_object->brush->SetColor(D2D1::ColorF(handle_color.d2dcolor()));
-			draw_handle(paint_object,
+			paint_object->draw_handle(
 				is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_center)) : to_client(aului::Point<float>(ctpts[i].pt_center)),
 				is_preset ? to_preset(aului::Point<float>(ctpts[i].pt_right)) : to_client(aului::Point<float>(ctpts[i].pt_right)),
 				drawing_mode, NULL
 			);
-			draw_handle(paint_object,
+			paint_object->draw_handle(
 				is_preset ? to_preset(aului::Point<float>(ctpts[i + 1].pt_center)) : to_client(aului::Point<float>(ctpts[i + 1].pt_center)),
 				is_preset ? to_preset(aului::Point<float>(ctpts[i + 1].pt_left)) : to_client(aului::Point<float>(ctpts[i + 1].pt_left)),
 				drawing_mode, NULL

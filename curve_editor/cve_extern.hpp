@@ -42,6 +42,7 @@ extern FILTER_DLL							g_filter;
 //Direct2D
 extern ID2D1Factory*						g_p_factory;
 extern IDWriteFactory*						g_p_write_factory;
+extern IWICImagingFactory*					g_p_imaging_factory;
 extern ID2D1DCRenderTarget*					g_p_render_target;
 
 //ƒtƒbƒN

@@ -17,7 +17,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT rect_wnd;
 	aului::Window_Rectangle rect_preset_list, rect_search_bar;
-	static cve::My_Direct2d_Paint_Object bitmap_buffer;
+	static cve::Cve_Paint_Object bitmap_buffer;
 
 	::GetClientRect(hwnd, &rect_wnd);
 
@@ -107,7 +107,7 @@ LRESULT CALLBACK wndproc_library(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 LRESULT CALLBACK wndproc_preset_list(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	RECT rect_wnd;
-	static cve::My_Direct2d_Paint_Object bitmap_buffer;
+	static cve::Cve_Paint_Object bitmap_buffer;
 
 	::GetClientRect(hwnd, &rect_wnd);
 

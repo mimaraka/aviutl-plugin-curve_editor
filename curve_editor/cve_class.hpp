@@ -69,8 +69,19 @@ namespace cve {
 	//---------------------------------------------------------------------
 	//		Direct2Dï`âÊÉIÉuÉWÉFÉNÉg(åpè≥)
 	//---------------------------------------------------------------------
-	class My_Direct2d_Paint_Object : public aului::Direct2d_Paint_Object {
+	class Cve_Paint_Object : public aului::Direct2d_Paint_Object {
 	private:
+		static constexpr float SEPARATOR_LINE_WIDTH = 3.6f;
+		static constexpr int SEPARATOR_LINE_LENGTH = 32;
+		static constexpr float HANDLE_THICKNESS = 2.f;
+		static constexpr float HANDLE_THICKNESS_PRESET = 0.8f;
+		static constexpr float HANDLE_SIZE = 5.f;
+		static constexpr float HANDLE_SIZE_PRESET = 0.7f;
+		static constexpr float HANDLE_BORDER_THICKNESS = 2.2f;
+		static constexpr float HANDLE_BORDER_THICKNESS_PRESET = 0.5f;
+		static constexpr float POINT_SIZE = 4.4f;
+		static constexpr float POINT_SIZE_PRESET = 2.f;
+
 		void draw_grid();
 
 	public:
@@ -79,6 +90,21 @@ namespace cve {
 		void draw_panel_editor();
 
 		void draw_rounded_edge(int flag, float radius);
+
+		void draw_bezier(
+			const aului::Point<float>& stpt,
+			const aului::Point<float>& ctpt1,
+			const aului::Point<float>& ctpt2,
+			const aului::Point<float>& edpt,
+			float thickness
+		);
+
+		void draw_handle(
+			const aului::Point<float>& st,
+			const aului::Point<float>& ed,
+			int drawing_mode,
+			int draw_option
+		);
 	};
 
 
@@ -88,17 +114,8 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Curve {
 	protected:
-		static constexpr float HANDLE_THICKNESS					= 2.f;
-		static constexpr float HANDLE_THICKNESS_PRESET			= 0.8f;
-		static constexpr float HANDLE_SIZE						= 5.f;
-		static constexpr float HANDLE_SIZE_PRESET				= 0.7f;
-		static constexpr float HANDLE_BORDER_THICKNESS			= 2.2f;
-		static constexpr float HANDLE_BORDER_THICKNESS_PRESET	= 0.5f;
 		static constexpr int POINT_BOX_WIDTH					= 10;
-		static constexpr float POINT_SIZE						= 4.4f;
-		static constexpr float POINT_SIZE_PRESET				= 2.f;
 		static constexpr float CURVE_THICKNESS					= 1.2f;
-
 		static constexpr double DRAW_GRAPH_STEP					= 1.;
 
 		double				get_bezier_value(double ratio, Static_Array<Curve_Points, CVE_POINT_MAX>& points);
@@ -111,21 +128,6 @@ namespace cve {
 
 		// ï`âÊån
 		void				draw_dash_line(aului::Direct2d_Paint_Object* paint_object, const RECT& rect_wnd, int pt_idx);
-		void				draw_bezier(
-								aului::Direct2d_Paint_Object* paint_object,
-								const aului::Point<float>& stpt,
-								const aului::Point<float>& ctpt1,
-								const aului::Point<float>& ctpt2,
-								const aului::Point<float>& edpt,
-								float thickness
-							);
-		void				draw_handle(
-								aului::Direct2d_Paint_Object* paint_object,
-								const aului::Point<float>& st,
-								const aului::Point<float>& ed,
-								int drawing_mode,
-								int draw_option
-							);
 
 	public:
 		static constexpr float HANDLE_DEFAULT_1 = 0.3f;
@@ -152,7 +154,7 @@ namespace cve {
 
 		virtual void		pt_on_ctpt(const POINT& pt_client, Point_Address* pt_address, bool prioritize_point=false);
 		virtual void		reverse_curve();
-		virtual void		draw_curve(aului::Direct2d_Paint_Object* paint_object, const RECT& rect_wnd, int drawing_mode);
+		virtual void		draw_curve(Cve_Paint_Object* paint_object, const RECT& rect_wnd, int drawing_mode);
 		bool				is_data_valid();
 
 		// êîílÇì«Ç›éÊÇÈ
@@ -247,7 +249,7 @@ namespace cve {
 		void				init();
 		void				pt_on_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				move_handle(const Point_Address pt_address, const POINT& pt_graph);
-		void				draw_curve(aului::Direct2d_Paint_Object* paint_object, const RECT& rect_wnd, int drawing_mode);
+		void				draw_curve(Cve_Paint_Object* paint_object, const RECT& rect_wnd, int drawing_mode);
 		void				reverse_curve();
 		int					create_number();
 		bool				read_number(int number, double* f, double* k, double* a, bool* rev);
@@ -279,7 +281,7 @@ namespace cve {
 		void				init();
 		void				pt_on_ctpt(const POINT& pt_client, Point_Address* pt_address);
 		void				move_handle(const POINT& pt_graph);
-		void				draw_curve(aului::Direct2d_Paint_Object* paint_object, const RECT& rect_wnd, int drawing_mode);
+		void				draw_curve(Cve_Paint_Object* paint_object, const RECT& rect_wnd, int drawing_mode);
 		void				reverse_curve();
 		int					create_number();
 		bool				read_number(int number, double* e, double* t, bool* rev);

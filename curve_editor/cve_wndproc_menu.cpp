@@ -18,7 +18,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	static HMENU		menu;
 	static MENUITEMINFO minfo;
 
-	static cve::My_Direct2d_Paint_Object	paint_object;
+	static cve::Cve_Paint_Object	paint_object;
 	static cve::Button	copy,
 						read,
 						save,

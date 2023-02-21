@@ -235,7 +235,8 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 //---------------------------------------------------------------------
 BOOL CALLBACK dialogproc_bezier_param(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	TCHAR buffer[30];
+	constexpr int MAX_INPUT = 256;
+	TCHAR buffer[MAX_INPUT];
 
 	switch (msg) {
 	case WM_CLOSE:
@@ -243,13 +244,18 @@ BOOL CALLBACK dialogproc_bezier_param(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 		return 0;
 
 	case WM_INITDIALOG:
-		::SetFocus(::GetDlgItem(hwnd, IDC_EDIT_VALUE));
+	{
+		HWND edit = ::GetDlgItem(hwnd, IDC_EDIT_VALUE);
+		::SendMessage(edit, EM_SETLIMITTEXT, MAX_INPUT - 1, 0);
+		::SetFocus(edit);
+
 		return 0;
+	}
 
 	case WM_COMMAND:
 		switch (LOWORD(wparam)) {
 		case IDOK:
-			::GetDlgItemText(hwnd, IDC_EDIT_VALUE, buffer, 30);
+			::GetDlgItemText(hwnd, IDC_EDIT_VALUE, buffer, MAX_INPUT);
 
 			if (g_curve_bezier.read_parameters(buffer))
 				::EndDialog(hwnd, 1);
@@ -500,7 +506,7 @@ BOOL CALLBACK dialogproc_id(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		case IDOK:
 			::GetDlgItemText(hwnd, IDC_EDIT_ID, buffer, 5);
 
-			if (strlen(buffer) == 0) {
+			if (::strlen(buffer) == 0) {
 				if (g_config.show_popup)
 					::MessageBox(hwnd, CVE_STR_ERROR_INPUT_INVALID, CVE_FILTER_NAME, MB_OK | MB_ICONERROR);
 

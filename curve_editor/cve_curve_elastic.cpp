@@ -74,14 +74,15 @@ double cve::Curve_Elastic::func_elastic(double ratio, double f, double k, double
 //---------------------------------------------------------------------
 double cve::Curve_Elastic::pt_to_param(int pt_graph_val, int idx_param)
 {
-	if (reverse)
-		pt_graph_val = CVE_GRAPH_RESOLUTION - pt_graph_val;
 	// Amp
 	if (idx_param == 0)
 		return (std::clamp(pt_graph_val, CVE_GRAPH_RESOLUTION / 2, CVE_GRAPH_RESOLUTION) - CVE_GRAPH_RESOLUTION * 0.5) / (CVE_GRAPH_RESOLUTION * 0.5);
 	// Freq
-	else if (idx_param == 1)
+	else if (idx_param == 1) {
+		if (reverse)
+			pt_graph_val = CVE_GRAPH_RESOLUTION - pt_graph_val;
 		return std::max(2. / (std::max(pt_graph_val, 10) / (double)CVE_GRAPH_RESOLUTION), 2.);
+	}
 	// Decay
 	else
 		return -10. * std::log(-(std::clamp(pt_graph_val, 0, (int)(CVE_GRAPH_RESOLUTION * 0.5 - 1)) / (CVE_GRAPH_RESOLUTION * 0.5)) + 1.) + 1.;
@@ -96,25 +97,20 @@ double cve::Curve_Elastic::pt_to_param(int pt_graph_val, int idx_param)
 //---------------------------------------------------------------------
 void cve::Curve_Elastic::param_to_pt(POINT* pt_graph, int idx_pt)
 {
+	// 振幅のハンドル
 	if (idx_pt <= 1) {
 		if (idx_pt == 0)
 			pt_graph->x = 0;
 		else
 			pt_graph->x = CVE_GRAPH_RESOLUTION;
-		if (reverse)
-			pt_graph->y = (int)(CVE_GRAPH_RESOLUTION * 0.5 * (-ampl + 1.));
-		else
-			pt_graph->y = (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.));
+		pt_graph->y = (int)(CVE_GRAPH_RESOLUTION * 0.5 * (ampl + 1.));
 	}
 	else if (idx_pt == 2) {
-		if (reverse) {
+		if (reverse)
 			pt_graph->x = (int)(CVE_GRAPH_RESOLUTION * (1 - 2. / freq));
-			pt_graph->y = CVE_GRAPH_RESOLUTION + (int)((std::exp(-(dec - 1.) * 0.1) - 1.) * CVE_GRAPH_RESOLUTION * 0.5);
-		}
-		else {
+		else
 			pt_graph->x = (int)(2. * CVE_GRAPH_RESOLUTION / freq);
-			pt_graph->y = -(int)((std::exp(-(dec - 1.) * 0.1) - 1.) * CVE_GRAPH_RESOLUTION * 0.5);
-		}
+		pt_graph->y = -(int)((std::exp(-(dec - 1.) * 0.1) - 1.) * CVE_GRAPH_RESOLUTION * 0.5);
 	}
 }
 
@@ -207,7 +203,7 @@ void cve::Curve_Elastic::reverse_curve()
 //		カーブを描画
 //---------------------------------------------------------------------
 void cve::Curve_Elastic::draw_curve(
-	aului::Direct2d_Paint_Object* paint_object,
+	Cve_Paint_Object* paint_object,
 	const RECT& rect_wnd,
 	int drawing_mode)
 {
@@ -248,12 +244,12 @@ void cve::Curve_Elastic::draw_curve(
 
 	for (double x = left_side; x < right_side; x += DRAW_GRAPH_STEP) {
 		if (reverse) {
-			y1 = func_elastic(1. - to_graph(x, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1., 0.5);
-			y2 = func_elastic(1. - to_graph(x + DRAW_GRAPH_STEP, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1., 0.5);
+			y1 = func_elastic(1. - to_graph(x, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1., .5);
+			y2 = func_elastic(1. - to_graph(x + DRAW_GRAPH_STEP, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 1., .5);
 		}
 		else {
-			y1 = func_elastic(to_graph(x, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0., 0.5);
-			y2 = func_elastic(to_graph(x + DRAW_GRAPH_STEP, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0., 0.5);
+			y1 = func_elastic(to_graph(x, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0., .5);
+			y2 = func_elastic(to_graph(x + DRAW_GRAPH_STEP, 0.).x / (double)CVE_GRAPH_RESOLUTION, freq, dec, ampl, 0., .5);
 		}
 		paint_object->p_render_target->DrawLine(
 			D2D1::Point2F(
@@ -273,8 +269,7 @@ void cve::Curve_Elastic::draw_curve(
 		param_to_pt(&pt_graph, 0);
 
 		// 振幅を調整するハンドル
-		draw_handle(
-			paint_object,
+		paint_object->draw_handle(
 			to_client(aului::Point<float>(pt_graph)),
 			to_client((float)CVE_GRAPH_RESOLUTION, (float)pt_graph.y),
 			drawing_mode, DRAW_HANDLE_ONLY
@@ -283,25 +278,22 @@ void cve::Curve_Elastic::draw_curve(
 		param_to_pt(&pt_graph, 2);
 
 		// 振動数・減衰を調整するハンドル
-		draw_handle(
-			paint_object,
-			to_client((float)pt_graph.x, CVE_GRAPH_RESOLUTION * 0.5f),
+		paint_object->draw_handle(
+			to_client((float)pt_graph.x, CVE_GRAPH_RESOLUTION * .5f),
 			to_client(aului::Point<float>(pt_graph)),
 			drawing_mode, NULL
 		);
 
 		// 始点
-		draw_handle(
-			paint_object,
-			to_client(0.f, reverse ? CVE_GRAPH_RESOLUTION * 0.5f : 0.f),
-			to_client(0.f, reverse ? CVE_GRAPH_RESOLUTION * 0.5f : 0.f),
+		paint_object->draw_handle(
+			to_client(0.f, reverse ? CVE_GRAPH_RESOLUTION * .5f : 0.f),
+			to_client(0.f, reverse ? CVE_GRAPH_RESOLUTION * .5f : 0.f),
 			drawing_mode, DRAW_POINT_ONLY
 		);
 		// 終点
-		draw_handle(
-			paint_object,
-			to_client((float)CVE_GRAPH_RESOLUTION, reverse ? (float)CVE_GRAPH_RESOLUTION : CVE_GRAPH_RESOLUTION * 0.5f),
-			to_client((float)CVE_GRAPH_RESOLUTION, reverse ? (float)CVE_GRAPH_RESOLUTION : CVE_GRAPH_RESOLUTION * 0.5f),
+		paint_object->draw_handle(
+			to_client((float)CVE_GRAPH_RESOLUTION, reverse ? (float)CVE_GRAPH_RESOLUTION : CVE_GRAPH_RESOLUTION * .5f),
+			to_client((float)CVE_GRAPH_RESOLUTION, reverse ? (float)CVE_GRAPH_RESOLUTION : CVE_GRAPH_RESOLUTION * .5f),
 			drawing_mode, DRAW_POINT_ONLY
 		);
 	}
@@ -317,7 +309,7 @@ int cve::Curve_Elastic::create_number()
 	int result;
 	int f = (int)(2000 / freq);
 	int a = (int)(100 * ampl);
-	int k = -(int)(100 * (std::exp(-(dec - 1.) * 0.1) - 1.));
+	int k = -(int)(100 * (std::exp(-(dec - 1.) * .1) - 1.));
 	result = 1 + a + k * 101 + f * 101 * 101;
 	if (reverse)
 		result *= -1;

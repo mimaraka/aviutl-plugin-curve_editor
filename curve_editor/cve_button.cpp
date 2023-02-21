@@ -88,7 +88,7 @@ void cve::Button::draw_content(aului::Color col_bg, RECT* rect_content, LPCTSTR 
 		/*::DrawText(
 			bitmap_buffer.hdc_memory,
 			content,
-			strlen(content),
+			::strlen(content),
 			rect_content,
 			DT_CENTER | DT_VCENTER | DT_NOCLIP | DT_SINGLELINE
 		);*/
@@ -109,15 +109,15 @@ void cve::Button::draw_content(aului::Color col_bg, RECT* rect_content, LPCTSTR 
 			&p_text_format
 		);
 
-		wchar_t* wc_content = new wchar_t[strlen(content) + 1];
+		wchar_t* wc_content = new wchar_t[::strlen(content) + 1];
 
-		MultiByteToWideChar(
+		::MultiByteToWideChar(
 			CP_ACP,
 			MB_PRECOMPOSED,
 			content,
 			-1,
 			wc_content,
-			strlen(content) + 1
+			::strlen(content) + 1
 		);
 
 		g_p_write_factory->CreateTextLayout(
@@ -159,7 +159,7 @@ void cve::Button::draw_content(aului::Color col_bg, RECT* rect_content, LPCTSTR 
 		if (p_text_format != nullptr)
 			g_p_render_target->DrawText(
 				wc_content,
-				wcslen(wc_content),
+				::wcslen(wc_content),
 				p_text_format,
 				&rectf,
 				bitmap_buffer.brush,
@@ -372,7 +372,7 @@ LRESULT cve::Button::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		switch (wparam) {
 		case CVE_CM_CHANGE_LABEL:
 		{
-			strcpy_s(label, LABEL_MAX_CHAR, (LPTSTR)lparam);
+			::strcpy_s(label, LABEL_MAX_CHAR, (LPTSTR)lparam);
 			::InvalidateRect(hw, NULL, FALSE);
 			return 0;
 		}

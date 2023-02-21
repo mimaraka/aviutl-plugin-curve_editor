@@ -56,7 +56,7 @@ int cve::Curve_Bezier::create_number()
 std::string cve::Curve_Bezier::create_parameters()
 {
 	aului::Point<float> pt;
-	std::string strx, stry, result;
+	std::string str_x, str_y, result;
 
 	pt.x = std::clamp(
 		(float)(std::round(ctpts[0].pt_right.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
@@ -67,15 +67,15 @@ std::string cve::Curve_Bezier::create_parameters()
 		MIN_Y, MAX_Y
 	);
 
-	strx = std::to_string(pt.x);
-	stry = std::to_string(pt.y);
-	strx.erase(4);
+	str_x = std::to_string(pt.x);
+	str_y = std::to_string(pt.y);
+	str_x.erase(4);
 
 	if (ctpts[0].pt_right.y < 0)
-		stry.erase(5);
+		str_y.erase(5);
 	else
-		stry.erase(4);
-	result += strx + ", " + stry + ", ";
+		str_y.erase(4);
+	result += str_x + ", " + str_y + ", ";
 
 	pt.x = std::clamp(
 		(float)(std::round(ctpts[1].pt_left.x * 100 / (double)CVE_GRAPH_RESOLUTION) * 0.01f),
@@ -86,15 +86,15 @@ std::string cve::Curve_Bezier::create_parameters()
 		MIN_Y, MAX_Y
 	);
 
-	strx = std::to_string(pt.x);
-	stry = std::to_string(pt.y);
-	strx.erase(4);
+	str_x = std::to_string(pt.x);
+	str_y = std::to_string(pt.y);
+	str_x.erase(4);
 
 	if (ctpts[1].pt_left.y < 0)
-		stry.erase(5);
+		str_y.erase(5);
 	else
-		stry.erase(4);
-	result += strx + ", " + stry;
+		str_y.erase(4);
+	result += str_x + ", " + str_y;
 
 	return result;
 }
@@ -106,23 +106,24 @@ std::string cve::Curve_Bezier::create_parameters()
 //---------------------------------------------------------------------
 bool cve::Curve_Bezier::read_parameters(LPCTSTR param, Static_Array<Curve_Points, CVE_POINT_MAX>& points)
 {
-	const std::regex regex_param(R"(^((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *, *)|(-?\d*\.\d* *, *))((\d+ *, *)|(\d*\.\d* *, *))((-?\d+ *)|(-?\d*\.\d* *))$)");
+	const std::regex regex_param(R"(^(\s*(\d|-|\.)+\s*,){3}\s*(\d|-|\.)+\s*$)");
 
 	if (std::regex_match(param, regex_param)) {
-		std::vector<std::string> vec = cve::split(param, ',');
+		std::string str_param(param);
+		str_param.erase(std::remove_if(str_param.begin(), str_param.end(), ::isspace), str_param.end());
+		std::vector<std::string> vec = aului::split(str_param, ',');
 
 		float values[4];
 
-		values[0] = std::clamp(std::stof(vec[0]), 0.f, 1.f);
-		values[1] = std::clamp(
-			std::stof(vec[1]),
-			MIN_Y, MAX_Y
-		);
-		values[2] = std::clamp(std::stof(vec[2]), 0.f, 1.f);
-		values[3] = std::clamp(
-			std::stof(vec[3]),
-			MIN_Y, MAX_Y
-		);
+		try {
+			values[0] = std::clamp(std::stof(vec[0]), 0.f, 1.f);
+			values[1] = std::clamp(std::stof(vec[1]), MIN_Y, MAX_Y);
+			values[2] = std::clamp(std::stof(vec[2]), 0.f, 1.f);
+			values[3] = std::clamp(std::stof(vec[3]), MIN_Y, MAX_Y);
+		}
+		catch (...) {
+			return false;
+		}
 
 		points[0].pt_right.x = (int)(values[0] * CVE_GRAPH_RESOLUTION);
 		points[0].pt_right.y = (int)(values[1] * CVE_GRAPH_RESOLUTION);

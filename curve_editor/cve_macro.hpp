@@ -22,11 +22,8 @@
 #define CVE_DEF_W						320
 #define CVE_DEF_H						540
 #define CVE_ROUND_RADIUS				4.f
-
 // セパレータ
 #define CVE_SEPARATOR_WIDTH				8
-#define CVE_SEPARATOR_LINE_WIDTH		3.6f
-#define CVE_SEPARATOR_LINE_LENGTH		32
 
 // グラフ
 #define CVE_GRAPH_GRID_NUM				2
@@ -156,7 +153,7 @@
 //---------------------------------------------------------------------
 #define CVE_STR_MODE_BEZIER					"ベジェ"
 #define CVE_STR_MODE_BEZIER_MULTI			"ベジェ(複数)"
-#define CVE_STR_MODE_BEZIER_VALUE			"Bezier(値指定)"
+#define CVE_STR_MODE_BEZIER_VALUE			"ベジェ(値指定)"
 #define CVE_STR_MODE_ELASTIC				"振動"
 #define CVE_STR_MODE_BOUNCE					"バウンス"
 

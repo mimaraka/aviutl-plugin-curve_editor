@@ -6,7 +6,7 @@
 
 #include "cve_header.hpp"
 
-#define CVE_GR_GRID_TH_L				0.5f
+#define CVE_GR_GRID_TH_L				.5f
 #define CVE_GR_GRID_TH_B				1.f
 #define CVE_GR_GRID_MIN					36
 
@@ -15,7 +15,7 @@
 //---------------------------------------------------------------------
 //		グラフのグリッドを描画
 //---------------------------------------------------------------------
-void cve::My_Direct2d_Paint_Object::draw_grid()
+void cve::Cve_Paint_Object::draw_grid()
 {
 	aului::Color col_grid = g_theme[g_config.theme].bg_graph;
 	col_grid.change_brightness(CVE_BR_GRID);
@@ -78,7 +78,7 @@ void cve::My_Direct2d_Paint_Object::draw_grid()
 //---------------------------------------------------------------------
 //		ラウンドエッジを描画
 //---------------------------------------------------------------------
-void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
+void cve::Cve_Paint_Object::draw_rounded_edge(int flag, float radius) {
 	ID2D1GeometrySink* sink = nullptr;
 	ID2D1PathGeometry* edge = nullptr;
 	D2D1_POINT_2F pt_1, pt_2, pt_3;
@@ -141,9 +141,137 @@ void cve::My_Direct2d_Paint_Object::draw_rounded_edge(int flag, float radius) {
 
 
 //---------------------------------------------------------------------
+//		ベジェ曲線を描画
+//---------------------------------------------------------------------
+void cve::Cve_Paint_Object::draw_bezier(
+	const aului::Point<float>& stpt,
+	const aului::Point<float>& ctpt1,
+	const aului::Point<float>& ctpt2,
+	const aului::Point<float>& edpt,
+	float thickness
+)
+{
+	ID2D1GeometrySink* sink = nullptr;
+	ID2D1PathGeometry* path_bezier = nullptr;
+	ID2D1StrokeStyle* style = nullptr;
+
+	g_p_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.f,
+			D2D1_DASH_STYLE_SOLID,
+			0.f),
+		NULL, NULL,
+		&style
+	);
+
+	g_p_factory->CreatePathGeometry(&path_bezier);
+	path_bezier->Open(&sink);
+	sink->BeginFigure(D2D1::Point2F(stpt.x, stpt.y), D2D1_FIGURE_BEGIN_HOLLOW);
+	sink->AddBezier(D2D1::BezierSegment(
+		D2D1::Point2F(ctpt1.x, ctpt1.y),
+		D2D1::Point2F(ctpt2.x, ctpt2.y),
+		D2D1::Point2F(edpt.x, edpt.y)
+	));
+	sink->EndFigure(D2D1_FIGURE_END_OPEN);
+	sink->Close();
+
+	if (path_bezier)
+		p_render_target->DrawGeometry(path_bezier, brush, thickness, style);
+
+	release(&sink);
+	release(&path_bezier);
+	release(&style);
+}
+
+
+
+//---------------------------------------------------------------------
+//		ハンドルを描画
+//---------------------------------------------------------------------
+void cve::Cve_Paint_Object::draw_handle(
+	const aului::Point<float>& st,
+	const aului::Point<float>& ed,
+	int drawing_mode,
+	int draw_option
+)
+{
+	ID2D1StrokeStyle* style = nullptr;
+
+	aului::Point<float> st_new = st;
+	aului::Point<float> ed_new = ed;
+
+	const float handle_thickness = (drawing_mode == Curve::DRAW_CURVE_NORMAL) ? HANDLE_THICKNESS : HANDLE_THICKNESS_PRESET;
+	const float point_size = (drawing_mode == Curve::DRAW_CURVE_NORMAL) ? POINT_SIZE : POINT_SIZE_PRESET;
+	const float handle_size = (drawing_mode == Curve::DRAW_CURVE_NORMAL) ? HANDLE_SIZE : HANDLE_SIZE_PRESET;
+	const float handle_circle_line = (drawing_mode == Curve::DRAW_CURVE_NORMAL) ? HANDLE_BORDER_THICKNESS : HANDLE_BORDER_THICKNESS;
+
+	if (drawing_mode == Curve::DRAW_CURVE_NORMAL) {
+		subtract_length(&st_new, ed, st, draw_option == Curve::DRAW_HANDLE_ONLY ? CVE_SUBTRACT_LENGTH : CVE_SUBTRACT_LENGTH_2);
+		subtract_length(&ed_new, st_new, ed, CVE_SUBTRACT_LENGTH);
+	}
+
+	g_p_factory->CreateStrokeStyle(
+		D2D1::StrokeStyleProperties(
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_CAP_STYLE_ROUND,
+			D2D1_LINE_JOIN_MITER,
+			10.f,
+			D2D1_DASH_STYLE_SOLID,
+			0.f),
+		NULL, NULL,
+		&style
+	);
+
+	if (drawing_mode != Curve::DRAW_CURVE_TRACE) {
+		if (draw_option != Curve::DRAW_POINT_ONLY) {
+			// ハンドルの直線
+			p_render_target->DrawLine(
+				D2D1::Point2F(st_new.x, st_new.y),
+				D2D1::Point2F(ed_new.x, ed_new.y),
+				brush, handle_thickness
+			);
+
+			// ハンドルの先端
+			p_render_target->DrawEllipse(
+				D2D1::Ellipse(
+					D2D1::Point2F(ed.x, ed.y),
+					handle_size, handle_size),
+				brush, HANDLE_BORDER_THICKNESS
+			);
+		}
+
+		// ハンドルの根元
+		if (draw_option == Curve::DRAW_HANDLE_ONLY) {
+			p_render_target->DrawEllipse(
+				D2D1::Ellipse(
+					D2D1::Point2F(st.x, st.y),
+					handle_size, handle_size),
+				brush, HANDLE_BORDER_THICKNESS
+			);
+		}
+		else {
+			p_render_target->FillEllipse(
+				D2D1::Ellipse(
+					D2D1::Point2F(st.x, st.y),
+					point_size, point_size),
+				brush
+			);
+		}
+	}
+	release(&style);
+}
+
+
+
+//---------------------------------------------------------------------
 //		メインウィンドウを描画
 //---------------------------------------------------------------------
-void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
+void cve::Cve_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 {
 	ID2D1StrokeStyle* style = nullptr;
 
@@ -162,20 +290,20 @@ void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 
 	const D2D1_POINT_2F line_start = {
 		g_config.layout_mode == cve::Config::Vertical ?
-			(rect_sepr.right + rect_sepr.left) * 0.5f - CVE_SEPARATOR_LINE_LENGTH :
+			(rect_sepr.right + rect_sepr.left) * .5f - SEPARATOR_LINE_LENGTH :
 			(float)(rect_sepr.left + CVE_SEPARATOR_WIDTH),
 		g_config.layout_mode == cve::Config::Vertical ?
 			(float)(rect_sepr.top + CVE_SEPARATOR_WIDTH) :
-			(rect_sepr.top + rect_sepr.bottom) * 0.5f - CVE_SEPARATOR_LINE_LENGTH
+			(rect_sepr.top + rect_sepr.bottom) * .5f - SEPARATOR_LINE_LENGTH
 	};
 
 	const D2D1_POINT_2F line_end = {
 		g_config.layout_mode == cve::Config::Vertical ?
-			(rect_sepr.right + rect_sepr.left) * 0.5f + CVE_SEPARATOR_LINE_LENGTH :
+			(rect_sepr.right + rect_sepr.left) * .5f + SEPARATOR_LINE_LENGTH :
 			(float)(rect_sepr.left + CVE_SEPARATOR_WIDTH),
 		g_config.layout_mode == cve::Config::Vertical ?
 			(float)(rect_sepr.top + CVE_SEPARATOR_WIDTH) :
-			(rect_sepr.top + rect_sepr.bottom) * 0.5f + CVE_SEPARATOR_LINE_LENGTH
+			(rect_sepr.top + rect_sepr.bottom) * .5f + SEPARATOR_LINE_LENGTH
 	};
 
 	if (p_render_target != nullptr) {
@@ -189,7 +317,7 @@ void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 			p_render_target->DrawLine(
 				line_start,
 				line_end,
-				brush, CVE_SEPARATOR_LINE_WIDTH, style
+				brush, SEPARATOR_LINE_WIDTH, style
 			);
 
 		p_render_target->EndDraw();
@@ -202,10 +330,14 @@ void cve::My_Direct2d_Paint_Object::draw_panel_main(const RECT& rect_sepr)
 //---------------------------------------------------------------------
 //		パネルを描画
 //---------------------------------------------------------------------
-void cve::My_Direct2d_Paint_Object::draw_panel()
+void cve::Cve_Paint_Object::draw_panel()
 {
-	//Direct2D初期化
-	d2d_setup(g_theme[g_config.theme].bg);
+	if (is_safe(&p_render_target)) {
+		p_render_target->BeginDraw();
+		// 背景を描画
+		p_render_target->Clear(D2D1::ColorF(g_theme[g_config.theme].bg.d2dcolor()));
+		p_render_target->EndDraw();
+	}
 }
 
 
@@ -213,7 +345,7 @@ void cve::My_Direct2d_Paint_Object::draw_panel()
 //---------------------------------------------------------------------
 //		エディタパネルを描画
 //---------------------------------------------------------------------
-void cve::My_Direct2d_Paint_Object::draw_panel_editor()
+void cve::Cve_Paint_Object::draw_panel_editor()
 {
 	aului::Color col_overlay = g_theme[g_config.theme].bg_graph;
 	D2D1_RECT_F rect_left = {
@@ -256,7 +388,7 @@ void cve::My_Direct2d_Paint_Object::draw_panel_editor()
 
 		col_overlay.change_brightness(CVE_BR_GR_INVALID);
 		brush->SetColor(D2D1::ColorF(col_overlay.d2dcolor()));
-		brush->SetOpacity(0.5f);
+		brush->SetOpacity(.5f);
 		if (brush) {
 			// Xが0未満1より大の部分を暗くする
 			p_render_target->FillRectangle(&rect_left, brush);

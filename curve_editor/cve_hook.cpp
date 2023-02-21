@@ -29,9 +29,8 @@ BOOL WINAPI TrackPopupMenu_hooked(HMENU menu, UINT flags, int x, int y, int rese
 		while (true) {
 			if (!::GetMenuString(menu, menu_id, menu_label, MAX_PATH, MF_BYCOMMAND))
 				return 0;
-			if (strcmp(menu_label, script_name_top) == 0) {
+			else if (::strcmp(menu_label, script_name_top) == 0)
 				break;
-			}
 			menu_id += 65536;
 		}
 

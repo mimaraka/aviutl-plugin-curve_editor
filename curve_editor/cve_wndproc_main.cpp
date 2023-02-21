@@ -17,7 +17,7 @@ LRESULT CALLBACK wndproc_main(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 	RECT	rect_wnd;
 	aului::Window_Rectangle rect_sepr, rect_menu, rect_editor, rect_library;
-	static cve::My_Direct2d_Paint_Object bitmap_buffer;
+	static cve::Cve_Paint_Object bitmap_buffer;
 	const bool is_vertical = g_config.layout_mode == cve::Config::Vertical;
 	static bool is_sepr_invalid_ver = false;
 	static bool is_sepr_invalid_hor = false;

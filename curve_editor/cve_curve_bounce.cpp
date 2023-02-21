@@ -29,26 +29,26 @@ double func1(double ratio, double e)
 
 double func2(double ratio, double e)
 {
-	return ratio + 0.5 + 1. / (e - 1.) - (e + 1.) * std::pow(e, func1(ratio + 0.5, e)) / (2. * e - 2.);
+	return ratio + .5 + 1. / (e - 1.) - (e + 1.) * std::pow(e, func1(ratio + .5, e)) / (2. * e - 2.);
 }
 
 double cve::Curve_Bounce::func_bounce(double ratio, double e, double t, double st, double ed)
 {
 	ratio = std::clamp(ratio, 0., 1.);
-	const double lim_val = t * (1 / (1. - e) - 0.5);
+	const double lim_val = t * (1 / (1. - e) - .5);
 	double result;
-	e = std::min(e, 0.999);
+	e = std::min(e, .999);
 
 	if (lim_val > 1.) {
-		int n = (int)(std::log(1 + (e - 1.) * (1 / t + 0.5)) / std::log(e));
-		if (ratio < t * ((std::pow(e, n) - 1.) / (e - 1.) - 0.5))
-			result = (ed - st) * (4 * std::pow(func2(ratio / t, e), 2) - std::pow(e, 2 * func1(ratio / t + 0.5, e))) + ed;
+		int n = (int)(std::log(1 + (e - 1.) * (1 / t + .5)) / std::log(e));
+		if (ratio < t * ((std::pow(e, n) - 1.) / (e - 1.) - .5))
+			result = (ed - st) * (4 * std::pow(func2(ratio / t, e), 2) - std::pow(e, 2 * func1(ratio / t + .5, e))) + ed;
 		else
 			result = ed;
 	}
 	else {
 		if (ratio < lim_val)
-			result = (ed - st) * (4 * std::pow(func2(ratio / t, e), 2) - std::pow(e, 2 * func1(ratio / t + 0.5, e))) + ed;
+			result = (ed - st) * (4 * std::pow(func2(ratio / t, e), 2) - std::pow(e, 2 * func1(ratio / t + .5, e))) + ed;
 		else
 			result = ed;
 	}
@@ -109,7 +109,7 @@ void cve::Curve_Bounce::move_handle(const POINT& pt_graph)
 //---------------------------------------------------------------------
 void cve::Curve_Bounce::param_to_pt(POINT* pt_graph)
 {
-	pt_graph->x = (int)((coef_time * (coef_bounce + 1) * 0.5) * CVE_GRAPH_RESOLUTION);
+	pt_graph->x = (int)((coef_time * (coef_bounce + 1) * .5) * CVE_GRAPH_RESOLUTION);
 	pt_graph->y = (int)((1. - std::pow(coef_bounce, 2)) * CVE_GRAPH_RESOLUTION);
 	if (reverse) {
 		pt_graph->x = CVE_GRAPH_RESOLUTION - pt_graph->x;
@@ -147,7 +147,7 @@ double cve::Curve_Bounce::pt_to_param(const POINT& pt_graph, int idx_param)
 //		カーブを描画
 //---------------------------------------------------------------------
 void cve::Curve_Bounce::draw_curve(
-	aului::Direct2d_Paint_Object* paint_object,
+	Cve_Paint_Object* paint_object,
 	const RECT& rect_wnd,
 	int drawing_mode)
 {
@@ -213,23 +213,20 @@ void cve::Curve_Bounce::draw_curve(
 		param_to_pt(&pt_graph);
 
 		// 振動数・減衰を調整するハンドル
-		draw_handle(
-			paint_object,
+		paint_object->draw_handle(
 			to_client(aului::Point<float>(pt_graph)),
 			to_client(aului::Point<float>(pt_graph)),
 			drawing_mode, DRAW_HANDLE_ONLY
 		);
 
 		// 始点
-		draw_handle(
-			paint_object,
+		paint_object->draw_handle(
 			to_client(0.f, 0.f),
 			to_client(0.f, 0.f),
 			drawing_mode, DRAW_POINT_ONLY
 		);
 		// 終点
-		draw_handle(
-			paint_object,
+		paint_object->draw_handle(
 			to_client((float)CVE_GRAPH_RESOLUTION, (float)CVE_GRAPH_RESOLUTION),
 			to_client((float)CVE_GRAPH_RESOLUTION, (float)CVE_GRAPH_RESOLUTION),
 			drawing_mode, DRAW_POINT_ONLY
@@ -245,7 +242,7 @@ void cve::Curve_Bounce::draw_curve(
 int cve::Curve_Bounce::create_number()
 {
 	int result;
-	int x = (int)((coef_time * (coef_bounce + 1) * 0.5) * 1000);
+	int x = (int)((coef_time * (coef_bounce + 1) * .5) * 1000);
 	int y = (int)((1. - std::pow(coef_bounce, 2)) * 1000);
 	result = y + 1001 * x + 10211202;
 	if (reverse)
@@ -283,8 +280,8 @@ bool cve::Curve_Bounce::read_number(int number, double* e, double* t, bool* rev)
 
 	x = num / 1001;
 	y = num - x * 1001;
-	*e = std::sqrt(1. - y * 0.001);
-	*t = 2. * 0.001 * x / (*e + 1.);
+	*e = std::sqrt(1. - y * .001);
+	*t = 2. * .001 * x / (*e + 1.);
 
 	return true;
 }
