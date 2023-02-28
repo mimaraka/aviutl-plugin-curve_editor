@@ -541,17 +541,21 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		///////////////////////////////////////////
 	case WM_MOUSEWHEEL:
 	{
+		int scroll_amount = GET_Y_LPARAM(wparam);
+		if (g_config.reverse_wheel)
+			scroll_amount *= -1;
+
 		// Ctrlキーが押されているとき(横に移動)
 		if (::GetAsyncKeyState(VK_CONTROL) < 0 && GetAsyncKeyState(VK_SHIFT) >= 0)
-			g_view_info.origin.x += (float)(GET_Y_LPARAM(wparam) * GRAPH_WHEEL_COEF_POS);
+			g_view_info.origin.x += (float)(scroll_amount * GRAPH_WHEEL_COEF_POS);
 
 		// Shiftキーが押されているとき(縦に移動)
 		else if (::GetAsyncKeyState(VK_SHIFT) < 0 && GetAsyncKeyState(VK_CONTROL) >= 0)
-			g_view_info.origin.y += (float)(GET_Y_LPARAM(wparam) * GRAPH_WHEEL_COEF_POS);
+			g_view_info.origin.y += (float)(scroll_amount * GRAPH_WHEEL_COEF_POS);
 
 		// 縮尺の上限下限を設定
 		else {
-			double coef = std::pow(GRAPH_SCALE_BASE, GET_Y_LPARAM(wparam) * GRAPH_WHEEL_COEF_SCALE);
+			double coef = std::pow(GRAPH_SCALE_BASE, scroll_amount * GRAPH_WHEEL_COEF_SCALE);
 			double scale_after_x, scale_after_y;
 
 			if (std::max(g_view_info.scale.x, g_view_info.scale.y) > cve::Graph_View_Info::SCALE_MAX / coef) {
@@ -605,8 +609,6 @@ LRESULT CALLBACK wndproc_editor(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 		// 編集モードを変更
 		for (int i = 0; i < sizeof(edit_mode_menu_id) / sizeof(int); i++) {
 			if (wparam == edit_mode_menu_id[i]) {
-				g_config.edit_mode = (cve::Edit_Mode)i;
-				::InvalidateRect(hwnd, NULL, FALSE);
 				::SendMessage(g_window_menu.hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BEZIER + i, 0);
 				return 0;
 			}

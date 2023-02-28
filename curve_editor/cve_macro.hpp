@@ -43,7 +43,7 @@
 //		ÉRÉìÉgÉçÅ[Éã
 //---------------------------------------------------------------------
 #define CVE_CT_EDIT_MODE_BEZIER			0x0400
-#define CVE_CT_EDIT_MODE_MULTIBEZIER	0x0401
+#define CVE_CT_EDIT_MODE_BEZIER_MULTI	0x0401
 #define CVE_CT_EDIT_MODE_VALUE			0x0402
 #define CVE_CT_EDIT_MODE_ELASTIC		0x0403
 #define CVE_CT_EDIT_MODE_BOUNCE			0x0404
@@ -181,6 +181,7 @@
 #define CVE_INI_KEY_SHOW_TRACE				"show_trace"
 #define CVE_INI_KEY_SHOW_BEZIER_DERIV		"show_bezier_deriv"
 #define CVE_INI_KEY_SHOW_POPUP				"show_popup"
+#define CVE_INI_KEY_REVERSE_WHEEL			"reverse_wheel"
 #define CVE_INI_KEY_AUTO_COPY				"auto_copy"
 #define CVE_INI_KEY_AUTO_APPLY				"auto_apply"
 #define CVE_INI_KEY_LINEARIZE				"linearize"

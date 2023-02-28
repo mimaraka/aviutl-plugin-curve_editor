@@ -163,6 +163,11 @@ void ini_load_configs(FILTER* fp)
 		CVE_INI_KEY_SHOW_POPUP,
 		true
 	);
+	// ホイールを反転
+	g_config.reverse_wheel = fp->exfunc->ini_load_int(fp,
+		CVE_INI_KEY_REVERSE_WHEEL,
+		false
+	);
 	// 自動コピー
 	g_config.auto_copy = fp->exfunc->ini_load_int(fp,
 		CVE_INI_KEY_AUTO_COPY,
@@ -235,7 +240,7 @@ void ini_load_configs(FILTER* fp)
 
 
 //---------------------------------------------------------------------
-//		aviutl.iniから設定を書き込み
+//		aviutl.iniに設定を書き込み
 //---------------------------------------------------------------------
 void ini_write_configs(FILTER* fp)
 {

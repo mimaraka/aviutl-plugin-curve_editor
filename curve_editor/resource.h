@@ -37,6 +37,8 @@
 #define IDC_PREVIOUSCURVE               1009
 #define IDC_AUTOCOPY                    1010
 #define IDC_MAXIMUMUNDO                 1011
+#define IDC_AUTOCOPY2                   1011
+#define IDC_REVERSE_WHEEL               1011
 #define IDC_EDIT_ID                     1012
 #define IDC_NOTIFY_UPDATE               1016
 #define IDC_CURVE_COLOR                 1017
@@ -46,7 +48,6 @@
 #define IDC_RESET_CONFIGS               1021
 #define IDC_CHECK_UPDATE                1022
 #define IDC_REPORT_BUGS                 1023
-#define IDC_ABOUT_LISENCE               1024
 #define IDC_ABOUT_LICENSE               1024
 #define ID_MENU_ABOUT                   40011
 #define ID_MENU_CONFIG                  40012

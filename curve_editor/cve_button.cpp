@@ -607,6 +607,30 @@ LRESULT cve::Button_ID::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
 		::InvalidateRect(hw, NULL, FALSE);
 
 		return 0;
+
+	case WM_MOUSEWHEEL:
+		if (GET_Y_LPARAM(wparam) > 0) {
+			::SendMessage(hwnd_parent, WM_COMMAND, CVE_CM_ID_NEXT, 0);
+		}
+		else if (GET_Y_LPARAM(wparam) < 0) {
+			::SendMessage(hwnd_parent, WM_COMMAND, CVE_CM_ID_BACK, 0);
+		}
+		return 0;
+	}
+	return Button::wndproc(hw, msg, wparam, lparam);
+}
+
+
+
+//---------------------------------------------------------------------
+//		ウィンドウプロシージャ(モード変更)
+//---------------------------------------------------------------------
+LRESULT cve::Button_Combobox::wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	switch (msg) {
+	case WM_MOUSEWHEEL:
+		::SendMessage(hwnd_parent, WM_COMMAND, id, GET_Y_LPARAM(wparam));
+		break;
 	}
 	return Button::wndproc(hw, msg, wparam, lparam);
 }

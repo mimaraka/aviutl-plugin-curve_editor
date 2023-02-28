@@ -50,29 +50,30 @@ END
 // Dialog
 //
 
-IDD_CONFIG DIALOGEX 0, 0, 349, 221
+IDD_CONFIG DIALOGEX 0, 0, 398, 222
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "設定"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,239,200,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,292,200,50,14
-    COMBOBOX        IDC_THEME,268,23,74,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,288,201,50,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,341,201,50,14
+    COMBOBOX        IDC_THEME,317,23,74,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "テーマ",IDC_STATIC,15,25,20,8
-    GROUPBOX        "全般",IDC_STATIC,7,7,335,99
+    GROUPBOX        "全般",IDC_STATIC,7,7,384,99
     CONTROL         "ポップアップを表示",IDC_ALERT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,57,72,10
-    GROUPBOX        "編集",IDC_STATIC,7,113,335,78
+    GROUPBOX        "編集",IDC_STATIC,7,113,384,78
     CONTROL         "1ステップ前の編集状態を表示",IDC_PREVIOUSCURVE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,72,111,10
-    CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモード)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,125,161,10
-    LTEXT           "カーブの色",IDC_STATIC,15,41,34,8
+    CONTROL         "値を自動でコピー(ベジェ・振動・バウンスモード)",IDC_AUTOCOPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,139,161,10
+    LTEXT           "カーブの色",IDC_STATIC,15,41,53,8
     CONTROL         "アップデートを通知",IDC_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,86,73,10
-    PUSHBUTTON      "変更",IDC_CURVE_COLOR,292,39,50,14
+    PUSHBUTTON      "変更",IDC_CURVE_COLOR,341,39,50,14
     CONTROL         "ハンドルを動かしたときにカーブを自動で反映(ベジェ(複数)モード)",IDC_AUTO_APPLY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,139,218,10
-    LTEXT           "(AviUtlで重い編集をしている時などは、この設定をオフにするとCurve Editorの動作が軽くなります。)",IDC_STATIC,25,150,305,8
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,153,232,10
+    LTEXT           "(AviUtlで重い編集をしている時などは、この設定をオフにするとCurve Editorの動作が軽くなります。)",IDC_STATIC,25,164,353,8
     CONTROL         "ハンドルをダブルクリックしたときにカーブを直線にする(ベジェ(複数)モード)",IDC_LINEARIZE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,163,238,10
-    PUSHBUTTON      "初期値に戻す",IDC_RESET_CONFIGS,7,200,60,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,177,296,10
+    PUSHBUTTON      "初期値に戻す",IDC_RESET_CONFIGS,7,201,60,14
+    CONTROL         "マウスホイールを反転",IDC_REVERSE_WHEEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,125,161,10
 END
 
 IDD_SAVE DIALOGEX 0, 0, 228, 61
@@ -83,7 +84,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,119,40,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,171,40,50,14
     EDITTEXT        IDC_EDIT_SAVE,7,20,214,14,ES_AUTOHSCROLL
-    LTEXT           "プリセット名を入力してください。(最大127文字)",IDC_STATIC,7,7,147,8
+    LTEXT           "プリセット名を入力してください。(最大127文字)",IDC_STATIC,7,7,214,8
 END
 
 IDD_PARAM DIALOGEX 0, 0, 223, 65
@@ -105,7 +106,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,71,42,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,124,42,50,14
     EDITTEXT        IDC_EDIT_READ,7,21,167,14,ES_AUTOHSCROLL
-    LTEXT           "カーブの数値を入力してください。",IDC_STATIC,7,7,104,8
+    LTEXT           "カーブの数値を入力してください。",IDC_STATIC,7,7,167,8
 END
 
 IDD_ABOUT DIALOGEX 0, 0, 219, 159
@@ -127,7 +128,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,71,42,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,124,42,50,14
     EDITTEXT        IDC_EDIT_ID,7,21,167,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "移動したいID(1~1024)を入力してください。",IDC_STATIC,7,7,135,8
+    LTEXT           "移動したいID(1~1024)を入力してください。",IDC_STATIC,7,7,167,8
 END
 
 IDD_CHECK_UPDATE DIALOGEX 0, 0, 125, 35
@@ -135,7 +136,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Curve Editor"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "アップデートをチェックしています...",IDC_STATIC,7,7,102,8
+    LTEXT           "アップデートをチェックしています...",IDC_STATIC,7,7,111,8
 END
 
 
@@ -150,9 +151,9 @@ BEGIN
     IDD_CONFIG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 342
+        RIGHTMARGIN, 391
         TOPMARGIN, 7
-        BOTTOMMARGIN, 214
+        BOTTOMMARGIN, 215
     END
 
     IDD_SAVE, DIALOG

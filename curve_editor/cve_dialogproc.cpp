@@ -45,6 +45,13 @@ void load_configs(HWND hwnd, HWND* combo_theme)
 			BST_CHECKED, 0
 		);
 
+	if (g_config.reverse_wheel)
+		::SendMessage(
+			::GetDlgItem(hwnd, IDC_REVERSE_WHEEL),
+			BM_SETCHECK,
+			BST_CHECKED, 0
+		);
+
 	if (g_config.auto_apply)
 		::SendMessage(
 			::GetDlgItem(hwnd, IDC_AUTO_APPLY),
@@ -83,6 +90,10 @@ void write_configs(HWND hwnd, HWND combo_theme)
 	);
 	g_config.notify_update = ::SendMessage(
 		::GetDlgItem(hwnd, IDC_NOTIFY_UPDATE),
+		BM_GETCHECK, 0, 0
+	);
+	g_config.reverse_wheel = ::SendMessage(
+		::GetDlgItem(hwnd, IDC_REVERSE_WHEEL),
 		BM_GETCHECK, 0, 0
 	);
 	g_config.auto_apply = ::SendMessage(
@@ -128,6 +139,11 @@ void write_configs(HWND hwnd, HWND combo_theme)
 		CVE_INI_KEY_NOTIFY_UPDATE,
 		g_config.notify_update
 	);
+	// ホイールを反転
+	g_fp->exfunc->ini_save_int(g_fp,
+		CVE_INI_KEY_REVERSE_WHEEL,
+		g_config.reverse_wheel
+	);
 	// 自動で適用
 	g_fp->exfunc->ini_save_int(g_fp,
 		CVE_INI_KEY_AUTO_APPLY,
@@ -146,8 +162,8 @@ BOOL CALLBACK dialogproc_config(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 	static COLORREF cust_colors[16];
 
 	RECT rect_color_curve = {
-		403, 65,
-		436, 85
+		477, 65,
+		510, 85
 	};
 
 	switch (msg) {

@@ -110,6 +110,7 @@ namespace cve {
 				show_handle,
 				show_bezier_deriv,
 				align_handle,
+				reverse_wheel,
 				linearize,
 				hooked_popup,
 				hooked_dialog,
@@ -129,6 +130,7 @@ namespace cve {
 		{
 			show_popup = true;
 			trace = true;
+			reverse_wheel = false;
 			auto_copy = false;
 			auto_apply = true;
 			linearize = false;

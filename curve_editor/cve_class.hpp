@@ -71,16 +71,16 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Cve_Paint_Object : public aului::Direct2d_Paint_Object {
 	private:
-		static constexpr float SEPARATOR_LINE_WIDTH = 3.6f;
-		static constexpr int SEPARATOR_LINE_LENGTH = 32;
-		static constexpr float HANDLE_THICKNESS = 2.f;
-		static constexpr float HANDLE_THICKNESS_PRESET = 0.8f;
-		static constexpr float HANDLE_SIZE = 5.f;
-		static constexpr float HANDLE_SIZE_PRESET = 0.7f;
-		static constexpr float HANDLE_BORDER_THICKNESS = 2.2f;
-		static constexpr float HANDLE_BORDER_THICKNESS_PRESET = 0.5f;
-		static constexpr float POINT_SIZE = 4.4f;
-		static constexpr float POINT_SIZE_PRESET = 2.f;
+		static constexpr float SEPARATOR_LINE_WIDTH				= 3.6f;
+		static constexpr int SEPARATOR_LINE_LENGTH				= 32;
+		static constexpr float HANDLE_THICKNESS					= 2.f;
+		static constexpr float HANDLE_THICKNESS_PRESET			= 0.8f;
+		static constexpr float HANDLE_SIZE						= 5.f;
+		static constexpr float HANDLE_SIZE_PRESET				= 0.7f;
+		static constexpr float HANDLE_BORDER_THICKNESS			= 2.2f;
+		static constexpr float HANDLE_BORDER_THICKNESS_PRESET	= 0.5f;
+		static constexpr float POINT_SIZE						= 4.4f;
+		static constexpr float POINT_SIZE_PRESET				= 2.f;
 
 		void draw_grid();
 
@@ -347,7 +347,7 @@ namespace cve {
 		void				draw_content(const aului::Color col_bg, RECT* rect_content, LPCTSTR content, bool change_color);
 		void				draw_edge();
 		void				set_font(int font_height, LPTSTR font_name);
-		virtual LRESULT		wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		virtual LRESULT		wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -359,7 +359,7 @@ namespace cve {
 	private:
 		bool				is_selected;
 
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		LRESULT				wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	public:
 		void				set_status(BOOL bl);
@@ -372,7 +372,7 @@ namespace cve {
 	//---------------------------------------------------------------------
 	class Button_Param : public Button {
 	private:
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		LRESULT				wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -387,7 +387,17 @@ namespace cve {
 		bool				is_scrolling = false;
 		int					coef_move;
 
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		LRESULT				wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam);
+	};
+
+
+
+	//---------------------------------------------------------------------
+	//		ボタン(モード選択)
+	//---------------------------------------------------------------------
+	class Button_Combobox : public Button {
+	private:
+		LRESULT				wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 
@@ -399,7 +409,7 @@ namespace cve {
 	private:
 		bool is_expanded;
 
-		LRESULT				wndproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+		LRESULT				wndproc(HWND hw, UINT msg, WPARAM wparam, LPARAM lparam);
 	};
 
 

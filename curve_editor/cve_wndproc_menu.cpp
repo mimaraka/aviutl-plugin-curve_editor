@@ -24,12 +24,12 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 						save,
 						clear,
 						fit,
-						mode,
 						id_back,
 						id_next;
 
 	static cve::Button_Param	param;
 	static cve::Button_ID		id_id;
+	static cve::Button_Combobox mode;
 
 	aului::Window_Rectangle		rect_lower_buttons,
 								rect_id_buttons;
@@ -331,26 +331,78 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			// 編集モード選択ボタン
 		case CVE_CT_EDIT_MODE:
 		{
-			minfo.fMask = MIIM_STATE;
+			if (lparam == 0) {
+				minfo.fMask = MIIM_STATE;
 
-			const int edit_mode_menu_id[] = {
-				ID_MODE_BEZIER,
-				ID_MODE_MULTIBEZIER,
-				ID_MODE_VALUE,
-				ID_MODE_ELASTIC,
-				ID_MODE_BOUNCE,
-			};
+				const int edit_mode_menu_id[] = {
+					ID_MODE_BEZIER,
+					ID_MODE_MULTIBEZIER,
+					ID_MODE_VALUE,
+					ID_MODE_ELASTIC,
+					ID_MODE_BOUNCE,
+				};
 
-			// モードのチェック
-			for (int i = 0; i < sizeof(edit_mode_menu_id) / sizeof(int); i++) {
-				minfo.fState = g_config.edit_mode == i ? MFS_CHECKED : MFS_UNCHECKED;
-				SetMenuItemInfo(menu, edit_mode_menu_id[i], FALSE, &minfo);
+				// モードのチェック
+				for (int i = 0; i < sizeof(edit_mode_menu_id) / sizeof(int); i++) {
+					minfo.fState = g_config.edit_mode == i ? MFS_CHECKED : MFS_UNCHECKED;
+					SetMenuItemInfo(menu, edit_mode_menu_id[i], FALSE, &minfo);
+				}
+
+				pt_client = { 0, 0 };
+
+				::ClientToScreen(mode.hwnd, &pt_client);
+				::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN, pt_client.x, pt_client.y, 0, hwnd, NULL);
 			}
+			else {
+				if (lparam > 0) {
+					// Bezier_Valueモードが実装されたら変える
+					switch (g_config.edit_mode) {
+					case cve::Mode_Bezier:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BOUNCE, 0);
+						break;
 
-			pt_client = { 0, 0 };
+					case cve::Mode_Bezier_Multi:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BEZIER, 0);
+						break;
 
-			::ClientToScreen(mode.hwnd, &pt_client);
-			::TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN, pt_client.x, pt_client.y, 0, hwnd, NULL);
+					case cve::Mode_Bezier_Value:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BEZIER_MULTI, 0);
+						break;
+
+					case cve::Mode_Elastic:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BEZIER_MULTI, 0);
+						break;
+
+					case cve::Mode_Bounce:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_ELASTIC, 0);
+						break;
+					}
+				}
+				else {
+					// Bezier_Valueモードが実装されたら変える
+					switch (g_config.edit_mode) {
+					case cve::Mode_Bezier:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BEZIER_MULTI, 0);
+						break;
+
+					case cve::Mode_Bezier_Multi:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_ELASTIC, 0);
+						break;
+
+					case cve::Mode_Bezier_Value:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_ELASTIC, 0);
+						break;
+
+					case cve::Mode_Elastic:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BOUNCE, 0);
+						break;
+
+					case cve::Mode_Bounce:
+						::SendMessage(hwnd, WM_COMMAND, CVE_CT_EDIT_MODE_BEZIER, 0);
+						break;
+					}
+				}
+			}
 
 			return 0;
 		}
@@ -358,93 +410,101 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		// ベジェモード
 		case CVE_CT_EDIT_MODE_BEZIER:
 		case ID_MODE_BEZIER:
-			g_config.edit_mode = cve::Mode_Bezier;
-			::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
-			param.show();
-			id_id.hide();
-			id_back.hide();
-			id_next.hide();
-			read.set_status(NULL);
-			save.set_status(NULL);
-			param.redraw();
-			g_window_editor.redraw();
+			if (g_config.edit_mode != cve::Mode_Bezier) {
+				g_config.edit_mode = cve::Mode_Bezier;
+				::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
+				param.show();
+				id_id.hide();
+				id_back.hide();
+				id_next.hide();
+				read.set_status(NULL);
+				save.set_status(NULL);
+				param.redraw();
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
+			}
 
 			return 0;
 
 		// ベジェ(複数)モード
-		case CVE_CT_EDIT_MODE_MULTIBEZIER:
+		case CVE_CT_EDIT_MODE_BEZIER_MULTI:
 		case ID_MODE_MULTIBEZIER:
-			g_config.edit_mode = cve::Mode_Bezier_Multi;
-			::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
-			param.hide();
-			id_id.show();
-			id_back.show();
-			id_next.show();
-			read.set_status(NULL);
-			save.set_status(NULL);
-			g_window_editor.redraw();
+			if (g_config.edit_mode != cve::Mode_Bezier_Multi) {
+				g_config.edit_mode = cve::Mode_Bezier_Multi;
+				::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
+				param.hide();
+				id_id.show();
+				id_back.show();
+				id_next.show();
+				read.set_status(NULL);
+				save.set_status(NULL);
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
+			}
 
 			return 0;
 
 		// 値指定モード
 		case CVE_CT_EDIT_MODE_VALUE:
 		case ID_MODE_VALUE:
-			g_config.edit_mode = cve::Mode_Bezier_Value;
-			::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
-			param.hide();
-			id_id.show();
-			id_back.show();
-			id_next.show();
-			read.set_status(cve::Button::FLAG_DISABLED);
-			save.set_status(cve::Button::FLAG_DISABLED);
-			g_window_editor.redraw();
+			if (g_config.edit_mode != cve::Mode_Bezier_Value) {
+				g_config.edit_mode = cve::Mode_Bezier_Value;
+				::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
+				param.hide();
+				id_id.show();
+				id_back.show();
+				id_next.show();
+				read.set_status(cve::Button::FLAG_DISABLED);
+				save.set_status(cve::Button::FLAG_DISABLED);
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
+			}
 
 			return 0;
 
 		// 振動モード
 		case CVE_CT_EDIT_MODE_ELASTIC:
 		case ID_MODE_ELASTIC:
-			g_config.edit_mode = cve::Mode_Elastic;
-			::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
-			param.show();
-			id_id.hide();
-			id_back.hide();
-			id_next.hide();
-			read.set_status(NULL);
-			save.set_status(NULL);
-			param.redraw();
-			g_window_editor.redraw();
+			if (g_config.edit_mode != cve::Mode_Elastic) {
+				g_config.edit_mode = cve::Mode_Elastic;
+				::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
+				param.show();
+				id_id.hide();
+				id_back.hide();
+				id_next.hide();
+				read.set_status(NULL);
+				save.set_status(NULL);
+				param.redraw();
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
+			}
 
 			return 0;
 
 		// バウンスモード
 		case CVE_CT_EDIT_MODE_BOUNCE:
 		case ID_MODE_BOUNCE:
-			g_config.edit_mode = cve::Mode_Bounce;
-			::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
-			param.show();
-			id_id.hide();
-			id_back.hide();
-			id_next.hide();
-			read.set_status(NULL);
-			save.set_status(NULL);
-			param.redraw();
-			g_window_editor.redraw();
+			if (g_config.edit_mode != cve::Mode_Bounce) {
+				g_config.edit_mode = cve::Mode_Bounce;
+				::SendMessage(mode.hwnd, WM_COMMAND, CVE_CM_CHANGE_LABEL, (LPARAM)str_mode[g_config.edit_mode]);
+				param.show();
+				id_id.hide();
+				id_back.hide();
+				id_next.hide();
+				read.set_status(NULL);
+				save.set_status(NULL);
+				param.redraw();
+				::SendMessage(g_window_editor.hwnd, WM_COMMAND, CVE_CM_FIT, 0);
+			}
 
 			return 0;
 
 			// 前のIDのカーブに移動
 		case CVE_CM_ID_BACK:
 			if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
-				g_config.current_id.multi--;
-				g_config.current_id.multi = std::clamp(g_config.current_id.multi, 1, CVE_CURVE_MAX);
+				g_config.current_id.multi = std::clamp(g_config.current_id.multi - 1, 1, CVE_CURVE_MAX);
 				g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 				id_id.redraw();
 				g_window_editor.redraw();
 			}
 			else if (g_config.edit_mode == cve::Mode_Bezier_Value) {
-				g_config.current_id.value--;
-				g_config.current_id.value = std::clamp(g_config.current_id.value, 1, CVE_CURVE_MAX);
+				g_config.current_id.value = std::clamp(g_config.current_id.value - 1, 1, CVE_CURVE_MAX);
 				g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 			}
 			id_id.redraw();
@@ -454,15 +514,13 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			// 次のIDのカーブに移動
 		case CVE_CM_ID_NEXT:
 			if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
-				g_config.current_id.multi++;
-				g_config.current_id.multi = std::clamp(g_config.current_id.multi, 1, CVE_CURVE_MAX);
+				g_config.current_id.multi = std::clamp(g_config.current_id.multi + 1, 1, CVE_CURVE_MAX);
 				g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 				id_id.redraw();
 				g_window_editor.redraw();
 			}
 			else if (g_config.edit_mode == cve::Mode_Bezier_Value) {
-				g_config.current_id.value++;
-				g_config.current_id.value = std::clamp(g_config.current_id.value, 1, CVE_CURVE_MAX);
+				g_config.current_id.value = std::clamp(g_config.current_id.value + 1, 1, CVE_CURVE_MAX);
 				g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 			}
 			id_id.redraw();
@@ -475,7 +533,7 @@ LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				g_config.current_id.multi = std::clamp((int)lparam, 1, CVE_CURVE_MAX);
 				g_curve_bezier_multi_trace = g_curve_bezier_multi[g_config.current_id.multi - 1];
 			}
-			else if (g_config.edit_mode == cve::Mode_Bezier_Multi) {
+			else if (g_config.edit_mode == cve::Mode_Bezier_Value) {
 				g_config.current_id.value = std::clamp((int)lparam, 1, CVE_CURVE_MAX);
 				g_curve_bezier_value_trace = g_curve_bezier_value[g_config.current_id.value - 1];
 			}
