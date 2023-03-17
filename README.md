@@ -104,7 +104,11 @@ AviUtl 1.00, 1.10
 
 ※[patch.aul](https://github.com/ePi5131/patch.aul)、
 [イージング設定時短プラグイン](https://github.com/kumrnm/aviutl-easing-quick-setup)、
-[イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)との共存を確認。  
+[イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)
+との共存を確認。  
+
+## Q&A
+[トラブルシューティング](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0)を参照してください。
 
 ## バグ報告
 バグ報告は[このリポジトリのIssues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues)または[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(匿名回答可)からお願いします。  
