@@ -65,30 +65,8 @@ AviUtlを起動後、メインウィンドウの「表示」メニューから�
 また、詳細な使用方法については、[このリポジトリのWiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。  
 
 ## スクリプトから使用する(スクリプト開発者向け)
-以下のようにして`curve_editor`を読み込み、`getcurve()`関数を使用することでスクリプトからカーブの値を取得することができます。  
-
-```lua
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
-```
-```
-curve_editor.getcurve(モード番号, パラメータ値, 進捗(0~1), 開始値, 終了値)
-```
-
-モード番号については以下のようになっています：  
-| 番号 | モード |
-| :---: | :---: |
-| 0 | ベジェ |
-| 1 | ベジェ(複数) |
-| 2 | (未実装) |
-| 3 | 振動 |
-| 4 | バウンス |
-
-パラメータ値については、数値を指定するものであれば「カーブの数値をコピー」からコピーできる値を、IDを指定するものであればIDを入力します。
+スクリプト制御や、`.anm`や`.obj`、`.tra`などのスクリプトファイル上で、Curve Editorのカーブを呼び出して使用することができます。  
+詳しくはWikiの[スクリプトからの使用](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%8B%E3%82%89%E3%81%AE%E4%BD%BF%E7%94%A8)を参照してください。
 
 ## 動作環境
 | OS | AviUtl | 拡張編集 | 
@@ -108,7 +86,7 @@ AviUtl 1.00, 1.10
 との共存を確認。  
 
 ## Q&A
-[トラブルシューティング](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0)を参照してください。
+Wikiの[トラブルシューティング](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0)を参照してください。
 
 ## バグ報告
 バグ報告は[このリポジトリのIssues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues)または[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(匿名回答可)からお願いします。  
