@@ -97,6 +97,10 @@ Wikiの[トラブルシューティング](https://github.com/mimaraka/aviutl-pl
 ## バグ報告
 バグ報告は[このリポジトリのIssues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues)または[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(匿名回答可)からお願いします。  
 
+## For English Users
+English Version (translated by [inmare](https://github.com/inmare))  
+https://github.com/inmare/au-curve_editor_en
+
 ## その他
 当プラグイン・スクリプトは以下のプラグイン・スクリプトを参考にして作成されました：  
 - [Flow](https://aescripts.com/flow/)
