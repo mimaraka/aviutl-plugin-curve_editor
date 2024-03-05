@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{8bf3c00c-170b-4992-981a-f53f69292691}</ProjectGuid>
+    <ProjectGuid>{3707b818-7019-4032-9e23-7f86515907cf}</ProjectGuid>
     <RootNamespace>curveeditor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName />
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -60,35 +59,27 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="BuildSettings.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
     <TargetExt>.auf</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
     <TargetExt>.auf</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <TargetExt>.auf</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <TargetExt>.auf</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -97,25 +88,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\boost_1_69_0\include\boost-1_83\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
-copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
+      <Command>copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl110\plugins"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,28 +111,19 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\boost_1_69_0\include\boost-1_83\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
-copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -155,23 +131,16 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\boost_1_69_0\include\boost-1_83\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
-copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -181,7 +150,9 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include;C:\aviutl_libs\aviutl_plugin_sdk;C:\aviutl_libs</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\boost_1_69_0\include\boost-1_83\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -189,122 +160,173 @@ copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plug
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;d2d1.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy $(TargetPath) "$(AVIUTL_DIR)1.10-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)1.00-0.92\Plugins"
-copy $(TargetPath) "$(AVIUTL_DIR)aviutl110\Plugins"
-copy $(TargetPath) "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)1.10-0.92\script"
-copy "$(SolutionDir)@Curve Editor.tra" "$(AVIUTL_DIR)aviutl110\script"
-copy "$(SolutionDir)@Curve Editor.tra" "C:\Users\njotn\UserDirectory\AviUtl_Plugins&amp;Scripts\Curve Editor"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cve_bitmap_buffer.cpp" />
-    <ClCompile Include="cve_button.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_curve.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="cve_curve_bounce.cpp" />
-    <ClCompile Include="cve_curve_elastic.cpp" />
-    <ClCompile Include="cve_curve_bezier_multi.cpp" />
-    <ClCompile Include="cve_curve_bezier.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="cve_curve_bezier_value.cpp" />
-    <ClCompile Include="cve_d2d_paint.cpp" />
-    <ClCompile Include="cve_dialogproc.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="cve_editbox.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_func.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_func_filter.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_hook.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_lua.cpp" />
-    <ClCompile Include="cve_main.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_obj_dialog_buttons.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_wndproc_editor.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="cve_wndproc_menu.cpp" />
-    <ClCompile Include="cve_wndproc_main.cpp" />
-    <ClCompile Include="cve_wndproc_library.cpp" />
+    <ClInclude Include="control_point.hpp" />
+    <ClInclude Include="curve_bezier.hpp" />
+    <ClInclude Include="curve_bounce.hpp" />
+    <ClInclude Include="curve_editor_script.hpp" />
+    <ClInclude Include="curve_editor_graph.hpp" />
+    <ClInclude Include="curve_elastic.hpp" />
+    <ClInclude Include="curve_graph_numeric.hpp" />
+    <ClInclude Include="curve_script.hpp" />
+    <ClInclude Include="curve_linear.hpp" />
+    <ClInclude Include="curve_normal.hpp" />
+    <ClInclude Include="curve_value.hpp" />
+    <ClInclude Include="dialog_config_contents.hpp" />
+    <ClInclude Include="dlgproc_bezier_parameter.hpp" />
+    <ClInclude Include="dlgproc_config.hpp" />
+    <ClInclude Include="dlgproc_config_appearance.hpp" />
+    <ClInclude Include="dlgproc_config_behavior.hpp" />
+    <ClInclude Include="dlgproc_config_editing.hpp" />
+    <ClInclude Include="dlgproc_config_general.hpp" />
+    <ClInclude Include="dlgproc_curve_code.hpp" />
+    <ClInclude Include="dlgproc_warning_autosaver.hpp" />
+    <ClInclude Include="drag_and_drop.hpp" />
+    <ClInclude Include="enum.hpp" />
+    <ClInclude Include="config.hpp" />
+    <ClInclude Include="constants.hpp" />
+    <ClInclude Include="curve.hpp" />
+    <ClInclude Include="curve_data.hpp" />
+    <ClInclude Include="curve_editor.hpp" />
+    <ClInclude Include="exedit_hook.hpp" />
+    <ClInclude Include="func_filter.hpp" />
+    <ClInclude Include="global.hpp" />
+    <ClInclude Include="curve_graph.hpp" />
+    <ClInclude Include="handle_bezier.hpp" />
+    <ClInclude Include="handle_elastic_freq_decay.hpp" />
+    <ClInclude Include="handle_elastic_amp.hpp" />
+    <ClInclude Include="menu.hpp" />
+    <ClInclude Include="menu_curve.hpp" />
+    <ClInclude Include="menu_edit_mode.hpp" />
+    <ClInclude Include="menu_graph.hpp" />
+    <ClInclude Include="menu_more.hpp" />
+    <ClInclude Include="trackbar_button.hpp" />
+    <ClInclude Include="preset.hpp" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="curve_step.hpp" />
+    <ClInclude Include="string_table.hpp" />
+    <ClInclude Include="theme.hpp" />
+    <ClInclude Include="util.hpp" />
+    <ClInclude Include="version.hpp" />
+    <ClInclude Include="view.hpp" />
+    <ClInclude Include="view_graph.hpp" />
+    <ClInclude Include="view_preset.hpp" />
+    <ClInclude Include="wndproc_editor.hpp" />
+    <ClInclude Include="wndproc_grapheditor.hpp" />
+    <ClInclude Include="wndproc_library.hpp" />
+    <ClInclude Include="wndproc_main.hpp" />
+    <ClInclude Include="wndproc_menu.hpp" />
+    <ClInclude Include="wndproc_texteditor.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cve_class.hpp" />
-    <ClInclude Include="cve_extern.hpp" />
-    <ClInclude Include="cve_header.hpp" />
-    <ClInclude Include="cve_macro.hpp" />
-    <ClInclude Include="cve_preset.hpp" />
-    <ClInclude Include="cve_struct.hpp" />
-    <ClInclude Include="cve_framework.hpp" />
-    <ClInclude Include="resource.h" />
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="control_point.cpp" />
+    <ClCompile Include="curve.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="curve_bezier.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="curve_editor_graph.cpp" />
+    <ClCompile Include="curve_graph.cpp" />
+    <ClCompile Include="dialog_config_contents.cpp" />
+    <ClCompile Include="dlgproc_config_appearance.cpp" />
+    <ClCompile Include="dlgproc_config_behavior.cpp" />
+    <ClCompile Include="dlgproc_config_editing.cpp" />
+    <ClCompile Include="dlgproc_config_general.cpp" />
+    <ClCompile Include="dlgproc_curve_code.cpp" />
+    <ClCompile Include="drag_and_drop.cpp" />
+    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="menu_curve.cpp" />
+    <ClCompile Include="menu_edit_mode.cpp" />
+    <ClCompile Include="menu_graph.cpp" />
+    <ClCompile Include="menu_more.cpp" />
+    <ClCompile Include="trackbar_button.cpp" />
+    <ClCompile Include="util.cpp" />
+    <ClCompile Include="curve_linear.cpp" />
+    <ClCompile Include="curve_normal.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="curve_step.cpp" />
+    <ClCompile Include="curve_value.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="curve_bounce.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="curve_editor.cpp" />
+    <ClCompile Include="curve_elastic.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="curve_script.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="dlgproc_bezier_parameter.cpp" />
+    <ClCompile Include="dlgproc_config.cpp" />
+    <ClCompile Include="dlgproc_warning_autosaver.cpp" />
+    <ClCompile Include="filter_export.cpp" />
+    <ClCompile Include="exedit_hook.cpp" />
+    <ClCompile Include="func_filter.cpp" />
+    <ClCompile Include="func_lua.cpp" />
+    <ClCompile Include="handle_bezier.cpp" />
+    <ClCompile Include="handle_bounce.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClInclude Include="handle_bounce.hpp" />
+    <ClCompile Include="handle_elastic_amp.cpp" />
+    <ClCompile Include="handle_elastic_freq_decay.cpp" />
+    <ClCompile Include="preset.cpp" />
+    <ClCompile Include="string_table.cpp" />
+    <ClCompile Include="version.cpp" />
+    <ClCompile Include="view_graph.cpp" />
+    <ClCompile Include="view_preset.cpp" />
+    <ClCompile Include="wndproc_editor.cpp" />
+    <ClCompile Include="wndproc_grapheditor.cpp" />
+    <ClCompile Include="wndproc_library.cpp" />
+    <ClCompile Include="wndproc_main.cpp" />
+    <ClCompile Include="wndproc_menu.cpp" />
+    <ClCompile Include="wndproc_texteditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="curve_editor.def" />
-    <None Include="res\cursor\drag.cur" />
+    <None Include="resources\cursor\drag.cur" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\icon\dark\back.ico" />
-    <Image Include="res\icon\dark\clear.ico" />
-    <Image Include="res\icon\dark\copy.ico" />
-    <Image Include="res\icon\dark\fit.ico" />
-    <Image Include="res\icon\dark\next.ico" />
-    <Image Include="res\icon\dark\read.ico" />
-    <Image Include="res\icon\dark\save.ico" />
-    <Image Include="res\icon\light\back.ico" />
-    <Image Include="res\icon\light\clear.ico" />
-    <Image Include="res\icon\light\copy.ico" />
-    <Image Include="res\icon\light\fit.ico" />
-    <Image Include="res\icon\light\next.ico" />
-    <Image Include="res\icon\light\read.ico" />
-    <Image Include="res\icon\light\save.ico" />
+    <Image Include="resources\icon\dark\back.png" />
+    <Image Include="resources\icon\dark\clear.png" />
+    <Image Include="resources\icon\dark\copy.png" />
+    <Image Include="resources\icon\dark\fit.png" />
+    <Image Include="resources\icon\dark\more.png" />
+    <Image Include="resources\icon\dark\next.png" />
+    <Image Include="resources\icon\dark\read.png" />
+    <Image Include="resources\icon\dark\save.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

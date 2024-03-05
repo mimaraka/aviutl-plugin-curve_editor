@@ -7,107 +7,107 @@
 
 ![graph2 7](https://user-images.githubusercontent.com/106879397/215339739-e6b130bf-41a5-421a-8f8a-7dc2b12e647d.png)  
 
-様々なイージングをウィンドウ上で編集できるAviUtlプラグイン&スクリプトです。  
+�l�X�ȃC�[�W���O���E�B���h�E��ŕҏW�ł���AviUtl�v���O�C��&�X�N���v�g�ł��B  
 
-## ダウンロード
-下のリンクから最新バージョンのzipファイル(`curve_editor-v*.zip`)をダウンロードしてください。  
-[**ダウンロード**](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)
+## �_�E�����[�h
+���̃����N����ŐV�o�[�W������zip�t�@�C��(`curve_editor-v*.zip`)���_�E�����[�h���Ă��������B  
+[**�_�E�����[�h**](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)
 
-## インストール
-ダウンロードした`curve_editor-v*.zip`を解凍し、フォルダ内にある`curve_editor.auf`をAviUtlのディレクトリ直下もしくは`plugins`フォルダ内に入れ、
-`@Curve Editor.tra`を`script`フォルダまたはその下のフォルダに入れてください。  
-[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)をインストールしていない場合は、こちらもインストールしてください。  
+## �C���X�g�[��
+�_�E�����[�h����`curve_editor-v*.zip`���𓀂��A�t�H���_���ɂ���`curve_editor.auf`��AviUtl�̃f�B���N�g��������������`plugins`�t�H���_���ɓ���A
+`@Curve Editor.tra`��`script`�t�H���_�܂��͂��̉��̃t�H���_�ɓ���Ă��������B  
+[Visual C++ 2015/2017/2019/2022 �ĔЕz�\�p�b�P�[�W (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)���C���X�g�[�����Ă��Ȃ��ꍇ�́A��������C���X�g�[�����Ă��������B  
 
 ![image](https://user-images.githubusercontent.com/106879397/212220660-598f0b11-a317-42c7-99cb-0795f56af998.png)
 
-## 使用方法
-AviUtlを起動後、メインウィンドウの「表示」メニューから「Curve Editorの表示」をクリックすると、Curve Editorのウィンドウが表示されます。
+## �g�p���@
+AviUtl���N����A���C���E�B���h�E�́u�\���v���j���[����uCurve Editor�̕\���v���N���b�N����ƁACurve Editor�̃E�B���h�E���\������܂��B
 
-本プラグインでは、以下で紹介する「**ベジェ**」「**ベジェ(複数)**」「**振動**」「**バウンス**」の4つの編集モードでカーブを編集することができます。  
-ウィンドウ左上のモード選択ボタンまたは右クリックメニューの「編集モード」から4つのモードを切り替えることができます。
+�{�v���O�C���ł́A�ȉ��ŏЉ��u**�x�W�F**�v�u**�x�W�F(����)**�v�u**�U��**�v�u**�o�E���X**�v��4�̕ҏW���[�h�ŃJ�[�u��ҏW���邱�Ƃ��ł��܂��B  
+�E�B���h�E����̃��[�h�I���{�^���܂��͉E�N���b�N���j���[�́u�ҏW���[�h�v����4�̃��[�h��؂�ւ��邱�Ƃ��ł��܂��B
 
-- #### ベジェ
-    ベジェ曲線のカーブを1~10桁の整数で識別します。値とカーブがそれぞれ対応しています。
+- #### �x�W�F
+    �x�W�F�Ȑ��̃J�[�u��1~10���̐����Ŏ��ʂ��܂��B�l�ƃJ�[�u�����ꂼ��Ή����Ă��܂��B
 
-- #### ベジェ(複数)
-    1~1024までのグラフのIDを使って、最大1024個のベジェ曲線のカーブをプロジェクトファイルに保存できます。  
+- #### �x�W�F(����)
+    1~1024�܂ł̃O���t��ID���g���āA�ő�1024�̃x�W�F�Ȑ��̃J�[�u���v���W�F�N�g�t�@�C���ɕۑ��ł��܂��B  
     
-    このモードでは、制御点を追加することで93氏のマルチベジェ軌道のように複雑なカーブを作成することもできます。  
-    グラフ上の何もないところをダブルクリックすると制御点が追加され、制御点上で再度ダブルクリックすると削除されます。  
+    ���̃��[�h�ł́A����_��ǉ����邱�Ƃ�93���̃}���`�x�W�F�O���̂悤�ɕ��G�ȃJ�[�u���쐬���邱�Ƃ��ł��܂��B  
+    �O���t��̉����Ȃ��Ƃ�����_�u���N���b�N����Ɛ���_���ǉ�����A����_��ōēx�_�u���N���b�N����ƍ폜����܂��B  
 
-- #### 振動
-    ゴムの振動のような動きになります。  
-    ベジェモードと同様に、カーブを整数によって識別します。負の値にするとカーブが反転します。
+- #### �U��
+    �S���̐U���̂悤�ȓ����ɂȂ�܂��B  
+    �x�W�F���[�h�Ɠ��l�ɁA�J�[�u�𐮐��ɂ���Ď��ʂ��܂��B���̒l�ɂ���ƃJ�[�u�����]���܂��B
 
-- #### バウンス
-    物体がバウンドする動きになります。  
-    ベジェモードと同様に、カーブを整数によって識別します。負の値にするとカーブが反転します。
+- #### �o�E���X
+    ���̂��o�E���h���铮���ɂȂ�܂��B  
+    �x�W�F���[�h�Ɠ��l�ɁA�J�[�u�𐮐��ɂ���Ď��ʂ��܂��B���̒l�ɂ���ƃJ�[�u�����]���܂��B
     
-### グラフビュー
-以下の画像のようにして、ビューを移動させたり拡大縮小させたりすることができます。
+### �O���t�r���[
+�ȉ��̉摜�̂悤�ɂ��āA�r���[���ړ���������g��k���������肷�邱�Ƃ��ł��܂��B
 
 ![curve_editor_view](https://user-images.githubusercontent.com/106879397/208283665-2d22b1f4-3672-4c0c-a8b2-7b1d718b67c6.gif)
 
-### ドラッグ&ドロップ
-以下の画像のようにして、編集したカーブをドラッグ&ドロップでトラックバーに適用することができます。
+### �h���b�O&�h���b�v
+�ȉ��̉摜�̂悤�ɂ��āA�ҏW�����J�[�u���h���b�O&�h���b�v�Ńg���b�N�o�[�ɓK�p���邱�Ƃ��ł��܂��B
 
 ![curve_editor_dandd](https://user-images.githubusercontent.com/106879397/208283022-ed88a2d9-66e0-41bb-8244-92a8adebc1db.gif)
 
-※Shiftキーを押しながらドラッグ&ドロップすることで、XYZ座標などイージングが一度に設定されるトラックバーについても、X、Y、Zごとに個別にイージングを設定することができます。
+��Shift�L�[�������Ȃ���h���b�O&�h���b�v���邱�ƂŁAXYZ���W�ȂǃC�[�W���O����x�ɐݒ肳���g���b�N�o�[�ɂ��Ă��AX�AY�AZ���ƂɌʂɃC�[�W���O��ݒ肷�邱�Ƃ��ł��܂��B
 
-#### ドラッグ&ドロップができない場合は…  
-ベジェ・ベジェ(複数)モードについては`Type1@Curve Editor`を、振動・バウンスモードについては`Type2@Curve Editor`をトラックバーのメニューから選択します。  
-ベジェ・振動・バウンスモードの場合は右上のコピーボタンを押してコピーできるカーブの数値を、ベジェ(振動)モードの場合は表示されているIDをパラメータ設定ダイアログに入力することで使用できます。
+#### �h���b�O&�h���b�v���ł��Ȃ��ꍇ�́c  
+�x�W�F�E�x�W�F(����)���[�h�ɂ��Ă�`Type1@Curve Editor`���A�U���E�o�E���X���[�h�ɂ��Ă�`Type2@Curve Editor`���g���b�N�o�[�̃��j���[����I�����܂��B  
+�x�W�F�E�U���E�o�E���X���[�h�̏ꍇ�͉E��̃R�s�[�{�^���������ăR�s�[�ł���J�[�u�̐��l���A�x�W�F(�U��)���[�h�̏ꍇ�͕\������Ă���ID���p�����[�^�ݒ�_�C�A���O�ɓ��͂��邱�ƂŎg�p�ł��܂��B
 
 
-### その他
-エディタ上で右クリックするとコンテクストメニューを開くことができるので、色々触りながら試してみてください。  
-また、詳細な使用方法については、[このリポジトリのWiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。  
+### ���̑�
+�G�f�B�^��ŉE�N���b�N����ƃR���e�N�X�g���j���[���J�����Ƃ��ł���̂ŁA�F�X�G��Ȃ��玎���Ă݂Ă��������B  
+�܂��A�ڍׂȎg�p���@�ɂ��ẮA[���̃��|�W�g����Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)���������������B  
 
-## プロジェクトファイルへのカーブの保存機能について
-一部のモードのカーブはプロジェクトファイル(`.aup`)への埋め込みが可能となっており、プロジェクト保存時に同時に保存されるようになっています。  
-しかし、仕様上、**拡張編集標準のバックアップ機能では、これらのカーブを保存することはできません。**
+## �v���W�F�N�g�t�@�C���ւ̃J�[�u�̕ۑ��@�\�ɂ���
+�ꕔ�̃��[�h�̃J�[�u�̓v���W�F�N�g�t�@�C��(`.aup`)�ւ̖��ߍ��݂��\�ƂȂ��Ă���A�v���W�F�N�g�ۑ����ɓ����ɕۑ������悤�ɂȂ��Ă��܂��B  
+�������A�d�l��A**�g���ҏW�W���̃o�b�N�A�b�v�@�\�ł́A�����̃J�[�u��ۑ����邱�Ƃ͂ł��܂���B**
 
-そのため、カーブのデータを保持した状態でバックアップを行いたい場合は、代わりに[autosaver](https://github.com/epi5131/autosaver)(epi氏)を使用するようにしてください。
+���̂��߁A�J�[�u�̃f�[�^��ێ�������ԂŃo�b�N�A�b�v���s�������ꍇ�́A�����[autosaver](https://github.com/epi5131/autosaver)(epi��)���g�p����悤�ɂ��Ă��������B
 
-## スクリプトから使用する(スクリプト開発者向け)
-スクリプト制御や、`.anm`や`.obj`、`.tra`などのスクリプトファイル上で、Curve Editorのカーブを呼び出して使用することができます。  
-詳しくはWikiの[スクリプトからの使用](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%8B%E3%82%89%E3%81%AE%E4%BD%BF%E7%94%A8)を参照してください。
+## �X�N���v�g����g�p����(�X�N���v�g�J���Ҍ���)
+�X�N���v�g�����A`.anm`��`.obj`�A`.tra`�Ȃǂ̃X�N���v�g�t�@�C����ŁACurve Editor�̃J�[�u���Ăяo���Ďg�p���邱�Ƃ��ł��܂��B  
+�ڂ�����Wiki��[�X�N���v�g����̎g�p](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88%E3%81%8B%E3%82%89%E3%81%AE%E4%BD%BF%E7%94%A8)���Q�Ƃ��Ă��������B
 
-## 動作環境
-| OS | AviUtl | 拡張編集 | 
+## �����
+| OS | AviUtl | �g���ҏW | 
 | :---: | :---: | :---: |
-| Windows 7~11 | 1.00, 1.10 | 0.92~ (0.92推奨) |  
+| Windows 7~11 | 1.00, 1.10 | 0.92~ (0.92����) |  
 
-※[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)が必要です。
+��[Visual C++ 2015/2017/2019/2022 �ĔЕz�\�p�b�P�[�W (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)���K�v�ł��B
 
-【動作確認済み】  
+�y����m�F�ς݁z  
 Windows 10, 11  
 AviUtl 1.00, 1.10  
-拡張編集 0.92  
+�g���ҏW 0.92  
 
-※[patch.aul](https://github.com/ePi5131/patch.aul)、
-[イージング設定時短プラグイン](https://github.com/kumrnm/aviutl-easing-quick-setup)、
-[イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)
-との共存を確認。  
+��[patch.aul](https://github.com/ePi5131/patch.aul)�A
+[�C�[�W���O�ݒ莞�Z�v���O�C��](https://github.com/kumrnm/aviutl-easing-quick-setup)�A
+[�C�[�W���O�ȒP�I��](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)
+�Ƃ̋������m�F�B  
 
 ## Q&A
-Wikiの[トラブルシューティング](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0)を参照してください。
+Wiki��[�g���u���V���[�e�B���O](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0)���Q�Ƃ��Ă��������B
 
-## バグ報告
-バグ報告は[このリポジトリのIssues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues)または[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(匿名回答可)からお願いします。  
+## �o�O��
+�o�O�񍐂�[���̃��|�W�g����Issues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues)�܂���[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(�����񓚉�)���炨�肢���܂��B  
 
 ## For English Users
 English Version (translated by [inmare](https://github.com/inmare))  
 https://github.com/inmare/au-curve_editor_en
 
-## その他
-当プラグイン・スクリプトは以下のプラグイン・スクリプトを参考にして作成されました：  
+## ���̑�
+���v���O�C���E�X�N���v�g�͈ȉ��̃v���O�C���E�X�N���v�g���Q�l�ɂ��č쐬����܂����F  
 - [Flow](https://aescripts.com/flow/)
-- [ベジェ軌道T](https://www.nicovideo.jp/watch/sm20632293)
-- [Aulsグラフエディタ](https://auls.client.jp/)
-- [イージング設定時短プラグイン](https://github.com/kumrnm/aviutl-easing-quick-setup)
-- [イージング簡単選択](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)
+- [�x�W�F�O��T](https://www.nicovideo.jp/watch/sm20632293)
+- [Auls�O���t�G�f�B�^](https://auls.client.jp/)
+- [�C�[�W���O�ݒ莞�Z�v���O�C��](https://github.com/kumrnm/aviutl-easing-quick-setup)
+- [�C�[�W���O�ȒP�I��](https://github.com/hebiiro/AviUtl-Plugin-SelectEasing)
 
-## 免責事項
-当プラグイン・スクリプトを使用したことによっていかなる損害が生じても、製作者は一切の責任を負わないものとします。  
+## �Ɛӎ���
+���v���O�C���E�X�N���v�g���g�p�������Ƃɂ���Ă����Ȃ鑹�Q�������Ă��A����҂͈�؂̐ӔC�𕉂�Ȃ����̂Ƃ��܂��B  

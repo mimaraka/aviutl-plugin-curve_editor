@@ -1,2 +1,3 @@
+LIBRARY
 EXPORTS
-	GetFilterTable @1
+	GetFilterTable

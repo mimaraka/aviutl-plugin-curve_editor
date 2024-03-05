@@ -2,6 +2,16 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
+*.lua text eol=crlf working-tree-encoding=cp932
+*.obj text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.anm text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.scn text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.cam text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.tra text eol=crlf working-tree-encoding=cp932 linguist-language=Lua
+*.h text eol=crlf working-tree-encoding=cp932
+*.hpp text eol=crlf working-tree-encoding=cp932
+*.c text eol=crlf working-tree-encoding=cp932
+*.cpp text eol=crlf working-tree-encoding=cp932
 
 ###############################################################################
 # Set default behavior for command prompt diff.
