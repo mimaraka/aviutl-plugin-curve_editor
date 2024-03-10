@@ -12,12 +12,50 @@ namespace cved {
 	namespace global {
 		inline class Config {
 		private:
+			static constexpr Theme THEME_DARK = {
+			mkaul::ColorF{27, 27, 27},
+			mkaul::ColorF{27, 27, 27},
+			mkaul::ColorF{19, 19, 19},
+			mkaul::ColorF{240, 240, 240},
+			mkaul::ColorF{57, 57, 57},
+			mkaul::ColorF{95, 95, 95},
+			mkaul::ColorF{240, 240, 240},
+			mkaul::ColorF{243, 243, 243},
+			mkaul::ColorF{180, 180, 180},
+			mkaul::ColorF{230, 230, 230},
+			mkaul::ColorF{68, 68, 68},
+			mkaul::ColorF{240, 240, 240},
+			mkaul::ColorF{35, 35, 35},
+			mkaul::ColorF{180, 180, 180},
+			mkaul::ColorF{200, 200, 200}
+			};
+
+			static constexpr Theme THEME_LIGHT = {
+			mkaul::ColorF{244, 244, 244},
+			mkaul::ColorF{230, 230, 230},
+			mkaul::ColorF{252, 252, 252},
+			mkaul::ColorF{70, 70, 70},
+			mkaul::ColorF{205, 205, 205},
+			mkaul::ColorF{160, 160, 160},
+			mkaul::ColorF{100, 100, 100},
+			mkaul::ColorF{70, 70, 70},
+			mkaul::ColorF{160, 160, 160},
+			mkaul::ColorF{230, 230, 230},
+			mkaul::ColorF{188, 188, 188},
+			mkaul::ColorF{70, 70, 70},
+			mkaul::ColorF{70, 70, 70},
+			mkaul::ColorF{70, 70, 70},
+			mkaul::ColorF{100, 100, 100}
+			};
+
 			Language language_ = Language::Automatic;
 			ThemeId theme_id_ = ThemeId::Dark;
 			EditMode edit_mode_ = EditMode::Normal;
 			LayoutMode layout_mode_ = LayoutMode::Vertical;
 			ApplyMode apply_mode_ = ApplyMode::Normal;
+			Theme current_theme_;
 			mkaul::ColorF curve_color_ = mkaul::ColorF{};
+			float curve_thickness_ = 0.f;
 			float curve_drawing_interval_ = 0.f;
 			mkaul::graphics::Factory::GraphicEngine graphic_engine_ = mkaul::graphics::Factory::GraphicEngine::Directx;
 			int curve_code_bezier_ = 0;
@@ -40,12 +78,11 @@ namespace cved {
 			std::filesystem::path json_path_;
 
 			template<typename T>
-			bool load_json_value(const nlohmann::json& data, const char* key_name, T& buffer) const {
+			T get_json_value(const nlohmann::json& data, const char* key_name, T def_value) const {
 				if (data.contains(key_name)) {
-					buffer = data[key_name];
-					return true;
+					return data[key_name];
 				}
-				else return false;
+				else return def_value;
 			}
 
 		public:
@@ -57,7 +94,7 @@ namespace cved {
 			auto get_theme_id() const noexcept { return theme_id_; }
 			bool set_theme_id(ThemeId theme_id) noexcept;
 
-			const Theme& get_theme() const noexcept;
+			const auto& get_theme() const noexcept { return current_theme_; }
 
 			auto get_edit_mode() const noexcept { return edit_mode_; }
 			bool set_edit_mode(EditMode edit_mode) noexcept;
@@ -74,10 +111,14 @@ namespace cved {
 			const auto& get_curve_color() const noexcept { return curve_color_; }
 			void set_curve_color(mkaul::ColorF curve_color) noexcept { curve_color_ = curve_color; }
 
+			auto get_curve_thickness() const noexcept { return curve_thickness_; }
+			void set_curve_thickness(float curve_thickness) noexcept;
+
 			auto get_curve_drawing_interval() const noexcept { return curve_drawing_interval_; }
 			void set_curve_drawing_interval(float curve_drawing_interval) noexcept;
 
 			auto get_graphic_engine() const noexcept { return graphic_engine_; }
+			bool set_graphic_engine(mkaul::graphics::Factory::GraphicEngine graphic_engine) noexcept;
 
 			auto get_curve_code_bezier() const noexcept { return curve_code_bezier_; }
 			auto get_curve_code_elastic() const noexcept { return curve_code_elastic_; }
