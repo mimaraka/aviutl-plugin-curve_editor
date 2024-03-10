@@ -8,7 +8,7 @@
 #include "global.hpp"
 #include "config.hpp"
 #include "constants.hpp"
-#include "util.hpp"
+#include "my_messagebox.hpp"
 #include "string_table.hpp"
 
 
@@ -121,7 +121,7 @@ namespace cved {
 		switch (message) {
 		case WM_CREATE:
 			if (!p_graphics->init(hwnd)) {
-				util::show_popup(global::string_table[StringId::ErrorGraphicsInitFailed], util::PopupIcon::Error);
+				my_messagebox(global::string_table[StringId::ErrorGraphicsInitFailed], hwnd, MessageBoxIcon::Error);
 				::DestroyWindow(hwnd);
 				return 0;
 			}

@@ -3,8 +3,8 @@
 #include "version.hpp"
 #include "global.hpp"
 #include "constants.hpp"
+#include "my_messagebox.hpp"
 #include "string_table.hpp"
-#include "util.hpp"
 
 
 namespace cved {
@@ -46,7 +46,7 @@ namespace cved {
 					global::PLUGIN_VERSION.str(),
 					latest.str()
 				);
-				auto response = util::show_popup(text.c_str(), util::PopupIcon::Information, util::PopupButton::OkCancel);
+				auto response = my_messagebox(text.c_str(), NULL, MessageBoxIcon::Information, MessageBoxButton::OkCancel);
 				if (response == IDOK) {
 					auto url = std::format("{}/releases/latest", global::PLUGIN_GITHUB_URL);
 					::ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
@@ -54,13 +54,13 @@ namespace cved {
 			}
 			else if (param) {
 				::EndDialog((HWND)param, 1);
-				util::show_popup(global::string_table[StringId::InfoLatestVersion], util::PopupIcon::Information);
+				my_messagebox(global::string_table[StringId::InfoLatestVersion], NULL);
 				
 			}
 		}
 		else if (param) {
 			::EndDialog((HWND)param, 1);
-			util::show_popup(global::string_table[StringId::ErrorConnectionFailed], util::PopupIcon::Error);
+			my_messagebox(global::string_table[StringId::ErrorConnectionFailed], NULL);
 		}
 
 		::ExitThread(TRUE);

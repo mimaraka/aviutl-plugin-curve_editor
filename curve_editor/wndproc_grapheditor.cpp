@@ -7,8 +7,8 @@
 #include "global.hpp"
 #include "menu_graph.hpp"
 #include "menu_curve.hpp"
+#include "my_messagebox.hpp"
 #include "string_table.hpp"
-#include "util.hpp"
 #include "resource.h"
 
 
@@ -19,7 +19,6 @@ namespace cved {
 		using StringId = global::StringTable::StringId;
 
 		constexpr float BOX_WIDTH = 20.f;
-		constexpr float CURVE_THICKNESS = 1.2f;
 		constexpr float CURVE_THICKNESS_VELOCITY = 1.f;
 		constexpr float HANDLE_THICKNESS = 2.f;
 		constexpr float POINT_RADIUS = 4.4f;
@@ -55,7 +54,7 @@ namespace cved {
 			// ウィンドウ初期化時
 		case WM_CREATE:
 			if (!p_graphics->init(hwnd)) {
-				util::show_popup(global::string_table[StringId::ErrorGraphicsInitFailed], util::PopupIcon::Error);
+				my_messagebox(global::string_table[StringId::ErrorGraphicsInitFailed], hwnd, MessageBoxIcon::Error);
 				::DestroyWindow(hwnd);
 				return 0;
 			}
@@ -115,7 +114,7 @@ namespace cved {
 			editor.current_curve()->draw_curve(
 				p_graphics.get(),
 				view,
-				CURVE_THICKNESS,
+				config.get_curve_thickness(),
 				config.get_curve_drawing_interval(),
 				config.get_curve_color()
 			);

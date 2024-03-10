@@ -4,6 +4,7 @@
 #include "global.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
+#include "my_messagebox.hpp"
 #include "string_table.hpp"
 #include "util.hpp"
 #include "constants.hpp"
@@ -62,7 +63,7 @@ namespace cved {
 		case WM_CREATE:
 		{
 			if (!p_graphics->init(hwnd)) {
-				util::show_popup(global::string_table[StringId::ErrorGraphicsInitFailed], util::PopupIcon::Error);
+				my_messagebox(global::string_table[StringId::ErrorGraphicsInitFailed], hwnd, MessageBoxIcon::Error);
 				::DestroyWindow(hwnd);
 			}
 
@@ -372,7 +373,7 @@ namespace cved {
 			if (menu_edit_mode.callback(wparam, lparam)) return 0;
 			if (menu_more.callback(wparam, lparam)) return 0;
 			switch (wparam) {
-			case (UINT)WindowCommand::Update:
+			case (WPARAM)WindowCommand::Update:
 				// モードボタンの更新
 				button_mode.set_label(global::config.get_edit_mode_str());
 				if (global::config.get_edit_mode() == EditMode::Script) {
@@ -403,6 +404,10 @@ namespace cved {
 				}
 				break;
 
+			case (WPARAM)WindowCommand::AddUpdateNotification:
+
+				break;
+
 			case BUTTON_ID_MODE:
 			{
 				mkaul::WindowRectangle rect_tmp;
@@ -421,13 +426,18 @@ namespace cved {
 			{
 				auto tmp = std::to_string(global::editor.track_param());
 				if (!util::copy_to_clipboard(hwnd, tmp.c_str()) and global::config.get_show_popup()) {
-					util::show_popup(global::string_table[StringId::ErrorCodeCopyFailed], util::PopupIcon::Error);
+					my_messagebox(global::string_table[StringId::ErrorCodeCopyFailed], hwnd, MessageBoxIcon::Error);
 				}
 			}
 				break;
 
 			case BUTTON_ID_READ:
-				::DialogBoxA(global::fp->dll_hinst, MAKEINTRESOURCE(IDD_CURVE_CODE), hwnd, dlgproc_curve_code);
+				::DialogBoxA(
+					global::fp->dll_hinst,
+					MAKEINTRESOURCE(IDD_CURVE_CODE),
+					hwnd,
+					dlgproc_curve_code
+				);
 				break;
 
 			case BUTTON_ID_SAVE:
@@ -437,10 +447,11 @@ namespace cved {
 			{
 				int response = IDOK;
 				if (global::config.get_show_popup()) {
-					response = util::show_popup(
+					response = my_messagebox(
 						global::string_table[StringId::WarningDeleteCurve],
-						util::PopupIcon::Warning,
-						util::PopupButton::OkCancel
+						hwnd,
+						MessageBoxIcon::Warning,
+						MessageBoxButton::OkCancel
 					);
 				}
 
