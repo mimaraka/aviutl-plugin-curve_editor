@@ -191,16 +191,16 @@
     <ClInclude Include="curve_linear.hpp" />
     <ClInclude Include="curve_normal.hpp" />
     <ClInclude Include="curve_value.hpp" />
-    <ClInclude Include="dialog_config_contents.hpp" />
-    <ClInclude Include="dlgproc_about.hpp" />
-    <ClInclude Include="dlgproc_bezier_parameter.hpp" />
-    <ClInclude Include="dlgproc_config.hpp" />
-    <ClInclude Include="dlgproc_config_appearance.hpp" />
-    <ClInclude Include="dlgproc_config_behavior.hpp" />
-    <ClInclude Include="dlgproc_config_editing.hpp" />
-    <ClInclude Include="dlgproc_config_general.hpp" />
-    <ClInclude Include="dlgproc_curve_code.hpp" />
-    <ClInclude Include="dlgproc_warning_autosaver.hpp" />
+    <ClInclude Include="dialog.hpp" />
+    <ClInclude Include="dialog_about.hpp" />
+    <ClInclude Include="dialog_bezier_param.hpp" />
+    <ClInclude Include="dialog_curve_code.hpp" />
+    <ClInclude Include="dialog_pref.hpp" />
+    <ClInclude Include="dialog_pref_appearance.hpp" />
+    <ClInclude Include="dialog_pref_behavior.hpp" />
+    <ClInclude Include="dialog_pref_editing.hpp" />
+    <ClInclude Include="dialog_pref_general.hpp" />
+    <ClInclude Include="dialog_warning_autosaver.hpp" />
     <ClInclude Include="drag_and_drop.hpp" />
     <ClInclude Include="enum.hpp" />
     <ClInclude Include="config.hpp" />
@@ -262,13 +262,16 @@
     </ClCompile>
     <ClCompile Include="curve_editor_graph.cpp" />
     <ClCompile Include="curve_graph.cpp" />
-    <ClCompile Include="dialog_config_contents.cpp" />
-    <ClCompile Include="dlgproc_about.cpp" />
-    <ClCompile Include="dlgproc_config_appearance.cpp" />
-    <ClCompile Include="dlgproc_config_behavior.cpp" />
-    <ClCompile Include="dlgproc_config_editing.cpp" />
-    <ClCompile Include="dlgproc_config_general.cpp" />
-    <ClCompile Include="dlgproc_curve_code.cpp" />
+    <ClCompile Include="dialog.cpp" />
+    <ClCompile Include="dialog_about.cpp" />
+    <ClCompile Include="dialog_bezier_param.cpp" />
+    <ClCompile Include="dialog_curve_code.cpp" />
+    <ClCompile Include="dialog_pref.cpp" />
+    <ClCompile Include="dialog_pref_appearance.cpp" />
+    <ClCompile Include="dialog_pref_behavior.cpp" />
+    <ClCompile Include="dialog_pref_editing.cpp" />
+    <ClCompile Include="dialog_pref_general.cpp" />
+    <ClCompile Include="dialog_warning_autosaver.cpp" />
     <ClCompile Include="drag_and_drop.cpp" />
     <ClCompile Include="filter_exit.cpp" />
     <ClCompile Include="filter_init.cpp" />
@@ -315,9 +318,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="dlgproc_bezier_parameter.cpp" />
-    <ClCompile Include="dlgproc_config.cpp" />
-    <ClCompile Include="dlgproc_warning_autosaver.cpp" />
     <ClCompile Include="dll_export.cpp" />
     <ClCompile Include="exedit_hook.cpp" />
     <ClCompile Include="func_lua.cpp" />

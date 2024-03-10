@@ -57,7 +57,9 @@ namespace cved {
 		MovePreset				= 0x0b15,
 		ChangeColor				= 0x0b16,
 		SetStatus				= 0x0b17,
-		GetExedit				= 0x0b18
+		LoadConfig				= 0x0b18,
+		SaveConfig				= 0x0b19,
+		AddUpdateNotification	= 0x0b1a
 	};
 
 	enum class ThemeId {

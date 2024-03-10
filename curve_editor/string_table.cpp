@@ -61,6 +61,10 @@ namespace cved {
 					id = IDS_INFO_UPDATE_AVAILABLE;
 					break;
 
+				case StringId::InfoRestartAviutl:
+					id = IDS_INFO_RESTART_AVIUTL;
+					break;
+
 				case StringId::LabelEditModeNormal:
 					id = IDS_LABEL_EDIT_MODE_NORMAL;
 					break;
@@ -159,6 +163,10 @@ namespace cved {
 
 				case StringId::WordEditMode:
 					id = IDS_WORD_EDIT_MODE;
+					break;
+
+				case StringId::WordLanguageAutomatic:
+					id = IDS_WORD_LANGUAGE_AUTOMATIC;
 					break;
 
 				default:
