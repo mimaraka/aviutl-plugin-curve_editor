@@ -19,25 +19,22 @@
 #define IDR_MENU_MORE                   125
 #define IDR_MENU_CURVE                  126
 #define IDD_CURVE_CODE                  128
-#define IDD_CHECK_UPDATE                130
 #define IDC_DRAG                        132
+#define IDD_ABOUT                       135
 #define IDC_CONFIG_APPLY                1003
 #define IDC_CONFIG_RESET                1004
-#define IDC_COMBO1                      1005
+#define IDC_COMBO_LANGUAGE              1005
 #define IDC_BUTTON1                     1006
 #define IDB_COPY                        1006
+#define IDC_BUTTON_CURVE_COLOR          1006
 #define IDC_CHECK1                      1007
 #define IDC_CHECK2                      1008
 #define IDC_DONTSHOWAGAIN               1009
 #define IDC_LIST_CONFIG                 1009
-#define IDC_CHECK3                      1010
-#define IDC_NOTIFY_UPDATE               1010
-#define IDC_CHECK4                      1011
+#define IDC_CHECK_NOTIFY_UPDATE         1010
 #define IDC_SHOW_POPUP                  1011
 #define IDC_TREE1                       1012
-#define IDC_EDIT1                       1013
 #define IDC_EDIT_CURVE_THICKNESS        1013
-#define IDC_SPIN1                       1014
 #define IDC_SPIN_CURVE_THICKNESS        1014
 #define IDC_EDIT2                       1015
 #define IDC_EDIT_CURVE_DRAWING_INTERVAL 1015
@@ -45,9 +42,18 @@
 #define IDC_EDIT_CURVE_CODE             1016
 #define IDC_SPIN_CURVE_DRAWING_INTERVAL 1016
 #define IDC_COMBO_THEME                 1017
+#define IDC_CHECK3                      1018
 #define IDC_SLIDER1                     1020
+#define IDC_SLIDER_CURVE_THICKNESS      1020
 #define IDC_SLIDER2                     1021
+#define IDC_SLIDER_CURVE_DRAWING_INTERVAL 1021
 #define IDC_COMMAND1                    1023
+#define IDC_CHECK_SHOW_TRACE            1024
+#define IDC_STATIC_CURVE_THICKNESS      1025
+#define IDC_STATIC_CURVE_DRAWING_INTERVAL 1026
+#define IDC_COMBO_GRAPHIC_METHOD        1027
+#define IDC_STATIC_PLUGIN_INFO          1030
+#define IDC_SYSLINK1                    1031
 #define IDS_ERROR_LUA_NOT_FOUND         0x1000
 #define IDS_ERROR_EXEDIT_NOT_FOUND      0x1001
 #define IDS_ERROR_EXEDIT_HOOK_FAILED    0x1002
@@ -61,6 +67,7 @@
 #define IDS_WARNING_AUTOSAVER_NOT_FOUND 5122
 #define IDS_INFO_LATEST_VERSION         0x1800
 #define IDS_INFO_UPDATE_AVAILABLE       6145
+#define IDS_INFO_RESTART_AVIUTL         6146
 #define IDS_LABEL_EDIT_MODE_NORMAL      0x1c00
 #define IDS_LABEL_EDIT_MODE_VALUE       0x1c01
 #define IDS_LABEL_EDIT_MODE_BEZIER      0x1c02
@@ -82,11 +89,13 @@
 #define IDS_LABEL_PREFERENCE_APPEARANCE 7425
 #define IDS_LABEL_PREFERENCE_BEHAVIOR   7426
 #define IDS_LABEL_PREFERENCE_EDITING    7427
+#define IDS_LABEL_MENU_UPDATE_AVAILABLE 7680
 #define IDS_LABEL_THEME_NAME_DARK       7936
 #define IDS_LABEL_THEME_LIGHT           7937
 #define IDS_LABEL_THEME_NAME_LIGHT      7937
 #define IDS_WORD_VERSION                9216
 #define IDS_WORD_EDIT_MODE              9217
+#define IDS_WORD_LANGUAGE_AUTOMATIC     9218
 #define ID_EDIT_APPLYMODE               40060
 #define ID_GRAPH_ALIGN                  40092
 #define ID_GRAPH_REVERSE                40095
@@ -113,14 +122,15 @@
 #define ID_CURVE_PASTE                  40139
 #define ID_CURVE_COPYCURVE              40140
 #define ID_Menu                         40141
+#define ID_MANIFEST_VISUALSTYLE			40142
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        135
+#define _APS_NEXT_RESOURCE_VALUE        137
 #define _APS_NEXT_COMMAND_VALUE         40142
-#define _APS_NEXT_CONTROL_VALUE         1024
+#define _APS_NEXT_CONTROL_VALUE         1032
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
