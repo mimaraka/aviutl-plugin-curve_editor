@@ -71,7 +71,7 @@ namespace cved {
 
 	void BounceHandle::from_param(double cor, double period, const ControlPoint& point_start, const ControlPoint& point_end) noexcept {
 		double x = mkaul::clamp(period * (cor + 1.) * 0.5, 0., 1.);
-		double y = mkaul::clamp(1. - std::pow(cor, 2), 0., 1.);
+		double y = mkaul::clamp(1. - cor * cor, 0., 1.);
 		if (is_reverse_) {
 			x = 1. - x;
 			y = 1. - y;

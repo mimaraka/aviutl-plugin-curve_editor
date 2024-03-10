@@ -122,7 +122,7 @@ namespace cved {
 		double x = point_offset_.x();
 		double y = point_offset_.y();
 
-		return std::sqrt(std::pow(x * view.scale_x(), 2) + std::pow(y * view.scale_y(), 2));
+		return std::sqrt(x * x * view.scale_x() * view.scale_x() + y * y * view.scale_y() * view.scale_y());
 	}
 
 	// 指定したポイントの基準点からの角度を取得
@@ -144,8 +144,8 @@ namespace cved {
 	) const noexcept {
 		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
 		return std::sqrt(
-			std::pow((point.x - point_origin.x) * view.scale_x(), 2) +
-			std::pow((point.y - point_origin.y) * view.scale_y(), 2)
+			(point.x - point_origin.x) * (point.x - point_origin.x) * view.scale_x() * view.scale_x() +
+			(point.y - point_origin.y) * (point.y - point_origin.y) * view.scale_y() * view.scale_y()
 		);
 	}
 

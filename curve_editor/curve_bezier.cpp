@@ -68,7 +68,7 @@ namespace cved {
 		auto pt3 = point_end_.point();
 
 		auto func_bezier = [](double v0, double v1, double v2, double v3, double t) {
-			return (v3 + 3. * (v1 - v2) - v0) * std::pow(t, 3) + (v2 - 2 * v1 + v0) * 3 * std::pow(t, 2) + (v1 - v0) * 3 * t + v0;
+			return (v3 + 3. * (v1 - v2) - v0) * t * t * t + (v2 - 2 * v1 + v0) * 3 * t * t + (v1 - v0) * 3 * t + v0;
 			};
 
 		double t = 0.;
@@ -77,10 +77,10 @@ namespace cved {
 		const double tmp3 = pt1.x - pt0.x;
 		const double tmp4 = pt0.x - progress;
 		// tの次数は2以下
-		if (tmp == 0.) {
+		if (mkaul::real_equal(tmp, 0.)) {
 			// tの次数は1以下
-			if (tmp2 == 0.) {
-				if (tmp3 != 0.) {
+			if (mkaul::real_equal(tmp2, 0.)) {
+				if (!mkaul::real_equal(tmp3, 0.)) {
 					t = -tmp4 / (3. * tmp3);
 				}
 			}
@@ -125,7 +125,7 @@ namespace cved {
 				}
 			}
 			// 実数の2・3重解を持つ場合
-			else if (tmp6 == 0.) {
+			else if (mkaul::real_equal(tmp6, 0.)) {
 				double tmp7 = std::pow(-q * 0.5, 1. / 3.);
 				double t0 = -tmp7 - tmp5;
 				double t1 = 2. * tmp7 - tmp5;
@@ -150,7 +150,17 @@ namespace cved {
 		}
 
 		// 相対値
-		double rel_value = func_bezier(pt0.y, pt1.y, pt2.y, pt3.y, t);
+		double rel_value;
+		// 端点がおかしくなる問題の解決
+		if (mkaul::real_equal(progress, 0.)) {
+			rel_value = point_start_.y();
+		}
+		else if (mkaul::real_equal(progress, 1.)) {
+			rel_value = point_end_.y();
+		}
+		else {
+			rel_value = func_bezier(pt0.y, pt1.y, pt2.y, pt3.y, t);
+		}
 		return start + (end - start) * rel_value;
 	}
 
