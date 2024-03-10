@@ -30,43 +30,5 @@ namespace cved {
 		inline constexpr char PLUGIN_DEVELOPER[] = "mimaraka";
 		inline constexpr char PLUGIN_TRANSLATOR[] = "Deepdive";
 		inline constexpr char PLUGIN_GITHUB_URL[] = "https://github.com/mimaraka/aviutl-plugin-curve_editor";
-
-		// ダークテーマ
-		inline constexpr Theme THEME_DARK = {
-			mkaul::ColorF{27, 27, 27},
-			mkaul::ColorF{27, 27, 27},
-			mkaul::ColorF{19, 19, 19},
-			mkaul::ColorF{240, 240, 240},
-			mkaul::ColorF{57, 57, 57},
-			mkaul::ColorF{95, 95, 95},
-			mkaul::ColorF{240, 240, 240},
-			mkaul::ColorF{243, 243, 243},
-			mkaul::ColorF{180, 180, 180},
-			mkaul::ColorF{230, 230, 230},
-			mkaul::ColorF{68, 68, 68},
-			mkaul::ColorF{240, 240, 240},
-			mkaul::ColorF{35, 35, 35},
-			mkaul::ColorF{180, 180, 180},
-			mkaul::ColorF{200, 200, 200}
-		};
-
-		// ライトテーマ
-		inline constexpr Theme THEME_LIGHT = {
-			mkaul::ColorF{244, 244, 244},
-			mkaul::ColorF{230, 230, 230},
-			mkaul::ColorF{252, 252, 252},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{205, 205, 205},
-			mkaul::ColorF{160, 160, 160},
-			mkaul::ColorF{100, 100, 100},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{160, 160, 160},
-			mkaul::ColorF{230, 230, 230},
-			mkaul::ColorF{188, 188, 188},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{100, 100, 100}
-		};
 	}
 }
