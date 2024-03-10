@@ -1,111 +1,13 @@
-#define NOMINMAX
-#include "global.hpp"
-#include "constants.hpp"
+#include "filter_wndproc.hpp"
+#include "actctx_manager.hpp"
 #include "config.hpp"
-#include "curve_editor.hpp"
-#include "version.hpp"
-#include "string_table.hpp"
-#include "exedit_hook.hpp"
-#include "util.hpp"
-#include "func_filter.hpp"
+#include "constants.hpp"
+#include "global.hpp"
 #include "wndproc_main.hpp"
-#include "dlgproc_warning_autosaver.hpp"
-#include "enum.hpp"
-#include "resource.h"
-#include <mkaul/include/aviutl.hpp>
-#include <mkaul/include/exedit.hpp>
-#include <aviutl/FilterPlugin.hpp>
-#include <format>
 
 
 
 namespace cved {
-	// AviUtl起動時の処理
-	BOOL filter_init(AviUtl::FilterPlugin* fp) {
-		using StringId = global::StringTable::StringId;
-
-		global::fp = fp;
-
-		// jsonから設定の読み込み
-		global::config.init(fp->dll_hinst);
-		global::config.load_json();
-
-		// 保存されたカーブの読み込み
-		global::editor.editor_graph().load(
-			global::config.get_curve_code_bezier(),
-			global::config.get_curve_code_elastic(),
-			global::config.get_curve_code_bounce()
-		);
-
-		// TODO: ロケールの設定
-		// ここに書く
-
-		// 文字列テーブルの読み込み
-		global::string_table.load(fp->dll_hinst);
-
-		// exedit.auf(ver.0.92)存在確認
-		if (!global::exedit_internal.init(fp)) {
-			// 拡張編集が存在しませんのエラー
-			util::show_popup(global::string_table[StringId::ErrorExeditNotFound], util::PopupIcon::Error);
-			return FALSE;
-		}
-
-		// オブジェクト設定ダイアログのフック処理
-		if (!global::exedit_hook.hook_objdialog_proc()) {
-			util::show_popup(global::string_table[StringId::ErrorExeditHookFailed], util::PopupIcon::Error);
-			return FALSE;
-		}
-
-		//// スクリプトファイルの存在確認
-		//const char* script_name_lua = "curve_editor.lua";
-		//const char* script_name_tra = "@Curve editor.tra";
-		//if (
-		//	!std::filesystem::exists(global::config.get_aviutl_directory() / script_name_lua)
-		//	and !std::filesystem::exists(global::config.get_aviutl_directory() / )
-		//	) {
-
-		//}
-
-		// 描画環境の初期化
-		if (!mkaul::graphics::Factory::startup(global::config.get_graphic_engine())) {
-			util::show_popup(global::string_table[StringId::ErrorGraphicsInitFailed], util::PopupIcon::Error);
-			return FALSE;
-		}
-
-		// アップデートチェック
-		if (global::config.get_notify_update()) {
-			DWORD thread_id;
-			::CreateThread(NULL, 0, check_for_updates, NULL, 0, &thread_id);
-		}
-
-		// autosaverがインストールされていない場合の警告
-		if (!mkaul::aviutl::get_fp_by_name(fp, "autosaver.auf") and !global::config.get_ignore_autosaver_warning()) {
-			::DialogBoxA(fp->dll_hinst, MAKEINTRESOURCE(IDD_WARNING_AUTOSAVER), fp->hwnd_parent, dlgproc_warning_autosaver);
-		}
-
-		return TRUE;
-	}
-
-
-	BOOL filter_exit(AviUtl::FilterPlugin* fp) {
-		// 設定をJSONに保存
-		global::config.save_json();
-		mkaul::graphics::Factory::shutdown();
-
-		return TRUE;
-	}
-
-
-	BOOL filter_project_load(AviUtl::FilterPlugin* fp, AviUtl::EditHandle* editp, void* data, int32_t size) {
-		return TRUE;
-	}
-
-
-	BOOL filter_project_save(AviUtl::FilterPlugin* fp, AviUtl::EditHandle* editp, void* data, int32_t* size) {
-		return TRUE;
-	}
-
-	
 	// キー押下時の処理
 	LRESULT on_keydown(WPARAM wparam) {
 		switch (wparam) {
@@ -164,6 +66,7 @@ namespace cved {
 	BOOL filter_wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, AviUtl::EditHandle* editp, AviUtl::FilterPlugin* fp)
 	{
 		using WindowMessage = AviUtl::FilterPlugin::WindowMessage;
+		static ActCtxManager actctx_manager;
 		RECT rect_wnd;
 		::GetClientRect(hwnd, &rect_wnd);
 
@@ -171,6 +74,8 @@ namespace cved {
 			// ウィンドウ作成時
 		case WindowMessage::Init:
 			global::editp = editp;
+
+			actctx_manager.init(fp->dll_hinst);
 
 			// WS_CLIPCHILDRENを追加
 			::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
@@ -195,10 +100,11 @@ namespace cved {
 			);
 			return 0;
 
-		// ウィンドウ破棄時
+			// ウィンドウ破棄時
 		case WM_CLOSE:
 		case WM_DESTROY:
 			global::window_main.close();
+			actctx_manager.exit();
 			return 0;
 
 		case WM_SIZE:
