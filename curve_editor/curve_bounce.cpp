@@ -25,7 +25,7 @@ namespace cved {
 	}
 
 	double func_bounce_3(double prog, double cor, double period) {
-		return 4. * std::pow(func_bounce_2(prog / period, cor), 2) - std::pow(cor, 2. * func_bounce_1(prog / period + .5, cor));
+		return 4. * func_bounce_2(prog / period, cor) * func_bounce_2(prog / period, cor) - std::pow(cor, 2. * func_bounce_1(prog / period + .5, cor));
 	}
 
 	double BounceCurve::get_value(double progress, double start, double end) const noexcept {
@@ -70,7 +70,7 @@ namespace cved {
 
 	int BounceCurve::encode() const noexcept {
 		int x = (int)((period_ * (cor_ + 1) * .5) * 1000);
-		int y = (int)((1. - std::pow(cor_, 2)) * 1000);
+		int y = (int)((1. - cor_ * cor_) * 1000);
 		int result = y + 1001 * x + 10211202;
 		if (handle_.is_reverse()) {
 			result *= -1;
