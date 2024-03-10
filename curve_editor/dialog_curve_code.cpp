@@ -1,35 +1,38 @@
-#include "dlgproc_curve_code.hpp"
+#include "dialog_curve_code.hpp"
+#include <regex>
 #include "curve_editor.hpp"
-#include "util.hpp"
 #include "global.hpp"
+#include "my_messagebox.hpp"
 #include "string_table.hpp"
 #include "resource.h"
-#include <regex>
 
 
 
 namespace cved {
-	INT_PTR CALLBACK dlgproc_curve_code(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	int CurveCodeDialog::i_resource() const noexcept { return IDD_CURVE_CODE; }
+
+
+	void CurveCodeDialog::init_controls(HWND hwnd) noexcept {
+		hwnd_edit_ = ::GetDlgItem(hwnd, IDC_EDIT_CURVE_CODE);
+		::SendMessageA(hwnd_edit_, EM_SETLIMITTEXT, MAX_TEXT, NULL);
+		::SetFocus(hwnd_edit_);
+	}
+
+
+	INT_PTR CurveCodeDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 		using StringId = global::StringTable::StringId;
-		constexpr size_t MAX_TEXT = 12;
 		const std::regex regex_code{ R"(^-?\d+$)" };
-		
+
 		switch (message) {
 		case WM_INITDIALOG:
-		{
-			HWND hwnd_edit = ::GetDlgItem(hwnd, IDC_EDIT_CURVE_CODE);
-			::SendMessageA(hwnd_edit, EM_SETLIMITTEXT, MAX_TEXT, NULL);
-			::SetFocus(hwnd_edit);
-		}
-			break;
-
-		case WM_CLOSE:
-			::EndDialog(hwnd, 1);
-			break;
+			init_controls(hwnd);
+			return TRUE;
 
 		case WM_KEYDOWN:
-			if (wparam == VK_RETURN)
+			if (wparam == VK_RETURN) {
 				::SendMessageA(hwnd, WM_COMMAND, MAKEWPARAM(IDOK, 0), 0);
+				return TRUE;
+			}
 			break;
 
 
@@ -51,26 +54,25 @@ namespace cved {
 						}
 						catch (std::out_of_range&) {}
 						// 入力値が範囲外の場合
-						util::show_popup(global::string_table[StringId::ErrorOutOfRange], util::PopupIcon::Error);
+						my_messagebox(global::string_table[StringId::ErrorOutOfRange], hwnd, MessageBoxIcon::Error);
 					}
 					// 入力値が不正の場合
 					else {
-						util::show_popup(global::string_table[StringId::ErrorInvalidInput], util::PopupIcon::Error);
+						my_messagebox(global::string_table[StringId::ErrorInvalidInput], hwnd, MessageBoxIcon::Error);
 					}
 				}
 				else {
 					::EndDialog(hwnd, 1);
-					break;
+					return TRUE;
 				}
-				break;
 			}
 
 			case IDCANCEL:
 				::EndDialog(hwnd, 1);
-				break;
+				return TRUE;
 			}
 			break;
 		}
-		return 0;
+		return FALSE;
 	}
 }

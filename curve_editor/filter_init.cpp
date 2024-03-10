@@ -4,7 +4,7 @@
 #include <mkaul/include/aviutl.hpp>
 #include "config.hpp"
 #include "curve_editor.hpp"
-#include "dlgproc_warning_autosaver.hpp"
+#include "dialog_warning_autosaver.hpp"
 #include "exedit_hook.hpp"
 #include "global.hpp"
 #include "string_table.hpp"
@@ -82,12 +82,13 @@ namespace cved {
 
 		// autosaverがインストールされていない場合の警告
 		if (!mkaul::aviutl::get_fp_by_name(fp, "autosaver.auf") and !global::config.get_ignore_autosaver_warning()) {
+			AutosaverWarningDialog dialog;
 			::MessageBeep(MB_ICONWARNING);
 			::IsolationAwareDialogBoxParamA(
 				fp->dll_hinst,
 				MAKEINTRESOURCE(IDD_WARNING_AUTOSAVER),
 				fp->hwnd_parent,
-				dlgproc_warning_autosaver,
+				dialog.get_message_router(),
 				NULL
 			);
 		}

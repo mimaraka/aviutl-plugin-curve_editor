@@ -3,7 +3,8 @@
 #include "config.hpp"
 #include "constants.hpp"
 #include "global.hpp"
-#include "dlgproc_config.hpp"
+#include "dialog_about.hpp"
+#include "dialog_pref.hpp"
 #include "string_table.hpp"
 #include "util.hpp"
 #include "resource.h"
@@ -48,37 +49,36 @@ namespace cved {
 		using StringId = global::StringTable::StringId;
 
 		switch (LOWORD(wparam)) {
+		case ID_LAYOUT_VERTICAL:
+			global::config.set_layout_mode(LayoutMode::Vertical);
+			break;
+
+		case ID_LAYOUT_HORIZONTAL:
+			global::config.set_layout_mode(LayoutMode::Horizontal);
+			break;
+			
 		case ID_MORE_SHOWLIBRARY:
 			global::config.set_show_library(!global::config.get_show_library());
 			global::window_main.send_command((WPARAM)WindowCommand::Update);
 			break;
 
 		case ID_MORE_PREFERENCES:
-			::DialogBoxA(global::fp->dll_hinst, MAKEINTRESOURCEA(IDD_CONFIG), global::fp->hwnd, dlgproc_config);
+		{
+			PrefDialog dialog;
+			dialog.show(global::fp->hwnd);
 			break;
+		}
 
 		case ID_MORE_HELP:
 			::ShellExecuteA(NULL, "open", std::format("{}/wiki", global::PLUGIN_GITHUB_URL).c_str(), NULL, NULL, SW_SHOWNORMAL);
 			break;
 
 		case ID_MORE_ABOUT:
-			util::show_popup(
-				std::format(
-					"{} ({})\n\nDeveloped by {}\nTranslated by {}",
-					global::PLUGIN_NAME,
-					global::PLUGIN_VERSION.str(),
-					global::PLUGIN_DEVELOPER,
-					global::PLUGIN_TRANSLATOR
-				).c_str()
-			);
+		{
+			AboutDialog dialog;
+			dialog.show(global::fp->hwnd);
 			break;
-
-		case ID_MORE_UPDATES:
-			break;
-
-		case ID_MORE_REPORTABUG:
-			::ShellExecuteA(NULL, "open", "https://forms.gle/LMPcpJTvXvw3fWRe7", NULL, NULL, SW_SHOWNORMAL);
-			break;
+		}
 
 		default:
 			return false;

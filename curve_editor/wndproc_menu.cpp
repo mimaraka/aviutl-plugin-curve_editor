@@ -1,17 +1,17 @@
 #include "wndproc_menu.hpp"
-#include "menu_edit_mode.hpp"
-#include "menu_more.hpp"
-#include "global.hpp"
-#include "config.hpp"
-#include "curve_editor.hpp"
-#include "my_messagebox.hpp"
-#include "string_table.hpp"
-#include "util.hpp"
-#include "constants.hpp"
-#include "dlgproc_curve_code.hpp"
-#include "resource.h"
 #include <mkaul/include/graphics.hpp>
 #include <mkaul/include/ui.hpp>
+#include "config.hpp"
+#include "constants.hpp"
+#include "curve_editor.hpp"
+#include "dialog_curve_code.hpp"
+#include "global.hpp"
+#include "my_messagebox.hpp"
+#include "menu_edit_mode.hpp"
+#include "menu_more.hpp"
+#include "string_table.hpp"
+#include "util.hpp"
+#include "resource.h"
 
 
 
@@ -432,14 +432,12 @@ namespace cved {
 				break;
 
 			case BUTTON_ID_READ:
-				::DialogBoxA(
-					global::fp->dll_hinst,
-					MAKEINTRESOURCE(IDD_CURVE_CODE),
-					hwnd,
-					dlgproc_curve_code
-				);
+			{
+				CurveCodeDialog dialog;
+				dialog.show(hwnd);
 				break;
-
+			}
+				
 			case BUTTON_ID_SAVE:
 				break;
 

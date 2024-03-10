@@ -22,6 +22,7 @@ namespace cved {
 				WarningDeleteAllCurves,
 				InfoLatestVersion,
 				InfoUpdateAvailable,
+				InfoRestartAviutl,
 				LabelEditModeNormal,
 				LabelEditModeValue,
 				LabelEditModeBezier,
@@ -47,6 +48,7 @@ namespace cved {
 				LabelPreferenceEditing,
 				WordVersion,
 				WordEditMode,
+				WordLanguageAutomatic,
 				NumStringId
 			};
 

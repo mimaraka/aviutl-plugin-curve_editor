@@ -2,13 +2,13 @@
 // Microsoft Visual C++ で生成されたインクルード ファイル。
 // curve_editor.rc で使用
 //
-#define IDD_CONFIG_APPEARANCE           7
-#define IDD_CONFIG                      104
-#define IDD_CONFIG_BEHAVIOR             105
-#define IDD_CONFIG_EDITING              106
+#define IDD_PREF_APPEARANCE             103
+#define IDD_PREF                        104
+#define IDD_PREF_BEHAVIOR               105
+#define IDD_PREF_EDITING                106
 #define IDR_MENU_GRAPH                  111
 #define IDD_WARNING_AUTOSAVER           114
-#define IDD_CONFIG_GENERAL              115
+#define IDD_PREF_GENERAL                115
 #define IDB_READ                        117
 #define IDB_SAVE                        118
 #define IDB_CLEAR                       119
@@ -21,6 +21,7 @@
 #define IDD_CURVE_CODE                  128
 #define IDC_DRAG                        132
 #define IDD_ABOUT                       135
+#define IDD_BEZIER_PARAM                136
 #define IDC_CONFIG_APPLY                1003
 #define IDC_CONFIG_RESET                1004
 #define IDC_COMBO_LANGUAGE              1005
@@ -28,11 +29,14 @@
 #define IDB_COPY                        1006
 #define IDC_BUTTON_CURVE_COLOR          1006
 #define IDC_CHECK1                      1007
+#define IDC_CHECK_REVERSE_WHEEL         1007
 #define IDC_CHECK2                      1008
+#define IDC_CHECK_AUTO_COPY             1008
 #define IDC_DONTSHOWAGAIN               1009
 #define IDC_LIST_CONFIG                 1009
 #define IDC_CHECK_NOTIFY_UPDATE         1010
 #define IDC_SHOW_POPUP                  1011
+#define IDC_CHECK_SHOW_POPUP            1011
 #define IDC_TREE1                       1012
 #define IDC_EDIT_CURVE_THICKNESS        1013
 #define IDC_SPIN_CURVE_THICKNESS        1014
@@ -43,6 +47,7 @@
 #define IDC_SPIN_CURVE_DRAWING_INTERVAL 1016
 #define IDC_COMBO_THEME                 1017
 #define IDC_CHECK3                      1018
+#define IDC_CHECK_AUTO_APPLY            1018
 #define IDC_SLIDER1                     1020
 #define IDC_SLIDER_CURVE_THICKNESS      1020
 #define IDC_SLIDER2                     1021
@@ -54,6 +59,7 @@
 #define IDC_COMBO_GRAPHIC_METHOD        1027
 #define IDC_STATIC_PLUGIN_INFO          1030
 #define IDC_SYSLINK1                    1031
+#define IDC_EDIT_BEZIER_PARAM           1032
 #define IDS_ERROR_LUA_NOT_FOUND         0x1000
 #define IDS_ERROR_EXEDIT_NOT_FOUND      0x1001
 #define IDS_ERROR_EXEDIT_HOOK_FAILED    0x1002
@@ -122,15 +128,15 @@
 #define ID_CURVE_PASTE                  40139
 #define ID_CURVE_COPYCURVE              40140
 #define ID_Menu                         40141
-#define ID_MANIFEST_VISUALSTYLE			40142
+#define ID_MANIFEST_VISUALSTYLE         40142
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_RESOURCE_VALUE        139
 #define _APS_NEXT_COMMAND_VALUE         40142
-#define _APS_NEXT_CONTROL_VALUE         1032
+#define _APS_NEXT_CONTROL_VALUE         1033
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

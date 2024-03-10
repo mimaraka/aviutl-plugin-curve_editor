@@ -87,9 +87,6 @@
     <ClInclude Include="global.hpp">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="util.hpp">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="curve_data.hpp">
       <Filter>Headers\Curve</Filter>
     </ClInclude>
@@ -159,17 +156,8 @@
     <ClInclude Include="curve_script.hpp">
       <Filter>Headers\Curve</Filter>
     </ClInclude>
-    <ClInclude Include="dlgproc_warning_autosaver.hpp">
-      <Filter>Headers\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dlgproc_config.hpp">
-      <Filter>Headers\Dialog</Filter>
-    </ClInclude>
     <ClInclude Include="curve_linear.hpp">
       <Filter>Headers\Curve</Filter>
-    </ClInclude>
-    <ClInclude Include="dlgproc_bezier_parameter.hpp">
-      <Filter>Headers\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="handle_bezier.hpp">
       <Filter>Headers\Curve\Handle</Filter>
@@ -216,29 +204,11 @@
     <ClInclude Include="menu_curve.hpp">
       <Filter>Headers\Menu</Filter>
     </ClInclude>
-    <ClInclude Include="dlgproc_config_general.hpp">
-      <Filter>Headers\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dlgproc_config_appearance.hpp">
-      <Filter>Headers\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dlgproc_config_behavior.hpp">
-      <Filter>Headers\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dlgproc_config_editing.hpp">
-      <Filter>Headers\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog_config_contents.hpp">
-      <Filter>Headers\Dialog</Filter>
-    </ClInclude>
     <ClInclude Include="curve_graph_numeric.hpp">
       <Filter>Headers\Curve</Filter>
     </ClInclude>
     <ClInclude Include="handle_bounce.hpp">
       <Filter>Headers\Curve\Handle</Filter>
-    </ClInclude>
-    <ClInclude Include="dlgproc_curve_code.hpp">
-      <Filter>Headers\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="exedit_hook.hpp">
       <Filter>Headers\Exedit Hook</Filter>
@@ -251,9 +221,6 @@
     </ClInclude>
     <ClInclude Include="my_button.hpp">
       <Filter>Headers\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="dlgproc_about.hpp">
-      <Filter>Headers\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="my_messagebox.hpp">
       <Filter>Headers\Util</Filter>
@@ -275,6 +242,39 @@
     </ClInclude>
     <ClInclude Include="filter_wndproc.hpp">
       <Filter>Headers\Filter Func</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_pref_appearance.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_pref.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_pref_general.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_pref_behavior.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_pref_editing.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_about.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_bezier_param.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_curve_code.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_warning_autosaver.hpp">
+      <Filter>Headers\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="util.hpp">
+      <Filter>Headers\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -335,20 +335,11 @@
     <ClCompile Include="version.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="dlgproc_warning_autosaver.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_config.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
     <ClCompile Include="curve_linear.cpp">
       <Filter>Sources\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_step.cpp">
       <Filter>Sources\Curve</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_bezier_parameter.cpp">
-      <Filter>Sources\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="handle_elastic_freq_decay.cpp">
       <Filter>Sources\Curve\Handle</Filter>
@@ -361,9 +352,6 @@
     </ClCompile>
     <ClCompile Include="handle_bounce.cpp">
       <Filter>Sources\Curve\Handle</Filter>
-    </ClCompile>
-    <ClCompile Include="util.cpp">
-      <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="curve_graph.cpp">
       <Filter>Sources\Curve</Filter>
@@ -398,24 +386,6 @@
     <ClCompile Include="curve_editor.cpp">
       <Filter>Sources\Curve\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="dialog_config_contents.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_config_general.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_config_appearance.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_config_behavior.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_config_editing.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_curve_code.cpp">
-      <Filter>Sources\Dialog</Filter>
-    </ClCompile>
     <ClCompile Include="exedit_hook.cpp">
       <Filter>Sources\Exedit Hook</Filter>
     </ClCompile>
@@ -424,9 +394,6 @@
     </ClCompile>
     <ClCompile Include="drag_and_drop.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="dlgproc_about.cpp">
-      <Filter>Sources\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="actctx_manager.cpp">
       <Filter>Sources\Util</Filter>
@@ -445,6 +412,39 @@
     </ClCompile>
     <ClCompile Include="filter_wndproc.cpp">
       <Filter>Sources\Filter Func</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_pref_appearance.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_pref.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_pref_general.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_pref_behavior.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_pref_editing.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_about.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_bezier_param.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_curve_code.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_warning_autosaver.cpp">
+      <Filter>Sources\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
+      <Filter>Sources\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
