@@ -139,7 +139,7 @@ namespace cved {
 			);
 
 			// 上部メニュー
-			global::window_menu.create(
+			global::window_toolbar.create(
 				global::fp->dll_hinst,
 				hwnd,
 				"WINDOW_MENU",
@@ -166,7 +166,7 @@ namespace cved {
 
 		case WM_CLOSE:
 		case WM_DESTROY:
-			global::window_menu.close();
+			global::window_toolbar.close();
 			global::window_grapheditor.close();
 			global::window_library.close();
 			p_graphics->release();
@@ -210,7 +210,7 @@ namespace cved {
 
 		case WM_SIZE:
 			p_graphics->resize();
-			global::window_menu.move(rect_menu);
+			global::window_toolbar.move(rect_menu);
 			global::window_grapheditor.move(rect_editor);
 			global::window_library.move(rect_library);
 			return 0;
@@ -271,7 +271,7 @@ namespace cved {
 			switch (wparam) {
 			case (UINT)WindowCommand::Update:
 				global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
-				global::window_menu.send_command((WPARAM)WindowCommand::Update);
+				global::window_toolbar.send_command((WPARAM)WindowCommand::Update);
 				global::window_main.redraw();
 				break;
 			}
