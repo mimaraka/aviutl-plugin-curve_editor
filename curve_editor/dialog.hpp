@@ -14,6 +14,5 @@ namespace cved {
 	public:
 		HWND create(HWND hwnd) const noexcept;
 		INT_PTR show(HWND hwnd) const noexcept;
-		static DLGPROC get_message_router() noexcept { return message_router; }
 	};
 }

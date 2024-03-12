@@ -3,7 +3,7 @@
 #include <mkaul/include/graphics.hpp>
 #include "wndproc_main.hpp"
 #include "wndproc_grapheditor.hpp"
-#include "wndproc_menu.hpp"
+#include "wndproc_toolbar.hpp"
 #include "wndproc_library.hpp"
 #include "global.hpp"
 #include "config.hpp"
@@ -144,7 +144,7 @@ namespace cved {
 				hwnd,
 				"WINDOW_MENU",
 				"CVED_WND_MENU",
-				wndproc_menu,
+				wndproc_toolbar,
 				WS_CHILD,
 				NULL,
 				rect_menu
