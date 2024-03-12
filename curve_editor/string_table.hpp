@@ -20,6 +20,7 @@ namespace cved {
 				ErrorCodeCopyFailed,
 				WarningDeleteCurve,
 				WarningDeleteAllCurves,
+				WarningResetPreferences,
 				InfoLatestVersion,
 				InfoUpdateAvailable,
 				InfoRestartAviutl,
