@@ -2,6 +2,7 @@
 #include "config.hpp"
 #include "enum.hpp"
 #include "global.hpp"
+#include "my_messagebox.hpp"
 #include "string_table.hpp"
 #include "resource.h"
 
@@ -38,7 +39,7 @@ namespace cved {
 
 
 	void PrefDialog::init_controls(HWND hwnd) noexcept {
-		hwnd_list_categories_ = ::GetDlgItem(hwnd, IDC_LIST_CONFIG);
+		hwnd_list_categories_ = ::GetDlgItem(hwnd, IDC_LIST_CATEGORY);
 		RECT rect_child = { 100, 7, 400, 217 };
 		::MapDialogRect(hwnd, &rect_child);
 
@@ -122,13 +123,23 @@ namespace cved {
 				::EndDialog(hwnd, 1);
 				return TRUE;
 
-			case IDC_CONFIG_APPLY:
+			case IDC_BUTTON_APPLY:
 				save_config();
 				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				return TRUE;
 
-			case IDC_CONFIG_RESET:
+			case IDC_BUTTON_RESET:
+			{
+				auto resp = my_messagebox(
+					global::string_table[StringId::WarningResetPreferences],
+					hwnd,
+					MessageBoxIcon::Warning, MessageBoxButton::OkCancel
+				);
+				if (resp == IDOK) {
+					// TODO: Preferencesのリセット
+				}
 				return TRUE;
+			}
 			}
 			switch (HIWORD(wparam)) {
 			case LBN_SELCHANGE:

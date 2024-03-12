@@ -226,6 +226,7 @@
     <ClInclude Include="menu_more.hpp" />
     <ClInclude Include="my_button.hpp" />
     <ClInclude Include="my_messagebox.hpp" />
+    <ClInclude Include="preferences.hpp" />
     <ClInclude Include="trackbar_button.hpp" />
     <ClInclude Include="preset.hpp" />
     <ClInclude Include="resource.h" />
@@ -241,7 +242,7 @@
     <ClInclude Include="wndproc_grapheditor.hpp" />
     <ClInclude Include="wndproc_library.hpp" />
     <ClInclude Include="wndproc_main.hpp" />
-    <ClInclude Include="wndproc_menu.hpp" />
+    <ClInclude Include="wndproc_toolbar.hpp" />
     <ClInclude Include="wndproc_texteditor.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -337,7 +338,7 @@
     <ClCompile Include="wndproc_grapheditor.cpp" />
     <ClCompile Include="wndproc_library.cpp" />
     <ClCompile Include="wndproc_main.cpp" />
-    <ClCompile Include="wndproc_menu.cpp" />
+    <ClCompile Include="wndproc_toolbar.cpp" />
     <ClCompile Include="wndproc_texteditor.cpp" />
   </ItemGroup>
   <ItemGroup>
