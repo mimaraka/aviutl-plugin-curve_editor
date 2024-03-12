@@ -14,7 +14,7 @@ namespace cved {
 		inline mkaul::exedit::Internal exedit_internal;
 
 		inline mkaul::ui::Window window_main;
-		inline mkaul::ui::Window window_menu;
+		inline mkaul::ui::Window window_toolbar;
 		inline mkaul::ui::Window window_editor;
 		inline mkaul::ui::Window window_grapheditor;
 		inline mkaul::ui::Window window_texteditor;

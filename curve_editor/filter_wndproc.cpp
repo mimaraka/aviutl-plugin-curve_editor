@@ -14,37 +14,37 @@ namespace cved {
 			// [R]
 		case 82:
 			if (global::window_editor.get_hwnd())
-				::SendMessage(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Reverse, 0);
+				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Reverse, 0);
 			return 0;
 
 			// [C]
 		case 67:
 			if (::GetAsyncKeyState(VK_CONTROL) < 0 and global::config.get_edit_mode() == EditMode::Bezier)
-				::SendMessage(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Copy, 0);
+				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Copy, 0);
 			return 0;
 
 			// [S]
 		case 83:
 			if (::GetAsyncKeyState(VK_CONTROL) < 0)
-				::SendMessage(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Save, 0);
+				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Save, 0);
 			return 0;
 
 			// [<]
 		case VK_LEFT:
-			if (global::config.get_edit_mode() == EditMode::Normal and global::window_menu.get_hwnd())
-				::SendMessage(global::window_menu.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::IdBack, 0);
+			if (global::config.get_edit_mode() == EditMode::Normal and global::window_toolbar.get_hwnd())
+				::SendMessageA(global::window_toolbar.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::IdBack, 0);
 			return 0;
 
 			// [>]
 		case VK_RIGHT:
-			if (global::config.get_edit_mode() == EditMode::Normal and global::window_menu.get_hwnd())
-				::SendMessage(global::window_menu.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::IdNext, 0);
+			if (global::config.get_edit_mode() == EditMode::Normal and global::window_toolbar.get_hwnd())
+				::SendMessageA(global::window_toolbar.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::IdNext, 0);
 			return 0;
 
 			// [Home]
 		case VK_HOME:
 			if (global::window_editor.get_hwnd())
-				::SendMessage(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Fit, 0);
+				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Fit, 0);
 			return 0;
 
 			// [A]
@@ -55,7 +55,7 @@ namespace cved {
 			// [Delete]
 		case VK_DELETE:
 			if (global::window_editor.get_hwnd())
-				::SendMessage(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Clear, 0);
+				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Clear, 0);
 			return 0;
 		}
 		return 0;
@@ -78,7 +78,7 @@ namespace cved {
 			actctx_manager.init(fp->dll_hinst);
 
 			// WS_CLIPCHILDRENを追加
-			::SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
+			::SetWindowLongPtrA(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
 
 			// Alpha版・Beta版の場合はキャプションを変更
 			if (global::PLUGIN_VERSION.is_preview()) {
