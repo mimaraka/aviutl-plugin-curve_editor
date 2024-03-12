@@ -23,9 +23,14 @@ namespace cved {
 	}
 
 
-	bool ActCtxManager::exit() noexcept {
-		auto ret = ::DeactivateActCtx(NULL, cookie_);
-		if (hactctx_) ::ReleaseActCtx(hactctx_);
-		return ret;
+	bool ActCtxManager::exit() {
+		HANDLE tmp;
+		::GetCurrentActCtx(&tmp);
+		if (tmp == hactctx_) {
+			auto ret = ::DeactivateActCtx(NULL, cookie_);
+			if (hactctx_) ::ReleaseActCtx(hactctx_);
+			return ret;
+		}
+		else return false;
 	}
 }

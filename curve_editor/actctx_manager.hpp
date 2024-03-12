@@ -11,6 +11,6 @@ namespace cved {
 
     public:
         bool init(HINSTANCE hinst) noexcept;
-        bool exit() noexcept;
+        bool exit();
     };
 }
