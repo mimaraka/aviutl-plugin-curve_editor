@@ -24,15 +24,8 @@ namespace cved {
 
 		constexpr int BUTTON_ID_MODE = 0x0001;
 		constexpr int BUTTON_ID_PARAM = 0x0002;
-		constexpr int BUTTON_ID_COPY = 0x0003;
-		constexpr int BUTTON_ID_READ = 0x0004;
-		constexpr int BUTTON_ID_SAVE = 0x0005;
-		constexpr int BUTTON_ID_CLEAR = 0x0006;
-		constexpr int BUTTON_ID_FIT = 0x0007;
 		constexpr int BUTTON_ID_MORE = 0x0008;
 		constexpr int BUTTON_ID_ID = 0x0009;
-		constexpr int BUTTON_ID_BACK = 0x000a;
-		constexpr int BUTTON_ID_NEXT = 0x000b;
 		constexpr int PADDING_CONTROL_WIDE = 4;
 		constexpr int PADDING_CONTROL_NARROW = 2;
 
@@ -65,7 +58,7 @@ namespace cved {
 			button_copy.create(
 				global::fp->dll_hinst,
 				hwnd,
-				BUTTON_ID_COPY,
+				(int)WindowCommand::Copy,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipCopy],
@@ -91,7 +84,7 @@ namespace cved {
 			button_read.create(
 				global::fp->dll_hinst,
 				hwnd,
-				BUTTON_ID_READ,
+				(int)WindowCommand::Read,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipRead],
@@ -116,7 +109,7 @@ namespace cved {
 			button_save.create(
 				global::fp->dll_hinst,
 				hwnd,
-				BUTTON_ID_SAVE,
+				(int)WindowCommand::Save,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipSave],
@@ -141,7 +134,7 @@ namespace cved {
 			button_clear.create(
 				global::fp->dll_hinst,
 				hwnd,
-				BUTTON_ID_CLEAR,
+				(int)WindowCommand::Clear,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipClear],
@@ -165,7 +158,7 @@ namespace cved {
 			button_fit.create(
 				global::fp->dll_hinst,
 				hwnd,
-				BUTTON_ID_FIT,
+				(int)WindowCommand::Fit,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipFit],
@@ -279,7 +272,7 @@ namespace cved {
 			button_id_back.create(
 				global::fp->dll_hinst,
 				hwnd,
-				BUTTON_ID_BACK,
+				(int)WindowCommand::IdBack,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipIdBack],
@@ -303,7 +296,7 @@ namespace cved {
 			button_id_next.create(
 				global::fp->dll_hinst,
 				hwnd,
-				BUTTON_ID_NEXT,
+				(int)WindowCommand::IdNext,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipIdNext],
@@ -324,8 +317,7 @@ namespace cved {
 				"PNG"
 			);
 
-			::SendMessage(hwnd, WM_COMMAND, (UINT)WindowCommand::Update, 0);
-
+			::SendMessageA(hwnd, WM_COMMAND, (UINT)WindowCommand::Update, 0);
 			return 0;
 		}
 
@@ -378,12 +370,28 @@ namespace cved {
 					button_param.show();
 					row_bottom.replace(1, &button_param);
 					toolbar.move(mkaul::WindowRectangle{ rect_wnd });
+					::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateParam, NULL);
 				}
 				break;
 
 			case (WPARAM)WindowCommand::AddUpdateNotification:
 
 				break;
+
+			case (WPARAM)WindowCommand::UpdateParam:
+			{
+				std::string label = "";
+				auto p_curve = global::editor.editor_graph().numeric_curve();
+				if (global::config.get_edit_mode() == EditMode::Bezier) {
+					// TODO: ベジェのパラメータを表示する処理
+					label = "0.21, 0.43, 0.57, 0.16";
+				}
+				else if (p_curve) {
+					label = std::to_string(p_curve->encode());
+				}
+				button_param.set_label(label);
+				break;
+			}
 
 			case BUTTON_ID_MODE:
 			{
@@ -399,7 +407,7 @@ namespace cved {
 			case BUTTON_ID_PARAM:
 				break;
 
-			case BUTTON_ID_COPY:
+			case (WPARAM)WindowCommand::Copy:
 			{
 				auto tmp = std::to_string(global::editor.track_param());
 				if (!util::copy_to_clipboard(hwnd, tmp.c_str()) and global::config.get_show_popup()) {
@@ -408,17 +416,17 @@ namespace cved {
 			}
 				break;
 
-			case BUTTON_ID_READ:
+			case (WPARAM)WindowCommand::Read:
 			{
 				CurveCodeDialog dialog;
 				dialog.show(hwnd);
 				break;
 			}
 				
-			case BUTTON_ID_SAVE:
+			case (WPARAM)WindowCommand::Save:
 				break;
 
-			case BUTTON_ID_CLEAR:
+			case (WPARAM)WindowCommand::Clear:
 			{
 				int response = IDOK;
 				if (global::config.get_show_popup()) {
@@ -443,7 +451,7 @@ namespace cved {
 				break;
 			}
 
-			case BUTTON_ID_FIT:
+			case (WPARAM)WindowCommand::Fit:
 				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
 				break;
 
