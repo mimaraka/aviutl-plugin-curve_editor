@@ -1,7 +1,7 @@
-#define ISOLATION_AWARE_ENABLED 1
-
 #include "filter_init.hpp"
+#include <CommCtrl.h>
 #include <mkaul/include/aviutl.hpp>
+#include "actctx_manager.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_warning_autosaver.hpp"
@@ -17,6 +17,7 @@ namespace cved {
 	// AviUtl起動時の処理
 	BOOL filter_init(AviUtl::FilterPlugin* fp) {
 		using StringId = global::StringTable::StringId;
+		ActCtxManager actctx_manager;
 
 		global::fp = fp;
 
@@ -36,6 +37,9 @@ namespace cved {
 
 		// 文字列テーブルの読み込み
 		global::string_table.load(fp->dll_hinst);
+
+		// アクティベーションコンテキスト(開始)
+		actctx_manager.init(fp->dll_hinst);
 
 		// exedit.auf(ver.0.92)存在確認
 		if (!global::exedit_internal.init(fp)) {
@@ -84,14 +88,11 @@ namespace cved {
 		if (!mkaul::aviutl::get_fp_by_name(fp, "autosaver.auf") and !global::config.get_ignore_autosaver_warning()) {
 			AutosaverWarningDialog dialog;
 			::MessageBeep(MB_ICONWARNING);
-			::IsolationAwareDialogBoxParamA(
-				fp->dll_hinst,
-				MAKEINTRESOURCE(IDD_WARNING_AUTOSAVER),
-				fp->hwnd_parent,
-				dialog.get_message_router(),
-				NULL
-			);
+			dialog.show(fp->hwnd_parent);
 		}
+
+		// アクティベーションコンテキスト(終了)
+		actctx_manager.exit();
 
 		return TRUE;
 	}
