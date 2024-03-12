@@ -53,6 +53,10 @@ namespace cved {
 					id = IDS_WARNING_DELETE_ALL_CURVES;
 					break;
 
+				case StringId::WarningResetPreferences:
+					id = IDS_WARNING_PREF_RESET;
+					break;
+
 				case StringId::InfoLatestVersion:
 					id = IDS_INFO_LATEST_VERSION;
 					break;
