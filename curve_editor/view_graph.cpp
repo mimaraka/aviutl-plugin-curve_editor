@@ -87,7 +87,7 @@ namespace cved {
 
 	void GraphView::draw_grid(mkaul::graphics::Graphics* p_graphics, const mkaul::WindowRectangle& rect_wnd) const noexcept {
 		constexpr float BRIGHTNESS_GRID = 0.1f;
-		constexpr double MAX_DELTA = 80.;
+		constexpr double MAX_DELTA = 75.;
 		constexpr float GRID_WEIGHT_BOLD = 1.f;
 		constexpr float GRID_WEIGHT_THIN = 0.5f;
 
