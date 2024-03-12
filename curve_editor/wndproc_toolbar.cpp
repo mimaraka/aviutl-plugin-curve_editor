@@ -1,4 +1,4 @@
-#include "wndproc_menu.hpp"
+#include "wndproc_toolbar.hpp"
 #include <mkaul/include/graphics.hpp>
 #include <mkaul/include/ui.hpp>
 #include "config.hpp"
@@ -16,7 +16,7 @@
 
 
 namespace cved {
-	LRESULT CALLBACK wndproc_menu(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	LRESULT CALLBACK wndproc_toolbar(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 		using namespace mkaul::graphics;
 		using namespace mkaul::ui;
 		using StringId = global::StringTable::StringId;
@@ -37,21 +37,13 @@ namespace cved {
 		constexpr int PADDING_CONTROL_NARROW = 2;
 
 		static std::unique_ptr<Graphics> p_graphics = Factory::create_graphics();
-		static std::unique_ptr<Bitmap> p_icon_copy;
-		static std::unique_ptr<Bitmap> p_icon_read;
-		static std::unique_ptr<Bitmap> p_icon_save;
-		static std::unique_ptr<Bitmap> p_icon_clear;
-		static std::unique_ptr<Bitmap> p_icon_fit;
-		static std::unique_ptr<Bitmap> p_icon_more;
-		static std::unique_ptr<Bitmap> p_icon_id_back;
-		static std::unique_ptr<Bitmap> p_icon_id_next;
 
 		static IconButton button_copy, button_read, button_save, button_clear, button_fit, button_more, button_id_back, button_id_next;
 		static LabelButton button_mode, button_param, button_id;
 		static Row row_id{ &button_id_back, &button_id, &button_id_next };
 		static Row row_top{ &button_copy, &button_read, &button_save, &button_clear, &button_fit, &button_more };
 		static Row row_bottom{ &button_mode, &button_param };
-		static Column top_menu{ &row_top, &row_bottom };
+		static Column toolbar{ &row_top, &row_bottom };
 
 		static EditModeMenu menu_edit_mode;
 		static MoreMenu menu_more{ global::fp->dll_hinst };
@@ -69,23 +61,15 @@ namespace cved {
 
 			mkaul::graphics::Font font{ 10.f, "Yu Gothic UI Semibold", mkaul::flag::FontStyle::Regular, 600 };
 
-			// アイコン(コピー)
-			p_icon_copy = p_graphics->load_bitmap_from_resource(
-				global::fp->dll_hinst,
-				MAKEINTRESOURCEA(IDB_COPY),
-				"PNG"
-			);
-
 			// ボタン(コピー)
 			button_copy.create(
 				global::fp->dll_hinst,
 				hwnd,
 				BUTTON_ID_COPY,
-				p_icon_copy.get(),
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipCopy],
-				mkaul::WindowRectangle{0, 0, 1, 1},
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_WIDE,
 					PADDING_CONTROL_WIDE,
@@ -96,10 +80,10 @@ namespace cved {
 				global::ROUND_RADIUS
 			);
 
-			// アイコン(カーブ読み取り)
-			p_icon_read = p_graphics->load_bitmap_from_resource(
+			// アイコン(コピー)
+			button_copy.set_icon_from_resource(
 				global::fp->dll_hinst,
-				MAKEINTRESOURCEA(IDB_READ),
+				MAKEINTRESOURCEA(IDB_COPY),
 				"PNG"
 			);
 
@@ -108,11 +92,35 @@ namespace cved {
 				global::fp->dll_hinst,
 				hwnd,
 				BUTTON_ID_READ,
-				p_icon_read.get(),
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipRead],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
+				mkaul::WindowRectangle{
+					PADDING_CONTROL_NARROW,
+					PADDING_CONTROL_WIDE,
+					PADDING_CONTROL_NARROW,
+					PADDING_CONTROL_NARROW
+				},
+				RoundEdge::All,
+				global::ROUND_RADIUS
+			);
+
+			// アイコン(カーブ読み取り)
+			button_read.set_icon_from_resource(
+				global::fp->dll_hinst,
+				MAKEINTRESOURCEA(IDB_READ),
+				"PNG"
+			);
+
+			button_save.create(
+				global::fp->dll_hinst,
+				hwnd,
+				BUTTON_ID_SAVE,
+				&global::config.get_theme().bg,
+				&global::config.get_theme().bg,
+				global::string_table[StringId::LabelTooltipSave],
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_WIDE,
@@ -124,34 +132,9 @@ namespace cved {
 			);
 
 			// アイコン(保存)
-			p_icon_save = p_graphics->load_bitmap_from_resource(
+			button_save.set_icon_from_resource(
 				global::fp->dll_hinst,
 				MAKEINTRESOURCEA(IDB_SAVE),
-				"PNG"
-			);
-
-			button_save.create(
-				global::fp->dll_hinst,
-				hwnd,
-				BUTTON_ID_SAVE,
-				p_icon_save.get(),
-				&global::config.get_theme().bg,
-				&global::config.get_theme().bg,
-				global::string_table[StringId::LabelTooltipSave],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
-				mkaul::WindowRectangle{
-					PADDING_CONTROL_NARROW,
-					PADDING_CONTROL_WIDE,
-					PADDING_CONTROL_NARROW,
-					PADDING_CONTROL_NARROW
-				},
-				RoundEdge::All,
-				global::ROUND_RADIUS
-			);
-
-			p_icon_clear = p_graphics->load_bitmap_from_resource(
-				global::fp->dll_hinst,
-				MAKEINTRESOURCEA(IDB_CLEAR),
 				"PNG"
 			);
 
@@ -159,11 +142,10 @@ namespace cved {
 				global::fp->dll_hinst,
 				hwnd,
 				BUTTON_ID_CLEAR,
-				p_icon_clear.get(),
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipClear],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_WIDE,
@@ -174,9 +156,9 @@ namespace cved {
 				global::ROUND_RADIUS
 			);
 
-			p_icon_fit = p_graphics->load_bitmap_from_resource(
+			button_clear.set_icon_from_resource(
 				global::fp->dll_hinst,
-				MAKEINTRESOURCEA(IDB_FIT),
+				MAKEINTRESOURCEA(IDB_CLEAR),
 				"PNG"
 			);
 
@@ -184,11 +166,10 @@ namespace cved {
 				global::fp->dll_hinst,
 				hwnd,
 				BUTTON_ID_FIT,
-				p_icon_fit.get(),
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipFit],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_WIDE,
@@ -199,9 +180,9 @@ namespace cved {
 				global::ROUND_RADIUS
 			);
 
-			p_icon_more = p_graphics->load_bitmap_from_resource(
+			button_fit.set_icon_from_resource(
 				global::fp->dll_hinst,
-				MAKEINTRESOURCEA(IDB_MORE),
+				MAKEINTRESOURCEA(IDB_FIT),
 				"PNG"
 			);
 
@@ -210,11 +191,10 @@ namespace cved {
 				global::fp->dll_hinst,
 				hwnd,
 				BUTTON_ID_MORE,
-				p_icon_more.get(),
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipMore],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_WIDE,
@@ -223,6 +203,12 @@ namespace cved {
 				},
 				RoundEdge::All,
 				global::ROUND_RADIUS
+			);
+
+			button_more.set_icon_from_resource(
+				global::fp->dll_hinst,
+				MAKEINTRESOURCEA(IDB_MORE),
+				"PNG"
 			);
 
 			// ボタン(モード選択)
@@ -236,7 +222,7 @@ namespace cved {
 				&global::config.get_theme().bg,
 				&global::config.get_theme().button_label,
 				global::string_table[StringId::WordEditMode],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_WIDE,
 					PADDING_CONTROL_NARROW,
@@ -258,7 +244,7 @@ namespace cved {
 				&global::config.get_theme().bg,
 				&global::config.get_theme().button_label,
 				"",
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_NARROW,
@@ -279,7 +265,7 @@ namespace cved {
 				&global::config.get_theme().bg,
 				&global::config.get_theme().button_label,
 				global::string_table[StringId::LabelTooltipCurrentId],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_NARROW,
@@ -288,23 +274,16 @@ namespace cved {
 				},
 				RoundEdge::All,
 				global::ROUND_RADIUS
-			);
-
-			p_icon_id_back = p_graphics->load_bitmap_from_resource(
-				global::fp->dll_hinst,
-				MAKEINTRESOURCEA(IDB_BACK),
-				"PNG"
 			);
 
 			button_id_back.create(
 				global::fp->dll_hinst,
 				hwnd,
 				BUTTON_ID_BACK,
-				p_icon_id_back.get(),
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipIdBack],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_NARROW,
@@ -315,9 +294,9 @@ namespace cved {
 				global::ROUND_RADIUS
 			);
 
-			p_icon_id_next = p_graphics->load_bitmap_from_resource(
+			button_id_back.set_icon_from_resource(
 				global::fp->dll_hinst,
-				MAKEINTRESOURCEA(IDB_NEXT),
+				MAKEINTRESOURCEA(IDB_BACK),
 				"PNG"
 			);
 
@@ -325,11 +304,10 @@ namespace cved {
 				global::fp->dll_hinst,
 				hwnd,
 				BUTTON_ID_NEXT,
-				p_icon_id_next.get(),
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
 				global::string_table[StringId::LabelTooltipIdNext],
-				mkaul::WindowRectangle{ 0, 0, 1, 1 },
+				mkaul::WindowRectangle{},
 				mkaul::WindowRectangle{
 					PADDING_CONTROL_NARROW,
 					PADDING_CONTROL_NARROW,
@@ -340,6 +318,12 @@ namespace cved {
 				global::ROUND_RADIUS
 			);
 
+			button_id_next.set_icon_from_resource(
+				global::fp->dll_hinst,
+				MAKEINTRESOURCEA(IDB_NEXT),
+				"PNG"
+			);
+
 			::SendMessage(hwnd, WM_COMMAND, (UINT)WindowCommand::Update, 0);
 
 			return 0;
@@ -347,20 +331,13 @@ namespace cved {
 
 		case WM_DESTROY:
 		case WM_CLOSE:
+			toolbar.close();
 			p_graphics->release();
-			p_icon_copy->release();
-			p_icon_read->release();
-			p_icon_save->release();
-			p_icon_clear->release();
-			p_icon_fit->release();
-			p_icon_more->release();
-			p_icon_id_back->release();
-			p_icon_id_next->release();
 			return 0;
 
 		case WM_SIZE:
 			p_graphics->resize();
-			top_menu.move(mkaul::WindowRectangle{ rect_wnd });
+			toolbar.move(mkaul::WindowRectangle{ rect_wnd });
 			return 0;
 
 		case WM_PAINT:
@@ -392,7 +369,7 @@ namespace cved {
 					row_id.show();
 					button_param.hide();
 					row_bottom.replace(1, &row_id);
-					top_menu.move(mkaul::WindowRectangle{ rect_wnd });
+					toolbar.move(mkaul::WindowRectangle{ rect_wnd });
 				}
 				// パラメータボタンを表示し、ID操作盤を非表示にする
 				else {
@@ -400,7 +377,7 @@ namespace cved {
 					row_id.hide();
 					button_param.show();
 					row_bottom.replace(1, &button_param);
-					top_menu.move(mkaul::WindowRectangle{ rect_wnd });
+					toolbar.move(mkaul::WindowRectangle{ rect_wnd });
 				}
 				break;
 
