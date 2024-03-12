@@ -100,9 +100,8 @@ namespace cved {
 			);
 			return 0;
 
-			// ウィンドウ破棄時
-		case WM_CLOSE:
-		case WM_DESTROY:
+			// AviUtl終了時
+		case WindowMessage::Exit:
 			global::window_main.close();
 			actctx_manager.exit();
 			return 0;
