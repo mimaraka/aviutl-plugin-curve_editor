@@ -77,14 +77,6 @@ namespace cved {
 			std::filesystem::path aviutl_directory_;
 			std::filesystem::path json_path_;
 
-			template<typename T>
-			T get_json_value(const nlohmann::json& data, const char* key_name, T def_value) const {
-				if (data.contains(key_name)) {
-					return data[key_name];
-				}
-				else return def_value;
-			}
-
 		public:
 			void init(HINSTANCE hinst) noexcept;
 
