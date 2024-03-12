@@ -172,6 +172,22 @@ namespace cved {
 
 			editor.current_curve()->handle_end_control();
 			editor.current_curve()->point_end_control();
+
+			// Auto Copy
+			if (global::config.get_auto_copy() and editor.numeric_curve()) {
+				global::window_toolbar.send_command((WPARAM)WindowCommand::Copy);
+			}
+
+			// Auto Apply
+			if (global::config.get_auto_apply() and !editor.numeric_curve()) {
+				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::RedrawAviutl, NULL);
+			}
+
+			// パラメータボタンの更新
+			if (editor.numeric_curve()) {
+				global::window_toolbar.send_command((WPARAM)WindowCommand::UpdateParam);
+			}
+
 			view.end_move();
 			view.end_scale();
 			::ReleaseCapture();
