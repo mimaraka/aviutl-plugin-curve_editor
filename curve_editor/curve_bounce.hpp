@@ -64,8 +64,6 @@ namespace cved {
 		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
 		bool point_begin_move(ActivePoint active_point, const GraphView& view) noexcept override;
 		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
-		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept override;
-		void point_end_move() noexcept override {}
-		void point_end_control() noexcept override;
+		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept override;
 	};
 }

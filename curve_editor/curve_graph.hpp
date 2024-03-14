@@ -70,7 +70,7 @@ namespace cved {
 		const auto& point_start() const noexcept { return point_start_; }
 		const auto& point_end() const noexcept { return point_end_; }
 
-		virtual void reverse() noexcept = 0;
+		virtual void reverse() noexcept;
 
 		bool is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
 		virtual bool is_point_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
@@ -92,8 +92,8 @@ namespace cved {
 		virtual ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept = 0;
 		virtual bool point_begin_move(ActivePoint active_point, const GraphView& view) noexcept = 0;
 		virtual ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept = 0;
-		virtual bool point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept = 0;
-		virtual void point_end_move() noexcept = 0;
-		virtual void point_end_control() noexcept = 0;
+		virtual bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept;
+		virtual void point_end_move() noexcept {};
+		virtual void point_end_control() noexcept;
 	};
 }

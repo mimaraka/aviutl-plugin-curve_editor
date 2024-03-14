@@ -49,8 +49,18 @@ namespace cved {
 		curve_segments_.emplace_back(std::move(new_curve));
 	}
 
+	// カーブを反転
 	void NormalCurve::reverse() noexcept {
-
+		for (size_t i = 0; i < curve_segments_.size() / 2; i++) {
+			std::swap(curve_segments_[i], curve_segments_[curve_segments_.size() - i - 1]);
+		}
+		for (auto& p_curve : curve_segments_) {
+			p_curve->reverse();
+			// prev, nextも反転
+			auto tmp = p_curve->prev();
+			p_curve->set_prev(p_curve->next());
+			p_curve->set_next(tmp);
+		}
 	}
 
 	// ハンドルを描画
@@ -131,7 +141,7 @@ namespace cved {
 				};
 				// 既存のカーブを移動させる
 				(*it)->point_begin_move(ActivePoint::End, view);
-				(*it)->point_move(ActivePoint::End, point, view);
+				(*it)->point_move(ActivePoint::End, point);
 				(*it)->point_end_move();
 
 				// 左のカーブがベジェの場合、右のハンドルをnew_curveの右ハンドルにコピーする
@@ -169,7 +179,7 @@ namespace cved {
 				// カーソルが始点にホバーしている場合
 				if ((*it)->point_start().is_hovered(point, box_width, view)) {
 					// 前のカーブの終点を削除するカーブの終点に移動させる
-					(*std::prev(it))->point_move(ActivePoint::End, (*it)->point_end().point(), view);
+					(*std::prev(it))->point_move(ActivePoint::End, (*it)->point_end().point());
 
 					// 自身と前のカーブがともにベジェの場合
 					if (typeid(**it) == typeid(BezierCurve) and typeid(**std::prev(it)) == typeid(BezierCurve)) {
@@ -368,7 +378,7 @@ namespace cved {
 			auto pt = mkaul::Point{ x, point.y };
 			auto tmp = (*it)->point_update(pt, view);
 			if (tmp == ActivePoint::End and next) {
-				next->point_move(ActivePoint::Start, pt, view);
+				next->point_move(ActivePoint::Start, pt);
 				result = tmp;
 			}
 		}

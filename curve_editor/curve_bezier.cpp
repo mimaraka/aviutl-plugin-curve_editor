@@ -183,6 +183,7 @@ namespace cved {
 		auto offset_tmp = handle_left_.point_offset();
 		handle_left_.set_point_offset(-handle_right_.point_offset());
 		handle_right_.set_point_offset(-offset_tmp);
+		GraphCurve::reverse();
 	}
 
 	int BezierCurve::encode() const noexcept {
@@ -267,6 +268,18 @@ namespace cved {
 		);
 
 		return true;
+	}
+
+	std::string BezierCurve::make_param() const noexcept {
+		const double width = point_end_.x() - point_start_.x();
+		const double height = point_end_.y() - point_start_.y();
+
+		float x1 = static_cast<float>(handle_left_.point_offset().x / width);
+		float y1 = static_cast<float>(handle_left_.point_offset().y / height);
+		float x2 = static_cast<float>(handle_right_.point_offset().x / width + 1.f);
+		float y2 = static_cast<float>(handle_right_.point_offset().y / height + 1.f);
+
+		return std::format("{:.2f}, {:.2f}, {:.2f}, {:.2f}", x1, y1, x2, y2);
 	}
 
 	// ハンドルを描画
@@ -391,23 +404,13 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
-	bool BezierCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		switch (active_point) {
-		case ActivePoint::Start:
-			point_start_.move(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
-			break;
-
-		case ActivePoint::End:
-			point_end_.move(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
-			break;
-
-		default:
-			return false;
+	bool BezierCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
+		if (GraphCurve::point_move(active_point, point)) {
+			handle_left_.set_position(point_start_.point() + handle_buffer_left_.point_offset());
+			handle_right_.set_position(point_end_.point() + handle_buffer_right_.point_offset());
+			return true;
 		}
-
-		handle_left_.set_position(point_start_.point() + handle_buffer_left_.point_offset());
-		handle_right_.set_position(point_end_.point() + handle_buffer_right_.point_offset());
-		return true;
+		else return false;
 	}
 
 	void BezierCurve::point_end_move() noexcept {
@@ -416,9 +419,8 @@ namespace cved {
 	}
 
 	void BezierCurve::point_end_control() noexcept {
-		point_start_.end_control();
-		point_end_.end_control();
 		handle_left_.end_control();
 		handle_right_.end_control();
+		GraphCurve::point_end_control();
 	}
 }

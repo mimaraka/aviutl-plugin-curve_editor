@@ -71,7 +71,7 @@ namespace cved {
 		return ActivePoint::Null;
 	}
 
-	bool StepCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept {
+	bool StepCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
 		return true;
 	}
 

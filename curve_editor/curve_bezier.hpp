@@ -44,6 +44,8 @@ namespace cved {
 		// 整数値からカーブに変換
 		bool decode(int number) noexcept override;
 
+		std::string make_param() const noexcept;
+
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,
 			const View& view,
@@ -82,7 +84,7 @@ namespace cved {
 		// ポイントの位置をアップデート
 		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		// ポイントを強制的に動かす
-		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept override;
+		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept override;
 		// ポイントの移動を終了
 		void point_end_move() noexcept override;
 		void point_end_control() noexcept override;
