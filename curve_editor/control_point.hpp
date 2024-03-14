@@ -20,6 +20,11 @@ namespace cved {
 			fixed_{fixed}
 		{}
 
+		auto operator = (const mkaul::Point<double>& point) noexcept {
+			this->point_ = point;
+			return *this;
+		}
+
 		// アクセッサ
 		const auto& point() const noexcept { return point_; }
 		auto x() const noexcept { return point_.x; }

@@ -60,11 +60,38 @@ namespace cved {
 		);
 	}
 
+	void GraphCurve::reverse() noexcept {
+		auto point_tmp = point_start_.point();
+		point_start_ = mkaul::Point{ 1., 1. } - point_end_.point();
+		point_end_ = mkaul::Point{ 1., 1. } - point_tmp;
+	}
+
 	bool GraphCurve::is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
 		return is_point_hovered(point, box_width, view) or is_handle_hovered(point, box_width, view);
 	}
 
 	bool GraphCurve::is_point_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
 		return point_start_.is_hovered(point, box_width, view) or point_end_.is_hovered(point, box_width, view);
+	}
+
+	bool GraphCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
+		switch (active_point) {
+		case ActivePoint::Start:
+			point_start_.move(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
+			break;
+
+		case ActivePoint::End:
+			point_end_.move(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
+			break;
+
+		default:
+			return false;
+		}
+		return true;
+	}
+
+	void GraphCurve::point_end_control() noexcept {
+		point_start_.end_control();
+		point_end_.end_control();
 	}
 }

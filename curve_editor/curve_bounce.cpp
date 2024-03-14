@@ -66,6 +66,8 @@ namespace cved {
 
 	void BounceCurve::reverse() noexcept {
 		handle_.reverse(point_start_, point_end_);
+		GraphCurve::reverse();
+		handle_.from_param(cor_, period_, point_start_, point_end_);
 	}
 
 	int BounceCurve::encode() const noexcept {
@@ -191,26 +193,11 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
-	bool BounceCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		switch (active_point) {
-		case ActivePoint::Start:
-			point_start_.move(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
-			break;
-
-		case ActivePoint::End:
-			point_end_.move(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
-			break;
-
-		default:
-			return false;
+	bool BounceCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
+		if (GraphCurve::point_move(active_point, point)) {
+			handle_.from_param(cor_, period_, point_start_, point_end_);
+			return true;
 		}
-
-		handle_.from_param(cor_, period_, point_start_, point_end_);
-		return true;
-	}
-
-	void BounceCurve::point_end_control() noexcept {
-		point_start_.end_control();
-		point_end_.end_control();
+		else return false;
 	}
 }

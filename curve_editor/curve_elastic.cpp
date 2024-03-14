@@ -26,6 +26,7 @@ namespace cved {
 		handle_freq_decay_.from_param(freq, decay, point_start, point_end);
 	}
 
+	// カーブの値を取得
 	double ElasticCurve::get_value(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - point_start_.x()) / (point_end_.x() - point_start_.x()), 0., 1.);
 
@@ -107,10 +108,15 @@ namespace cved {
 		decay_ = DEFAULT_DECAY;
 	}
 
+	// カーブを反転
 	void ElasticCurve::reverse() noexcept {
 		handle_freq_decay_.reverse(point_start_, point_end_);
+		GraphCurve::reverse();
+		handle_amp_.from_param(amp_, point_start_, point_end_);
+		handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
 	}
 
+	// カーブのコードを生成
 	int ElasticCurve::encode() const noexcept {
 		int result;
 		int f = (int)(500 / freq_);
@@ -159,6 +165,7 @@ namespace cved {
 		return true;
 	}
 
+	// ハンドルを描画
 	void ElasticCurve::draw_handle(
 		mkaul::graphics::Graphics* p_graphics,
 		const View& view,
@@ -215,10 +222,12 @@ namespace cved {
 		);
 	}
 
+	// カーソルがハンドルにホバーしているかどうか
 	bool ElasticCurve::is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
 		return handle_amp_.is_hovered(point, box_width, view) or handle_freq_decay_.is_hovered(point, box_width, view);
 	}
 
+	// カーソルがハンドルにホバーしているかをチェックし、操作を開始
 	bool ElasticCurve::handle_check_hover(
 		const mkaul::Point<double>& point,
 		float box_width,
@@ -227,6 +236,7 @@ namespace cved {
 		return handle_amp_.check_hover(point, box_width, view) or handle_freq_decay_.check_hover(point, box_width, view);
 	}
 
+	// ハンドルの位置をアップデート
 	bool ElasticCurve::handle_update(const mkaul::Point<double>& point, const GraphView&) noexcept {
 		if (handle_amp_.update(point, point_start_, point_end_) or handle_freq_decay_.update(point, point_start_, point_end_)) {
 			amp_ = handle_amp_.get_amp(point_start_, point_end_);
@@ -237,11 +247,13 @@ namespace cved {
 		else return false;
 	}
 
+	// ハンドルの操作を終了
 	void ElasticCurve::handle_end_control() noexcept {
 		handle_amp_.end_control();
 		handle_freq_decay_.end_control();
 	}
 
+	// カーソルがポイントにホバーしているかをチェックし、操作を開始
 	ElasticCurve::ActivePoint ElasticCurve::point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
 		bool start = point_start_.check_hover(point, box_width, view);
 		bool end = point_end_.check_hover(point, box_width, view);
@@ -256,6 +268,7 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
+	// ポイントの移動を開始
 	bool ElasticCurve::point_begin_move(ActivePoint active_point, const GraphView&) noexcept {
 		amp_ = handle_amp_.get_amp(point_start_, point_end_);
 		freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
@@ -263,6 +276,7 @@ namespace cved {
 		return true;
 	}
 
+	// ポイントを位置をアップデート
 	ElasticCurve::ActivePoint ElasticCurve::point_update(const mkaul::Point<double>& point, const GraphView&) noexcept {
 		bool moved_start = point_start_.update(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
 		bool moved_end = point_end_.update(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
@@ -276,27 +290,13 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
-	bool ElasticCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		switch (active_point) {
-		case ActivePoint::Start:
-			point_start_.move(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
-			break;
-
-		case ActivePoint::End:
-			point_end_.move(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
-			break;
-
-		default:
-			return false;
+	// ポイントを強制的に動かす
+	bool ElasticCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
+		if (GraphCurve::point_move(active_point, point)) {
+			handle_amp_.from_param(amp_, point_start_, point_end_);
+			handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
+			return true;
 		}
-
-		handle_amp_.from_param(amp_, point_start_, point_end_);
-		handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
-		return true;
-	}
-
-	void ElasticCurve::point_end_control() noexcept {
-		point_start_.end_control();
-		point_end_.end_control();
+		else return false;
 	}
 }

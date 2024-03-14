@@ -24,22 +24,6 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
-	bool LinearCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		switch (active_point) {
-		case ActivePoint::Start:
-			point_start_.move(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
-			break;
-
-		case ActivePoint::End:
-			point_end_.move(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
-			break;
-
-		default:
-			return false;
-		}
-		return true;
-	}
-
 	void LinearCurve::point_end_control() noexcept {
 		point_start_.end_control();
 		point_end_.end_control();
