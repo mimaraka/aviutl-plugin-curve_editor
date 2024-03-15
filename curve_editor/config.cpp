@@ -34,7 +34,7 @@ namespace cved {
 			reverse_wheel_ = false;
 			notify_update_ = true;
 			ignore_autosaver_warning_ = false;
-			separator_ = 0;
+			separator_ = global::SEPARATOR_WIDTH;
 			preset_size_ = 50;
 
 			// AviUtlのディレクトリの取得
@@ -169,7 +169,7 @@ namespace cved {
 		}
 
 		void Config::set_separator(int separator) noexcept {
-			
+			separator_ = std::max(separator, global::SEPARATOR_WIDTH);
 		}
 
 		void Config::set_preset_size(int preset_size) noexcept {

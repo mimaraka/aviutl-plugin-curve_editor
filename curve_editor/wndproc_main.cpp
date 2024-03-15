@@ -14,68 +14,18 @@
 
 
 namespace cved {
-	// セパレータの位置を調整
-	void adjust_separator(const RECT& rect_wnd, bool& exceed_vertical, bool& exceed_horizontal)
-	{
-		const bool is_vertical = global::config.get_layout_mode() == LayoutMode::Vertical;
-		static int buffer_vertical = 0;
-		static int buffer_horizontal = 0;
-
-		// 縦レイアウトのとき
-		if (is_vertical) {
-			if (exceed_vertical) {
-				global::config.set_separator(buffer_vertical);
-			}
-			if (rect_wnd.bottom - global::MENU_HEIGHT - global::SEPARATOR_WIDTH < global::config.get_separator()) {
-				// セパレータの位置が範囲外になった瞬間
-				if (!exceed_vertical) {
-					exceed_vertical = true;
-					buffer_vertical = global::config.get_separator();
-				}
-				global::config.set_separator(rect_wnd.bottom - global::MENU_HEIGHT - global::SEPARATOR_WIDTH);
-			}
-			else {
-				if (exceed_vertical) {
-					exceed_vertical = false;
-				}
-			}
-			global::config.set_separator(std::max(global::config.get_separator(), global::SEPARATOR_WIDTH));
-		}
-		// 横レイアウトのとき
-		else {
-			if (exceed_horizontal) {
-				global::config.set_separator(buffer_horizontal);
-			}
-			if (rect_wnd.right - global::MIN_WIDTH + global::SEPARATOR_WIDTH < global::config.get_separator()) {
-				// セパレータの位置が範囲外になった瞬間
-				if (!exceed_horizontal) {
-					exceed_horizontal = true;
-					buffer_horizontal = global::config.get_separator();
-				}
-				global::config.set_separator(rect_wnd.right - global::MIN_WIDTH + global::SEPARATOR_WIDTH);
-			}
-			else {
-				if (exceed_horizontal) {
-					exceed_horizontal = false;
-				}
-			}
-			global::config.set_separator(std::max(global::config.get_separator(), global::SEPARATOR_WIDTH));
-		}
-	}
-
-
 	// メインウィンドウのウィンドウプロシージャ
 	LRESULT CALLBACK wndproc_main(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 	{
 		using StringId = global::StringTable::StringId;
+
+		constexpr uint32_t COMMAND_MOVE_WINDOW = 0x0001;
 
 		static bool is_separator_moving = false;
 		POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 		
 		mkaul::WindowRectangle rect_sepr, rect_menu, rect_editor, rect_library;
 		const bool is_vertical = global::config.get_layout_mode() == LayoutMode::Vertical;
-		static bool separator_exceed_vertical = false;
-		static bool separator_exceed_horizontal = false;
 
 		// Graphics
 		using namespace mkaul::graphics;
@@ -84,20 +34,34 @@ namespace cved {
 		RECT rect_wnd;
 		::GetClientRect(hwnd, &rect_wnd);
 
-		adjust_separator(rect_wnd, separator_exceed_vertical, separator_exceed_horizontal);
-
 		// セパレータの矩形を設定
-		rect_sepr.set(
-			is_vertical ? 0 : rect_wnd.right - global::config.get_separator() - global::SEPARATOR_WIDTH,
-			is_vertical ? rect_wnd.bottom - global::config.get_separator() - global::SEPARATOR_WIDTH : 0,
-			is_vertical ? rect_wnd.right : rect_wnd.right - global::config.get_separator() + global::SEPARATOR_WIDTH,
-			is_vertical ? rect_wnd.bottom - global::config.get_separator() + global::SEPARATOR_WIDTH : rect_wnd.bottom
-		);
+		if (is_vertical) {
+			rect_sepr.set(
+				0,
+				std::max((int)rect_wnd.bottom - global::config.get_separator() - global::SEPARATOR_WIDTH, global::MENU_HEIGHT),
+				rect_wnd.right,
+				std::max(
+					(int)rect_wnd.bottom - global::config.get_separator() + global::SEPARATOR_WIDTH,
+					(int)global::MENU_HEIGHT + 2 * global::SEPARATOR_WIDTH
+				)
+			);
+		}
+		else {
+			rect_sepr.set(
+				std::max((int)rect_wnd.right - global::config.get_separator() - global::SEPARATOR_WIDTH, global::MIN_WIDTH),
+				0,
+				std::max(
+					(int)rect_wnd.right - global::config.get_separator() + global::SEPARATOR_WIDTH,
+					global::MIN_WIDTH + 2 * global::SEPARATOR_WIDTH
+				),
+				rect_wnd.bottom
+			);
+		}
 
 		// メニューの矩形を設定
 		rect_menu.set(
 			0, 0,
-			is_vertical ? rect_wnd.right : rect_wnd.right - global::config.get_separator() - global::SEPARATOR_WIDTH,
+			is_vertical ? rect_wnd.right : rect_sepr.left,
 			global::MENU_HEIGHT
 		);
 
@@ -105,15 +69,15 @@ namespace cved {
 		rect_editor.set(
 			0,
 			global::MENU_HEIGHT,
-			is_vertical ? rect_wnd.right : rect_wnd.right - global::config.get_separator() - global::SEPARATOR_WIDTH,
-			is_vertical ? rect_wnd.bottom - global::config.get_separator() - global::SEPARATOR_WIDTH : rect_wnd.bottom
+			is_vertical ? rect_wnd.right : rect_sepr.left,
+			is_vertical ? rect_sepr.top : rect_wnd.bottom
 		);
 		rect_editor.set_margin(global::MARGIN, 0, global::MARGIN, global::MARGIN);
 
 		// ライブラリウィンドウの矩形を設定
 		rect_library.set(
-			is_vertical ? 0 : rect_wnd.right - global::config.get_separator() + global::SEPARATOR_WIDTH,
-			is_vertical ? rect_wnd.bottom - global::config.get_separator() + global::SEPARATOR_WIDTH : 0,
+			is_vertical ? 0 : rect_sepr.right,
+			is_vertical ? rect_sepr.bottom : 0,
 			rect_wnd.right,
 			rect_wnd.bottom
 		);
@@ -220,12 +184,6 @@ namespace cved {
 		{
 			if (rect_sepr.pt_in_rect(pt_client)) {
 				is_separator_moving = true;
-				if (is_vertical) {
-					separator_exceed_vertical = false;
-				}
-				else {
-					separator_exceed_horizontal = false;
-				}
 				if (global::config.get_layout_mode() == LayoutMode::Vertical)
 					::SetCursor(LoadCursor(NULL, IDC_SIZENS));
 				else
@@ -250,20 +208,21 @@ namespace cved {
 					::SetCursor(LoadCursor(NULL, IDC_SIZEWE));
 			}
 			if (is_separator_moving) {
-				if (is_vertical)
+				if (is_vertical) {
 					global::config.set_separator(mkaul::clamp(
 						(int)(rect_wnd.bottom - pt_client.y),
 						global::SEPARATOR_WIDTH,
 						(int)rect_wnd.bottom - global::SEPARATOR_WIDTH - global::MENU_HEIGHT
 					));
-				else
+				}
+				else {
 					global::config.set_separator(mkaul::clamp(
 						(int)(rect_wnd.right - pt_client.x),
 						global::SEPARATOR_WIDTH,
 						(int)rect_wnd.right - global::MIN_WIDTH + global::SEPARATOR_WIDTH
 					));
-
-				global::window_main.redraw();
+				}
+				::SendMessageA(hwnd, WM_COMMAND, COMMAND_MOVE_WINDOW, NULL);
 			}
 			return 0;
 
@@ -273,6 +232,12 @@ namespace cved {
 				global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
 				global::window_toolbar.send_command((WPARAM)WindowCommand::Update);
 				global::window_main.redraw();
+				break;
+
+			case COMMAND_MOVE_WINDOW:
+				global::window_toolbar.move(rect_menu);
+				global::window_grapheditor.move(rect_editor);
+				global::window_library.move(rect_library);
 				break;
 			}
 			return 0;
