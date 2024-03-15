@@ -282,6 +282,9 @@
     <ClInclude Include="preferences.hpp">
       <Filter>Headers\Config</Filter>
     </ClInclude>
+    <ClInclude Include="notification.hpp">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve.cpp">

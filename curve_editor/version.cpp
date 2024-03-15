@@ -12,7 +12,7 @@ namespace cved {
 		mkaul::http::Client client;
 		std::vector<byte> data;
 		DWORD status_code;
-		auto url = std::format("{}/releases/latest", global::PLUGIN_GITHUB_URL);
+		const char* url = "https://api.github.com/repos/mimaraka/aviutl-plugin-curve_editor/releases/latest";
 		if (!client.open(url)) {
 			return false;
 		}
@@ -36,9 +36,6 @@ namespace cved {
 		mkaul::Version latest;
 		if (fetch_latest_version(&latest)) {
 			if (global::PLUGIN_VERSION < latest) {
-				if (param) {
-					::EndDialog((HWND)param, 1);
-				}
 				auto text = std::format(
 					"{}\n{}: {} → {}",
 					global::string_table[StringId::InfoUpdateAvailable],
@@ -59,7 +56,6 @@ namespace cved {
 			}
 		}
 		else if (param) {
-			::EndDialog((HWND)param, 1);
 			my_messagebox(global::string_table[StringId::ErrorConnectionFailed], NULL);
 		}
 

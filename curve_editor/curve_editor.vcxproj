@@ -226,6 +226,7 @@
     <ClInclude Include="menu_more.hpp" />
     <ClInclude Include="my_button.hpp" />
     <ClInclude Include="my_messagebox.hpp" />
+    <ClInclude Include="notification.hpp" />
     <ClInclude Include="preferences.hpp" />
     <ClInclude Include="trackbar_button.hpp" />
     <ClInclude Include="preset.hpp" />
