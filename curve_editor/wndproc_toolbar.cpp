@@ -1,4 +1,5 @@
 #include "wndproc_toolbar.hpp"
+#include <thread>
 #include <mkaul/include/graphics.hpp>
 #include <mkaul/include/ui.hpp>
 #include "config.hpp"
@@ -11,6 +12,7 @@
 #include "menu_more.hpp"
 #include "string_table.hpp"
 #include "util.hpp"
+#include "version.hpp"
 #include "resource.h"
 
 
@@ -40,6 +42,19 @@ namespace cved {
 
 		static EditModeMenu menu_edit_mode;
 		static MoreMenu menu_more{ global::fp->dll_hinst };
+
+		auto aaa = ::GetThreadId(::GetCurrentThread());
+		static mkaul::Version version_latest;
+		static std::thread th_update{ [&] {
+			//std::this_thread::sleep_for(std::chrono::seconds{10});
+			if (fetch_latest_version(&version_latest)) {
+				if (global::PLUGIN_VERSION < version_latest) {
+					// TODO: 送信されていない
+					::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::AddUpdateNotification, NULL);
+					::PostThreadMessageA(aaa, WM_COMMAND, (WPARAM)WindowCommand::AddUpdateNotification, NULL);
+				}
+			}
+		} };
 
 		RECT rect_wnd;
 		::GetClientRect(hwnd, &rect_wnd);
@@ -317,12 +332,18 @@ namespace cved {
 				"PNG"
 			);
 
+			if (global::config.get_notify_update()) {
+				
+				//th.join();
+			}
+
 			::SendMessageA(hwnd, WM_COMMAND, (UINT)WindowCommand::Update, 0);
 			return 0;
 		}
 
 		case WM_DESTROY:
 		case WM_CLOSE:
+			th_update.join();
 			toolbar.close();
 			p_graphics->release();
 			return 0;
@@ -375,7 +396,6 @@ namespace cved {
 				break;
 
 			case (WPARAM)WindowCommand::AddUpdateNotification:
-
 				break;
 
 			case (WPARAM)WindowCommand::UpdateParam:
@@ -383,8 +403,7 @@ namespace cved {
 				std::string label = "";
 				auto p_curve = global::editor.editor_graph().numeric_curve();
 				if (global::config.get_edit_mode() == EditMode::Bezier) {
-					// TODO: ベジェのパラメータを表示する処理
-					label = "0.21, 0.43, 0.57, 0.16";
+					label = global::editor.editor_graph().curve_bezier()->make_param().c_str();
 				}
 				else if (p_curve) {
 					label = std::to_string(p_curve->encode());

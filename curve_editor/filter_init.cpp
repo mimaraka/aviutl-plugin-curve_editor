@@ -78,12 +78,6 @@ namespace cved {
 			return FALSE;
 		}
 
-		// アップデートチェック
-		if (global::config.get_notify_update()) {
-			DWORD thread_id;
-			::CreateThread(NULL, 0, check_for_updates, NULL, 0, &thread_id);
-		}
-
 		// autosaverがインストールされていない場合の警告
 		if (!mkaul::aviutl::get_fp_by_name(fp, "autosaver.auf") and !global::config.get_ignore_autosaver_warning()) {
 			AutosaverWarningDialog dialog;
