@@ -56,15 +56,11 @@ namespace cved {
 		case WM_HSCROLL:
 			if (lparam == (LPARAM)hwnd_slider_curve_thickness_) {
 				int value_int = ::SendMessageA(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL);
-				std::stringstream stream;
-				stream << std::fixed << std::setprecision(1) << value_int * 0.1f;
-				::SetWindowTextA(hwnd_static_curve_thickness_, stream.str().c_str());
+				::SetWindowTextA(hwnd_static_curve_thickness_, std::format("{:.1f}", value_int * 0.1f).c_str());
 			}
 			else if (lparam == (LPARAM)hwnd_slider_curve_drawing_interval_) {
 				int value_int = ::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_GETPOS, NULL, NULL);
-				std::stringstream stream;
-				stream << std::fixed << std::setprecision(1) << value_int * 0.1f;
-				::SetWindowTextA(hwnd_static_curve_drawing_interval_, stream.str().c_str());
+				::SetWindowTextA(hwnd_static_curve_drawing_interval_, std::format("{:.1f}", value_int * 0.1f).c_str());
 			}
 			return TRUE;
 
