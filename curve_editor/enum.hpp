@@ -24,6 +24,12 @@ namespace cved {
 		NumCurveSegmentType
 	};
 
+	enum class IDCurveType : uint32_t {
+		Normal,
+		Value,
+		Script
+	};
+
 	enum class WindowCommand: uint32_t {
 		Update					= 0x0800,
 		Copy					= 0x0801,

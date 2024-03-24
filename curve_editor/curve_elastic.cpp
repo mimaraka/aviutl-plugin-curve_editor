@@ -1,4 +1,6 @@
 #include "curve_elastic.hpp"
+#include "curve_data.hpp"
+#include "enum.hpp"
 #include "util.hpp"
 
 
@@ -33,7 +35,7 @@ namespace cved {
 		if (handle_freq_decay_.is_reverse()) {
 			progress = 1. - progress;
 		}
-		double result;
+		double ret;
 		const double omega = 2. * std::numbers::pi * freq_;
 		const double exp_k = std::exp(-decay_);
 
@@ -88,15 +90,15 @@ namespace cved {
 		double extremum_x = func_elastic(extremum_t);
 		double tmp = func_elastic(progress);
 		if (progress < extremum_t) {
-			result = (amp_ * (extremum_x - 1.) + 1.) / extremum_x * tmp;
+			ret = (amp_ * (extremum_x - 1.) + 1.) / extremum_x * tmp;
 		}
 		else {
-			result = amp_ * (tmp - 1.) + 1.;
+			ret = amp_ * (tmp - 1.) + 1.;
 		}
 		if (handle_freq_decay_.is_reverse()) {
-			result = 1. - result;
+			ret = 1. - ret;
 		}
-		return start + (end - start) * (point_start_.y() + (point_end_.y() - point_start_.y()) * result);
+		return start + (end - start) * (point_start_.y() + (point_end_.y() - point_start_.y()) * ret);
 	}
 
 	// カーブを初期化
@@ -116,20 +118,59 @@ namespace cved {
 		handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
 	}
 
+	void ElasticCurve::create_data(std::vector<byte>& data) const noexcept {
+		ElasticCurveData data_elastic{
+			.data_graph = GraphCurveData{
+				.start_x = point_start_.x(),
+				.start_y = point_start_.y(),
+				.end_x = point_end_.x(),
+				.end_y = point_end_.y()
+			},
+			.amp = amp_,
+			.freq = freq_,
+			.decay = decay_
+		};
+		auto bytes_elastic = reinterpret_cast<byte*>(&data_elastic);
+		size_t n = sizeof(ElasticCurveData) / sizeof(byte);
+		data = std::vector<byte>{ bytes_elastic, bytes_elastic + n };
+		data.insert(data.begin(), (byte)CurveSegmentType::Elastic);
+	}
+
+	bool ElasticCurve::load_data(const byte* data, size_t size) noexcept {
+		if (size < sizeof(ElasticCurveData) / sizeof(byte)) return false;
+		auto p_curve_data = reinterpret_cast<const ElasticCurveData*>(data);
+		// カーブの整合性チェック
+		if (
+			!mkaul::real_in_range(p_curve_data->data_graph.start_x, 0., 1., true)
+			or !mkaul::real_in_range(p_curve_data->data_graph.end_x, 0., 1., true)
+			or p_curve_data->data_graph.end_x < p_curve_data->data_graph.start_x
+			) {
+			return false;
+		}
+		point_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
+		point_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
+		handle_amp_.from_param(p_curve_data->amp, point_start_, point_end_);
+		handle_freq_decay_.from_param(p_curve_data->freq, p_curve_data->decay, point_start_, point_end_);
+		amp_ = handle_amp_.get_amp(point_start_, point_end_);
+		freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
+		decay_ = handle_freq_decay_.get_decay(point_start_, point_end_);
+		return true;
+	}
+
 	// カーブのコードを生成
-	int ElasticCurve::encode() const noexcept {
-		int result;
+	int32_t ElasticCurve::encode() const noexcept {
+		int ret;
 		int f = (int)(500 / freq_);
 		int a = (int)(100 * amp_);
 		int k = -(int)(100 * (std::exp(-(decay_ - 1.) * .1) - 1.));
-		result = 1 + a + k * 101 + f * 101 * 101;
+		ret = 1 + a + k * 101 + f * 101 * 101;
 		if (handle_freq_decay_.is_reverse()) {
-			result *= -1;
+			ret *= -1;
 		}
-		return result;
+		return ret;
 	}
 
-	bool ElasticCurve::decode(int code) noexcept {
+	bool ElasticCurve::decode(int32_t code) noexcept {
 		// -2147483647 ~  -11213203 : Unused
 		//   -11213202 ~  -10211202 : Bounce
 		//   -10211201 ~         -1 : Elastic
@@ -269,7 +310,7 @@ namespace cved {
 	}
 
 	// ポイントの移動を開始
-	bool ElasticCurve::point_begin_move(ActivePoint active_point, const GraphView&) noexcept {
+	bool ElasticCurve::point_begin_move(ActivePoint active_point) noexcept {
 		amp_ = handle_amp_.get_amp(point_start_, point_end_);
 		freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
 		decay_ = handle_freq_decay_.get_decay(point_start_, point_end_);

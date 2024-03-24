@@ -34,15 +34,16 @@ namespace cved {
 
 		// カーブの値を取得する
 		double get_value(double progress, double start, double end) const noexcept override;
-
 		void clear() noexcept override;
-
 		void reverse() noexcept override;
 
 		// カーブから一意な整数値を生成
-		int encode() const noexcept override;
+		int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
-		bool decode(int number) noexcept override;
+		bool decode(int32_t code) noexcept override;
+
+		void create_data(std::vector<byte>& data) const noexcept override;
+		bool load_data(const byte* data, size_t size) noexcept override;
 
 		std::string make_param() const noexcept;
 
@@ -80,7 +81,7 @@ namespace cved {
 
 		// ポイントの移動を開始
 		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
-		bool point_begin_move(ActivePoint active_point, const GraphView& view) noexcept override;
+		bool point_begin_move(ActivePoint active_point) noexcept override;
 		// ポイントの位置をアップデート
 		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		// ポイントを強制的に動かす

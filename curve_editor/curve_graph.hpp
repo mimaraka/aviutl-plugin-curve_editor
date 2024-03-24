@@ -90,7 +90,7 @@ namespace cved {
 		virtual void handle_end_control() noexcept = 0;
 
 		virtual ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept = 0;
-		virtual bool point_begin_move(ActivePoint active_point, const GraphView& view) noexcept = 0;
+		virtual bool point_begin_move(ActivePoint active_point) noexcept = 0;
 		virtual ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept = 0;
 		virtual bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept;
 		virtual void point_end_move() noexcept {};

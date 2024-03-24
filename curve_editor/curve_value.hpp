@@ -16,10 +16,9 @@ namespace cved {
 		);
 
 		const auto& get_curve_segments() const noexcept { return curve_segments_; }
-
 		double get_value(double progress, double start, double end) const noexcept override;
-
 		void clear() noexcept override;
+		void create_data(std::vector<byte>& data) const noexcept override;
 
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,
@@ -54,7 +53,7 @@ namespace cved {
 		// カーソルがポイントにホバーしているかを判定し、ホバーしていれば移動を開始
 		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
 		// ポイントの移動を開始
-		bool point_begin_move(ActivePoint, const GraphView&) noexcept override { return false; }
+		bool point_begin_move(ActivePoint) noexcept override { return false; }
 		// ポイントの位置をアップデート
 		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		// ポイントを強制的に動かす

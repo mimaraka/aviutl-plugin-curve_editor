@@ -2,6 +2,7 @@
 #include <mkaul/include/graphics.hpp>
 #include <mkaul/include/util.hpp>
 #include "config.hpp"
+#include "curve_data.hpp"
 #include "util.hpp"
 
 
@@ -186,10 +187,50 @@ namespace cved {
 		GraphCurve::reverse();
 	}
 
-	int BezierCurve::encode() const noexcept {
+	void BezierCurve::create_data(std::vector<byte>& data) const noexcept {
+		BezierCurveData data_bezier{
+			.data_graph = GraphCurveData{
+				.start_x = point_start_.x(),
+				.start_y = point_start_.y(),
+				.end_x = point_end_.x(),
+				.end_y = point_end_.y()
+			},
+			.left_x = handle_left_.point_offset().x,
+			.left_y = handle_left_.point_offset().y,
+			.right_x = handle_right_.point_offset().x,
+			.right_y = handle_right_.point_offset().y
+		};
+		auto bytes_bezier = reinterpret_cast<byte*>(&data_bezier);
+		size_t n = sizeof(BezierCurveData) / sizeof(byte);
+		data = std::vector<byte>{ bytes_bezier, bytes_bezier + n };
+		data.insert(data.begin(), (byte)CurveSegmentType::Bezier);
+	}
+
+	bool BezierCurve::load_data(const byte* data, size_t size) noexcept {
+		if (size < sizeof(BezierCurveData) / sizeof(byte)) return false;
+		auto p_curve_data = reinterpret_cast<const BezierCurveData*>(data);
+		// カーブの整合性チェック
+		// TODO: コードの共通化
+		if (
+			!mkaul::real_in_range(p_curve_data->data_graph.start_x, 0., 1., true)
+			or !mkaul::real_in_range(p_curve_data->data_graph.end_x, 0., 1., true)
+			or p_curve_data->data_graph.end_x < p_curve_data->data_graph.start_x
+			or !mkaul::real_in_range(p_curve_data->left_x, 0., p_curve_data->data_graph.end_x - p_curve_data->data_graph.start_x, true)
+			or !mkaul::real_in_range(p_curve_data->right_x, p_curve_data->data_graph.start_x - p_curve_data->data_graph.end_x, 0., true)
+			) {
+			return false;
+		}
+		point_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
+		point_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
+		handle_left_.set_point_offset(mkaul::Point{ p_curve_data->left_x, p_curve_data->left_y });
+		handle_right_.set_point_offset(mkaul::Point{ p_curve_data->right_x, p_curve_data->right_y });
+		return true;
+	}
+
+	int32_t BezierCurve::encode() const noexcept {
 		constexpr float MAX_Y = 3.73f;
 		constexpr float MIN_Y = -2.73f;
-		int result;
+		int ret;
 		float x1, y1, x2, y2;
 		int ix1, iy1, ix2, iy2;
 		const double width = point_end_.x() - point_start_.x();
@@ -212,14 +253,14 @@ namespace cved {
 		iy2 = (int)std::round(y2 * 100.f);
 
 		// 計算
-		result = 6600047 * (iy2 + 273) + 65347 * ix2 + 101 * (iy1 + 273) + ix1 - 2147483647;
-		if (result >= -12368442) {
-			result += 24736885;
+		ret = 6600047 * (iy2 + 273) + 65347 * ix2 + 101 * (iy1 + 273) + ix1 - 2147483647;
+		if (ret >= -12368442) {
+			ret += 24736885;
 		}
-		return result;
+		return ret;
 	}
 
-	bool BezierCurve::decode(int number) noexcept {
+	bool BezierCurve::decode(int32_t code) noexcept {
 		// -2147483647 ~  -12368443 : For bezier curves
 		//   -12368442 ~         -1 : For ID curves
 		//           0              : Unused
@@ -229,11 +270,11 @@ namespace cved {
 
 		int64_t tmp;
 
-		if (number <= -12368443) {
-			tmp = (int64_t)number + (int64_t)INT32_MAX;
+		if (code <= -12368443) {
+			tmp = (int64_t)code + (int64_t)INT32_MAX;
 		}
-		else if (12368443 <= number and number < INT32_MAX) {
-			tmp = (int64_t)number + (int64_t)2122746762;
+		else if (12368443 <= code and code < INT32_MAX) {
+			tmp = (int64_t)code + (int64_t)2122746762;
 		}
 		else return false;
 
@@ -339,7 +380,7 @@ namespace cved {
 		const GraphView& view
 	) noexcept {
 		bool ks_move_symmetrically = ::GetAsyncKeyState(VK_CONTROL) & 0x8000 and ::GetAsyncKeyState(VK_SHIFT) & 0x8000;
-		bool result = false;
+		bool ret = false;
 
 		if (handle_left_.update(point, view)) {
 			if (ks_move_symmetrically) {
@@ -349,7 +390,7 @@ namespace cved {
 				}
 				handle_right_.move(point_end_.point() - handle_left_.point_offset(), view, false, true);
 			}
-			result = true;
+			ret = true;
 		}
 		else if (handle_right_.update(point, view)) {
 			if (ks_move_symmetrically) {
@@ -359,10 +400,10 @@ namespace cved {
 				}
 				handle_left_.move(point_start_.point() - handle_right_.point_offset(), view, false, true);
 			}
-			result = true;
+			ret = true;
 		}
 		flag_prev_move_symmetrically_ = ks_move_symmetrically;
-		return result;
+		return ret;
 	}
 
 	// ハンドルの移動を終了
@@ -385,7 +426,7 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
-	bool BezierCurve::point_begin_move(ActivePoint active_point, const GraphView& view) noexcept {
+	bool BezierCurve::point_begin_move(ActivePoint active_point) noexcept {
 		handle_buffer_left_.set_point_offset(handle_left_.point_offset());
 		handle_buffer_right_.set_point_offset(handle_right_.point_offset());
 		return true;

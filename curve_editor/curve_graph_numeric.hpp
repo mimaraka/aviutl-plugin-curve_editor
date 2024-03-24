@@ -10,8 +10,8 @@ namespace cved {
 		using GraphCurve::GraphCurve;
 
 		// カーブから一意な整数値を生成
-		virtual int encode() const noexcept = 0;
+		virtual int32_t encode() const noexcept = 0;
 		// 整数値からカーブに変換
-		virtual bool decode(int number) noexcept = 0;
+		virtual bool decode(int32_t code) noexcept = 0;
 	};
 }

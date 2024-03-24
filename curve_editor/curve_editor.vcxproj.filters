@@ -1,464 +1,479 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Headers">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Headers\Curve">
-      <UniqueIdentifier>{274582b0-2591-46a2-a113-49aecfa3c3c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Curve\Handle">
-      <UniqueIdentifier>{5fb9124d-b953-4b0f-8ed8-c13b1b05ee46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Curve\Editor">
-      <UniqueIdentifier>{6fc4954d-fb0f-4ba9-a148-9cbe1c6e00df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Window Procedure">
-      <UniqueIdentifier>{36dcc05e-cca7-4919-864c-be75aa937df2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\View">
-      <UniqueIdentifier>{5868f70f-18fc-469d-afb8-134499c692e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Menu">
-      <UniqueIdentifier>{feb162eb-045d-4525-96f7-62d50e0e1182}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Dialog">
-      <UniqueIdentifier>{a6042aa4-e356-4401-a70c-ce74744909ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Exedit Hook">
-      <UniqueIdentifier>{c986478d-dce9-49df-8522-345c4d794f97}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\UI">
-      <UniqueIdentifier>{c13e62b1-ab5f-47e8-b7b4-33c15df4c8ad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Sources\Curve">
-      <UniqueIdentifier>{9ed3bbdd-25ef-45fc-a32a-0874ee4785bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Curve\Handle">
-      <UniqueIdentifier>{82bb0983-1a5a-4bc9-a413-9a84a28b7cc3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Curve\Editor">
-      <UniqueIdentifier>{3e7ea665-8ff6-4961-879c-616bebb916fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Window Procedure">
-      <UniqueIdentifier>{627ee968-e52c-4873-91d1-c846346103a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\View">
-      <UniqueIdentifier>{bd6163fe-ce55-4a4b-8dac-64f9e5d5784e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Menu">
-      <UniqueIdentifier>{757f7728-9757-4416-b7d0-1796cf4c5c04}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Dialog">
-      <UniqueIdentifier>{1c0ea417-2665-488e-8651-8b9406678d62}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Exedit Hook">
-      <UniqueIdentifier>{cfa084d6-1bfd-4ac2-9cf4-23b018ca9d48}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Util">
-      <UniqueIdentifier>{c882058e-4681-45de-86ee-6138e52e6e30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Util">
-      <UniqueIdentifier>{0085c803-fb94-4a41-ab49-73c6d5c9b910}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headers\Filter Func">
-      <UniqueIdentifier>{fca9df6f-beab-4460-89e4-28c6035c6173}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Filter Func">
-      <UniqueIdentifier>{81ce0285-14f7-44e9-8f20-55c3905b1610}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Module">
       <UniqueIdentifier>{b523de7f-bf57-4aeb-8956-37e575097e5d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headers\Config">
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Curve">
+      <UniqueIdentifier>{9ed3bbdd-25ef-45fc-a32a-0874ee4785bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Curve\Handle">
+      <UniqueIdentifier>{82bb0983-1a5a-4bc9-a413-9a84a28b7cc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Curve\Editor">
+      <UniqueIdentifier>{3e7ea665-8ff6-4961-879c-616bebb916fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Window Procedure">
+      <UniqueIdentifier>{627ee968-e52c-4873-91d1-c846346103a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\View">
+      <UniqueIdentifier>{bd6163fe-ce55-4a4b-8dac-64f9e5d5784e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Menu">
+      <UniqueIdentifier>{757f7728-9757-4416-b7d0-1796cf4c5c04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialog">
+      <UniqueIdentifier>{1c0ea417-2665-488e-8651-8b9406678d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Exedit Hook">
+      <UniqueIdentifier>{cfa084d6-1bfd-4ac2-9cf4-23b018ca9d48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Util">
+      <UniqueIdentifier>{c882058e-4681-45de-86ee-6138e52e6e30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter Func">
+      <UniqueIdentifier>{81ce0285-14f7-44e9-8f20-55c3905b1610}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Curve">
+      <UniqueIdentifier>{274582b0-2591-46a2-a113-49aecfa3c3c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Curve\Handle">
+      <UniqueIdentifier>{5fb9124d-b953-4b0f-8ed8-c13b1b05ee46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Curve\Editor">
+      <UniqueIdentifier>{6fc4954d-fb0f-4ba9-a148-9cbe1c6e00df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Window Procedure">
+      <UniqueIdentifier>{36dcc05e-cca7-4919-864c-be75aa937df2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\View">
+      <UniqueIdentifier>{5868f70f-18fc-469d-afb8-134499c692e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Menu">
+      <UniqueIdentifier>{feb162eb-045d-4525-96f7-62d50e0e1182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialog">
+      <UniqueIdentifier>{a6042aa4-e356-4401-a70c-ce74744909ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Exedit Hook">
+      <UniqueIdentifier>{c986478d-dce9-49df-8522-345c4d794f97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{c13e62b1-ab5f-47e8-b7b4-33c15df4c8ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{0085c803-fb94-4a41-ab49-73c6d5c9b910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter Func">
+      <UniqueIdentifier>{fca9df6f-beab-4460-89e4-28c6035c6173}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Config">
       <UniqueIdentifier>{7369f4d6-526d-4cbf-941a-f76ea20406c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Config">
+      <UniqueIdentifier>{0aea0d4e-e85f-4b78-8b13-0448afbb702a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curve.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="global.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="curve_data.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="string_table.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="version.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wndproc_main.hpp">
-      <Filter>Headers\Window Procedure</Filter>
+      <Filter>Header Files\Window Procedure</Filter>
     </ClInclude>
     <ClInclude Include="wndproc_editor.hpp">
-      <Filter>Headers\Window Procedure</Filter>
+      <Filter>Header Files\Window Procedure</Filter>
     </ClInclude>
     <ClInclude Include="wndproc_grapheditor.hpp">
-      <Filter>Headers\Window Procedure</Filter>
+      <Filter>Header Files\Window Procedure</Filter>
     </ClInclude>
     <ClInclude Include="wndproc_library.hpp">
-      <Filter>Headers\Window Procedure</Filter>
+      <Filter>Header Files\Window Procedure</Filter>
     </ClInclude>
     <ClInclude Include="wndproc_texteditor.hpp">
-      <Filter>Headers\Window Procedure</Filter>
+      <Filter>Header Files\Window Procedure</Filter>
     </ClInclude>
     <ClInclude Include="constants.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="enum.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wndproc_toolbar.hpp">
-      <Filter>Headers\Window Procedure</Filter>
+      <Filter>Header Files\Window Procedure</Filter>
     </ClInclude>
     <ClInclude Include="theme.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="preset.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="curve_bezier.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_graph.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_elastic.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_bounce.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_step.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_normal.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_value.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_script.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="curve_linear.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="handle_bezier.hpp">
-      <Filter>Headers\Curve\Handle</Filter>
+      <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
     <ClInclude Include="handle_elastic_freq_decay.hpp">
-      <Filter>Headers\Curve\Handle</Filter>
+      <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
     <ClInclude Include="handle_elastic_amp.hpp">
-      <Filter>Headers\Curve\Handle</Filter>
+      <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
     <ClInclude Include="view.hpp">
-      <Filter>Headers\View</Filter>
+      <Filter>Header Files\View</Filter>
     </ClInclude>
     <ClInclude Include="view_graph.hpp">
-      <Filter>Headers\View</Filter>
+      <Filter>Header Files\View</Filter>
     </ClInclude>
     <ClInclude Include="view_preset.hpp">
-      <Filter>Headers\View</Filter>
+      <Filter>Header Files\View</Filter>
     </ClInclude>
     <ClInclude Include="curve_editor.hpp">
-      <Filter>Headers\Curve\Editor</Filter>
+      <Filter>Header Files\Curve\Editor</Filter>
     </ClInclude>
     <ClInclude Include="curve_editor_script.hpp">
-      <Filter>Headers\Curve\Editor</Filter>
+      <Filter>Header Files\Curve\Editor</Filter>
     </ClInclude>
     <ClInclude Include="curve_editor_graph.hpp">
-      <Filter>Headers\Curve\Editor</Filter>
+      <Filter>Header Files\Curve\Editor</Filter>
     </ClInclude>
     <ClInclude Include="control_point.hpp">
-      <Filter>Headers\Curve\Handle</Filter>
+      <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
     <ClInclude Include="menu_edit_mode.hpp">
-      <Filter>Headers\Menu</Filter>
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="menu_more.hpp">
-      <Filter>Headers\Menu</Filter>
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="menu_graph.hpp">
-      <Filter>Headers\Menu</Filter>
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="menu.hpp">
-      <Filter>Headers\Menu</Filter>
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="menu_curve.hpp">
-      <Filter>Headers\Menu</Filter>
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="curve_graph_numeric.hpp">
-      <Filter>Headers\Curve</Filter>
+      <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="handle_bounce.hpp">
-      <Filter>Headers\Curve\Handle</Filter>
+      <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
     <ClInclude Include="exedit_hook.hpp">
-      <Filter>Headers\Exedit Hook</Filter>
+      <Filter>Header Files\Exedit Hook</Filter>
     </ClInclude>
     <ClInclude Include="trackbar_button.hpp">
-      <Filter>Headers\Exedit Hook</Filter>
+      <Filter>Header Files\Exedit Hook</Filter>
     </ClInclude>
     <ClInclude Include="drag_and_drop.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="my_button.hpp">
-      <Filter>Headers\UI</Filter>
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="my_messagebox.hpp">
-      <Filter>Headers\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="actctx_manager.hpp">
-      <Filter>Headers\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="filter_init.hpp">
-      <Filter>Headers\Filter Func</Filter>
+      <Filter>Header Files\Filter Func</Filter>
     </ClInclude>
     <ClInclude Include="filter_exit.hpp">
-      <Filter>Headers\Filter Func</Filter>
+      <Filter>Header Files\Filter Func</Filter>
     </ClInclude>
     <ClInclude Include="filter_project_load.hpp">
-      <Filter>Headers\Filter Func</Filter>
+      <Filter>Header Files\Filter Func</Filter>
     </ClInclude>
     <ClInclude Include="filter_project_save.hpp">
-      <Filter>Headers\Filter Func</Filter>
+      <Filter>Header Files\Filter Func</Filter>
     </ClInclude>
     <ClInclude Include="filter_wndproc.hpp">
-      <Filter>Headers\Filter Func</Filter>
+      <Filter>Header Files\Filter Func</Filter>
     </ClInclude>
     <ClInclude Include="dialog_pref_appearance.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_pref.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_pref_general.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_pref_behavior.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_pref_editing.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_about.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_bezier_param.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_curve_code.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_warning_autosaver.hpp">
-      <Filter>Headers\Dialog</Filter>
+      <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="util.hpp">
-      <Filter>Headers\Util</Filter>
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="config.hpp">
-      <Filter>Headers\Config</Filter>
+      <Filter>Header Files\Config</Filter>
     </ClInclude>
     <ClInclude Include="preferences.hpp">
-      <Filter>Headers\Config</Filter>
+      <Filter>Header Files\Config</Filter>
     </ClInclude>
     <ClInclude Include="notification.hpp">
-      <Filter>Headers</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json_loader.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_bezier.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_normal.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_elastic.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_bounce.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_script.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_value.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="dll_export.cpp">
-      <Filter>Sources</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="string_table.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="config.cpp">
-      <Filter>Sources</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="func_lua.cpp">
-      <Filter>Sources</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="wndproc_editor.cpp">
-      <Filter>Sources\Window Procedure</Filter>
+      <Filter>Source Files\Window Procedure</Filter>
     </ClCompile>
     <ClCompile Include="wndproc_grapheditor.cpp">
-      <Filter>Sources\Window Procedure</Filter>
+      <Filter>Source Files\Window Procedure</Filter>
     </ClCompile>
     <ClCompile Include="wndproc_library.cpp">
-      <Filter>Sources\Window Procedure</Filter>
+      <Filter>Source Files\Window Procedure</Filter>
     </ClCompile>
     <ClCompile Include="wndproc_main.cpp">
-      <Filter>Sources\Window Procedure</Filter>
+      <Filter>Source Files\Window Procedure</Filter>
     </ClCompile>
     <ClCompile Include="wndproc_texteditor.cpp">
-      <Filter>Sources\Window Procedure</Filter>
+      <Filter>Source Files\Window Procedure</Filter>
     </ClCompile>
     <ClCompile Include="wndproc_toolbar.cpp">
-      <Filter>Sources\Window Procedure</Filter>
+      <Filter>Source Files\Window Procedure</Filter>
     </ClCompile>
     <ClCompile Include="preset.cpp">
-      <Filter>Sources</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="version.cpp">
-      <Filter>Sources</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="curve_linear.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_step.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="handle_elastic_freq_decay.cpp">
-      <Filter>Sources\Curve\Handle</Filter>
+      <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
     <ClCompile Include="handle_bezier.cpp">
-      <Filter>Sources\Curve\Handle</Filter>
+      <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
     <ClCompile Include="handle_elastic_amp.cpp">
-      <Filter>Sources\Curve\Handle</Filter>
+      <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
     <ClCompile Include="handle_bounce.cpp">
-      <Filter>Sources\Curve\Handle</Filter>
+      <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
     <ClCompile Include="curve_graph.cpp">
-      <Filter>Sources\Curve</Filter>
+      <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="view_graph.cpp">
-      <Filter>Sources\View</Filter>
+      <Filter>Source Files\View</Filter>
     </ClCompile>
     <ClCompile Include="curve_editor_graph.cpp">
-      <Filter>Sources\Curve\Editor</Filter>
+      <Filter>Source Files\Curve\Editor</Filter>
     </ClCompile>
     <ClCompile Include="control_point.cpp">
-      <Filter>Sources\Curve\Handle</Filter>
+      <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
     <ClCompile Include="view_preset.cpp">
-      <Filter>Sources\View</Filter>
+      <Filter>Source Files\View</Filter>
     </ClCompile>
     <ClCompile Include="menu_edit_mode.cpp">
-      <Filter>Sources\Menu</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="menu_more.cpp">
-      <Filter>Sources\Menu</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="menu_graph.cpp">
-      <Filter>Sources\Menu</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="menu.cpp">
-      <Filter>Sources\Menu</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="menu_curve.cpp">
-      <Filter>Sources\Menu</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="curve_editor.cpp">
-      <Filter>Sources\Curve\Editor</Filter>
+      <Filter>Source Files\Curve\Editor</Filter>
     </ClCompile>
     <ClCompile Include="exedit_hook.cpp">
-      <Filter>Sources\Exedit Hook</Filter>
+      <Filter>Source Files\Exedit Hook</Filter>
     </ClCompile>
     <ClCompile Include="trackbar_button.cpp">
-      <Filter>Sources\Exedit Hook</Filter>
+      <Filter>Source Files\Exedit Hook</Filter>
     </ClCompile>
     <ClCompile Include="drag_and_drop.cpp">
-      <Filter>Sources</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="actctx_manager.cpp">
-      <Filter>Sources\Util</Filter>
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="filter_init.cpp">
-      <Filter>Sources\Filter Func</Filter>
+      <Filter>Source Files\Filter Func</Filter>
     </ClCompile>
     <ClCompile Include="filter_exit.cpp">
-      <Filter>Sources\Filter Func</Filter>
+      <Filter>Source Files\Filter Func</Filter>
     </ClCompile>
     <ClCompile Include="filter_project_load.cpp">
-      <Filter>Sources\Filter Func</Filter>
+      <Filter>Source Files\Filter Func</Filter>
     </ClCompile>
     <ClCompile Include="filter_project_save.cpp">
-      <Filter>Sources\Filter Func</Filter>
+      <Filter>Source Files\Filter Func</Filter>
     </ClCompile>
     <ClCompile Include="filter_wndproc.cpp">
-      <Filter>Sources\Filter Func</Filter>
+      <Filter>Source Files\Filter Func</Filter>
     </ClCompile>
     <ClCompile Include="dialog_pref_appearance.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_pref.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_pref_general.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_pref_behavior.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_pref_editing.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_about.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_bezier_param.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_curve_code.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_warning_autosaver.cpp">
-      <Filter>Sources\Dialog</Filter>
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="util.cpp">
-      <Filter>Sources\Util</Filter>
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="config.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="preferences.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="json_loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="curve_editor_script.cpp">
+      <Filter>Source Files\Curve\Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\cursor\drag.cur">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </None>
     <None Include="curve_editor.def">
       <Filter>Module</Filter>
@@ -466,38 +481,38 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\icon\dark\copy.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\icon\dark\read.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\icon\dark\save.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\icon\dark\clear.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\icon\dark\fit.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\icon\dark\more.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\icon\dark\back.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="resources\icon\dark\next.png">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="manifest.xml">
-      <Filter>Resources</Filter>
+      <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>
 </Project>

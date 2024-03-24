@@ -10,14 +10,14 @@ namespace cved {
 		class ScriptCurveEditor {
 		private:
 			std::vector<ScriptCurve> curves_script_;
-
-			int index_ = 0;
+			int32_t index_ = 0u;
 
 		public:
 			ScriptCurveEditor() :
 				curves_script_{}
 			{}
 
+			void reset() noexcept;
 			ScriptCurve* curve_script() noexcept { return &curves_script_[index_]; }
 			auto index() const noexcept { return index_; }
 		};

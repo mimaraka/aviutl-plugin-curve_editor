@@ -27,17 +27,20 @@ namespace cved {
 			BounceCurve curve_bounce_;
 			StepCurve curve_step_;
 
-			int index_normal_;
-			int index_value_;
+			size_t index_normal_ = 0u;
+			size_t index_value_ = 0u;
 
 			std::unique_ptr<GraphCurve> copied_curve_ = nullptr;
 
 		public:
 			GraphCurveEditor();
-			bool load(int code_bezier, int code_elastic, int code_bounce) noexcept;
 
-			int index_normal() const noexcept { return index_normal_; }
-			int index_value() const noexcept { return index_value_; }
+			void reset_id_curves() noexcept;
+			bool load_codes(int32_t code_bezier, int32_t code_elastic, int32_t code_bounce) noexcept;
+
+			auto index_normal() const noexcept { return index_normal_; }
+			auto index_value() const noexcept { return index_value_; }
+
 			GraphCurve* current_curve() noexcept;
 			NumericGraphCurve* numeric_curve() noexcept;
 			NormalCurve* curve_normal(size_t index) noexcept;
@@ -48,9 +51,16 @@ namespace cved {
 			ElasticCurve* curve_elastic() noexcept { return &curve_elastic_; }
 			BounceCurve* curve_bounce() noexcept { return &curve_bounce_; }
 			StepCurve* curve_step() noexcept { return &curve_step_; }
+
 			const auto& copied_curve() const noexcept { return copied_curve_; }
 			bool is_copying() const noexcept { return copied_curve_.get() != nullptr; }
 
+			void create_data_normal(std::vector<byte>& data) const noexcept;
+			bool load_data_normal(const byte* data, size_t size) noexcept;
+			// v1.xのデータはNormalCurveに適用される
+			bool load_data_v1(const byte* data) noexcept;
+			void create_data_value(std::vector<byte>& data) const noexcept;
+			bool load_data_value(const byte* data, size_t size) noexcept;
 		};
 	}
 }
