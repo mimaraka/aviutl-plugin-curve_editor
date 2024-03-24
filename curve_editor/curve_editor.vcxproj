@@ -84,7 +84,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -110,7 +110,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -158,7 +158,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -219,6 +219,7 @@
     <ClInclude Include="handle_bezier.hpp" />
     <ClInclude Include="handle_elastic_freq_decay.hpp" />
     <ClInclude Include="handle_elastic_amp.hpp" />
+    <ClInclude Include="json_loader.hpp" />
     <ClInclude Include="menu.hpp" />
     <ClInclude Include="menu_curve.hpp" />
     <ClInclude Include="menu_edit_mode.hpp" />
@@ -263,6 +264,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="curve_editor_graph.cpp" />
+    <ClCompile Include="curve_editor_script.cpp" />
     <ClCompile Include="curve_graph.cpp" />
     <ClCompile Include="dialog.cpp" />
     <ClCompile Include="dialog_about.cpp" />
@@ -280,11 +282,13 @@
     <ClCompile Include="filter_project_load.cpp" />
     <ClCompile Include="filter_project_save.cpp" />
     <ClCompile Include="filter_wndproc.cpp" />
+    <ClCompile Include="json_loader.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="menu_curve.cpp" />
     <ClCompile Include="menu_edit_mode.cpp" />
     <ClCompile Include="menu_graph.cpp" />
     <ClCompile Include="menu_more.cpp" />
+    <ClCompile Include="preferences.cpp" />
     <ClCompile Include="trackbar_button.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="curve_linear.cpp" />

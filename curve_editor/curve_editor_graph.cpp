@@ -12,16 +12,25 @@ namespace cved {
 			curve_bezier_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.},true },
 			curve_elastic_{ mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}, true },
 			curve_bounce_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true },
-			curve_step_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true },
-			index_normal_{ 0 },
-			index_value_{ 0 }
+			curve_step_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true }
 		{
+			reset_id_curves();
 			curve_bezier_.clear();
-			NormalCurve new_curve{};
-			curves_normal_.emplace_back(std::move(new_curve));
+			curve_elastic_.clear();
+			curve_bounce_.clear();
+			curve_step_.clear();
 		}
 
-		bool GraphCurveEditor::load(int code_bezier, int code_elastic, int code_bounce) noexcept {
+		void GraphCurveEditor::reset_id_curves() noexcept {
+			curves_normal_.clear();
+			curves_normal_.emplace_back(NormalCurve{});
+			curves_value_.clear();
+			//curves_value_.emplace_back(ValueCurve{});
+			index_normal_ = 0u;
+			index_value_ = 0u;
+		}
+
+		bool GraphCurveEditor::load_codes(int32_t code_bezier, int32_t code_elastic, int32_t code_bounce) noexcept {
 			bool result_bezier = curve_bezier_.decode(code_bezier);
 			bool result_elastic = curve_elastic_.decode(code_elastic);
 			bool result_bounce = curve_bounce_.decode(code_bounce);
@@ -85,6 +94,82 @@ namespace cved {
 			default:
 				return nullptr;
 			}
+		}
+
+		// NormalCurveのvectorのデータを作成
+		void GraphCurveEditor::create_data_normal(std::vector<byte>& data) const noexcept {
+			data.clear();
+			for (const auto& curve : curves_normal_) {
+				std::vector<byte> tmp;
+				curve.create_data(tmp);
+				// データのサイズ
+				uint32_t size = tmp.size();
+				auto bytes_size = reinterpret_cast<byte*>(&size);
+				// サイズの情報(4バイト)をねじ込む
+				tmp.insert(tmp.begin(), bytes_size, bytes_size + sizeof(uint32_t) / sizeof(byte));
+				// データの連結
+				std::copy(tmp.begin(), tmp.end(), std::back_inserter(data));
+			}
+		}
+
+		// NormalCurveのデータを読み込み
+		bool GraphCurveEditor::load_data_normal(const byte* data, size_t size) noexcept {
+			constexpr size_t SIZE_N = sizeof(uint32_t) / sizeof(byte);
+
+			std::vector<NormalCurve> vec_tmp;
+			for (size_t index = 0u; index < size;) {
+				// indexからsizeまでのバイト数が4バイト未満(サイズ情報が取得できない)の場合
+				if (size < index + SIZE_N) return false;
+				// サイズ情報の取得
+				auto p_size = reinterpret_cast<const uint32_t*>(data + index);
+				// データが記述されている部分までインデックスを進める
+				index += SIZE_N;
+				// indexからsizeまでのバイト数がサイズ情報のサイズより小さい(データが無効)場合
+				if (size < index + *p_size) return false;
+				// NormalCurveのデータの読み込み
+				NormalCurve curve;
+				if (!curve.load_data(data + index, *p_size)) return false;
+				// 読み込みに成功したらインデックスを進め、カーブをアペンド
+				index += *p_size;
+				vec_tmp.emplace_back(std::move(curve));
+			}
+			curves_normal_ = std::move(vec_tmp);
+			// インデックスをリセット
+			index_normal_ = 0;
+			return true;
+		}
+
+		// v1.xのカーブのデータを読み取り
+		bool GraphCurveEditor::load_data_v1(const byte* data) noexcept {
+			constexpr size_t CURVE_N = 1024u;
+			constexpr size_t POINT_N = 64u;
+			constexpr size_t SIZE_CURVE_POINT = 28u;
+
+			struct CurveDataV1 {
+				// 28バイト
+				struct {
+					uint8_t dummy[SIZE_CURVE_POINT];
+				} curve_point[POINT_N];
+				uint32_t size;
+			};
+
+			auto curve_data = reinterpret_cast<const CurveDataV1*>(data);
+			std::vector<NormalCurve> vec_tmp;
+
+			for (size_t i = 0u; i < CURVE_N; i++) {
+				// sizeの値が不正でないことをチェック
+				if (POINT_N < curve_data[i].size) return false;
+				NormalCurve curve;
+				if (!curve.load_data_v1(reinterpret_cast<const byte*>(&curve_data[i]), curve_data[i].size)) {
+					return false;
+				}
+				// 読み込みに成功したらカーブをアペンド
+				vec_tmp.emplace_back(std::move(curve));
+			}
+			curves_normal_ = std::move(vec_tmp);
+			// インデックスをリセット
+			index_normal_ = 0;
+			return true;
 		}
 	}
 }

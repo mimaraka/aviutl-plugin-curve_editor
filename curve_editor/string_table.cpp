@@ -45,6 +45,10 @@ namespace cved {
 					id = IDS_ERROR_CODE_COPY_FAILED;
 					break;
 
+				case StringId::ErrorDataLoadFailed:
+					id = IDS_ERROR_DATA_LOAD_FAILED;
+					break;
+
 				case StringId::WarningDeleteCurve:
 					id = IDS_WARNING_DELETE_CURVE;
 					break;

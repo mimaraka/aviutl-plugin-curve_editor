@@ -1,4 +1,6 @@
 #include "curve_bounce.hpp"
+#include "curve_data.hpp"
+#include "enum.hpp"
 
 
 
@@ -31,7 +33,7 @@ namespace cved {
 	double BounceCurve::get_value(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - point_start_.x()) / (point_end_.x() - point_start_.x()), 0., 1.);
 
-		double result;
+		double ret;
 		const double limit_value = period_ * (1. / (1. - cor_) - .5);
 
 		if (handle_.is_reverse()) {
@@ -40,22 +42,22 @@ namespace cved {
 		if (limit_value > 1.) {
 			int n = (int)(std::log(1. + (cor_ - 1.) * (1 / period_ + .5)) / std::log(cor_));
 			if (progress < period_ * ((std::pow(cor_, n) - 1.) / (cor_ - 1.) - .5)) {
-				result = func_bounce_3(progress, cor_, period_);
+				ret = func_bounce_3(progress, cor_, period_);
 			}
 			else {
-				result = 0.;
+				ret = 0.;
 			}
 		}
 		else {
 			if (progress < limit_value)
-				result = func_bounce_3(progress, cor_, period_);
+				ret = func_bounce_3(progress, cor_, period_);
 			else
-				result = 0;
+				ret = 0;
 		}
 		if (handle_.is_reverse()) {
-			result = -1. - result;
+			ret = -1. - ret;
 		}
-		return start + (end - start) * (point_end_.y() + (point_end_.y() - point_start_.y()) * result);
+		return start + (end - start) * (point_end_.y() + (point_end_.y() - point_start_.y()) * ret);
 	}
 
 	void BounceCurve::clear() noexcept {
@@ -70,17 +72,53 @@ namespace cved {
 		handle_.from_param(cor_, period_, point_start_, point_end_);
 	}
 
-	int BounceCurve::encode() const noexcept {
-		int x = (int)((period_ * (cor_ + 1) * .5) * 1000);
-		int y = (int)((1. - cor_ * cor_) * 1000);
-		int result = y + 1001 * x + 10211202;
-		if (handle_.is_reverse()) {
-			result *= -1;
-		}
-		return result;
+	void BounceCurve::create_data(std::vector<byte>& data) const noexcept {
+		BounceCurveData data_bounce{
+			.data_graph = GraphCurveData{
+				.start_x = point_start_.x(),
+				.start_y = point_start_.y(),
+				.end_x = point_end_.x(),
+				.end_y = point_end_.y()
+			},
+			.cor = cor_,
+			.period = period_
+		};
+		auto bytes_bounce = reinterpret_cast<byte*>(&data_bounce);
+		size_t n = sizeof(BounceCurveData) / sizeof(byte);
+		data = std::vector<byte>{ bytes_bounce, bytes_bounce + n };
+		data.insert(data.begin(), (byte)CurveSegmentType::Bounce);
 	}
 
-	bool BounceCurve::decode(int code) noexcept {
+	bool BounceCurve::load_data(const byte* data, size_t size) noexcept {
+		if (size < sizeof(BounceCurveData) / sizeof(byte)) return false;
+		auto p_curve_data = reinterpret_cast<const BounceCurveData*>(data);
+		// カーブの整合性チェック
+		if (
+			!mkaul::real_in_range(p_curve_data->data_graph.start_x, 0., 1., true)
+			or !mkaul::real_in_range(p_curve_data->data_graph.end_x, 0., 1., true)
+			or p_curve_data->data_graph.end_x < p_curve_data->data_graph.start_x
+			) {
+			return false;
+		}
+		point_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
+		point_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
+		handle_.from_param(p_curve_data->cor, p_curve_data->period, point_start_, point_end_);
+		cor_ = handle_.get_cor(point_start_, point_end_);
+		period_ = handle_.get_period(point_start_, point_end_);
+		return true;
+	}
+
+	int32_t BounceCurve::encode() const noexcept {
+		int x = (int)((period_ * (cor_ + 1) * 0.5) * 1000);
+		int y = (int)((1. - cor_ * cor_) * 1000);
+		int ret = y + 1001 * x + 10211202;
+		if (handle_.is_reverse()) {
+			ret *= -1;
+		}
+		return ret;
+	}
+
+	bool BounceCurve::decode(int32_t code) noexcept {
 		// -2147483647 ~  -11213203 : Unused
 		//   -11213202 ~  -10211202 : Bounce
 		//   -10211201 ~         -1 : Elastic
@@ -174,7 +212,7 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
-	bool BounceCurve::point_begin_move(ActivePoint active_point, const GraphView&) noexcept {
+	bool BounceCurve::point_begin_move(ActivePoint active_point) noexcept {
 		cor_ = handle_.get_cor(point_start_, point_end_);
 		period_ = handle_.get_period(point_start_, point_end_);
 		return true;

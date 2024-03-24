@@ -25,16 +25,20 @@ namespace cved {
 			double cor = DEFAULT_COR,
 			double period = DEFAULT_PERIOD
 		);
+		~BounceCurve() {}
 
 		// カーブの値を生成
 		double get_value(double progress, double start, double end) const noexcept override;
-
 		void clear() noexcept override;
-
 		void reverse() noexcept override;
 
-		int encode() const noexcept override;
-		bool decode(int number) noexcept override;
+		void create_data(std::vector<byte>& data) const noexcept override;
+		bool load_data(const byte* data, size_t size) noexcept override;
+
+		// カーブから一意な整数値を生成
+		int32_t encode() const noexcept override;
+		// 整数値からカーブに変換
+		bool decode(int32_t code) noexcept override;
 
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,
@@ -62,7 +66,7 @@ namespace cved {
 		void handle_end_control() noexcept override;
 
 		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
-		bool point_begin_move(ActivePoint active_point, const GraphView& view) noexcept override;
+		bool point_begin_move(ActivePoint active_point) noexcept override;
 		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept override;
 	};

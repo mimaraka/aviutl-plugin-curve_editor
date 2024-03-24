@@ -18,6 +18,7 @@ namespace cved {
 				ErrorOutOfRange,
 				ErrorInvalidInput,
 				ErrorCodeCopyFailed,
+				ErrorDataLoadFailed,
 				WarningDeleteCurve,
 				WarningDeleteAllCurves,
 				WarningResetPreferences,
