@@ -1,5 +1,6 @@
 #include "dialog_curve_code.hpp"
 #include <regex>
+#include "config.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
@@ -54,11 +55,15 @@ namespace cved {
 						}
 						catch (std::out_of_range&) {}
 						// 入力値が範囲外の場合
-						my_messagebox(global::string_table[StringId::ErrorOutOfRange], hwnd, MessageBoxIcon::Error);
+						if (global::config.get_show_popup()) {
+							my_messagebox(global::string_table[StringId::ErrorOutOfRange], hwnd, MessageBoxIcon::Error);
+							return TRUE;
+						}
 					}
 					// 入力値が不正の場合
-					else {
+					else if (global::config.get_show_popup()) {
 						my_messagebox(global::string_table[StringId::ErrorInvalidInput], hwnd, MessageBoxIcon::Error);
+						return TRUE;
 					}
 				}
 				else {
