@@ -19,7 +19,7 @@ namespace cved {
 		const double progress = ::lua_tonumber(L, 3);
 		const double start = ::lua_tonumber(L, 4);
 		const double end = ::lua_tonumber(L, 5);
-		double result = 0.;
+		double ret = 0.;
 
 		// Numeric Typeのカーブのオブジェクトを用意しておく
 		static BezierCurve curve_bezier;
@@ -34,7 +34,7 @@ namespace cved {
 				::lua_pushnil(L);
 				return 1;
 			}
-			result = curve_bezier.get_value(progress, start, end);
+			ret = curve_bezier.get_value(progress, start, end);
 			break;
 
 			// 標準
@@ -42,7 +42,7 @@ namespace cved {
 		{
 			auto p_curve_normal = global::editor.editor_graph().curve_normal(parameter - 1);
 			if (p_curve_normal) {
-				result = p_curve_normal->get_value(progress, start, end);
+				ret = p_curve_normal->get_value(progress, start, end);
 			}
 			else {
 				::lua_pushnil(L);
@@ -63,7 +63,7 @@ namespace cved {
 				::lua_pushnil(L);
 				return 1;
 			}
-			result = curve_elastic.get_value(progress, start, end);
+			ret = curve_elastic.get_value(progress, start, end);
 			break;
 
 			// バウンス
@@ -72,7 +72,7 @@ namespace cved {
 				::lua_pushnil(L);
 				return 1;
 			}
-			result = curve_bounce.get_value(progress, start, end);
+			ret = curve_bounce.get_value(progress, start, end);
 			break;
 
 			// ステップ
@@ -92,7 +92,7 @@ namespace cved {
 			return 1;
 		}
 
-		::lua_pushnumber(L, result);
+		::lua_pushnumber(L, ret);
 		return 1;
 	}
 
