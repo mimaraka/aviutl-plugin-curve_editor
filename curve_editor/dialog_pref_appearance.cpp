@@ -50,7 +50,6 @@ namespace cved {
 			init_controls(hwnd);
 
 			cc.hwndOwner = hwnd;
-			cc.rgbResult = global::config.get_curve_color().colorref();
 			return TRUE;
 
 		case WM_HSCROLL:
@@ -84,6 +83,8 @@ namespace cved {
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case (UINT)WindowCommand::LoadConfig:
+				cc.rgbResult = global::config.get_curve_color().colorref();
+				::InvalidateRect(hwnd, NULL, FALSE);
 				::SendMessageA(hwnd_combo_theme_, CB_SETCURSEL, (WPARAM)global::config.get_theme_id(), NULL);
 				::SendMessageA(
 					hwnd_check_show_trace_,

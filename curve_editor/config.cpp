@@ -2,6 +2,8 @@
 #include <fstream>
 #include "constants.hpp"
 #include "curve_editor.hpp"
+#include "global.hpp"
+#include "json_loader.hpp"
 #include "string_table.hpp"
 
 
@@ -11,28 +13,18 @@ using json = nlohmann::json;
 namespace cved {
 	namespace global {
 		void Config::init(HINSTANCE hinst) noexcept {
-			language_ = Language::Automatic;
-			theme_id_ = ThemeId::Dark;
+			pref_.reset();
 			edit_mode_ = EditMode::Normal;
 			layout_mode_ = LayoutMode::Vertical;
 			apply_mode_ = ApplyMode::Normal;
 			current_theme_ = THEME_DARK;
-			curve_color_ = mkaul::ColorF(148, 158, 197);
-			curve_thickness_ = 1.2f;
-			curve_drawing_interval_ = 1.f;
 			curve_code_bezier_ = 145674282;
 			curve_code_elastic_ = 2554290;
 			curve_code_bounce_ = 10612242;
-			show_popup_ = true;
-			show_trace_ = true;
-			auto_copy_ = false;
-			auto_apply_ = true;
 			show_handle_ = true;
 			show_library_ = true;
 			show_velocity_graph_ = false;
 			align_handle_ = true;
-			reverse_wheel_ = false;
-			notify_update_ = true;
 			ignore_autosaver_warning_ = false;
 			separator_ = global::SEPARATOR_WIDTH;
 			preset_size_ = 50;
@@ -42,10 +34,6 @@ namespace cved {
 			::GetModuleFileNameA(NULL, path_str, MAX_PATH);
 			std::filesystem::path aviutl_path{ path_str };
 			aviutl_directory_ = aviutl_path.parent_path();
-			// jsonファイルのパスの設定
-			::GetModuleFileNameA(hinst, path_str, MAX_PATH);
-			std::filesystem::path dll_path{ path_str };
-			json_path_ = dll_path.parent_path() / "curve_editor.json";
 		}
 
 		bool Config::set_language(Language language) noexcept {
@@ -54,7 +42,7 @@ namespace cved {
 			case Language::Japanese:
 			case Language::English:
 			case Language::Korean:
-				language_ = language;
+				pref_.language = language;
 				return true;
 
 			default:
@@ -65,12 +53,12 @@ namespace cved {
 		bool Config::set_theme_id(ThemeId theme_id) noexcept {
 			switch (theme_id) {
 			case ThemeId::Dark:
-				theme_id_ = ThemeId::Dark;
+				pref_.theme_id = ThemeId::Dark;
 				current_theme_ = THEME_DARK;
 				return true;
 
 			case ThemeId::Light:
-				theme_id_ = ThemeId::Light;
+				pref_.theme_id = ThemeId::Light;
 				current_theme_ = THEME_LIGHT;
 				return true;
 
@@ -79,12 +67,12 @@ namespace cved {
 			}
 		}
 
-		bool Config::set_graphic_engine(mkaul::graphics::Factory::GraphicEngine graphic_engine) noexcept {
+		bool Config::set_graphic_method(mkaul::graphics::Factory::GraphicEngine graphic_engine) noexcept {
 			using GraphicEngine = mkaul::graphics::Factory::GraphicEngine;
 			switch (graphic_engine) {
 			case GraphicEngine::Gdiplus:
 			case GraphicEngine::Directx:
-				graphic_engine_ = graphic_engine;
+				pref_.graphic_method = graphic_engine;
 				return true;
 
 			default:
@@ -141,11 +129,11 @@ namespace cved {
 		}
 
 		void Config::set_curve_thickness(float curve_thickness) noexcept {
-			curve_thickness_ = mkaul::clamp(roundf(curve_thickness * 10.f) * 0.1f, 0.1f, 10.f);
+			pref_.curve_thickness = mkaul::clamp(roundf(curve_thickness * 10.f) * 0.1f, 0.1f, 10.f);
 		}
 
 		void Config::set_curve_drawing_interval(float curve_drawing_interval) noexcept {
-			curve_drawing_interval_ = mkaul::clamp(roundf(curve_drawing_interval * 10.f) * 0.1f, 0.1f, 10.f);
+			pref_.curve_drawing_interval = mkaul::clamp(roundf(curve_drawing_interval * 10.f) * 0.1f, 0.1f, 10.f);
 		}
 
 		bool Config::set_layout_mode(LayoutMode layout_mode) noexcept {
@@ -180,76 +168,49 @@ namespace cved {
 
 		// jsonファイルを読み込み
 		bool Config::load_json() {
-			std::ifstream file{ json_path_ };
-			if (file.fail()) return false;
-			
-			try {
-				json data = json::parse(file);
-				if (data.contains(GET_KEY(theme_id_))) set_theme_id(data[GET_KEY(theme_id_)]);
+			json data;
+			if (JsonLoader::get_data(global::fp->dll_hinst, "config", &data)) {
+				if (data.contains("preferences")) pref_.from_json(data["preferences"]);
 				if (data.contains(GET_KEY(edit_mode_))) set_edit_mode(data[GET_KEY(edit_mode_)]);
 				if (data.contains(GET_KEY(layout_mode_))) set_layout_mode(data[GET_KEY(layout_mode_)]);
 				if (data.contains(GET_KEY(apply_mode_))) set_apply_mode(data[GET_KEY(apply_mode_)]);
-				if (data.contains(GET_KEY(curve_color_))) set_curve_color(mkaul::ColorF{ data[GET_KEY(curve_color_)] });
-				if (data.contains(GET_KEY(curve_thickness_))) set_curve_thickness(data[GET_KEY(curve_thickness_)]);
-				if (data.contains(GET_KEY(curve_drawing_interval_))) set_curve_drawing_interval(data[GET_KEY(curve_drawing_interval_)]);
-				if (data.contains(GET_KEY(graphic_engine_))) set_graphic_engine(data[GET_KEY(graphic_engine_)]);
-				if (data.contains(GET_KEY(curve_code_bezier_))) curve_code_bezier_ = data[GET_KEY(curve_code_bezier_)];
-				if (data.contains(GET_KEY(curve_code_elastic_))) curve_code_elastic_ = data[GET_KEY(curve_code_elastic_)];
-				if (data.contains(GET_KEY(curve_code_bounce_))) curve_code_bounce_ = data[GET_KEY(curve_code_bounce_)];
-				if (data.contains(GET_KEY(show_popup_))) set_show_popup(data[GET_KEY(show_popup_)]);
-				if (data.contains(GET_KEY(show_trace_))) set_show_trace(data[GET_KEY(show_trace_)]);
+				JsonLoader::get_value(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
+				JsonLoader::get_value(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
+				JsonLoader::get_value(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
 				if (data.contains(GET_KEY(show_library_))) set_show_library(data[GET_KEY(show_library_)]);
-				if (data.contains(GET_KEY(auto_copy_))) set_auto_copy(data[GET_KEY(auto_copy_)]);
-				if (data.contains(GET_KEY(auto_apply_))) set_auto_apply(data[GET_KEY(auto_apply_)]);
 				if (data.contains(GET_KEY(show_velocity_graph_))) set_show_velocity_graph(data[GET_KEY(show_velocity_graph_)]);
 				if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
-				if (data.contains(GET_KEY(reverse_wheel_))) set_reverse_wheel(data[GET_KEY(reverse_wheel_)]);
-				if (data.contains(GET_KEY(notify_update_))) set_notify_update(data[GET_KEY(notify_update_)]);
 				if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
 				if (data.contains(GET_KEY(separator_))) set_separator(data[GET_KEY(separator_)]);
 				if (data.contains(GET_KEY(preset_size_))) set_preset_size(data[GET_KEY(preset_size_)]);
 
 				return true;
 			}
-			catch (json::parse_error&) {
-				return false;
-			}
+			else return false;
 		}
 
 		// jsonファイルを保存
 		bool Config::save_json() {
+			json data_pref;
+			pref_.to_json(&data_pref);
+
 			json data = {
-				{GET_KEY(theme_id_), theme_id_},
+				{"preferences", data_pref},
 				{GET_KEY(edit_mode_), edit_mode_},
 				{GET_KEY(layout_mode_), layout_mode_},
 				{GET_KEY(apply_mode_), apply_mode_},
-				{GET_KEY(curve_color_), curve_color_.colorref()},
-				{GET_KEY(curve_thickness_), curve_thickness_},
-				{GET_KEY(curve_drawing_interval_), curve_drawing_interval_},
-				{GET_KEY(graphic_engine_), graphic_engine_},
 				{"curve_code_bezier", editor.editor_graph().curve_bezier()->encode()},
 				{"curve_code_elastic", editor.editor_graph().curve_elastic()->encode()},
 				{"curve_code_bounce", editor.editor_graph().curve_bounce()->encode()},
-				{GET_KEY(show_popup_), show_popup_},
-				{GET_KEY(show_trace_), show_trace_},
 				{GET_KEY(show_library_), show_library_},
-				{GET_KEY(auto_copy_), auto_copy_},
-				{GET_KEY(auto_apply_), auto_apply_},
 				{GET_KEY(show_velocity_graph_), show_velocity_graph_},
 				{GET_KEY(align_handle_), align_handle_},
-				{GET_KEY(reverse_wheel_), reverse_wheel_},
-				{GET_KEY(notify_update_), notify_update_},
 				{GET_KEY(ignore_autosaver_warning_), ignore_autosaver_warning_},
 				{GET_KEY(separator_), separator_},
 				{GET_KEY(preset_size_), preset_size_}
 			};
 
-			std::ofstream file{ json_path_ };
-			if (file.fail()) return false;
-
-			file << data.dump(4);
-			file.close();
-			return true;
+			return JsonLoader::set_data(global::fp->dll_hinst, "config", data);
 		}
 
 #undef GET_KEY
