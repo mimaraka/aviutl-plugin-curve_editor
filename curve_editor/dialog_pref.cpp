@@ -136,7 +136,9 @@ namespace cved {
 					MessageBoxIcon::Warning, MessageBoxButton::OkCancel
 				);
 				if (resp == IDOK) {
-					// TODO: Preferencesのリセット
+					global::config.reset_pref();
+					load_config();
+					global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				}
 				return TRUE;
 			}
