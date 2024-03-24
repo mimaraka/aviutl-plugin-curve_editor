@@ -1,82 +1,38 @@
 @Type1
 --param:0
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
+local ce=require"curve_editor"
 local gpt=obj.getpoint
 local idx,t=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
 local par=gpt"param"
-if(-2147483647<=par and par<=-12368443)or(12368443<=par and par<=2147483646)then
-	return curve_editor.getcurve(0,par,t,st,ed)
-elseif 1<=par and par<=1024 then
-	return curve_editor.getcurve(1,par,t,st,ed)
-else
-	return gpt"default"
-end
+return ce.getcurve(0,par,t,st,ed) or ce.getcurve(1,par,t,st,ed) or gpt"default"
 
 
-@Type1(’†ŠÔ“_–³Ž‹)
+@Type1(ä¸­é–“ç‚¹ç„¡è¦–)
 --twopoint
 --param:0
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
+local ce=require"curve_editor"
 local gpt=obj.getpoint
 local par=gpt"param"
-if(-2147483647<=par and par<=-12368443)or(12368443<=par and par<=2147483646)then
-	return curve_editor.getcurve(0,par,gpt"totalindex",gpt(0),gpt(1))
-elseif 1<=par and par<=1024 then
-	return curve_editor.getcurve(1,par,gpt"totalindex",gpt(0),gpt(1))
-else
-	return gpt"default"
-end
+return ce.getcurve(0,par,gpt"totalindex",gpt(0),gpt(1)) or ce.getcurve(1,par,gpt"totalindex",gpt(0),gpt(1)) or gpt"default"
 
 
 @Type2
 --param:0
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
+local ce=require"curve_editor"
 local gpt=obj.getpoint
 local idx,t=math.modf(gpt"index")
 local st=gpt(idx)
 local ed=gpt(idx+1)
 local par=gpt"param"
-if(-10211201<=par and par<=-1)or(1<=par and par<=10211201)then
-	return curve_editor.getcurve(3,par,t,st,ed)
-elseif(-11213202<=par and par<=-10211202)or(10211202<=par and par<=11213202)then
-	return curve_editor.getcurve(4,par,t,st,ed)
-else
-	return gpt"default"
-end
+return ce.getcurve(3,par,t,st,ed) or ce.getcurve(4,par,t,st,ed) or gpt"default"
 
 
-@Type2(’†ŠÔ“_–³Ž‹)
+@Type2(ä¸­é–“ç‚¹ç„¡è¦–)
 --twopoint
 --param:0
-local modname="curve_editor"
-if not package.loaded[modname] then
-	package.preload[modname]=package.loadlib(modname .. ".auf","luaopen_" .. modname)
-	require(modname)
-	package.preload[modname]=nil
-end
+local ce=require"curve_editor"
 local gpt=obj.getpoint
 local par=gpt"param"
-if(-10211201<=par and par<=-1)or(1<=par and par<=10211201)then
-	return curve_editor.getcurve(3,par,gpt"totalindex",gpt(0),gpt(1))
-elseif(-11213202<=par and par<=-10211202)or(10211202<=par and par<=11213202)then
-	return curve_editor.getcurve(4,par,gpt"totalindex",gpt(0),gpt(1))
-else
-	return gpt"default"
-end
+return ce.getcurve(3,par,gpt"totalindex",gpt(0),gpt(1)) or ce.getcurve(4,par,gpt"totalindex",gpt(0),gpt(1)) or gpt"default"

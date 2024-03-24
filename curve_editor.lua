@@ -1,0 +1,1 @@
+return package.loadlib("curve_editor.auf","luaopen_curve_editor")()

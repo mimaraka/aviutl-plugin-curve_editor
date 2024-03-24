@@ -1,0 +1,155 @@
+#include "dialog_pref.hpp"
+#include "config.hpp"
+#include "enum.hpp"
+#include "global.hpp"
+#include "my_messagebox.hpp"
+#include "string_table.hpp"
+#include "resource.h"
+
+
+
+namespace cved {
+	PrefDialog::PrefDialog() {
+		using StringId = global::StringTable::StringId;
+
+		categories_.emplace_back(CategoryInfo{
+			.id = ID_CATEGORY_GENERAL,
+			.name =global::string_table[StringId::LabelPreferenceGeneral],
+			.p_dialog = &dialog_general_ 
+		});
+		categories_.emplace_back(CategoryInfo{
+			.id = ID_CATEGORY_APPEARANCE,
+			.name = global::string_table[StringId::LabelPreferenceAppearance],
+			.p_dialog = &dialog_appearance_
+		});
+		categories_.emplace_back(CategoryInfo{
+			.id = ID_CATEGORY_BEHAVIOR,
+			.name = global::string_table[StringId::LabelPreferenceBehavior],
+			.p_dialog = &dialog_behavior_
+		});
+		categories_.emplace_back(CategoryInfo{
+			.id = ID_CATEGORY_EDITING,
+			.name = global::string_table[StringId::LabelPreferenceEditing],
+			.p_dialog = &dialog_editing_
+		});
+	}
+
+
+	int PrefDialog::i_resource() const noexcept { return IDD_PREF; }
+
+
+	void PrefDialog::init_controls(HWND hwnd) noexcept {
+		hwnd_list_categories_ = ::GetDlgItem(hwnd, IDC_LIST_CATEGORY);
+		RECT rect_child = { 100, 7, 400, 217 };
+		::MapDialogRect(hwnd, &rect_child);
+
+		for (auto& category : categories_) {
+			// リストに項目を追加
+			::SendMessageA(hwnd_list_categories_, LB_ADDSTRING, NULL, (LPARAM)category.name);
+			// 項目へのIDの紐づけ
+			::SendMessageA(
+				hwnd_list_categories_,
+				LB_SETITEMDATA,
+				(WPARAM)(::SendMessageA(hwnd_list_categories_, LB_GETCOUNT, NULL, NULL) - 1),
+				(LPARAM)category.id
+			);
+			category.hwnd = category.p_dialog->create(hwnd);
+			// 子ウィンドウの移動
+			::MoveWindow(
+				category.hwnd,
+				rect_child.left,
+				rect_child.top,
+				rect_child.right - rect_child.left,
+				rect_child.bottom - rect_child.top,
+				TRUE
+			);
+		}
+		::SendMessageA(hwnd_list_categories_, LB_SETCURSEL, 0, NULL);
+	}
+
+
+	void PrefDialog::update() noexcept {
+		int index = ::SendMessageA(hwnd_list_categories_, LB_GETCURSEL, NULL, NULL);
+		for (const auto& category : categories_) {
+			::ShowWindow(category.hwnd, SW_HIDE);
+		}
+		if (index != LB_ERR) {
+			int id = ::SendMessageA(hwnd_list_categories_, LB_GETITEMDATA, (WPARAM)index, NULL);
+			if (id != LB_ERR) {
+				for (const auto& category : categories_) {
+					if (category.id == id) {
+						::ShowWindow(category.hwnd, SW_SHOW);
+					}
+				}
+			}
+		}
+	}
+
+
+	void PrefDialog::load_config() noexcept {
+		for (const auto& category : categories_) {
+			::SendMessageA(category.hwnd, WM_COMMAND, (WPARAM)WindowCommand::LoadConfig, NULL);
+		}
+	}
+
+
+	void PrefDialog::save_config() noexcept {
+		for (const auto& category : categories_) {
+			::SendMessageA(category.hwnd, WM_COMMAND, (WPARAM)WindowCommand::SaveConfig, NULL);
+		}
+		global::config.save_json();
+	}
+
+
+	INT_PTR PrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+		using StringId = global::StringTable::StringId;
+
+		switch (message) {
+		case WM_INITDIALOG:
+			init_controls(hwnd);
+			update();
+			load_config();
+			return TRUE;
+
+		case WM_COMMAND:
+			switch (LOWORD(wparam)) {
+			case IDOK:
+				save_config();
+				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
+				::EndDialog(hwnd, 1);
+				return TRUE;
+
+			case IDCANCEL:
+				::EndDialog(hwnd, 1);
+				return TRUE;
+
+			case IDC_BUTTON_APPLY:
+				save_config();
+				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
+				return TRUE;
+
+			case IDC_BUTTON_RESET:
+			{
+				auto resp = my_messagebox(
+					global::string_table[StringId::WarningResetPreferences],
+					hwnd,
+					MessageBoxIcon::Warning, MessageBoxButton::OkCancel
+				);
+				if (resp == IDOK) {
+					global::config.reset_pref();
+					load_config();
+					global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
+				}
+				return TRUE;
+			}
+			}
+			switch (HIWORD(wparam)) {
+			case LBN_SELCHANGE:
+				update();
+				return TRUE;
+			}
+			break;
+		}
+		return FALSE;
+	}
+}

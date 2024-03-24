@@ -1,0 +1,19 @@
+{
+    "align_handle": true,
+    "apply_mode": 0,
+    "auto_apply": true,
+    "auto_copy": false,
+    "curve_color": 12951188,
+    "edit_mode": 1,
+    "graphic_method": 1,
+    "ignore_autosaver_warning": false,
+    "layout_mode": 0,
+    "notify_update": false,
+    "preset_size": 50,
+    "reverse_wheel": false,
+    "separator": 0,
+    "show_popup": true,
+    "show_trace": true,
+    "theme_id": 0,
+    "velocity_graph": false
+}
