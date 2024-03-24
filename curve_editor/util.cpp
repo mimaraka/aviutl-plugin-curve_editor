@@ -36,7 +36,7 @@ namespace cved {
 			HGLOBAL memory = nullptr;
 			// 確保したメモリの先頭のポインタ
 			LPTSTR buffer = nullptr;
-			bool result = false;
+			bool ret = false;
 
 			if (!::OpenClipboard(hwnd)) return false;
 
@@ -54,18 +54,18 @@ namespace cved {
 					// メモリブロックへのアクセスを終了
 					::GlobalUnlock(memory);
 					::SetClipboardData(CF_TEXT, memory);
-					result = true;
+					ret = true;
 				}
 			}
 			::CloseClipboard();
 
-			return result;
+			return ret;
 		}
 
 		int16_t get_track_script_idx() noexcept {
 			const std::regex regex_script_name{ std::format(R"(^Type1@{}(\x01.+)?$)", global::PLUGIN_NAME) };
 			auto tra_script_names = reinterpret_cast<const char**>(global::exedit_internal.base_address() + 0x231488u);
-			int script_idx = 0;
+			int16_t script_idx = 0;
 
 			while (true) {
 				if (!tra_script_names[script_idx]) return -1;

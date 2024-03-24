@@ -30,7 +30,7 @@ namespace cved {
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case (WPARAM)WindowCommand::LoadConfig:
-				::SendMessageA(hwnd_combo_graphic_method_, CB_SETCURSEL, (WPARAM)global::config.get_graphic_engine(), NULL);
+				::SendMessageA(hwnd_combo_graphic_method_, CB_SETCURSEL, (WPARAM)global::config.get_graphic_method(), NULL);
 				::SendMessageA(
 					hwnd_check_show_popup_,
 					BM_SETCHECK,
@@ -40,7 +40,7 @@ namespace cved {
 				return TRUE;
 
 			case (WPARAM)WindowCommand::SaveConfig:
-				global::config.set_graphic_engine(
+				global::config.set_graphic_method(
 					(mkaul::graphics::Factory::GraphicEngine)::SendMessageA(hwnd_combo_graphic_method_, CB_GETCURSEL, NULL, NULL)
 				);
 				global::config.set_show_popup(

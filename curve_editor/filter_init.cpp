@@ -26,7 +26,7 @@ namespace cved {
 		global::config.load_json();
 
 		// 保存されたカーブの読み込み
-		global::editor.editor_graph().load(
+		global::editor.editor_graph().load_codes(
 			global::config.get_curve_code_bezier(),
 			global::config.get_curve_code_elastic(),
 			global::config.get_curve_code_bounce()
@@ -73,7 +73,7 @@ namespace cved {
 		//}
 
 		// 描画環境の初期化
-		if (!mkaul::graphics::Factory::startup(global::config.get_graphic_engine())) {
+		if (!mkaul::graphics::Factory::startup(global::config.get_graphic_method())) {
 			my_messagebox(global::string_table[StringId::ErrorGraphicsInitFailed], NULL, MessageBoxIcon::Error);
 			return FALSE;
 		}

@@ -154,7 +154,7 @@ namespace cved {
 		const mkaul::Point<double>& point,
 		const GraphView& view
 	) const noexcept {
-		mkaul::Point<double> point_origin, point_opposite, result;
+		mkaul::Point<double> point_origin, point_opposite, ret;
 
 		if (type_ == Type::Left) {
 			point_origin = p_curve_->point_start().point();
@@ -166,33 +166,33 @@ namespace cved {
 		}
 
 		if (snap_state_ != SnapState::Unsnapped) {
-			result.x = point.x - point_origin.x;
+			ret.x = point.x - point_origin.x;
 			if (snap_state_ == SnapState::SnapStart) {
-				result.y = p_curve_->point_start().y() - point_origin.y;
+				ret.y = p_curve_->point_start().y() - point_origin.y;
 			}
 			else {
-				result.y = p_curve_->point_end().y() - point_origin.y;
+				ret.y = p_curve_->point_end().y() - point_origin.y;
 			}
 		}
 		else if (locked_angle_) {
 			double length = get_cursor_length(point, view);
-			result = mkaul::Point{
+			ret = mkaul::Point{
 				length * std::cos(buffer_angle_) / view.scale_x(),
 				length * std::sin(buffer_angle_) / view.scale_y()
 			};
 		}
 		else if (locked_length_) {
 			double angle = get_cursor_angle(point, view);
-			result = mkaul::Point{
+			ret = mkaul::Point{
 				buffer_length_ * std::cos(angle) / view.scale_x(),
 				buffer_length_ * std::sin(angle) / view.scale_y()
 			};
 		}
 		else {
-			result = point - point_origin;
+			ret = point - point_origin;
 		}
-		limit_range(&result, locked_angle_ or locked_length_);
-		return result;
+		limit_range(&ret, locked_angle_ or locked_length_);
+		return ret;
 	}
 
 	void BezierHandle::limit_range(
@@ -324,12 +324,12 @@ namespace cved {
 	void BezierHandle::set_position(
 		const mkaul::Point<double>& point
 	) noexcept {
-		mkaul::Point<double> result;
+		mkaul::Point<double> ret;
 		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
 
-		result = point - point_origin;
-		limit_range(&result, true);
-		point_offset_.move(result);
+		ret = point - point_origin;
+		limit_range(&ret, true);
+		point_offset_.move(ret);
 	}
 
 	// ハンドルの移動を終了する

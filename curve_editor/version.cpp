@@ -16,12 +16,12 @@ namespace cved {
 		if (!client.open(url)) {
 			return false;
 		}
-		auto result = client.get(&data, &status_code);
+		auto resp = client.get(&data, &status_code);
 		client.close();
-		if (result) {
+		if (resp) {
 			try {
-				std::string result{ data.begin(), data.end() };
-				auto j = nlohmann::json::parse(result);
+				std::string ret{ data.begin(), data.end() };
+				auto j = nlohmann::json::parse(ret);
 				return p_version->from_str(j["tag_name"]);;
 			}
 			catch (nlohmann::json::parse_error&) {}
