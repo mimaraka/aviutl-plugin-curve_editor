@@ -360,8 +360,6 @@ namespace cved {
 			return 0;
 
 		case WM_COMMAND:
-			if (menu_edit_mode.callback(wparam, lparam)) return 0;
-			if (menu_more.callback(wparam, lparam)) return 0;
 			switch (wparam) {
 			case (WPARAM)WindowCommand::Update:
 				// モードボタンの更新
