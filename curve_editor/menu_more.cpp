@@ -45,10 +45,10 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_MORE_SHOWLIBRARY, FALSE, &minfo_tmp);
 	}
 
-	bool MoreMenu::callback(WPARAM wparam, LPARAM lparam) noexcept {
+	bool MoreMenu::callback(uint16_t id) noexcept {
 		using StringId = global::StringTable::StringId;
 
-		switch (LOWORD(wparam)) {
+		switch (id) {
 		case ID_LAYOUT_VERTICAL:
 			global::config.set_layout_mode(LayoutMode::Vertical);
 			break;
