@@ -8,7 +8,7 @@ namespace cved {
 		return menu_;
 	}
 
-	int Menu::show(
+	bool Menu::show(
 		HWND hwnd,
 		UINT flags,
 		const mkaul::Point<LONG>* p_custom_point_screen
@@ -19,12 +19,13 @@ namespace cved {
 			tmp = p_custom_point_screen->to<POINT>();
 		}
 		update_state();
-		return ::TrackPopupMenu(
+		int ret = ::TrackPopupMenu(
 			menu_,
-			flags,
+			flags | TPM_RETURNCMD | TPM_NONOTIFY,
 			tmp.x,
 			tmp.y,
 			0, hwnd, NULL
 		);
+		return callback(ret);
 	}
 }

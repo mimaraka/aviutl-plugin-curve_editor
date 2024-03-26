@@ -10,11 +10,11 @@ namespace cved {
 	protected:
 		HMENU menu_ = NULL;
 		virtual void update_state() noexcept {}
+		virtual bool callback(uint16_t) noexcept { return false; }
 
 	public:
 		HMENU get_handle() noexcept;
-		virtual bool callback(WPARAM wparam, LPARAM lparam) noexcept = 0;
-		int show(
+		bool show(
 			HWND hwnd,
 			UINT flags = NULL,
 			const mkaul::Point<LONG>* p_custom_point_screen = nullptr

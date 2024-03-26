@@ -8,6 +8,7 @@ namespace cved {
 	class CurveMenu : public Menu {
 		HMENU submenu_segment_type_;
 		void update_state(size_t index) noexcept;
+		bool callback(size_t index, uint16_t id) noexcept;
 
 	public:
 		CurveMenu(HINSTANCE hinst);
@@ -19,6 +20,5 @@ namespace cved {
 			UINT flags = NULL,
 			const mkaul::Point<LONG>* p_custom_point_screen = nullptr
 		) noexcept;
-		bool callback(WPARAM wparam, LPARAM lparam) noexcept override;
 	};
 }

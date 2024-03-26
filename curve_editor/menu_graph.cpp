@@ -22,8 +22,8 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_GRAPH_VELOCITY, FALSE, &minfo_tmp);
 	}
 
-	bool GraphMenu::callback(WPARAM wparam, LPARAM lparam) noexcept {
-		switch (LOWORD(wparam)) {
+	bool GraphMenu::callback(uint16_t id) noexcept {
+		switch (id) {
 		case ID_GRAPH_REVERSE:
 			global::window_grapheditor.send_command((WPARAM)WindowCommand::Reverse);
 			break;

@@ -36,21 +36,20 @@ namespace cved {
 		}
 	}
 
-	bool EditModeMenu::callback(WPARAM wparam, LPARAM lparam) noexcept {
+	bool EditModeMenu::callback(uint16_t id) noexcept {
 		if (mkaul::in_range(
-			LOWORD(wparam),
-			(WORD)WindowCommand::EditModeNormal,
-			(WORD)WindowCommand::EditModeNormal + (WORD)EditMode::NumEditMode - 1u,
+			id,
+			(uint16_t)WindowCommand::EditModeNormal,
+			(uint16_t)WindowCommand::EditModeNormal + (uint16_t)EditMode::NumEditMode - 1u,
 			true
 		)) {
-			EditMode new_mode = (EditMode)(LOWORD(wparam) - (WORD)WindowCommand::EditModeNormal);
+			EditMode new_mode = (EditMode)(id - (uint16_t)WindowCommand::EditModeNormal);
 			// 編集モードが変更された場合
 			if (new_mode != global::config.get_edit_mode()) {
-				global::config.set_edit_mode((EditMode)(LOWORD(wparam) - (WORD)WindowCommand::EditModeNormal));
+				global::config.set_edit_mode((EditMode)(id - (uint16_t)WindowCommand::EditModeNormal));
 				global::window_main.send_command((WPARAM)WindowCommand::Update);
 				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
 			}
-
 			return true;
 		}
 		else return false;
