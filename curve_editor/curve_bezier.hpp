@@ -33,7 +33,7 @@ namespace cved {
 		void set_next(GraphCurve* p) noexcept override;
 
 		// カーブの値を取得する
-		double get_value(double progress, double start, double end) const noexcept override;
+		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
 		void reverse() noexcept override;
 

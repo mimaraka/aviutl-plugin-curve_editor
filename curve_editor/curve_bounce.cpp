@@ -18,31 +18,28 @@ namespace cved {
 		handle_.from_param(cor, period, point_start, point_end);
 	}
 
-	double func_bounce_1(double prog, double cor) {
-		return std::floor(std::log((cor - 1.) * prog + 1.) / std::log(cor));
-	}
-
-	double func_bounce_2(double prog, double cor) {
-		return prog + 0.5 + 1. / (cor - 1.) - (cor + 1.) * std::pow(cor, func_bounce_1(prog + .5, cor)) / (2. * cor - 2.);
-	}
-
-	double func_bounce_3(double prog, double cor, double period) {
-		return 4. * func_bounce_2(prog / period, cor) * func_bounce_2(prog / period, cor) - std::pow(cor, 2. * func_bounce_1(prog / period + .5, cor));
-	}
-
-	double BounceCurve::get_value(double progress, double start, double end) const noexcept {
+	double BounceCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - point_start_.x()) / (point_end_.x() - point_start_.x()), 0., 1.);
 
 		double ret;
 		const double limit_value = period_ * (1. / (1. - cor_) - .5);
 
+		auto func_1 = [](double prog, double cor) {
+			return std::floor(std::log((cor - 1.) * prog + 1.) / std::log(cor));
+		};
+		auto func_2 = [&](double prog, double cor) {
+			return prog + 0.5 + 1. / (cor - 1.) - (cor + 1.) * std::pow(cor, func_1(prog + .5, cor)) / (2. * cor - 2.);
+		};
+
 		if (handle_.is_reverse()) {
 			progress = 1. - progress;
 		}
+		double tmp = 4. * func_2(progress / period_, cor_) * func_2(progress / period_, cor_) - std::pow(cor_, 2. * func_1(progress / period_ + .5, cor_));
+		
 		if (limit_value > 1.) {
 			int n = (int)(std::log(1. + (cor_ - 1.) * (1 / period_ + .5)) / std::log(cor_));
 			if (progress < period_ * ((std::pow(cor_, n) - 1.) / (cor_ - 1.) - .5)) {
-				ret = func_bounce_3(progress, cor_, period_);
+				ret = tmp;
 			}
 			else {
 				ret = 0.;
@@ -50,7 +47,7 @@ namespace cved {
 		}
 		else {
 			if (progress < limit_value)
-				ret = func_bounce_3(progress, cor_, period_);
+				ret = tmp;
 			else
 				ret = 0;
 		}
@@ -163,11 +160,13 @@ namespace cved {
 		bool,
 		const mkaul::ColorF& color
 	) const noexcept {
-		mkaul::WindowRectangle rect_wnd;
-		p_graphics->get_rect(&rect_wnd);
+		if (p_graphics) {
+			mkaul::WindowRectangle rect_wnd;
+			p_graphics->get_rect(&rect_wnd);
 
-		auto handle_client = view.view_to_client(handle_.get_point().point(), rect_wnd);
-		p_graphics->draw_ellipse(handle_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness });
+			auto handle_client = view.view_to_client(handle_.get_point().point(), rect_wnd);
+			p_graphics->draw_ellipse(handle_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness });
+		}
 	}
 
 	bool BounceCurve::is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {

@@ -5,7 +5,6 @@
 #include "curve_bounce.hpp"
 #include "curve_elastic.hpp"
 #include "curve_linear.hpp"
-#include "curve_step.hpp"
 
 
 
@@ -21,7 +20,7 @@ namespace cved {
 	}
 
 	// カーブの値を取得
-	double NormalCurve::get_value(double progress, double start, double end) const noexcept {
+	double NormalCurve::curve_function(double progress, double start, double end) const noexcept {
 		for (auto it = curve_segments_.begin(), ed = curve_segments_.end(); it != ed; it++) {
 			if (*it == curve_segments_.front() and progress < (*it)->point_start().x()) {
 				return start;
@@ -99,11 +98,6 @@ namespace cved {
 			case (byte)CurveSegmentType::Bounce:
 				index++;
 				if (!load_segment_data<BounceCurve, BounceCurveData>(data, index, size, new_curve)) return false;
-				break;
-
-			case (byte)CurveSegmentType::Step:
-				index++;
-				if (!load_segment_data<StepCurve, StepCurveData>(data, index, size, new_curve)) return false;
 				break;
 
 			default:
@@ -241,38 +235,40 @@ namespace cved {
 		constexpr float DASH_BLANK_LENGTH = 5.f;
 		constexpr float LINE_THICKNESS = 0.5f;
 
-		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
-			// ポイントの境界に点線を引く
-			if (it != curve_segments_.begin()) {
-				mkaul::WindowRectangle rect_wnd;
-				float custom_dashes[] = { DASH_LENGTH, DASH_BLANK_LENGTH };
-				auto dash_stroke = Stroke{
-					LINE_THICKNESS,
-					Stroke::DashStyle::Custom,
-					Stroke::CapStyle::Flat,
-					Stroke::CapStyle::Flat,
-					Stroke::CapStyle::Round,
-					Stroke::LineJoin::Round,
-					custom_dashes,
-					ARRAYSIZE(custom_dashes)
-				};
-				auto line_color = global::config.get_theme().bg_graph;
-				line_color.invert();
-				line_color.change_contrast(DASH_CONTRAST);
+		if (p_graphics) {
+			for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
+				// ポイントの境界に点線を引く
+				if (it != curve_segments_.begin()) {
+					mkaul::WindowRectangle rect_wnd;
+					float custom_dashes[] = { DASH_LENGTH, DASH_BLANK_LENGTH };
+					auto dash_stroke = Stroke{
+						LINE_THICKNESS,
+						Stroke::DashStyle::Custom,
+						Stroke::CapStyle::Flat,
+						Stroke::CapStyle::Flat,
+						Stroke::CapStyle::Round,
+						Stroke::LineJoin::Round,
+						custom_dashes,
+						ARRAYSIZE(custom_dashes)
+					};
+					auto line_color = global::config.get_theme().bg_graph;
+					line_color.invert();
+					line_color.change_contrast(DASH_CONTRAST);
 
-				p_graphics->get_rect(&rect_wnd);
-				// 点線を引く(クライアントでの)X座標
-				auto x_client = view.view_to_client((*it)->point_start().point(), rect_wnd).x;
-				p_graphics->draw_line(
-					mkaul::Point{ x_client, 0.f },
-					mkaul::Point{ x_client, (float)rect_wnd.bottom },
-					line_color,
-					dash_stroke
-				);
+					p_graphics->get_rect(&rect_wnd);
+					// 点線を引く(クライアントでの)X座標
+					auto x_client = view.view_to_client((*it)->point_start().point(), rect_wnd).x;
+					p_graphics->draw_line(
+						mkaul::Point{ x_client, 0.f },
+						mkaul::Point{ x_client, (float)rect_wnd.bottom },
+						line_color,
+						dash_stroke
+					);
+				}
+				// 各カーブのハンドル・ポイントを描画
+				(*it)->draw_handle(p_graphics, view, thickness, root_radius, tip_radius, tip_thickness, cutoff_line, color);
+				(*it)->draw_point(p_graphics, view, root_radius, color);
 			}
-			// 各カーブのハンドル・ポイントを描画
-			(*it)->draw_handle(p_graphics, view, thickness, root_radius, tip_radius, tip_thickness, cutoff_line, color);
-			(*it)->draw_point(p_graphics, view, root_radius, color);
 		}
 	}
 
@@ -423,16 +419,6 @@ namespace cved {
 
 		case CurveSegmentType::Bounce:
 			new_curve = std::make_unique<BounceCurve>(
-				current_curve->point_start().point(),
-				current_curve->point_end().point(),
-				false,
-				current_curve->prev(),
-				current_curve->next()
-			);
-			break;
-
-		case CurveSegmentType::Step:
-			new_curve = std::make_unique<StepCurve>(
 				current_curve->point_start().point(),
 				current_curve->point_end().point(),
 				false,

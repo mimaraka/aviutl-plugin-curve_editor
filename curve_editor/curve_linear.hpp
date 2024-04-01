@@ -11,7 +11,7 @@ namespace cved {
 		using GraphCurve::GraphCurve;
 
 		// カーブの値を取得
-		double get_value(double progress, double start, double end) const noexcept override;
+		double curve_function(double progress, double start, double end) const noexcept override;
 		// カーブを初期化
 		void clear() noexcept override {}
 

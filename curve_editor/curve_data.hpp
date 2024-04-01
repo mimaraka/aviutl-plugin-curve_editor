@@ -39,11 +39,6 @@ namespace cved {
 		int32_t reserved[16];
 	};
 
-	struct StepCurveData {
-		GraphCurveData data_graph;
-		int32_t reserved[16];
-	};
-
 	struct ScriptCurveData {
 
 	};
