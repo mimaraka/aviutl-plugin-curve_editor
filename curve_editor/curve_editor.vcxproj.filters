@@ -147,9 +147,6 @@
     <ClInclude Include="curve_bounce.hpp">
       <Filter>Header Files\Curve</Filter>
     </ClInclude>
-    <ClInclude Include="curve_step.hpp">
-      <Filter>Header Files\Curve</Filter>
-    </ClInclude>
     <ClInclude Include="curve_normal.hpp">
       <Filter>Header Files\Curve</Filter>
     </ClInclude>
@@ -218,9 +215,6 @@
     </ClInclude>
     <ClInclude Include="trackbar_button.hpp">
       <Filter>Header Files\Exedit Hook</Filter>
-    </ClInclude>
-    <ClInclude Include="drag_and_drop.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="my_button.hpp">
       <Filter>Header Files\UI</Filter>
@@ -291,6 +285,12 @@
     <ClInclude Include="json_loader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="dialog_curve_discretization.hpp">
+      <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="drag_and_drop.hpp">
+      <Filter>Header Files\Exedit Hook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve.cpp">
@@ -350,9 +350,6 @@
     <ClCompile Include="curve_linear.cpp">
       <Filter>Source Files\Curve</Filter>
     </ClCompile>
-    <ClCompile Include="curve_step.cpp">
-      <Filter>Source Files\Curve</Filter>
-    </ClCompile>
     <ClCompile Include="handle_elastic_freq_decay.cpp">
       <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
@@ -403,9 +400,6 @@
     </ClCompile>
     <ClCompile Include="trackbar_button.cpp">
       <Filter>Source Files\Exedit Hook</Filter>
-    </ClCompile>
-    <ClCompile Include="drag_and_drop.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="actctx_manager.cpp">
       <Filter>Source Files\Util</Filter>
@@ -469,6 +463,12 @@
     </ClCompile>
     <ClCompile Include="curve_editor_script.cpp">
       <Filter>Source Files\Curve\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_curve_discretization.cpp">
+      <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="drag_and_drop.cpp">
+      <Filter>Source Files\Exedit Hook</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

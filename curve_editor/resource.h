@@ -22,6 +22,7 @@
 #define IDC_DRAG                        132
 #define IDD_ABOUT                       135
 #define IDD_BEZIER_PARAM                136
+#define IDD_CURVE_DISCRETIZATION        139
 #define IDC_BUTTON_APPLY                1003
 #define IDC_BUTTON_RESET                1004
 #define IDC_COMBO_LANGUAGE              1005
@@ -37,11 +38,7 @@
 #define IDC_CHECK_NOTIFY_UPDATE         1010
 #define IDC_CHECK_SHOW_POPUP            1011
 #define IDC_TREE1                       1012
-#define IDC_EDIT_CURVE_THICKNESS        1013
-#define IDC_SPIN_CURVE_THICKNESS        1014
-#define IDC_EDIT_CURVE_DRAWING_INTERVAL 1015
 #define IDC_EDIT_CURVE_CODE             1016
-#define IDC_SPIN_CURVE_DRAWING_INTERVAL 1016
 #define IDC_COMBO_THEME                 1017
 #define IDC_CHECK_AUTO_APPLY            1018
 #define IDC_SLIDER_CURVE_THICKNESS      1020
@@ -54,6 +51,11 @@
 #define IDC_STATIC_PLUGIN_INFO          1030
 #define IDC_SYSLINK1                    1031
 #define IDC_EDIT_BEZIER_PARAM           1032
+#define IDC_SLIDER_SAMPLING             1033
+#define IDC_STATIC_SAMPLING             1034
+#define IDC_SLIDER2                     1035
+#define IDC_SLIDER_QUANTIZATION         1035
+#define IDC_STATIC_QUANTIZATION         1036
 #define IDS_ERROR_LUA_NOT_FOUND         4096
 #define IDS_ERROR_EXEDIT_NOT_FOUND      4097
 #define IDS_ERROR_EXEDIT_HOOK_FAILED    4098
@@ -63,20 +65,19 @@
 #define IDS_ERROR_OUT_OF_RANGE          4102
 #define IDS_ERROR_CODE_COPY_FAILED      4103
 #define IDS_ERROR_DATA_LOAD_FAILED      4104
-#define IDS_WARNING_DELETE_CURVE        0x1400
-#define IDS_WARNING_DELETE_ALL_CURVES   0x1401
+#define IDS_WARNING_DELETE_CURVE        5120
+#define IDS_WARNING_DELETE_ALL_CURVES   5121
 #define IDS_WARNING_AUTOSAVER_NOT_FOUND 5122
 #define IDS_WARNING_PREF_RESET          5122
-#define IDS_INFO_LATEST_VERSION         0x1800
+#define IDS_INFO_LATEST_VERSION         6144
 #define IDS_INFO_UPDATE_AVAILABLE       6145
 #define IDS_INFO_RESTART_AVIUTL         6146
-#define IDS_LABEL_EDIT_MODE_NORMAL      0x1c00
-#define IDS_LABEL_EDIT_MODE_VALUE       0x1c01
-#define IDS_LABEL_EDIT_MODE_BEZIER      0x1c02
-#define IDS_LABEL_EDIT_MODE_ELASTIC     0x1c03
-#define IDS_LABEL_EDIT_MODE_BOUNCE      0x1c04
-#define IDS_LABEL_EDIT_MODE_STEP        7173
-#define IDS_LABEL_EDIT_MODE_SCRIPT      7174
+#define IDS_LABEL_EDIT_MODE_NORMAL      7168
+#define IDS_LABEL_EDIT_MODE_VALUE       7169
+#define IDS_LABEL_EDIT_MODE_BEZIER      7170
+#define IDS_LABEL_EDIT_MODE_ELASTIC     7171
+#define IDS_LABEL_EDIT_MODE_BOUNCE      7172
+#define IDS_LABEL_EDIT_MODE_SCRIPT      7173
 #define IDS_LABEL_CURVE_SEGMENT_TYPE_LINEAR 7175
 #define IDS_LABEL_TOOLTIP_COPY          7176
 #define IDS_LABEL_TOOLTIP_READ          7177
@@ -122,17 +123,17 @@
 #define ID_APPLYMODE_IGNOREMID          40135
 #define ID_CURVE_COPY                   40138
 #define ID_CURVE_PASTE                  40139
-#define ID_CURVE_COPYCURVE              40140
-#define ID_Menu                         40141
 #define ID_MANIFEST_VISUALSTYLE         40142
+#define ID_CURVE_DISCRETIZATION         40143
+#define ID_GRAPH_DESCRITIZATION         40147
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        139
-#define _APS_NEXT_COMMAND_VALUE         40142
-#define _APS_NEXT_CONTROL_VALUE         1033
+#define _APS_NEXT_RESOURCE_VALUE        141
+#define _APS_NEXT_COMMAND_VALUE         40148
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
