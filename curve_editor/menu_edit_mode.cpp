@@ -29,7 +29,7 @@ namespace cved {
 		for (uint32_t i = 0u; i < (uint32_t)EditMode::NumEditMode; i++) {
 			minfo_tmp.fState = (EditMode)i == global::config.get_edit_mode() ? MFS_CHECKED : MFS_UNCHECKED;
 			// TODO: モードを実装し次第削除する
-			if (i == (uint32_t)EditMode::Value or i == (uint32_t)EditMode::Step or i == (uint32_t)EditMode::Script) {
+			if (i == (uint32_t)EditMode::Value or i == (uint32_t)EditMode::Script) {
 				minfo_tmp.fState |= MFS_DISABLED;
 			}
 			::SetMenuItemInfoA(menu_, i, TRUE, &minfo_tmp);

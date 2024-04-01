@@ -30,7 +30,6 @@ namespace cved {
 				LabelEditModeBezier,
 				LabelEditModeElastic,
 				LabelEditModeBounce,
-				LabelEditModeStep,
 				LabelEditModeScript,
 				LabelCurveSegmentTypeLinear,
 				LabelTooltipCopy,

@@ -93,10 +93,6 @@ namespace cved {
 					id = IDS_LABEL_EDIT_MODE_BOUNCE;
 					break;
 
-				case StringId::LabelEditModeStep:
-					id = IDS_LABEL_EDIT_MODE_STEP;
-					break;
-
 				case StringId::LabelEditModeScript:
 					id = IDS_LABEL_EDIT_MODE_SCRIPT;
 					break;

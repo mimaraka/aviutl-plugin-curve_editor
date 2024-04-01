@@ -25,7 +25,6 @@ namespace cved {
 		static BezierCurve curve_bezier;
 		static ElasticCurve curve_elastic;
 		static BounceCurve curve_bounce;
-		static StepCurve curve_step;
 
 		switch (mode) {
 			// ベジェ

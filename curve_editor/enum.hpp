@@ -10,7 +10,6 @@ namespace cved {
 		Bezier,
 		Elastic,
 		Bounce,
-		Step,
 		Script,
 		NumEditMode
 	};
@@ -20,7 +19,6 @@ namespace cved {
 		Bezier,
 		Elastic,
 		Bounce,
-		Step,
 		NumCurveSegmentType
 	};
 
@@ -48,13 +46,11 @@ namespace cved {
 		EditModeBezier			= 0x0902,
 		EditModeElastic			= 0x0903,
 		EditModeBounce			= 0x0904,
-		EditModeStep			= 0x0905,
-		EditModeScript			= 0x0906,
+		EditModeScript			= 0x0905,
 		CurveSegmentTypeLinear	= 0x0a00,
 		CurveSegmentTypeBezier	= 0x0a01,
 		CurveSegmentTypeElastic	= 0x0a02,
 		CurveSegmentTypeBounce	= 0x0a03,
-		CurveSegmentTypeStep	= 0x0a04,
 		IdNext					= 0x0b00,
 		IdBack					= 0x0b01,
 		RedrawAviutl			= 0x0b02,
