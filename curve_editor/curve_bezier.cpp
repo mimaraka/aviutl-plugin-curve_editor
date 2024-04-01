@@ -60,7 +60,7 @@ namespace cved {
 	}
 
 	// カーブの値を取得
-	double BezierCurve::get_value(double progress, double start, double end) const noexcept {
+	double BezierCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp(progress, point_start_.x(), point_end_.x());
 
 		auto pt0 = point_start_.point();
@@ -334,33 +334,35 @@ namespace cved {
 		bool cutoff_line,
 		const mkaul::ColorF& color
 	) const noexcept {
-		mkaul::WindowRectangle rect_wnd;
-		p_graphics->get_rect(&rect_wnd);
+		if (p_graphics) {
+			mkaul::WindowRectangle rect_wnd;
+			p_graphics->get_rect(&rect_wnd);
 
-		auto start_client = view.view_to_client(point_start_.point(), rect_wnd);
-		auto left_client = view.view_to_client(point_start_.point() + handle_left_.point_offset(), rect_wnd);
-		auto right_client = view.view_to_client(point_end_.point() + handle_right_.point_offset(), rect_wnd);
-		auto end_client = view.view_to_client(point_end_.point(), rect_wnd);
+			auto start_client = view.view_to_client(point_start_.point(), rect_wnd);
+			auto left_client = view.view_to_client(point_start_.point() + handle_left_.point_offset(), rect_wnd);
+			auto right_client = view.view_to_client(point_end_.point() + handle_right_.point_offset(), rect_wnd);
+			auto end_client = view.view_to_client(point_end_.point(), rect_wnd);
 
-		auto start_cutoff = start_client;
-		auto left_cutoff = left_client;
-		auto right_cutoff = right_client;
-		auto end_cutoff = end_client;
+			auto start_cutoff = start_client;
+			auto left_cutoff = left_client;
+			auto right_cutoff = right_client;
+			auto end_cutoff = end_client;
 
-		if (cutoff_line) {
-			util::get_cutoff_line(&start_cutoff, left_client, start_client, root_radius + 4.f);
-			util::get_cutoff_line(&left_cutoff, start_client, left_client, tip_radius + 4.f);
-			util::get_cutoff_line(&right_cutoff, end_client, right_client, tip_radius + 4.f);
-			util::get_cutoff_line(&end_cutoff, right_client, end_client, root_radius + 4.f);
+			if (cutoff_line) {
+				util::get_cutoff_line(&start_cutoff, left_client, start_client, root_radius + 4.f);
+				util::get_cutoff_line(&left_cutoff, start_client, left_client, tip_radius + 4.f);
+				util::get_cutoff_line(&right_cutoff, end_client, right_client, tip_radius + 4.f);
+				util::get_cutoff_line(&end_cutoff, right_client, end_client, root_radius + 4.f);
+			}
+			// 線 (左ハンドル)
+			p_graphics->draw_line(start_cutoff, left_cutoff, color, mkaul::graphics::Stroke{ thickness });
+			// 線 (右ハンドル)
+			p_graphics->draw_line(end_cutoff, right_cutoff, color, mkaul::graphics::Stroke{ thickness });
+			// 先端の円 (左ハンドル)
+			p_graphics->draw_ellipse(left_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness });
+			// 先端の円 (右ハンドル)
+			p_graphics->draw_ellipse(right_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness });
 		}
-		// 線 (左ハンドル)
-		p_graphics->draw_line(start_cutoff, left_cutoff, color, mkaul::graphics::Stroke{ thickness });
-		// 線 (右ハンドル)
-		p_graphics->draw_line(end_cutoff, right_cutoff, color, mkaul::graphics::Stroke{ thickness });
-		// 先端の円 (左ハンドル)
-		p_graphics->draw_ellipse(left_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness });
-		// 先端の円 (右ハンドル)
-		p_graphics->draw_ellipse(right_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness });
 	}
 
 	bool BezierCurve::is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {

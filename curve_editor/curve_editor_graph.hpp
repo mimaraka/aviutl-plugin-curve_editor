@@ -11,7 +11,6 @@
 #include "curve_elastic.hpp"
 #include "curve_bounce.hpp"
 #include "curve_linear.hpp"
-#include "curve_step.hpp"
 #include "enum.hpp"
 
 
@@ -25,7 +24,6 @@ namespace cved {
 			BezierCurve curve_bezier_;
 			ElasticCurve curve_elastic_;
 			BounceCurve curve_bounce_;
-			StepCurve curve_step_;
 
 			size_t index_normal_ = 0u;
 			size_t index_value_ = 0u;
@@ -50,7 +48,6 @@ namespace cved {
 			BezierCurve* curve_bezier() noexcept { return &curve_bezier_; }
 			ElasticCurve* curve_elastic() noexcept { return &curve_elastic_; }
 			BounceCurve* curve_bounce() noexcept { return &curve_bounce_; }
-			StepCurve* curve_step() noexcept { return &curve_step_; }
 
 			const auto& copied_curve() const noexcept { return copied_curve_; }
 			bool is_copying() const noexcept { return copied_curve_.get() != nullptr; }

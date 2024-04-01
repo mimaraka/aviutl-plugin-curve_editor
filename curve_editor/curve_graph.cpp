@@ -3,6 +3,25 @@
 
 
 namespace cved {
+	double GraphCurve::get_value(double progress, double start, double end) const noexcept {
+		// 離散化の設定
+		double prog = progress;
+		// 標本化
+		if (0u < sampling_resolution_) {
+			prog = std::floor(prog * (double)sampling_resolution_) / (double)sampling_resolution_;
+		}
+		double ret = curve_function(prog, start, end);
+		// 量子化
+		if (0u < quantization_resolution_) {
+			double tmp1 = (ret - start) / (end - start);
+			double tmp2 = (tmp1 - point_start_.y()) / (point_end_.y() - point_start_.y());
+			double tmp3 = std::floor(tmp2 * (double)quantization_resolution_) / (double)quantization_resolution_;
+			double tmp4 = point_start_.y() + tmp3 * (point_end_.y() - point_start_.y());
+			ret = start + tmp4 * (end - start);
+		}
+		return ret;
+	}
+
 	void GraphCurve::draw_curve(
 		mkaul::graphics::Graphics* p_graphics,
 		const View& view,

@@ -14,6 +14,8 @@ namespace cved {
 		ControlPoint point_end_;
 		GraphCurve* prev_;
 		GraphCurve* next_;
+		uint32_t sampling_resolution_ = 0u;
+		uint32_t quantization_resolution_ = 0u;
 
 	public:
 		enum class ActivePoint {
@@ -39,6 +41,13 @@ namespace cved {
 		auto next() const noexcept { return next_; }
 		virtual void set_prev(GraphCurve* p) noexcept { prev_ = p; }
 		virtual void set_next(GraphCurve* p) noexcept { next_ = p; }
+
+		auto get_sampling_resolution() const noexcept { return sampling_resolution_; }
+		void set_sampling_resolution(uint32_t sampling_resolution) noexcept { sampling_resolution_ = sampling_resolution; }
+		auto get_quantization_resolution() const noexcept { return quantization_resolution_; }
+		void set_quantization_resolution(uint32_t quantization_resolution) noexcept { quantization_resolution_ = quantization_resolution; }
+
+		double get_value(double progress, double start, double end) const noexcept override;
 
 		void draw_curve(
 			mkaul::graphics::Graphics* p_graphics,

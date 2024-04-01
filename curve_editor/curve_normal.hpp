@@ -31,9 +31,9 @@ namespace cved {
 			const mkaul::Point<double>& point_end = mkaul::Point{ 1., 1. }
 		);
 
-		const auto& get_curve_segments() const noexcept { return curve_segments_; }
+		auto& get_curve_segments() noexcept { return curve_segments_; }
 
-		double get_value(double progress, double start, double end) const noexcept override;
+		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
 		void reverse() noexcept override;
 

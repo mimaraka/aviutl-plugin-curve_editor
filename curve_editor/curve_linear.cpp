@@ -5,7 +5,7 @@
 
 
 namespace cved {
-	double LinearCurve::get_value(double progress, double start, double end) const noexcept {
+	double LinearCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - point_start_.x()) / (point_end_.x() - point_start_.x()), 0., 1.);
 		return start + (end - start) * (point_start_.y() + (point_end_.y() - point_start_.y()) * progress);
 	}

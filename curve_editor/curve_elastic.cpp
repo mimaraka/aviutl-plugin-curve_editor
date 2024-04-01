@@ -29,7 +29,7 @@ namespace cved {
 	}
 
 	// カーブの値を取得
-	double ElasticCurve::get_value(double progress, double start, double end) const noexcept {
+	double ElasticCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - point_start_.x()) / (point_end_.x() - point_start_.x()), 0., 1.);
 
 		if (handle_freq_decay_.is_reverse()) {
@@ -217,50 +217,52 @@ namespace cved {
 		bool cutoff_line,
 		const mkaul::ColorF& color
 	) const noexcept {
-		mkaul::WindowRectangle rect_wnd;
-		p_graphics->get_rect(&rect_wnd);
+		if (p_graphics) {
+			mkaul::WindowRectangle rect_wnd;
+			p_graphics->get_rect(&rect_wnd);
 
-		auto amp_left_client = view.view_to_client(handle_amp_.point_left().point(), rect_wnd);
-		auto amp_right_client = view.view_to_client(handle_amp_.point_right().point(), rect_wnd);
-		auto tmp_amp_left = amp_left_client;
-		auto tmp_amp_right = amp_right_client;
+			auto amp_left_client = view.view_to_client(handle_amp_.point_left().point(), rect_wnd);
+			auto amp_right_client = view.view_to_client(handle_amp_.point_right().point(), rect_wnd);
+			auto tmp_amp_left = amp_left_client;
+			auto tmp_amp_right = amp_right_client;
 
-		p_graphics->draw_ellipse(
-			amp_left_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness }
-		);
-		p_graphics->draw_ellipse(
-			amp_right_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness }
-		);
+			p_graphics->draw_ellipse(
+				amp_left_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness }
+			);
+			p_graphics->draw_ellipse(
+				amp_right_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness }
+			);
 
-		if (cutoff_line) {
-			util::get_cutoff_line(&tmp_amp_left, amp_right_client, amp_left_client, tip_radius + 4.f);
-			util::get_cutoff_line(&tmp_amp_right, amp_left_client, amp_right_client, tip_radius + 4.f);
+			if (cutoff_line) {
+				util::get_cutoff_line(&tmp_amp_left, amp_right_client, amp_left_client, tip_radius + 4.f);
+				util::get_cutoff_line(&tmp_amp_right, amp_left_client, amp_right_client, tip_radius + 4.f);
+			}
+
+			p_graphics->draw_line(
+				tmp_amp_left, tmp_amp_right, color, mkaul::graphics::Stroke{ thickness }
+			);
+
+			// FreqDecayHandleの描画
+			auto freq_decay_client_root = view.view_to_client(mkaul::Point{ handle_freq_decay_.point().x(), point_end_.y() }, rect_wnd);
+			auto freq_decay_client_tip = view.view_to_client(handle_freq_decay_.point().point(), rect_wnd);
+			auto tmp_freq_decay_root = freq_decay_client_root;
+			auto tmp_freq_decay_tip = freq_decay_client_tip;
+
+			if (cutoff_line) {
+				util::get_cutoff_line(&tmp_freq_decay_root, freq_decay_client_tip, freq_decay_client_root, root_radius + 4.f);
+				util::get_cutoff_line(&tmp_freq_decay_tip, freq_decay_client_root, freq_decay_client_tip, tip_radius + 4.f);
+			}
+
+			p_graphics->draw_ellipse(
+				freq_decay_client_tip, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness }
+			);
+			p_graphics->fill_ellipse(
+				freq_decay_client_root, root_radius, root_radius, color
+			);
+			p_graphics->draw_line(
+				tmp_freq_decay_root, tmp_freq_decay_tip, color, mkaul::graphics::Stroke{ tip_thickness }
+			);
 		}
-
-		p_graphics->draw_line(
-			tmp_amp_left, tmp_amp_right, color, mkaul::graphics::Stroke{ thickness }
-		);
-
-		// FreqDecayHandleの描画
-		auto freq_decay_client_root = view.view_to_client(mkaul::Point{ handle_freq_decay_.point().x(), point_end_.y() }, rect_wnd);
-		auto freq_decay_client_tip = view.view_to_client(handle_freq_decay_.point().point(), rect_wnd);
-		auto tmp_freq_decay_root = freq_decay_client_root;
-		auto tmp_freq_decay_tip = freq_decay_client_tip;
-
-		if (cutoff_line) {
-			util::get_cutoff_line(&tmp_freq_decay_root, freq_decay_client_tip, freq_decay_client_root, root_radius + 4.f);
-			util::get_cutoff_line(&tmp_freq_decay_tip, freq_decay_client_root, freq_decay_client_tip, tip_radius + 4.f);
-		}
-
-		p_graphics->draw_ellipse(
-			freq_decay_client_tip, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness }
-		);
-		p_graphics->fill_ellipse(
-			freq_decay_client_root, root_radius, root_radius, color
-		);
-		p_graphics->draw_line(
-			tmp_freq_decay_root, tmp_freq_decay_tip, color, mkaul::graphics::Stroke{ tip_thickness }
-		);
 	}
 
 	// カーソルがハンドルにホバーしているかどうか
