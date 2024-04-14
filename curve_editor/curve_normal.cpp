@@ -76,28 +76,28 @@ namespace cved {
 	// カーブのデータを読み込み
 	bool NormalCurve::load_data(const byte* data, size_t size) noexcept {
 		std::vector<std::unique_ptr<GraphCurve>> vec_tmp;
-		for (size_t index = 0u; index < size;) {
+		for (size_t idx = 0u; idx < size;) {
 			std::unique_ptr<GraphCurve> new_curve;
 
-			switch (*(data + index)) {
+			switch (*(data + idx)) {
 			case (byte)CurveSegmentType::Linear:
-				index++;
-				if (!load_segment_data<LinearCurve, LinearCurveData>(data, index, size, new_curve)) return false;
+				idx++;
+				if (!load_segment_data<LinearCurve, LinearCurveData>(data, idx, size, new_curve)) return false;
 				break;
 
 			case (byte)CurveSegmentType::Bezier:
-				index++;
-				if (!load_segment_data<BezierCurve, BezierCurveData>(data, index, size, new_curve)) return false;
+				idx++;
+				if (!load_segment_data<BezierCurve, BezierCurveData>(data, idx, size, new_curve)) return false;
 				break;
 
 			case (byte)CurveSegmentType::Elastic:
-				index++;
-				if (!load_segment_data<ElasticCurve, ElasticCurveData>(data, index, size, new_curve)) return false;
+				idx++;
+				if (!load_segment_data<ElasticCurve, ElasticCurveData>(data, idx, size, new_curve)) return false;
 				break;
 
 			case (byte)CurveSegmentType::Bounce:
-				index++;
-				if (!load_segment_data<BounceCurve, BounceCurveData>(data, index, size, new_curve)) return false;
+				idx++;
+				if (!load_segment_data<BounceCurve, BounceCurveData>(data, idx, size, new_curve)) return false;
 				break;
 
 			default:
@@ -380,9 +380,9 @@ namespace cved {
 		return false;
 	}
 
-	bool NormalCurve::replace_curve(size_t index, CurveSegmentType segment_type) noexcept {
-		if (index >= curve_segments_.size()) return false;
-		auto current_curve = curve_segments_[index].get();
+	bool NormalCurve::replace_curve(size_t idx, CurveSegmentType segment_type) noexcept {
+		if (idx >= curve_segments_.size()) return false;
+		auto current_curve = curve_segments_[idx].get();
 		std::unique_ptr<GraphCurve> new_curve;
 		switch (segment_type) {
 		case CurveSegmentType::Linear:
@@ -437,7 +437,7 @@ namespace cved {
 		if (current_curve->next()) {
 			current_curve->next()->set_prev(new_curve.get());
 		}
-		curve_segments_[index] = std::move(new_curve);
+		curve_segments_[idx] = std::move(new_curve);
 
 		return true;
 	}

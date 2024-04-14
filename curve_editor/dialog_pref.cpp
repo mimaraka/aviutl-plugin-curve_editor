@@ -69,12 +69,12 @@ namespace cved {
 
 
 	void PrefDialog::update() noexcept {
-		int index = ::SendMessageA(hwnd_list_categories_, LB_GETCURSEL, NULL, NULL);
+		int idx = ::SendMessageA(hwnd_list_categories_, LB_GETCURSEL, NULL, NULL);
 		for (const auto& category : categories_) {
 			::ShowWindow(category.hwnd, SW_HIDE);
 		}
-		if (index != LB_ERR) {
-			int id = ::SendMessageA(hwnd_list_categories_, LB_GETITEMDATA, (WPARAM)index, NULL);
+		if (idx != LB_ERR) {
+			int id = ::SendMessageA(hwnd_list_categories_, LB_GETITEMDATA, (WPARAM)idx, NULL);
 			if (id != LB_ERR) {
 				for (const auto& category : categories_) {
 					if (category.id == id) {

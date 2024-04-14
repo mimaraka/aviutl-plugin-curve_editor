@@ -41,7 +41,7 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_CURVE_TYPE, FALSE, &minfo_tmp);
 	}
 
-	void CurveMenu::update_state(size_t index) noexcept {
+	void CurveMenu::update_state(size_t idx) noexcept {
 		constexpr size_t n_segment_types = (size_t)CurveSegmentType::NumCurveSegmentType;
 		// カーブセグメントの型情報(のポインタ)の配列
 		const std::type_info* p_segment_types[n_segment_types] = {
@@ -54,13 +54,13 @@ namespace cved {
 		// TODO: 値指定モードに対応させる
 		if (global::config.get_edit_mode() == EditMode::Normal) {
 			auto p_curve_normal = global::editor.editor_graph().curve_normal();
-			if (p_curve_normal and index < p_curve_normal->get_curve_segments().size()) {
+			if (p_curve_normal and idx < p_curve_normal->get_curve_segments().size()) {
 				// カーブタイプのサブメニューのチェック状態を更新
 				for (uint32_t i = 0u; i < n_segment_types; i++) {
 					MENUITEMINFOA minfo_tmp;
 					minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
 					minfo_tmp.fMask = MIIM_STATE;
-					minfo_tmp.fState = typeid(*(p_curve_normal->get_curve_segments()[index])) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
+					minfo_tmp.fState = typeid(*(p_curve_normal->get_curve_segments()[idx])) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
 					::SetMenuItemInfoA(submenu_segment_type_, i, TRUE, &minfo_tmp);
 				}
 			}
@@ -74,13 +74,13 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_CURVE_PASTE, FALSE, &minfo_tmp);
 	}
 
-	HMENU CurveMenu::get_handle(size_t index) noexcept {
-		update_state(index);
+	HMENU CurveMenu::get_handle(size_t idx) noexcept {
+		update_state(idx);
 		return Menu::get_handle();
 	}
 
 	int CurveMenu::show(
-		size_t index,
+		size_t idx,
 		HWND hwnd,
 		UINT flags,
 		const mkaul::Point<LONG>* p_custom_point_screen
@@ -90,7 +90,7 @@ namespace cved {
 		if (p_custom_point_screen) {
 			tmp = p_custom_point_screen->to<POINT>();
 		}
-		update_state(index);
+		update_state(idx);
 		int ret = ::TrackPopupMenu(
 			menu_,
 			flags | TPM_RETURNCMD | TPM_NONOTIFY,
@@ -98,10 +98,10 @@ namespace cved {
 			tmp.y,
 			0, hwnd, NULL
 		);
-		return callback(index, ret);
+		return callback(idx, ret);
 	}
 
-	bool CurveMenu::callback(size_t index, uint16_t id) noexcept {
+	bool CurveMenu::callback(size_t idx, uint16_t id) noexcept {
 		if (mkaul::in_range(
 			id,
 			(uint16_t)WindowCommand::CurveSegmentTypeLinear,
@@ -109,7 +109,7 @@ namespace cved {
 			true
 		)) {
 			global::editor.editor_graph().curve_normal()->replace_curve(
-				index,
+				idx,
 				(CurveSegmentType)(id - (uint16_t)WindowCommand::CurveSegmentTypeLinear)
 			);
 			global::window_grapheditor.redraw();
@@ -131,7 +131,7 @@ namespace cved {
 			auto p_curve = global::editor.editor_graph().curve_normal();
 			if (p_curve) {
 				CurveDiscretizationDialog dialog;
-				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve->get_curve_segments()[index].get()));
+				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve->get_curve_segments()[idx].get()));
 			}
 			break;
 		}
