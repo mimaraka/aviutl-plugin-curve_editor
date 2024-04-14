@@ -16,7 +16,7 @@ namespace cved {
 			pref_.reset();
 			edit_mode_ = EditMode::Normal;
 			layout_mode_ = LayoutMode::Vertical;
-			apply_mode_ = ApplyMode::Normal;
+			apply_mode_.fill(ApplyMode::Normal);
 			current_theme_ = THEME_DARK;
 			curve_code_bezier_ = 145674282;
 			curve_code_elastic_ = 2554290;
@@ -113,11 +113,11 @@ namespace cved {
 			return get_edit_mode_str(edit_mode_);
 		}
 
-		bool Config::set_apply_mode(ApplyMode apply_mode) noexcept {
+		bool Config::set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept {
 			switch (apply_mode) {
 			case ApplyMode::Normal:
 			case ApplyMode::IgnoreMidPoint:
-				apply_mode_ = apply_mode;
+				apply_mode_[(size_t)edit_mode] = apply_mode;
 				return true;
 
 			default:
@@ -167,23 +167,32 @@ namespace cved {
 		bool Config::load_json() {
 			json data;
 			if (JsonLoader::get_data(global::fp->dll_hinst, "config", &data)) {
-				if (data.contains("preferences")) pref_.from_json(data["preferences"]);
-				if (data.contains(GET_KEY(edit_mode_))) set_edit_mode(data[GET_KEY(edit_mode_)]);
-				if (data.contains(GET_KEY(layout_mode_))) set_layout_mode(data[GET_KEY(layout_mode_)]);
-				if (data.contains(GET_KEY(apply_mode_))) set_apply_mode(data[GET_KEY(apply_mode_)]);
-				JsonLoader::get_value(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
-				JsonLoader::get_value(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
-				JsonLoader::get_value(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
-				if (data.contains(GET_KEY(show_library_))) set_show_library(data[GET_KEY(show_library_)]);
-				if (data.contains(GET_KEY(show_velocity_graph_))) set_show_velocity_graph(data[GET_KEY(show_velocity_graph_)]);
-				if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
-				if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
-				if (data.contains(GET_KEY(separator_))) set_separator(data[GET_KEY(separator_)]);
-				if (data.contains(GET_KEY(preset_size_))) set_preset_size(data[GET_KEY(preset_size_)]);
+				try {
+					if (data.contains("preferences")) pref_.from_json(data["preferences"]);
+					if (data.contains(GET_KEY(edit_mode_))) set_edit_mode(data[GET_KEY(edit_mode_)]);
+					if (data.contains(GET_KEY(layout_mode_))) set_layout_mode(data[GET_KEY(layout_mode_)]);
+					if (data[GET_KEY(apply_mode_)].is_array()) {
+						size_t count = 0u;
+						for (const auto& el : data[GET_KEY(apply_mode_)]) {
+							if (count >= apply_mode_.size()) break;
+							set_apply_mode((EditMode)count++, (ApplyMode)el);
+						}
+					}
+					JsonLoader::get_value(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
+					JsonLoader::get_value(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
+					JsonLoader::get_value(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
+					if (data.contains(GET_KEY(show_library_))) set_show_library(data[GET_KEY(show_library_)]);
+					if (data.contains(GET_KEY(show_velocity_graph_))) set_show_velocity_graph(data[GET_KEY(show_velocity_graph_)]);
+					if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
+					if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
+					if (data.contains(GET_KEY(separator_))) set_separator(data[GET_KEY(separator_)]);
+					if (data.contains(GET_KEY(preset_size_))) set_preset_size(data[GET_KEY(preset_size_)]);
 
-				return true;
+					return true;
+				}
+				catch (const json::exception&) {}
 			}
-			else return false;
+			return false;
 		}
 
 		// jsonファイルを保存
