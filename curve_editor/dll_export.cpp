@@ -9,8 +9,7 @@
 
 
 
-auto __stdcall GetFilterTable()
-{
+auto __stdcall GetFilterTable() {
 	using Flag = AviUtl::FilterPluginDLL::Flag;
 	static auto str_info = std::format("{} {}", cved::global::PLUGIN_NAME, cved::global::PLUGIN_VERSION.str());
 

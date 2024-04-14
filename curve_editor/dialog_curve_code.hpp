@@ -7,7 +7,6 @@
 namespace cved {
 	class CurveCodeDialog : public Dialog {
 		static constexpr size_t MAX_TEXT = 12u;
-
 		HWND hwnd_edit_ = NULL;
 
 		int i_resource() const noexcept override;
