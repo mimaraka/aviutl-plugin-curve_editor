@@ -19,8 +19,8 @@ namespace cved {
 		const auto& point_left() const noexcept { return point_left_; }
 		const auto& point_right() const noexcept { return point_right_; }
 
-		bool is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
-		bool check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept;
+		bool is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
+		bool check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept;
 		bool update(
 			const mkaul::Point<double>& point,
 			const ControlPoint& point_start,

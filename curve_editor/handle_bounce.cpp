@@ -19,12 +19,12 @@ namespace cved {
 		}
 	}
 
-	bool BounceHandle::is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
-		return point_.is_hovered(point, box_width, view);
+	bool BounceHandle::is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+		return point_.is_hovered(point, view);
 	}
 
-	bool BounceHandle::check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
-		return point_.check_hover(point, box_width, view);
+	bool BounceHandle::check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+		return point_.check_hover(point, view);
 	}
 
 	bool BounceHandle::update(

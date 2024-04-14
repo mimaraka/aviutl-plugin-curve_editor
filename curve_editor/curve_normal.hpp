@@ -13,15 +13,15 @@ namespace cved {
 		template <class CurveType, class CurveDataType>
 		static bool load_segment_data(
 			const byte* data,
-			size_t& index,
+			size_t& idx,
 			size_t size,
 			std::unique_ptr<GraphCurve>& p_curve
 		) noexcept {
 			constexpr size_t n = sizeof(CurveDataType) / sizeof(byte);
-			if (size < index + n) return false;
+			if (size < idx + n) return false;
 			p_curve = std::make_unique<CurveType>();
-			if (!p_curve->load_data(data + index, n)) return false;
-			index += n;
+			if (!p_curve->load_data(data + idx, n)) return false;
+			idx += n;
 			return true;
 		}
 
@@ -53,15 +53,14 @@ namespace cved {
 		) const noexcept override;
 
 		bool add_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept;
-		bool delete_curve(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept;
-		bool replace_curve(size_t index, CurveSegmentType segment_type) noexcept;
+		bool delete_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept;
+		bool replace_curve(size_t idx, CurveSegmentType segment_type) noexcept;
 
-		bool is_point_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept override;
-		bool is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept override;
+		bool is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
+		bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
 
 		bool handle_check_hover(
 			const mkaul::Point<double>& point,
-			float box_width,
 			const GraphView& view
 		) noexcept override;
 
@@ -72,7 +71,7 @@ namespace cved {
 		void handle_end_control() noexcept override;
 
 		// カーソルがポイントにホバーしているかを判定し、ホバーしていれば移動を開始
-		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
+		ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		// ポイントの移動を開始
 		bool point_begin_move(ActivePoint) noexcept override { return false; }
 		// ポイントの位置をアップデート

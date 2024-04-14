@@ -55,11 +55,10 @@ namespace cved {
 			const mkaul::ColorF& color = mkaul::ColorF{}
 		) const noexcept override;
 
-		bool is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept override;
+		bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
 
 		bool handle_check_hover(
 			const mkaul::Point<double>& point,
-			float box_width,
 			const GraphView& view
 		) noexcept override;
 
@@ -69,7 +68,7 @@ namespace cved {
 		) noexcept override;
 		void handle_end_control() noexcept override;
 
-		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
+		ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		bool point_begin_move(ActivePoint active_point) noexcept override;
 		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept override;

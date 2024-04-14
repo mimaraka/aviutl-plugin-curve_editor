@@ -22,8 +22,8 @@ namespace cved {
 		void reverse(const ControlPoint& point_start, const ControlPoint& point_end) noexcept;
 		void set_is_reverse(bool reverse, const ControlPoint& point_start, const ControlPoint& point_end) noexcept;
 
-		bool is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
-		bool check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept;
+		bool is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
+		bool check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept;
 		bool update(
 			const mkaul::Point<double>& point,
 			const ControlPoint& point_start,
