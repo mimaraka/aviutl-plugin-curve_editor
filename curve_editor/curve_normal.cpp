@@ -193,7 +193,7 @@ namespace cved {
 				new_curve->point_end_move();
 
 				// ハンドルの移動
-				auto p_curve_bezier = reinterpret_cast<BezierCurve*>(new_curve.get());
+				auto p_curve_bezier = dynamic_cast<BezierCurve*>(new_curve.get());
 				p_curve_bezier->handle_left()->set_point_offset(
 					mkaul::Point{
 						(points[i].point_right.x - points[i].point_center.x) / (double)GRAPH_RESOLUTION,
@@ -304,8 +304,8 @@ namespace cved {
 				// 左のカーブがベジェの場合、右のハンドルをnew_curveの右ハンドルにコピーする
 				// TODO: このあたりの処理がゴリ押しだから何とかしたい
 				if (typeid(**it) == typeid(BezierCurve)) {
-					auto bezier_prev = reinterpret_cast<BezierCurve*>((*it).get());
-					auto bezier_new = reinterpret_cast<BezierCurve*>(new_curve.get());
+					auto bezier_prev = dynamic_cast<BezierCurve*>((*it).get());
+					auto bezier_new = dynamic_cast<BezierCurve*>(new_curve.get());
 					bezier_new->handle_right()->set_position(
 						new_curve->point_end().point() + bezier_prev->handle_right()->point_offset()
 					);
@@ -342,8 +342,8 @@ namespace cved {
 					// 自身と前のカーブがともにベジェの場合
 					if (typeid(**it) == typeid(BezierCurve) and typeid(**std::prev(it)) == typeid(BezierCurve)) {
 						// 前のベジェの右ハンドルを自身の右ハンドルにする
-						auto bezier_prev = reinterpret_cast<BezierCurve*>((*std::prev(it)).get());
-						auto bezier_self = reinterpret_cast<BezierCurve*>((*it).get());
+						auto bezier_prev = dynamic_cast<BezierCurve*>((*std::prev(it)).get());
+						auto bezier_self = dynamic_cast<BezierCurve*>((*it).get());
 						bezier_prev->handle_right()->set_position(
 							(*it)->point_end().point() + bezier_self->handle_right()->point_offset()
 						);
@@ -357,8 +357,8 @@ namespace cved {
 						and typeid(**std::next(it)) == typeid(BezierCurve)
 						) {
 						// 前のベジェの右ハンドルを次のベジェの左ハンドルに合わせて回転
-						auto bezier_prev = reinterpret_cast<BezierCurve*>((*std::prev(it)).get());
-						auto bezier_next = reinterpret_cast<BezierCurve*>((*std::next(it)).get());
+						auto bezier_prev = dynamic_cast<BezierCurve*>((*std::prev(it)).get());
+						auto bezier_next = dynamic_cast<BezierCurve*>((*std::next(it)).get());
 						bezier_prev->handle_right()->lock_length(view);
 						bezier_prev->handle_right()->move(
 							(*it)->point_end().point() - bezier_next->handle_left()->point_offset(),

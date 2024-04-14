@@ -38,7 +38,7 @@ namespace cved {
 	void BezierCurve::set_prev(GraphCurve* p) noexcept {
 		BezierHandle* handle_opposite;
 		if (p and typeid(*p) == typeid(BezierCurve)) {
-			handle_opposite = reinterpret_cast<BezierCurve*>(p)->handle_right();
+			handle_opposite = dynamic_cast<BezierCurve*>(p)->handle_right();
 		}
 		else {
 			handle_opposite = nullptr;
@@ -50,7 +50,7 @@ namespace cved {
 	void BezierCurve::set_next(GraphCurve* p) noexcept {
 		BezierHandle* handle_opposite;
 		if (p and typeid(*p) == typeid(BezierCurve)) {
-			handle_opposite = reinterpret_cast<BezierCurve*>(p)->handle_left();
+			handle_opposite = dynamic_cast<BezierCurve*>(p)->handle_left();
 		}
 		else {
 			handle_opposite = nullptr;
