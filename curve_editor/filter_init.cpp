@@ -49,10 +49,10 @@ namespace cved {
 		}
 
 		// オブジェクト設定ダイアログのフック処理
-		if (!global::exedit_hook.hook_objdialog_proc()) {
+		/*if (!global::exedit_hook.hook_objdialog_proc()) {
 			my_messagebox(global::string_table[StringId::ErrorExeditHookFailed], NULL, MessageBoxIcon::Error);
 			return FALSE;
-		}
+		}*/
 
 		// コモンコントロールの初期化
 		INITCOMMONCONTROLSEX icc{
