@@ -141,13 +141,12 @@ namespace cved {
 		void set_point_offset(const mkaul::Point<double>& point_offset) noexcept { point_offset_.move(point_offset); }
 
 		// カーソルがハンドルにホバーされているかどうか
-		bool is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
+		bool is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
 
 		// ハンドルの移動を開始
 		bool check_hover(
 			const mkaul::Point<double>& point,
-			const GraphView& view,
-			float box_width
+			const GraphView& view
 		) noexcept;
 
 		void begin_move(
