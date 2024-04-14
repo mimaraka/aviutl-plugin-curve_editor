@@ -85,14 +85,15 @@ namespace cved {
 					t = -tmp4 / (3. * tmp3);
 				}
 			}
+			// tの次数は2
 			else {
 				const double inside_sqrt = 9. * tmp3 * tmp3 - 12. * tmp4 * tmp2;
 				const double t_1 = (-3. * tmp3 + std::sqrt(inside_sqrt)) / (6. * tmp2);
 				const double t_2 = (-3. * tmp3 - std::sqrt(inside_sqrt)) / (6. * tmp2);
-				if (mkaul::in_range(t_1, 0., 1.)) {
+				if (mkaul::real_in_range(t_1, 0., 1., true)) {
 					t = t_1;
 				}
-				else if (mkaul::in_range(t_2, 0., 1.)) {
+				else if (mkaul::real_in_range(t_2, 0., 1., true)) {
 					t = t_2;
 				}
 			}
@@ -115,13 +116,13 @@ namespace cved {
 				double re_t1 = r_2 * std::cos(theta + std::numbers::pi * 2. / 3.) - tmp5;
 				double re_t2 = r_2 * std::cos(theta + std::numbers::pi * 4. / 3.) - tmp5;
 
-				if (mkaul::in_range(re_t0, -0.00001, 1.00001, true)) {
+				if (mkaul::real_in_range(re_t0, 0., 1., true)) {
 					t = re_t0;
 				}
-				else if (mkaul::in_range(re_t1, -0.00001, 1.00001, true)) {
+				else if (mkaul::real_in_range(re_t1, 0., 1., true)) {
 					t = re_t1;
 				}
-				else if (mkaul::in_range(re_t2, -0.00001, 1.00001, true)) {
+				else if (mkaul::real_in_range(re_t2, 0., 1., true)) {
 					t = re_t2;
 				}
 			}
@@ -131,10 +132,10 @@ namespace cved {
 				double t0 = -tmp7 - tmp5;
 				double t1 = 2. * tmp7 - tmp5;
 
-				if (mkaul::in_range(t0, -0.00001, 1.00001, true)) {
+				if (mkaul::real_in_range(t0, 0., 1., true)) {
 					t = t0;
 				}
-				else if (mkaul::in_range(t1, -0.00001, 1.00001, true)) {
+				else if (mkaul::real_in_range(t1, 0., 1., true)) {
 					t = t1;
 				}
 			}
