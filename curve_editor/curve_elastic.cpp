@@ -266,17 +266,16 @@ namespace cved {
 	}
 
 	// カーソルがハンドルにホバーしているかどうか
-	bool ElasticCurve::is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
-		return handle_amp_.is_hovered(point, box_width, view) or handle_freq_decay_.is_hovered(point, box_width, view);
+	bool ElasticCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+		return handle_amp_.is_hovered(point, view) or handle_freq_decay_.is_hovered(point, view);
 	}
 
 	// カーソルがハンドルにホバーしているかをチェックし、操作を開始
 	bool ElasticCurve::handle_check_hover(
 		const mkaul::Point<double>& point,
-		float box_width,
 		const GraphView& view
 	) noexcept {
-		return handle_amp_.check_hover(point, box_width, view) or handle_freq_decay_.check_hover(point, box_width, view);
+		return handle_amp_.check_hover(point, view) or handle_freq_decay_.check_hover(point, view);
 	}
 
 	// ハンドルの位置をアップデート
@@ -297,9 +296,9 @@ namespace cved {
 	}
 
 	// カーソルがポイントにホバーしているかをチェックし、操作を開始
-	ElasticCurve::ActivePoint ElasticCurve::point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
-		bool start = point_start_.check_hover(point, box_width, view);
-		bool end = point_end_.check_hover(point, box_width, view);
+	ElasticCurve::ActivePoint ElasticCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+		bool start = point_start_.check_hover(point, view);
+		bool end = point_end_.check_hover(point, view);
 		
 		if (start or end) {
 			amp_ = handle_amp_.get_amp(point_start_, point_end_);

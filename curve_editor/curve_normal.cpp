@@ -330,12 +330,12 @@ namespace cved {
 	}
 
 	// ポイントを削除
-	bool NormalCurve::delete_curve(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
+	bool NormalCurve::delete_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			// 先頭のカーブでない場合
 			if (*it != curve_segments_.front()) {
 				// カーソルが始点にホバーしている場合
-				if ((*it)->point_start().is_hovered(point, box_width, view)) {
+				if ((*it)->point_start().is_hovered(point, view)) {
 					// 前のカーブの終点を削除するカーブの終点に移動させる
 					(*std::prev(it))->point_move(ActivePoint::End, (*it)->point_end().point());
 
@@ -442,18 +442,18 @@ namespace cved {
 		return true;
 	}
 
-	bool NormalCurve::is_point_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
+	bool NormalCurve::is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
 		for (auto& curve : curve_segments_) {
-			if (curve->is_point_hovered(point, box_width, view)) {
+			if (curve->is_point_hovered(point, view)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool NormalCurve::is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
+	bool NormalCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
 		for (auto& curve : curve_segments_) {
-			if (curve->is_handle_hovered(point, box_width, view)) {
+			if (curve->is_handle_hovered(point, view)) {
 				return true;
 			}
 		}
@@ -470,7 +470,7 @@ namespace cved {
 			auto previous = *it != curve_segments_.front() ? (*std::prev(it)).get() : nullptr;
 			auto next = *it != curve_segments_.back() ? (*std::next(it)).get() : nullptr;
 
-			if ((*it)->handle_check_hover(point, box_width, view)) {
+			if ((*it)->handle_check_hover(point, view)) {
 				return true;
 			}
 		}
@@ -499,10 +499,10 @@ namespace cved {
 		}
 	}
 
-	NormalCurve::ActivePoint NormalCurve::point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
+	NormalCurve::ActivePoint NormalCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			// 必ずpoint_endに最初にヒットする
-			auto ret = (*it)->point_check_hover(point, box_width, view);
+			auto ret = (*it)->point_check_hover(point, view);
 
 			if (ret == ActivePoint::End and *it != curve_segments_.back()) {
 				// 後ろのカーブのpoint_startもbegin_move()させる

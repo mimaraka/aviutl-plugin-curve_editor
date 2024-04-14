@@ -81,13 +81,12 @@ namespace cved {
 
 		virtual void reverse() noexcept;
 
-		bool is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
-		virtual bool is_point_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
-		virtual bool is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept = 0;
+		bool is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
+		virtual bool is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
+		virtual bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept = 0;
 
 		virtual bool handle_check_hover(
 			const mkaul::Point<double>& point,
-			float box_width,
 			const GraphView& view
 		) noexcept = 0;
 
@@ -98,7 +97,7 @@ namespace cved {
 
 		virtual void handle_end_control() noexcept = 0;
 
-		virtual ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept = 0;
+		virtual ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept = 0;
 		virtual bool point_begin_move(ActivePoint active_point) noexcept = 0;
 		virtual ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept = 0;
 		virtual bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept;

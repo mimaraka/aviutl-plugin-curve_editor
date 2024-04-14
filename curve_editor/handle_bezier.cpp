@@ -224,16 +224,15 @@ namespace cved {
 	}
 
 	// カーソルがハンドルにホバーしているか
-	bool BezierHandle::is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
+	bool BezierHandle::is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
 		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
-		return point_offset_.is_hovered(point - point_origin, box_width, view);
+		return point_offset_.is_hovered(point - point_origin, view);
 	}
 
 	// ハンドルの移動を開始する
 	bool BezierHandle::check_hover(
 		const mkaul::Point<double>& point,
-		const GraphView& view,
-		float box_width
+		const GraphView& view
 	) noexcept {
 		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
 		bool ks_snap = key_state_snap();
@@ -244,7 +243,7 @@ namespace cved {
 		flag_prev_lock_angle_ = ks_lock_angle;
 		flag_prev_lock_length_ = ks_lock_length;
 
-		if (point_offset_.check_hover(point - point_origin, box_width, view)) {
+		if (point_offset_.check_hover(point - point_origin, view)) {
 			if (ks_snap) {
 				snap();
 			}

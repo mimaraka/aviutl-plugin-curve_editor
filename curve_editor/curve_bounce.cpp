@@ -169,8 +169,8 @@ namespace cved {
 		}
 	}
 
-	bool BounceCurve::is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
-		return handle_.is_hovered(point, box_width, view);
+	bool BounceCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+		return handle_.is_hovered(point, view);
 	}
 
 	bool BounceCurve::handle_check_hover(
@@ -178,7 +178,7 @@ namespace cved {
 		float box_width,
 		const GraphView& view
 	) noexcept {
-		return handle_.check_hover(point, box_width, view);
+		return handle_.check_hover(point, view);
 	}
 
 	bool BounceCurve::handle_update(
@@ -197,9 +197,9 @@ namespace cved {
 		handle_.end_control();
 	}
 
-	BounceCurve::ActivePoint BounceCurve::point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
-		bool start = point_start_.check_hover(point, box_width, view);
-		bool end = point_end_.check_hover(point, box_width, view);
+	BounceCurve::ActivePoint BounceCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+		bool start = point_start_.check_hover(point, view);
+		bool end = point_end_.check_hover(point, view);
 		
 		if (start or end) {
 			cor_ = handle_.get_cor(point_start_, point_end_);

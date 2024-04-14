@@ -140,8 +140,8 @@ namespace cved {
 		case WM_LBUTTONDOWN:
 			// ハンドルにホバーしていた時
 			if (
-				editor.current_curve()->handle_check_hover(pt_view, BOX_WIDTH, view)
-				or editor.current_curve()->point_check_hover(pt_view, BOX_WIDTH, view) != GraphCurve::ActivePoint::Null
+				editor.current_curve()->handle_check_hover(pt_view, view)
+				or editor.current_curve()->point_check_hover(pt_view, view) != GraphCurve::ActivePoint::Null
 				) {
 				::SetCursor(::LoadCursorA(NULL, IDC_HAND));
 				::SetCapture(hwnd);
@@ -197,10 +197,10 @@ namespace cved {
 		case WM_LBUTTONDBLCLK:
 			// 現在のカーブがNormalCurveのとき
 			if (config.get_edit_mode() == EditMode::Normal) {
-				if (editor.curve_normal()->delete_curve(pt_view, BOX_WIDTH, view)
+				if (editor.curve_normal()->delete_curve(pt_view, view)
 					or editor.curve_normal()->add_curve(pt_view, view)
 					) {
-					editor.current_curve()->point_check_hover(pt_view, BOX_WIDTH, view);
+					editor.current_curve()->point_check_hover(pt_view, view);
 					::SetCursor(::LoadCursorA(NULL, IDC_HAND));
 					::InvalidateRect(hwnd, NULL, FALSE);
 				}
@@ -229,7 +229,7 @@ namespace cved {
 			// マウスカーソル移動時
 		case WM_MOUSEMOVE:
 			// ハンドルホバー時のカーソル変更
-			if (editor.current_curve()->is_hovered(pt_view, BOX_WIDTH, view)) {
+			if (editor.current_curve()->is_hovered(pt_view, view)) {
 				::SetCursor(::LoadCursorA(NULL, IDC_HAND));
 			}
 

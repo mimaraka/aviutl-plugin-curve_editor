@@ -366,16 +366,15 @@ namespace cved {
 		}
 	}
 
-	bool BezierCurve::is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
-		return handle_left_.is_hovered(point, box_width, view) or handle_right_.is_hovered(point, box_width, view);
+	bool BezierCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+		return handle_left_.is_hovered(point, view) or handle_right_.is_hovered(point, view);
 	}
 
 	bool BezierCurve::handle_check_hover(
 		const mkaul::Point<double>& point,
-		float box_width,
 		const GraphView& view
 	) noexcept {
-		return handle_left_.check_hover(point, view, box_width) or handle_right_.check_hover(point, view, box_width);
+		return handle_left_.check_hover(point, view) or handle_right_.check_hover(point, view);
 	}
 
 	bool BezierCurve::handle_update(
@@ -415,9 +414,9 @@ namespace cved {
 		handle_right_.end_control();
 	}
 
-	BezierCurve::ActivePoint BezierCurve::point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
-		bool start = point_start_.check_hover(point, box_width, view);
-		bool end = point_end_.check_hover(point, box_width, view);
+	BezierCurve::ActivePoint BezierCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+		bool start = point_start_.check_hover(point, view);
+		bool end = point_end_.check_hover(point, view);
 
 		if (start or end) {
 			handle_buffer_left_.set_point_offset(handle_left_.point_offset());
