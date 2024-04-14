@@ -31,9 +31,9 @@ namespace cved {
 		auto y() const noexcept { return point_.y; }
 
 		// 引数のポイントがコントロールポイント付近にあるかどうか
-		bool is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept;
+		bool is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
 		bool is_controlled() const noexcept { return controlled_; }
-		bool check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept;
+		bool check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept;
 		
 		bool update(const mkaul::Point<double>& point) noexcept;
 		void move(const mkaul::Point<double>& point) noexcept;

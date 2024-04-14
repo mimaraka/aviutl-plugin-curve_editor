@@ -85,12 +85,12 @@ namespace cved {
 		point_end_ = mkaul::Point{ 1., 1. } - point_tmp;
 	}
 
-	bool GraphCurve::is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
-		return is_point_hovered(point, box_width, view) or is_handle_hovered(point, box_width, view);
+	bool GraphCurve::is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+		return is_point_hovered(point, view) or is_handle_hovered(point, view);
 	}
 
-	bool GraphCurve::is_point_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
-		return point_start_.is_hovered(point, box_width, view) or point_end_.is_hovered(point, box_width, view);
+	bool GraphCurve::is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+		return point_start_.is_hovered(point, view) or point_end_.is_hovered(point, view);
 	}
 
 	bool GraphCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {

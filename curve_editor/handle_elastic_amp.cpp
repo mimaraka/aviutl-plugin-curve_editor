@@ -3,12 +3,12 @@
 
 
 namespace cved {
-	bool ElasticAmpHandle::is_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept {
-		return point_left_.is_hovered(point, box_width, view) or point_right_.is_hovered(point, box_width, view);
+	bool ElasticAmpHandle::is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+		return point_left_.is_hovered(point, view) or point_right_.is_hovered(point, view);
 	}
 
-	bool ElasticAmpHandle::check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept {
-		return point_left_.check_hover(point, box_width, view) or point_right_.check_hover(point, box_width, view);
+	bool ElasticAmpHandle::check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+		return point_left_.check_hover(point, view) or point_right_.check_hover(point, view);
 	}
 
 	bool ElasticAmpHandle::update(

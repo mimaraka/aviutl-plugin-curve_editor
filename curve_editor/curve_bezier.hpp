@@ -63,12 +63,11 @@ namespace cved {
 		// ハンドルを取得 (右)
 		auto handle_right() const noexcept { return const_cast<BezierHandle*>(&handle_right_); }
 
-		bool is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept override;
+		bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
 
 		// ハンドルの移動を開始
 		bool handle_check_hover(
 			const mkaul::Point<double>& point,
-			float box_width,
 			const GraphView& view
 		) noexcept override;
 		// ハンドルの位置をアップデート
@@ -80,7 +79,7 @@ namespace cved {
 		void handle_end_control() noexcept override;
 
 		// ポイントの移動を開始
-		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
+		ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		bool point_begin_move(ActivePoint active_point) noexcept override;
 		// ポイントの位置をアップデート
 		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
