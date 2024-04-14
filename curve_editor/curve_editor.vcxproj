@@ -101,7 +101,8 @@
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl110\plugins"</Command>
+      <Command>copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl110\plugins"
+copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</Command>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>
@@ -196,6 +197,7 @@
     <ClInclude Include="dialog_bezier_param.hpp" />
     <ClInclude Include="dialog_curve_code.hpp" />
     <ClInclude Include="dialog_curve_discretization.hpp" />
+    <ClInclude Include="dialog_id_jumpto.hpp" />
     <ClInclude Include="dialog_pref.hpp" />
     <ClInclude Include="dialog_pref_appearance.hpp" />
     <ClInclude Include="dialog_pref_behavior.hpp" />
@@ -222,9 +224,11 @@
     <ClInclude Include="handle_elastic_amp.hpp" />
     <ClInclude Include="json_loader.hpp" />
     <ClInclude Include="menu.hpp" />
+    <ClInclude Include="menu_bezier_handle.hpp" />
     <ClInclude Include="menu_curve.hpp" />
     <ClInclude Include="menu_edit_mode.hpp" />
     <ClInclude Include="menu_graph.hpp" />
+    <ClInclude Include="menu_id.hpp" />
     <ClInclude Include="menu_more.hpp" />
     <ClInclude Include="my_button.hpp" />
     <ClInclude Include="my_messagebox.hpp" />
@@ -271,6 +275,7 @@
     <ClCompile Include="dialog_bezier_param.cpp" />
     <ClCompile Include="dialog_curve_code.cpp" />
     <ClCompile Include="dialog_curve_discretization.cpp" />
+    <ClCompile Include="dialog_id_jumpto.cpp" />
     <ClCompile Include="dialog_pref.cpp" />
     <ClCompile Include="dialog_pref_appearance.cpp" />
     <ClCompile Include="dialog_pref_behavior.cpp" />
@@ -285,9 +290,11 @@
     <ClCompile Include="filter_wndproc.cpp" />
     <ClCompile Include="json_loader.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="menu_bezier_handle.cpp" />
     <ClCompile Include="menu_curve.cpp" />
     <ClCompile Include="menu_edit_mode.cpp" />
     <ClCompile Include="menu_graph.cpp" />
+    <ClCompile Include="menu_id.cpp" />
     <ClCompile Include="menu_more.cpp" />
     <ClCompile Include="preferences.cpp" />
     <ClCompile Include="trackbar_button.cpp" />

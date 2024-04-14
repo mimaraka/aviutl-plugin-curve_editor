@@ -13,6 +13,7 @@ namespace cved {
 		inline constexpr int MIN_HEIGHT = 200;
 		inline constexpr int SEPARATOR_WIDTH = 8;
 		inline constexpr int MENU_HEIGHT = 75;
+		inline constexpr size_t IDCURVE_MAX_N = 4096u;
 		inline constexpr float ROUND_RADIUS = 4.f;
 		inline constexpr float SEPARATOR_LINE_WIDTH = 3.6f;
 		inline constexpr float SEPARATOR_LINE_LENGTH = 32.f;

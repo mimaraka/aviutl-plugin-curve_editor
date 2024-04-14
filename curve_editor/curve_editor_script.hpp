@@ -10,7 +10,7 @@ namespace cved {
 		class ScriptCurveEditor {
 		private:
 			std::vector<ScriptCurve> curves_script_;
-			int32_t index_ = 0u;
+			size_t index_ = 0u;
 
 		public:
 			ScriptCurveEditor() :
@@ -19,7 +19,10 @@ namespace cved {
 
 			void reset() noexcept;
 			ScriptCurve* curve_script() noexcept { return &curves_script_[index_]; }
-			auto index() const noexcept { return index_; }
+			auto idx() const noexcept { return index_; }
+			bool set_idx(size_t idx) noexcept;
+			void jump_to_last_idx() noexcept;
+			bool is_idx_last() const noexcept { return index_ == curves_script_.size() - 1; }
 		};
 	}
 }

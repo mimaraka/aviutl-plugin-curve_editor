@@ -1,6 +1,7 @@
 #pragma once
 
 #include "curve_graph.hpp"
+#include "enum.hpp"
 
 
 
@@ -19,6 +20,7 @@ namespace cved {
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
 		void create_data(std::vector<byte>& data) const noexcept override;
+		bool load_data(const byte* data, size_t size) noexcept override;
 
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,
@@ -32,15 +34,14 @@ namespace cved {
 		) const noexcept override;
 
 		bool add_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept;
-		bool delete_curve(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept;
-		bool replace_curve(size_t index, CurveSegmentType segment_type) noexcept;
+		bool delete_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept;
+		bool replace_curve(size_t idx, CurveSegmentType segment_type) noexcept;
 
-		bool is_point_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept override;
-		bool is_handle_hovered(const mkaul::Point<double>& point, float box_width, const GraphView& view) const noexcept override;
+		bool is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
+		bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
 
 		bool handle_check_hover(
 			const mkaul::Point<double>& point,
-			float box_width,
 			const GraphView& view
 		) noexcept override;
 
@@ -51,7 +52,7 @@ namespace cved {
 		void handle_end_control() noexcept override;
 
 		// カーソルがポイントにホバーしているかを判定し、ホバーしていれば移動を開始
-		ActivePoint point_check_hover(const mkaul::Point<double>& point, float box_width, const GraphView& view) noexcept override;
+		ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
 		// ポイントの移動を開始
 		bool point_begin_move(ActivePoint) noexcept override { return false; }
 		// ポイントの位置をアップデート

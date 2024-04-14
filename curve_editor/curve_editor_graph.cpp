@@ -19,13 +19,47 @@ namespace cved {
 			curve_bounce_.clear();
 		}
 
+		bool GraphCurveEditor::set_idx_normal(size_t idx) noexcept {
+			if (idx < curves_normal_.size()) {
+				idx_normal_ = idx;
+				return true;
+			}
+			else if (idx == curves_normal_.size()) {
+				curves_normal_.emplace_back(NormalCurve{});
+				idx_normal_ = idx;
+				return true;
+			}
+			else return false;
+		}
+
+		bool GraphCurveEditor::set_idx_value(size_t idx) noexcept {
+			if (idx < curves_value_.size()) {
+				idx_value_ = idx;
+				return true;
+			}
+			else if (idx == curves_value_.size()) {
+				curves_value_.emplace_back(ValueCurve{});
+				idx_value_ = idx;
+				return true;
+			}
+			else return false;
+		}
+
+		void GraphCurveEditor::jump_to_last_idx_normal() noexcept {
+			idx_normal_ = curves_normal_.size() - 1;
+		}
+
+		void GraphCurveEditor::jump_to_last_idx_value() noexcept {
+			idx_value_ = curves_value_.size() - 1;
+		}
+
 		void GraphCurveEditor::reset_id_curves() noexcept {
 			curves_normal_.clear();
 			curves_normal_.emplace_back(NormalCurve{});
 			curves_value_.clear();
-			//curves_value_.emplace_back(ValueCurve{});
-			index_normal_ = 0u;
-			index_value_ = 0u;
+			curves_value_.emplace_back(ValueCurve{});
+			idx_normal_ = 0u;
+			idx_value_ = 0u;
 		}
 
 		bool GraphCurveEditor::load_codes(int32_t code_bezier, int32_t code_elastic, int32_t code_bounce) noexcept {
@@ -35,16 +69,16 @@ namespace cved {
 			return result_bezier and result_elastic and result_bounce;
 		}
 
-		NormalCurve* GraphCurveEditor::curve_normal(size_t index) noexcept {
-			if (index < curves_normal_.size()) {
-				return &curves_normal_[index];
+		NormalCurve* GraphCurveEditor::curve_normal(size_t idx) noexcept {
+			if (idx < curves_normal_.size()) {
+				return &curves_normal_[idx];
 			}
 			else return nullptr;
 		}
 
-		ValueCurve* GraphCurveEditor::curve_value(size_t index) noexcept {
-			if (index < curves_value_.size()) {
-				return &curves_value_[index];
+		ValueCurve* GraphCurveEditor::curve_value(size_t idx) noexcept {
+			if (idx < curves_value_.size()) {
+				return &curves_value_[idx];
 			}
 			else return nullptr;
 		}
@@ -56,10 +90,10 @@ namespace cved {
 				return &curve_bezier_;
 
 			case EditMode::Normal:
-				return &curves_normal_[index_normal_];
+				return &curves_normal_[idx_normal_];
 
 			case EditMode::Value:
-				return &curves_value_[index_value_];
+				return &curves_value_[idx_value_];
 
 			case EditMode::Elastic:
 				return &curve_elastic_;
@@ -109,25 +143,25 @@ namespace cved {
 			constexpr size_t SIZE_N = sizeof(uint32_t) / sizeof(byte);
 
 			std::vector<NormalCurve> vec_tmp;
-			for (size_t index = 0u; index < size;) {
-				// indexからsizeまでのバイト数が4バイト未満(サイズ情報が取得できない)の場合
-				if (size < index + SIZE_N) return false;
+			for (size_t idx = 0u; idx < size;) {
+				// idxからsizeまでのバイト数が4バイト未満(サイズ情報が取得できない)の場合
+				if (size < idx + SIZE_N) return false;
 				// サイズ情報の取得
-				auto p_size = reinterpret_cast<const uint32_t*>(data + index);
+				auto p_size = reinterpret_cast<const uint32_t*>(data + idx);
 				// データが記述されている部分までインデックスを進める
-				index += SIZE_N;
-				// indexからsizeまでのバイト数がサイズ情報のサイズより小さい(データが無効)場合
-				if (size < index + *p_size) return false;
+				idx += SIZE_N;
+				// idxからsizeまでのバイト数がサイズ情報のサイズより小さい(データが無効)場合
+				if (size < idx + *p_size) return false;
 				// NormalCurveのデータの読み込み
 				NormalCurve curve;
-				if (!curve.load_data(data + index, *p_size)) return false;
+				if (!curve.load_data(data + idx, *p_size)) return false;
 				// 読み込みに成功したらインデックスを進め、カーブをアペンド
-				index += *p_size;
+				idx += *p_size;
 				vec_tmp.emplace_back(std::move(curve));
 			}
 			curves_normal_ = std::move(vec_tmp);
 			// インデックスをリセット
-			index_normal_ = 0;
+			idx_normal_ = 0;
 			return true;
 		}
 
@@ -160,7 +194,7 @@ namespace cved {
 			}
 			curves_normal_ = std::move(vec_tmp);
 			// インデックスをリセット
-			index_normal_ = 0;
+			idx_normal_ = 0;
 			return true;
 		}
 	}

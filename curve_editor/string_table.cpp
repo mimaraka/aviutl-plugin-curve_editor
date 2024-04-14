@@ -61,6 +61,14 @@ namespace cved {
 					id = IDS_WARNING_PREF_RESET;
 					break;
 
+				case StringId::WarningDeleteId:
+					id = IDS_WARNING_DELETE_ID;
+					break;
+
+				case StringId::WarningDeleteAllIds:
+					id = IDS_WARNING_DELETE_ALL_IDS;
+					break;
+
 				case StringId::InfoLatestVersion:
 					id = IDS_INFO_LATEST_VERSION;
 					break;

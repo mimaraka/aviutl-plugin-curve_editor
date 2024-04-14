@@ -6,10 +6,12 @@
 #include "constants.hpp"
 #include "curve_editor.hpp"
 #include "dialog_curve_code.hpp"
+#include "dialog_bezier_param.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "menu_edit_mode.hpp"
 #include "menu_more.hpp"
+#include "menu_id.hpp"
 #include "string_table.hpp"
 #include "util.hpp"
 #include "version.hpp"
@@ -31,6 +33,8 @@ namespace cved {
 		constexpr int PADDING_CONTROL_WIDE = 4;
 		constexpr int PADDING_CONTROL_NARROW = 2;
 
+		static const auto hinst = reinterpret_cast<HINSTANCE>(::GetWindowLongPtrA(hwnd, GWLP_HINSTANCE));
+
 		static std::unique_ptr<Graphics> p_graphics = Factory::create_graphics();
 
 		static IconButton button_copy, button_read, button_save, button_clear, button_fit, button_more, button_id_back, button_id_next;
@@ -41,7 +45,8 @@ namespace cved {
 		static Column toolbar{ &row_top, &row_bottom };
 
 		static EditModeMenu menu_edit_mode;
-		static MoreMenu menu_more{ global::fp->dll_hinst };
+		static MoreMenu menu_more{ hinst };
+		static IdMenu menu_id{ hinst };
 
 		auto aaa = ::GetThreadId(::GetCurrentThread());
 		static mkaul::Version version_latest;
@@ -67,11 +72,11 @@ namespace cved {
 				::DestroyWindow(hwnd);
 			}
 
-			mkaul::graphics::Font font{ 10.f, "Yu Gothic UI Semibold", mkaul::flag::FontStyle::Regular, 600 };
+			mkaul::graphics::Font font{ 9.f, "Yu Gothic UI Semibold", mkaul::flag::FontStyle::Regular, 600 };
 
 			// ボタン(コピー)
 			button_copy.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				(int)WindowCommand::Copy,
 				&global::config.get_theme().bg,
@@ -90,14 +95,14 @@ namespace cved {
 
 			// アイコン(コピー)
 			button_copy.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_COPY),
 				"PNG"
 			);
 
 			// ボタン(カーブ読み取り)
 			button_read.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				(int)WindowCommand::Read,
 				&global::config.get_theme().bg,
@@ -116,13 +121,13 @@ namespace cved {
 
 			// アイコン(カーブ読み取り)
 			button_read.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_READ),
 				"PNG"
 			);
 
 			button_save.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				(int)WindowCommand::Save,
 				&global::config.get_theme().bg,
@@ -141,13 +146,13 @@ namespace cved {
 
 			// アイコン(保存)
 			button_save.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_SAVE),
 				"PNG"
 			);
 
 			button_clear.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				(int)WindowCommand::Clear,
 				&global::config.get_theme().bg,
@@ -165,13 +170,13 @@ namespace cved {
 			);
 
 			button_clear.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_CLEAR),
 				"PNG"
 			);
 
 			button_fit.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				(int)WindowCommand::Fit,
 				&global::config.get_theme().bg,
@@ -189,14 +194,14 @@ namespace cved {
 			);
 
 			button_fit.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_FIT),
 				"PNG"
 			);
 
 			// ボタン(もっと見る)
 			button_more.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				BUTTON_ID_MORE,
 				&global::config.get_theme().bg,
@@ -214,14 +219,14 @@ namespace cved {
 			);
 
 			button_more.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_MORE),
 				"PNG"
 			);
 
 			// ボタン(モード選択)
 			button_mode.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				BUTTON_ID_MODE,
 				global::config.get_edit_mode_str(),
@@ -243,10 +248,10 @@ namespace cved {
 
 			// ボタン(パラメータ)
 			button_param.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				BUTTON_ID_PARAM,
-				"203482384",
+				"",
 				font,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
@@ -264,10 +269,10 @@ namespace cved {
 			);
 
 			button_id.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				BUTTON_ID_ID,
-				"1",
+				"",
 				font,
 				&global::config.get_theme().bg,
 				&global::config.get_theme().bg,
@@ -285,7 +290,7 @@ namespace cved {
 			);
 
 			button_id_back.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				(int)WindowCommand::IdBack,
 				&global::config.get_theme().bg,
@@ -303,13 +308,13 @@ namespace cved {
 			);
 
 			button_id_back.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_BACK),
 				"PNG"
 			);
 
 			button_id_next.create(
-				global::fp->dll_hinst,
+				hinst,
 				hwnd,
 				(int)WindowCommand::IdNext,
 				&global::config.get_theme().bg,
@@ -327,13 +332,13 @@ namespace cved {
 			);
 
 			button_id_next.set_icon_from_resource(
-				global::fp->dll_hinst,
+				hinst,
 				MAKEINTRESOURCEA(IDB_NEXT),
 				"PNG"
 			);
 
 			if (global::config.get_notify_update()) {
-				
+
 				//th.join();
 			}
 
@@ -381,6 +386,7 @@ namespace cved {
 					button_param.hide();
 					row_bottom.replace(1, &row_id);
 					toolbar.move(mkaul::WindowRectangle{ rect_wnd });
+					::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateIdPanel, NULL);
 				}
 				// パラメータボタンを表示し、ID操作盤を非表示にする
 				else {
@@ -389,14 +395,15 @@ namespace cved {
 					button_param.show();
 					row_bottom.replace(1, &button_param);
 					toolbar.move(mkaul::WindowRectangle{ rect_wnd });
-					::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateParam, NULL);
+					::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateParamPanel, NULL);
 				}
 				break;
 
 			case (WPARAM)WindowCommand::AddUpdateNotification:
 				break;
 
-			case (WPARAM)WindowCommand::UpdateParam:
+			// パラメータ表示パネルの更新
+			case (WPARAM)WindowCommand::UpdateParamPanel:
 			{
 				std::string label = "";
 				auto p_curve = global::editor.editor_graph().numeric_curve();
@@ -410,6 +417,26 @@ namespace cved {
 				break;
 			}
 
+			// ID操作パネルの更新
+			case (WPARAM)WindowCommand::UpdateIdPanel:
+			{
+				auto idx = global::editor.current_idx();
+
+				if (idx <= 0u) {
+					button_id_back.set_status(mkaul::flag::Status::Disabled);
+				}
+				else if (global::IDCURVE_MAX_N - 1 <= idx) {
+					button_id_next.set_status(mkaul::flag::Status::Disabled);
+				}
+				else {
+					button_id_back.set_status(mkaul::flag::Status::Null);
+					button_id_next.set_status(mkaul::flag::Status::Null);
+				}
+				button_id.set_label(std::to_string(idx + 1));
+				break;
+			}
+
+			// モードボタンクリック時
 			case BUTTON_ID_MODE:
 			{
 				mkaul::WindowRectangle rect_tmp;
@@ -421,8 +448,20 @@ namespace cved {
 				break;
 			}
 
+			// パラメータボタンクリック時
 			case BUTTON_ID_PARAM:
+				if (global::config.get_edit_mode() == EditMode::Bezier) {
+					BezierParamDialog dialog;
+					dialog.show(hwnd);
+				}
 				break;
+
+			// IDボタンクリック時
+			case BUTTON_ID_ID:
+			{
+				menu_id.show(hwnd);
+				break;
+			}
 
 			case (WPARAM)WindowCommand::Copy:
 			{
@@ -431,7 +470,7 @@ namespace cved {
 					my_messagebox(global::string_table[StringId::ErrorCodeCopyFailed], hwnd, MessageBoxIcon::Error);
 				}
 			}
-				break;
+			break;
 
 			case (WPARAM)WindowCommand::Read:
 			{
@@ -439,7 +478,7 @@ namespace cved {
 				dialog.show(hwnd);
 				break;
 			}
-				
+
 			case (WPARAM)WindowCommand::Save:
 				break;
 
@@ -474,6 +513,16 @@ namespace cved {
 
 			case BUTTON_ID_MORE:
 				menu_more.show(hwnd);
+				break;
+
+			case (WPARAM)WindowCommand::IdBack:
+				global::editor.advance_idx(-1);
+				global::window_main.send_command((WPARAM)WindowCommand::Update);
+				break;
+
+			case (WPARAM)WindowCommand::IdNext:
+				global::editor.advance_idx(1);
+				global::window_main.send_command((WPARAM)WindowCommand::Update);
 				break;
 			}
 			return 0;
