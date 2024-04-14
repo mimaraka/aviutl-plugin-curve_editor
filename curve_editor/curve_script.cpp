@@ -4,5 +4,10 @@
 
 
 namespace cved {
+	void ScriptCurve::create_data(std::vector<byte>& data) const noexcept {
+	}
 
+	bool ScriptCurve::load_data(const byte* data, size_t size) noexcept {
+		return false;
+	}
 }

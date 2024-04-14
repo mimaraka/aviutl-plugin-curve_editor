@@ -23,6 +23,10 @@
 #define IDD_ABOUT                       135
 #define IDD_BEZIER_PARAM                136
 #define IDD_CURVE_DISCRETIZATION        139
+#define IDD_CURVE_CODE1                 140
+#define IDD_ID_JUMPTO                   140
+#define IDR_MENU_ID                     141
+#define IDR_MENU_BEZIER_HANDLE          146
 #define IDC_BUTTON_APPLY                1003
 #define IDC_BUTTON_RESET                1004
 #define IDC_COMBO_LANGUAGE              1005
@@ -38,6 +42,8 @@
 #define IDC_CHECK_NOTIFY_UPDATE         1010
 #define IDC_CHECK_SHOW_POPUP            1011
 #define IDC_TREE1                       1012
+#define IDC_CHECK_HOTKEY                1012
+#define IDC_CHECK_ENABLE_HOTKEYS        1012
 #define IDC_EDIT_CURVE_CODE             1016
 #define IDC_COMBO_THEME                 1017
 #define IDC_CHECK_AUTO_APPLY            1018
@@ -56,6 +62,7 @@
 #define IDC_SLIDER2                     1035
 #define IDC_SLIDER_QUANTIZATION         1035
 #define IDC_STATIC_QUANTIZATION         1036
+#define IDC_EDIT1                       1037
 #define IDS_ERROR_LUA_NOT_FOUND         4096
 #define IDS_ERROR_EXEDIT_NOT_FOUND      4097
 #define IDS_ERROR_EXEDIT_HOOK_FAILED    4098
@@ -69,6 +76,8 @@
 #define IDS_WARNING_DELETE_ALL_CURVES   5121
 #define IDS_WARNING_AUTOSAVER_NOT_FOUND 5122
 #define IDS_WARNING_PREF_RESET          5122
+#define IDS_WARNING_DELETE_ID           5123
+#define IDS_WARNING_DELETE_ALL_IDS      5124
 #define IDS_INFO_LATEST_VERSION         6144
 #define IDS_INFO_UPDATE_AVAILABLE       6145
 #define IDS_INFO_RESTART_AVIUTL         6146
@@ -126,14 +135,26 @@
 #define ID_MANIFEST_VISUALSTYLE         40142
 #define ID_CURVE_DISCRETIZATION         40143
 #define ID_GRAPH_DESCRITIZATION         40147
+#define ID_ID_JUMP                      40151
+#define ID_ID_DELETE                    40153
+#define ID_ID_JUMPTOFIRST               40155
+#define ID_ID_JUMPTOLAST                40156
+#define ID_MENU_40157                   40157
+#define ID_MENU_40158                   40158
+#define ID_BEZIER_HANDLE_ROTATE         40159
+#define ID_BEZIER_HANDLE_               40160
+#define ID_BEZIER_HANDLE_ROOT           40161
+#define ID_MENU_40162                   40162
+#define ID_ID_DELETE_ALL                40163
+#define ID_MENU_DELETEALLIDS            40164
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        141
-#define _APS_NEXT_COMMAND_VALUE         40148
-#define _APS_NEXT_CONTROL_VALUE         1037
+#define _APS_NEXT_RESOURCE_VALUE        150
+#define _APS_NEXT_COMMAND_VALUE         40165
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -22,6 +22,8 @@ namespace cved {
 				WarningDeleteCurve,
 				WarningDeleteAllCurves,
 				WarningResetPreferences,
+				WarningDeleteId,
+				WarningDeleteAllIds,
 				InfoLatestVersion,
 				InfoUpdateAvailable,
 				InfoRestartAviutl,

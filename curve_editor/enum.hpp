@@ -62,7 +62,9 @@ namespace cved {
 		LoadConfig				= 0x0b18,
 		SaveConfig				= 0x0b19,
 		AddUpdateNotification	= 0x0b1a,
-		UpdateParam				= 0x0b1b
+		UpdateParamPanel		= 0x0b1b,
+		UpdateIdPanel			= 0x0b1c,
+		MoveWindow				= 0x0b1d
 	};
 
 	enum class ThemeId {

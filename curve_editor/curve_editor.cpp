@@ -21,6 +21,78 @@ namespace cved {
 			}
 		}
 
+		size_t CurveEditor::current_idx() noexcept {
+			switch (global::config.get_edit_mode()) {
+			case EditMode::Normal:
+				return editor_graph_.idx_normal();
+
+			case EditMode::Value:
+				return editor_graph_.idx_value();
+
+			case EditMode::Script:
+				return editor_script_.idx();
+
+			default:
+				return 0u;
+			}
+		}
+
+		bool CurveEditor::set_idx(size_t idx) noexcept {
+			switch (global::config.get_edit_mode()) {
+			case EditMode::Normal:
+				return editor_graph_.set_idx_normal(idx);
+
+			case EditMode::Value:
+				return editor_graph_.set_idx_value(idx);
+				break;
+
+			case EditMode::Script:
+				return editor_script_.set_idx(idx);
+
+			default:
+				return false;
+			}
+		}
+
+		bool CurveEditor::advance_idx(int n) noexcept {
+			return set_idx((size_t)std::max((int)current_idx() + n, 0));
+		}
+
+		void CurveEditor::jump_to_last_idx() noexcept {
+			switch (global::config.get_edit_mode()) {
+			case EditMode::Normal:
+				editor_graph_.jump_to_last_idx_normal();
+				break;
+
+			case EditMode::Value:
+				editor_graph_.jump_to_last_idx_value();
+				break;
+
+			case EditMode::Script:
+				editor_script_.jump_to_last_idx();
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		bool CurveEditor::is_idx_last() noexcept {
+			switch (global::config.get_edit_mode()) {
+			case EditMode::Normal:
+				return editor_graph_.is_idx_normal_last();
+
+			case EditMode::Value:
+				return editor_graph_.is_idx_value_last();
+
+			case EditMode::Script:
+				return editor_script_.is_idx_last();
+
+			default:
+				return false;
+			}
+		}
+
 		void CurveEditor::reset_id_curves() noexcept {
 			editor_graph_.reset_id_curves();
 			editor_script_.reset();
@@ -29,13 +101,13 @@ namespace cved {
 		int32_t CurveEditor::track_param() noexcept {
 			switch (global::config.get_edit_mode()) {
 			case EditMode::Normal:
-				return (int32_t)editor_graph_.index_normal() + 1;
+				return (int32_t)editor_graph_.idx_normal() + 1;
 
 			case EditMode::Value:
-				return -(int32_t)editor_graph_.index_value() - 1;
+				return -(int32_t)editor_graph_.idx_value() - 1;
 
 			case EditMode::Script:
-				return (int32_t)(IDCURVE_MAX_N + editor_script_.index()) + 1;
+				return (int32_t)(IDCURVE_MAX_N + editor_script_.idx()) + 1;
 
 			case EditMode::Bezier:
 			case EditMode::Elastic:
@@ -75,22 +147,22 @@ namespace cved {
 		bool CurveEditor::load_data(const byte* data, size_t size) noexcept {
 			constexpr size_t SIZE_N = sizeof(uint32_t) / sizeof(byte);
 
-			for (size_t index = 0u; index < size;) {
+			for (size_t idx = 0u; idx < size;) {
 				// IDカーブのタイプの識別子を確認
-				switch (*(data + index)) {
+				switch (*(data + idx)) {
 				case (byte)IDCurveType::Normal:
 				{
-					// indexからsizeまでのバイト数が5バイト未満(タイプ・サイズ情報が取得できない)の場合
-					if (size < index + SIZE_N + 1u) return false;
-					index++;
-					auto p_size = reinterpret_cast<const uint32_t*>(data + index);
+					// idxからsizeまでのバイト数が5バイト未満(タイプ・サイズ情報が取得できない)の場合
+					if (size < idx + SIZE_N + 1u) return false;
+					idx++;
+					auto p_size = reinterpret_cast<const uint32_t*>(data + idx);
 					// データが記述されている部分までインデックスを進める
-					index += SIZE_N;
-					// indexからsizeまでのバイト数がサイズ情報のサイズより小さい(データが無効)場合
-					if (size < index + *p_size) return false;
-					if (!editor_graph_.load_data_normal(data + index, *p_size)) return false;
+					idx += SIZE_N;
+					// idxからsizeまでのバイト数がサイズ情報のサイズより小さい(データが無効)場合
+					if (size < idx + *p_size) return false;
+					if (!editor_graph_.load_data_normal(data + idx, *p_size)) return false;
 					// 読み込みに成功したらインデックスを進める
-					index += *p_size;
+					idx += *p_size;
 					break;
 				}
 
