@@ -12,14 +12,19 @@ namespace cved {
 			.lpResourceName = MAKEINTRESOURCEA(ID_MANIFEST_VISUALSTYLE),
 			.hModule = hinst
 		};
-		hactctx_ = ::CreateActCtxA(&actctx);
-		if (hactctx_ == INVALID_HANDLE_VALUE) return false;
-		auto ret = ::ActivateActCtx(hactctx_, &cookie_);
-		if (!ret) {
-			::ReleaseActCtx(hactctx_);
-			return false;
+		HANDLE tmp = NULL;
+		::GetCurrentActCtx(&tmp);
+		if (!tmp) {
+			hactctx_ = ::CreateActCtxA(&actctx);
+			if (hactctx_ == INVALID_HANDLE_VALUE) return false;
+			auto ret = ::ActivateActCtx(hactctx_, &cookie_);
+			if (!ret) {
+				::ReleaseActCtx(hactctx_);
+				return false;
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 
