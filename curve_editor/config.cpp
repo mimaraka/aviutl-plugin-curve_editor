@@ -101,9 +101,6 @@ namespace cved {
 			case EditMode::Bounce:
 				return string_table[StringId::LabelEditModeBounce];
 
-			case EditMode::Step:
-				return string_table[StringId::LabelEditModeStep];
-
 			case EditMode::Script:
 				return string_table[StringId::LabelEditModeScript];
 

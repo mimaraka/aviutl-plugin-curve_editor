@@ -13,7 +13,6 @@ namespace cved {
 			case EditMode::Bezier:
 			case EditMode::Elastic:
 			case EditMode::Bounce:
-			case EditMode::Step:
 				return editor_graph_.current_curve();
 
 			case EditMode::Script:
@@ -41,7 +40,6 @@ namespace cved {
 			case EditMode::Bezier:
 			case EditMode::Elastic:
 			case EditMode::Bounce:
-			case EditMode::Step:
 				return editor_graph_.numeric_curve()->encode();
 
 			default:

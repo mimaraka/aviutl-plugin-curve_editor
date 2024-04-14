@@ -1,7 +1,9 @@
 #include "menu_curve.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
+#include "dialog_curve_discretization.hpp"
 #include "enum.hpp"
+#include "global.hpp"
 #include "string_table.hpp"
 #include "resource.h"
 
@@ -16,8 +18,7 @@ namespace cved {
 			global::string_table[StringId::LabelCurveSegmentTypeLinear],
 			global::string_table[StringId::LabelEditModeBezier],
 			global::string_table[StringId::LabelEditModeElastic],
-			global::string_table[StringId::LabelEditModeBounce],
-			global::string_table[StringId::LabelEditModeStep]
+			global::string_table[StringId::LabelEditModeBounce]
 		};
 
 		// カーブタイプのサブメニューの作成
@@ -47,20 +48,19 @@ namespace cved {
 			&typeid(LinearCurve),
 			&typeid(BezierCurve),
 			&typeid(ElasticCurve),
-			&typeid(BounceCurve),
-			&typeid(StepCurve)
+			&typeid(BounceCurve)
 		};
 
 		// TODO: 値指定モードに対応させる
 		if (global::config.get_edit_mode() == EditMode::Normal) {
-			auto p_curve = reinterpret_cast<NormalCurve*>(global::editor.editor_graph().current_curve());
-			if (index < p_curve->get_curve_segments().size()) {
+			auto p_curve_normal = global::editor.editor_graph().curve_normal();
+			if (p_curve_normal and index < p_curve_normal->get_curve_segments().size()) {
 				// カーブタイプのサブメニューのチェック状態を更新
 				for (uint32_t i = 0u; i < n_segment_types; i++) {
 					MENUITEMINFOA minfo_tmp;
 					minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
 					minfo_tmp.fMask = MIIM_STATE;
-					minfo_tmp.fState = typeid(*(p_curve->get_curve_segments()[index])) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
+					minfo_tmp.fState = typeid(*(p_curve_normal->get_curve_segments()[index])) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
 					::SetMenuItemInfoA(submenu_segment_type_, i, TRUE, &minfo_tmp);
 				}
 			}
@@ -85,11 +85,61 @@ namespace cved {
 		UINT flags,
 		const mkaul::Point<LONG>* p_custom_point_screen
 	) noexcept {
+		POINT tmp;
+		::GetCursorPos(&tmp);
+		if (p_custom_point_screen) {
+			tmp = p_custom_point_screen->to<POINT>();
+		}
 		update_state(index);
-		return Menu::show(hwnd, flags, p_custom_point_screen);
+		int ret = ::TrackPopupMenu(
+			menu_,
+			flags | TPM_RETURNCMD | TPM_NONOTIFY,
+			tmp.x,
+			tmp.y,
+			0, hwnd, NULL
+		);
+		return callback(index, ret);
 	}
 
-	bool CurveMenu::callback(WPARAM wparam, LPARAM lparam) noexcept {
-		return false;
+	bool CurveMenu::callback(size_t index, uint16_t id) noexcept {
+		if (mkaul::in_range(
+			id,
+			(uint16_t)WindowCommand::CurveSegmentTypeLinear,
+			(uint16_t)WindowCommand::CurveSegmentTypeLinear + (uint16_t)CurveSegmentType::NumCurveSegmentType - 1u,
+			true
+		)) {
+			global::editor.editor_graph().curve_normal()->replace_curve(
+				index,
+				(CurveSegmentType)(id - (uint16_t)WindowCommand::CurveSegmentTypeLinear)
+			);
+			global::window_grapheditor.redraw();
+			return true;
+		}
+
+		switch (id) {
+		case ID_CURVE_COPY:
+			break;
+
+		case ID_CURVE_PASTE:
+			break;
+
+		case ID_CURVE_REVERSE:
+			break;
+
+		case ID_CURVE_DISCRETIZATION:
+		{
+			auto p_curve = global::editor.editor_graph().curve_normal();
+			if (p_curve) {
+				CurveDiscretizationDialog dialog;
+				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve->get_curve_segments()[index].get()));
+			}
+			break;
+		}
+
+		default:
+			return false;
+		}
+
+		return true;
 	}
 }

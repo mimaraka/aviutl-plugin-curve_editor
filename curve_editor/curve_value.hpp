@@ -16,7 +16,7 @@ namespace cved {
 		);
 
 		const auto& get_curve_segments() const noexcept { return curve_segments_; }
-		double get_value(double progress, double start, double end) const noexcept override;
+		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
 		void create_data(std::vector<byte>& data) const noexcept override;
 

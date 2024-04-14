@@ -11,14 +11,12 @@ namespace cved {
 			curves_value_{},
 			curve_bezier_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.},true },
 			curve_elastic_{ mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}, true },
-			curve_bounce_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true },
-			curve_step_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true }
+			curve_bounce_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true }
 		{
 			reset_id_curves();
 			curve_bezier_.clear();
 			curve_elastic_.clear();
 			curve_bounce_.clear();
-			curve_step_.clear();
 		}
 
 		void GraphCurveEditor::reset_id_curves() noexcept {
@@ -69,9 +67,6 @@ namespace cved {
 			case EditMode::Bounce:
 				return &curve_bounce_;
 
-			case EditMode::Step:
-				return &curve_step_;
-
 			default:
 				return nullptr;
 			}
@@ -87,9 +82,6 @@ namespace cved {
 
 			case EditMode::Bounce:
 				return &curve_bounce_;
-
-			case EditMode::Step:
-				return &curve_step_;
 
 			default:
 				return nullptr;

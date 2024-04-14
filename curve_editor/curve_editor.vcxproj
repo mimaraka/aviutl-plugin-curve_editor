@@ -195,6 +195,7 @@
     <ClInclude Include="dialog_about.hpp" />
     <ClInclude Include="dialog_bezier_param.hpp" />
     <ClInclude Include="dialog_curve_code.hpp" />
+    <ClInclude Include="dialog_curve_discretization.hpp" />
     <ClInclude Include="dialog_pref.hpp" />
     <ClInclude Include="dialog_pref_appearance.hpp" />
     <ClInclude Include="dialog_pref_behavior.hpp" />
@@ -232,7 +233,6 @@
     <ClInclude Include="trackbar_button.hpp" />
     <ClInclude Include="preset.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="curve_step.hpp" />
     <ClInclude Include="string_table.hpp" />
     <ClInclude Include="theme.hpp" />
     <ClInclude Include="util.hpp" />
@@ -270,6 +270,7 @@
     <ClCompile Include="dialog_about.cpp" />
     <ClCompile Include="dialog_bezier_param.cpp" />
     <ClCompile Include="dialog_curve_code.cpp" />
+    <ClCompile Include="dialog_curve_discretization.cpp" />
     <ClCompile Include="dialog_pref.cpp" />
     <ClCompile Include="dialog_pref_appearance.cpp" />
     <ClCompile Include="dialog_pref_behavior.cpp" />
@@ -298,7 +299,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="curve_step.cpp" />
     <ClCompile Include="curve_value.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>

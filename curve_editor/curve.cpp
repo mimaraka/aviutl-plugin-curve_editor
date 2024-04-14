@@ -3,6 +3,10 @@
 
 
 namespace cved {
+	double Curve::get_value(double progress, double start, double end) const noexcept {
+		return curve_function(progress, start, end);
+	}
+
 	double Curve::get_velocity(double progress, double start, double end) const noexcept {
 		constexpr double DELTA = 0.000001;
 		constexpr double TMP = 1. / DELTA;
