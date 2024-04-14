@@ -51,10 +51,12 @@ namespace cved {
 		switch (id) {
 		case ID_LAYOUT_VERTICAL:
 			global::config.set_layout_mode(LayoutMode::Vertical);
+			global::window_main.send_command((WPARAM)WindowCommand::MoveWindow);
 			break;
 
 		case ID_LAYOUT_HORIZONTAL:
 			global::config.set_layout_mode(LayoutMode::Horizontal);
+			global::window_main.send_command((WPARAM)WindowCommand::MoveWindow);
 			break;
 			
 		case ID_MORE_SHOWLIBRARY:

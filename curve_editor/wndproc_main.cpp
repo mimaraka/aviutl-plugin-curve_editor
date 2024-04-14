@@ -19,8 +19,6 @@ namespace cved {
 	{
 		using StringId = global::StringTable::StringId;
 
-		constexpr uint32_t COMMAND_MOVE_WINDOW = 0x0001;
-
 		static bool is_separator_moving = false;
 		POINT pt_client = { GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam) };
 		
@@ -222,19 +220,19 @@ namespace cved {
 						(int)rect_wnd.right - global::MIN_WIDTH + global::SEPARATOR_WIDTH
 					));
 				}
-				::SendMessageA(hwnd, WM_COMMAND, COMMAND_MOVE_WINDOW, NULL);
+				::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::MoveWindow, NULL);
 			}
 			return 0;
 
 		case WM_COMMAND:
 			switch (wparam) {
-			case (UINT)WindowCommand::Update:
+			case (WPARAM)WindowCommand::Update:
 				global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
 				global::window_toolbar.send_command((WPARAM)WindowCommand::Update);
 				global::window_main.redraw();
 				break;
 
-			case COMMAND_MOVE_WINDOW:
+			case (WPARAM)WindowCommand::MoveWindow:
 				global::window_toolbar.move(rect_menu);
 				global::window_grapheditor.move(rect_editor);
 				global::window_library.move(rect_library);
