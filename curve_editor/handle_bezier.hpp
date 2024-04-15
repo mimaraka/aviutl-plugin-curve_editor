@@ -64,9 +64,10 @@ namespace cved {
 			const GraphView& view
 		) const noexcept;
 		// 移動後のハンドルの座標を取得
-		auto get_dest_point(
+		mkaul::Point<double> get_dest_point(
 			const mkaul::Point<double>& point,
-			const GraphView& view
+			const GraphView& view,
+			bool keep_angle = false
 		) const noexcept;
 		// 座標の範囲制限
 		void limit_range(
@@ -115,6 +116,8 @@ namespace cved {
 			flag_prev_lock_length_{ false }
 		{}
 
+		auto type() const noexcept { return type_; }
+		auto p_curve() const noexcept { return p_curve_; }
 		auto handle_opposite() const noexcept { return handle_opposite_; }
 		void set_handle_opposite(BezierHandle* p) noexcept { handle_opposite_ = p; }
 
@@ -135,6 +138,11 @@ namespace cved {
 		void lock_length(const GraphView& view) noexcept;
 		// ハンドルの長さの固定を解除
 		void unlock_length() noexcept;
+
+		// ハンドルの角度を隣のカーブの傾きに合わせて回転させる
+		void adjust_angle(const GraphView& view) noexcept;
+		// ハンドルを始点に移動する
+		void move_to_root() noexcept;
 
 		// ハンドルのオフセット座標を取得
 		const auto& point_offset() const noexcept { return point_offset_.point(); }
