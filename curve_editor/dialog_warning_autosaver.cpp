@@ -12,12 +12,12 @@ namespace cved {
 		constexpr char URL_GITHUB_AUTOSAVER[] = "https://github.com/ePi5131/autosaver/releases/latest";
 
 		switch (message) {
-		case WM_CLOSE:
+		/*case WM_CLOSE:
 			global::config.set_ignore_autosaver_warning(
 				::SendMessageA(hwnd_check_dontshowagain_, BM_GETCHECK, NULL, NULL)
 			);
-			::EndDialog(hwnd, 1);
-			return TRUE;
+			::EndDialog(hwnd, IDCANCEL);
+			return TRUE;*/
 
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
@@ -26,14 +26,14 @@ namespace cved {
 					::SendMessageA(hwnd_check_dontshowagain_, BM_GETCHECK, NULL, NULL)
 				);
 				::ShellExecuteA(NULL, "open", URL_GITHUB_AUTOSAVER, NULL, NULL, SW_SHOWNORMAL);
-				::EndDialog(hwnd, 1);
+				::EndDialog(hwnd, IDOK);
 				return TRUE;
 
 			case IDCANCEL:
 				global::config.set_ignore_autosaver_warning(
 					::SendMessageA(hwnd_check_dontshowagain_, BM_GETCHECK, NULL, NULL)
 				);
-				::EndDialog(hwnd, 1);
+				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;
 			}
 			break;

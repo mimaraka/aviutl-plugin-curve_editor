@@ -60,7 +60,7 @@ namespace cved {
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case IDOK:
-				::EndDialog(hwnd, 1);
+				::EndDialog(hwnd, IDOK);
 				return TRUE;
 
 			case IDCANCEL:
@@ -69,7 +69,7 @@ namespace cved {
 					p_curve->set_quantization_resolution(quantization_resolution_prev);
 					global::window_grapheditor.redraw();
 				}
-				::EndDialog(hwnd, 1);
+				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;
 			}
 			break;
