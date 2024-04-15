@@ -51,9 +51,8 @@ namespace cved {
 
 	// カーブを反転
 	void NormalCurve::reverse() noexcept {
-		for (size_t i = 0; i < curve_segments_.size() / 2; i++) {
-			std::swap(curve_segments_[i], curve_segments_[curve_segments_.size() - i - 1]);
-		}
+		std::reverse(curve_segments_.begin(), curve_segments_.end());
+
 		for (auto& p_curve : curve_segments_) {
 			p_curve->reverse();
 			// prev, nextも反転
@@ -478,7 +477,6 @@ namespace cved {
 	// カーソルがハンドルにホバーしているかを判定
 	bool NormalCurve::handle_check_hover(
 		const mkaul::Point<double>& point,
-		float box_width,
 		const GraphView& view
 	) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
