@@ -17,6 +17,7 @@
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
+#pragma code_page(932)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -146,7 +147,7 @@ BEGIN
     LTEXT           "テーマ",IDC_STATIC,10,15,150,8
     COMBOBOX        IDC_COMBO_THEME,160,13,80,52,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "変更",IDC_BUTTON_CURVE_COLOR,190,27,50,14
-    CONTROL         "直前の編集状態を表示",IDC_CHECK_SHOW_TRACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,89,104,10
+    CONTROL         "直前の編集状態を表示",IDC_CHECK_SHOW_TRACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,89,150,10
     LTEXT           "カーブの太さ",IDC_STATIC,10,47,150,8
     LTEXT           "カーブの描画間隔\n(値が小さいほど高精度だが高負荷)",IDC_STATIC,10,66,150,17
     CONTROL         "",IDC_SLIDER_CURVE_DRAWING_INTERVAL,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,160,67,80,12
@@ -159,10 +160,10 @@ IDD_PREF_BEHAVIOR DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "ポップアップを表示",IDC_CHECK_SHOW_POPUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,65,10
+    CONTROL         "ポップアップを表示",IDC_CHECK_SHOW_POPUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,150,10
     LTEXT           "描画方式",IDC_STATIC,10,15,150,8
     COMBOBOX        IDC_COMBO_GRAPHIC_METHOD,160,13,80,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "ショートカットキーを有効にする",IDC_CHECK_ENABLE_HOTKEYS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,41,102,10
+    CONTROL         "ショートカットキーを有効にする",IDC_CHECK_ENABLE_HOTKEYS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,41,150,10
     GROUPBOX        "動作設定",IDC_STATIC,3,3,294,194
 END
 
@@ -170,10 +171,10 @@ IDD_PREF_EDITING DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "マウスホイールを反転",IDC_CHECK_REVERSE_WHEEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,24,82,10
+    CONTROL         "マウスホイールを反転",IDC_CHECK_REVERSE_WHEEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,24,276,10
     CONTROL         "値を自動でコピー(ベジェ・振動・バウンス)",IDC_CHECK_AUTO_COPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,106,280,10
     CONTROL         "ハンドルを動かしたときにカーブを自動で反映(標準・値指定)",IDC_CHECK_AUTO_APPLY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,118,215,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,118,280,10
     LTEXT           "(AviUtlで重い編集をしている時などは、この設定をオフにするとCurve Editorの動作が軽くなります。)",IDC_STATIC,20,130,270,18
     GROUPBOX        "グラフエディタ",IDC_STATIC,10,13,280,87
     GROUPBOX        "編集設定",IDC_STATIC,3,3,294,194
@@ -196,7 +197,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "言語/Language",IDC_STATIC,10,15,52,8
     COMBOBOX        IDC_COMBO_LANGUAGE,160,13,80,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "アップデートを通知",IDC_CHECK_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,79,10
+    CONTROL         "アップデートを通知",IDC_CHECK_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,150,10
     GROUPBOX        "一般設定",IDC_STATIC,3,3,294,194
 END
 
@@ -589,6 +590,7 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
