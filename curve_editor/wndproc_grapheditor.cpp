@@ -27,11 +27,14 @@ namespace cved {
 		constexpr float HANDLE_TIP_THICKNESS = 2.2f;
 		constexpr float BRIGHTNESS_GRAPH_INVALID = -0.04f;
 
+		static const auto hinst = reinterpret_cast<HINSTANCE>(::GetWindowLongPtrA(hwnd, GWLP_HINSTANCE));
+
 		static DragAndDrop dnd;
 
 		static GraphView view;
-		static GraphMenu menu_graph{ global::fp->dll_hinst };
-		static CurveMenu menu_curve{ global::fp->dll_hinst };
+		static GraphMenu menu_graph{ hinst };
+		static CurveMenu menu_curve{ hinst };
+		static BezierHandleMenu menu_bezier_handle{ hinst };
 
 		auto& editor = global::editor.editor_graph();
 		const auto& config = global::config;
