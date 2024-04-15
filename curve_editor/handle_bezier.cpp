@@ -112,6 +112,55 @@ namespace cved {
 		locked_length_ = false;
 	}
 
+	void BezierHandle::adjust_angle(const GraphView& view) noexcept {
+		double length = get_handle_length(view);
+		const GraphCurve* p_curve_neighbor = nullptr;
+		mkaul::Point<double> point_dest;
+
+		if (type_ == Type::Left) {
+			p_curve_neighbor = p_curve_->prev();
+			if (!p_curve_neighbor) return;
+			auto point_origin = p_curve_->point_start().point();
+			double slope = p_curve_neighbor->get_velocity(point_origin.x, 0., 1.);
+			double angle = std::atan(slope * view.scale_y() / view.scale_x());
+			point_dest = get_dest_point(
+				point_origin + mkaul::Point<double>{
+					length * std::cos(angle) / view.scale_x(),
+					length * std::sin(angle) / view.scale_y()
+				},
+				view,
+				true
+			);
+		}
+		else {
+			p_curve_neighbor = p_curve_->next();
+			if (!p_curve_neighbor) return;
+			auto point_origin = p_curve_->point_end().point();
+			// TODO: この0.000001は適当な値
+			double slope = p_curve_neighbor->get_velocity(point_origin.x + 0.000001, 0., 1.);
+			double angle = std::atan(slope * view.scale_y() / view.scale_x());
+			point_dest = get_dest_point(
+				point_origin - mkaul::Point<double>{
+					length * std::cos(angle) / view.scale_x(),
+					length * std::sin(angle) / view.scale_y()
+				},
+				view,
+				true
+			);
+		}
+		point_offset_.move(point_dest);
+	}
+
+	// 始点に移動
+	void BezierHandle::move_to_root() noexcept {
+		if (type_ == Type::Left) {
+			point_offset_.move(p_curve_->point_start().point());
+		}
+		else {
+			point_offset_.move(p_curve_->point_end().point());
+		}
+	}
+
 	// ハンドルの角度を取得
 	double BezierHandle::get_handle_angle(const GraphView& view) const noexcept {
 		return std::atan2(point_offset_.y() * view.scale_y(), point_offset_.x() * view.scale_x());
@@ -150,9 +199,10 @@ namespace cved {
 	}
 
 	// 移動先のハンドルの座標を取得
-	auto BezierHandle::get_dest_point(
+	mkaul::Point<double> BezierHandle::get_dest_point(
 		const mkaul::Point<double>& point,
-		const GraphView& view
+		const GraphView& view,
+		bool keep_angle
 	) const noexcept {
 		mkaul::Point<double> point_origin, point_opposite, ret;
 
@@ -191,7 +241,7 @@ namespace cved {
 		else {
 			ret = point - point_origin;
 		}
-		limit_range(&ret, locked_angle_ or locked_length_);
+		limit_range(&ret, locked_angle_ or locked_length_ or keep_angle);
 		return ret;
 	}
 
@@ -290,7 +340,7 @@ namespace cved {
 		const mkaul::Point<double>& point,
 		const GraphView& view
 	) noexcept {
-		
+
 		if (point_offset_.is_controlled()) {
 			update_flags(view);
 			point_offset_.move(get_dest_point(point, view));

@@ -7,6 +7,7 @@
 #include "global.hpp"
 #include "menu_graph.hpp"
 #include "menu_curve.hpp"
+#include "menu_bezier_handle.hpp"
 #include "my_messagebox.hpp"
 #include "string_table.hpp"
 #include "resource.h"
@@ -284,20 +285,23 @@ namespace cved {
 			// 標準・値指定モードのとき
 			// TODO: 値指定モードに対応させる
 			if (config.get_edit_mode() == EditMode::Normal) {
-				auto p_curve = editor.curve_normal();
-				for (auto it = p_curve->get_curve_segments().begin(), end = p_curve->get_curve_segments().end(); it != end; it++) {
-					if ((*it)->point_start().is_hovered(pt_view, BOX_WIDTH, view)) {
-						size_t index = std::distance(p_curve->get_curve_segments().begin(), it);
-						auto id = menu_curve.show(index, hwnd, TPM_RETURNCMD);
-						if (mkaul::in_range(
-							id,
-							(int)WindowCommand::CurveSegmentTypeLinear,
-							(int)WindowCommand::CurveSegmentTypeLinear + (int)CurveSegmentType::NumCurveSegmentType - 1,
-							true
-						)) {
-							p_curve->replace_curve(index, (CurveSegmentType)(id - (int)WindowCommand::CurveSegmentTypeLinear));
-							::InvalidateRect(hwnd, NULL, FALSE);
+				auto p_curve_normal = editor.curve_normal();
+				for (auto it = p_curve_normal->get_curve_segments().begin(), end = p_curve_normal->get_curve_segments().end(); it != end; it++) {
+					// ベジェのハンドルにホバーしていた場合
+					if (typeid(**it) == typeid(BezierCurve) and (*it)->is_handle_hovered(pt_view, view)) {
+						auto p_curve_bezier = dynamic_cast<BezierCurve*>(it->get());
+						if (p_curve_bezier->handle_left()->is_hovered(pt_view, view)) {
+							menu_bezier_handle.show(p_curve_bezier->handle_left(), view, hwnd);
 						}
+						else if (p_curve_bezier->handle_right()->is_hovered(pt_view, view)) {
+							menu_bezier_handle.show(p_curve_bezier->handle_right(), view, hwnd);
+						}
+						return 0;
+						}
+					// カーブの始点にホバーしていた場合
+					if ((*it)->point_start().is_hovered(pt_view, view)) {
+						size_t idx = std::distance(p_curve_normal->get_curve_segments().begin(), it);
+						menu_curve.show(idx, hwnd);
 						return 0;
 					}
 				}
