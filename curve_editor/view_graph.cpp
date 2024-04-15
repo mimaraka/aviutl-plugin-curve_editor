@@ -5,16 +5,16 @@
 
 
 namespace cved {
-	void GraphView::begin_move(const mkaul::Point<float>& point) noexcept {
+	void GraphView::begin_move(const mkaul::Point<float>& pt) noexcept {
 		moving_ = true;
-		point_buffer_ = point;
+		pt_buffer_ = pt;
 		center_buffer_ = center_;
 	}
 
-	bool GraphView::move(const mkaul::Point<float>& point, const mkaul::WindowRectangle& rect_wnd) noexcept {
+	bool GraphView::move(const mkaul::Point<float>& pt, const mkaul::WindowRectangle& rect_wnd) noexcept {
 		if (moving_) {
-			auto point_offset = point - point_buffer_;
-			center_ = center_buffer_ - mkaul::Point{ point_offset.x / scale_x_, -point_offset.y / scale_y_ };
+			auto pt_offset = pt - pt_buffer_;
+			center_ = center_buffer_ - mkaul::Point{ pt_offset.x / scale_x_, -pt_offset.y / scale_y_ };
 			return true;
 		}
 		else return false;
@@ -31,20 +31,20 @@ namespace cved {
 
 	}
 
-	void GraphView::begin_scale(const mkaul::Point<float>& point) noexcept {
+	void GraphView::begin_scale(const mkaul::Point<float>& pt) noexcept {
 		scaling_ = true;
-		point_buffer_ = point;
+		pt_buffer_ = pt;
 		scale_x_buffer_ = scale_x_;
 		scale_y_buffer_ = scale_y_;
 	}
 
-	bool GraphView::scale(const mkaul::Point<float>& point) noexcept {
+	bool GraphView::scale(const mkaul::Point<float>& pt) noexcept {
 		if (scaling_) {
 			double coef_x, coef_y;
 
-			coef_x = mkaul::clamp(std::pow(GRAPH_SCALE_BASE, point.x - point_buffer_.x),
+			coef_x = mkaul::clamp(std::pow(GRAPH_SCALE_BASE, pt.x - pt_buffer_.x),
 				SCALE_MIN / scale_x_buffer_, SCALE_MAX / scale_x_buffer_);
-			coef_y = mkaul::clamp(std::pow(GRAPH_SCALE_BASE, point_buffer_.y - point.y),
+			coef_y = mkaul::clamp(std::pow(GRAPH_SCALE_BASE, pt_buffer_.y - pt.y),
 				SCALE_MIN / scale_y_buffer_, SCALE_MAX / scale_y_buffer_);
 			if (::GetAsyncKeyState(VK_SHIFT) & 0x8000) {
 				coef_x = coef_y = std::max(coef_x, coef_y);
@@ -151,10 +151,10 @@ namespace cved {
 		return center_.y + offset_view_y;
 	}
 
-	mkaul::Point<double> GraphView::client_to_view(const mkaul::Point<float>& point_client, const mkaul::WindowRectangle& rect_wnd) const noexcept {
+	mkaul::Point<double> GraphView::client_to_view(const mkaul::Point<float>& pt_client, const mkaul::WindowRectangle& rect_wnd) const noexcept {
 		return mkaul::Point{
-			client_to_view_x(point_client.x, rect_wnd),
-			client_to_view_y(point_client.y, rect_wnd)
+			client_to_view_x(pt_client.x, rect_wnd),
+			client_to_view_y(pt_client.y, rect_wnd)
 		};
 	}
 
@@ -172,10 +172,10 @@ namespace cved {
 		return center_client_y + offset_client_y;
 	}
 
-	mkaul::Point<float> GraphView::view_to_client(const mkaul::Point<double>& point_view, const mkaul::WindowRectangle& rect_wnd) const noexcept {
+	mkaul::Point<float> GraphView::view_to_client(const mkaul::Point<double>& pt_view, const mkaul::WindowRectangle& rect_wnd) const noexcept {
 		return mkaul::Point{
-			view_to_client_x(point_view.x, rect_wnd),
-			view_to_client_y(point_view.y, rect_wnd)
+			view_to_client_x(pt_view.x, rect_wnd),
+			view_to_client_y(pt_view.y, rect_wnd)
 		};
 	}
 }

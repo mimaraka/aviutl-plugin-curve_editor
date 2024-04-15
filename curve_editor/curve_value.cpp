@@ -4,8 +4,8 @@
 
 namespace cved {
 	ValueCurve::ValueCurve(
-		const mkaul::Point<double>& point_start,
-		const mkaul::Point<double>& point_end
+		const mkaul::Point<double>& pt_start,
+		const mkaul::Point<double>& pt_end
 	)
 	{
 		
@@ -42,12 +42,12 @@ namespace cved {
 	{
 	}
 
-	bool ValueCurve::add_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept
+	bool ValueCurve::add_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept
 	{
 		return false;
 	}
 
-	bool ValueCurve::delete_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept
+	bool ValueCurve::delete_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept
 	{
 		return false;
 	}
@@ -57,18 +57,18 @@ namespace cved {
 		return false;
 	}
 
-	bool ValueCurve::is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept
+	bool ValueCurve::is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept
 	{
 		return false;
 	}
 
-	bool ValueCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept
+	bool ValueCurve::is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept
 	{
 		return false;
 	}
 
 	bool ValueCurve::handle_check_hover(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept
 	{
@@ -76,7 +76,7 @@ namespace cved {
 	}
 
 	bool ValueCurve::handle_update(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept
 	{
@@ -87,21 +87,21 @@ namespace cved {
 	{
 	}
 
-	ValueCurve::ActivePoint ValueCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept
+	ValueCurve::ActivePoint ValueCurve::pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept
 	{
 		return ActivePoint{};
 	}
 
-	ValueCurve::ActivePoint ValueCurve::point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept
+	ValueCurve::ActivePoint ValueCurve::pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept
 	{
 		return ActivePoint{};
 	}
 
-	void ValueCurve::point_end_move() noexcept
+	void ValueCurve::pt_end_move() noexcept
 	{
 	}
 
-	void ValueCurve::point_end_control() noexcept
+	void ValueCurve::pt_end_control() noexcept
 	{
 	}
 }

@@ -10,23 +10,23 @@
 namespace cved {
 	// コンストラクタ
 	BezierCurve::BezierCurve(
-		const mkaul::Point<double>& point_start,
-		const mkaul::Point<double>& point_end,
-		bool point_fixed,
+		const mkaul::Point<double>& pt_start,
+		const mkaul::Point<double>& pt_end,
+		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		const mkaul::Point<double>& handle_left,
 		const mkaul::Point<double>& handle_right
 	) :
-		NumericGraphCurve{ point_start, point_end, point_fixed, prev, next },
+		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
 		handle_left_{ this, BezierHandle::Type::Left, handle_left },
 		handle_right_{ this, BezierHandle::Type::Right, handle_right },
 		handle_buffer_left_{ this, BezierHandle::Type::Left },
 		handle_buffer_right_{ this, BezierHandle::Type::Right },
 		flag_prev_move_symmetrically_{ false }
 	{
-		handle_left_.set_position(point_start + handle_left);
-		handle_right_.set_position(point_end + handle_right);
+		handle_left_.set_position(pt_start + handle_left);
+		handle_right_.set_position(pt_end + handle_right);
 		if (prev) {
 			set_prev(prev);
 		}
@@ -61,12 +61,12 @@ namespace cved {
 
 	// カーブの値を取得
 	double BezierCurve::curve_function(double progress, double start, double end) const noexcept {
-		progress = mkaul::clamp(progress, point_start_.x(), point_end_.x());
+		progress = mkaul::clamp(progress, pt_start().x(), pt_end().x());
 
-		auto pt0 = point_start_.point();
-		auto pt1 = point_start_.point() + handle_left_.point_offset();
-		auto pt2 = point_end_.point() + handle_right_.point_offset();
-		auto pt3 = point_end_.point();
+		auto pt0 = pt_start().pt();
+		auto pt1 = pt_start().pt() + handle_left_.pt_offset();
+		auto pt2 = pt_end().pt() + handle_right_.pt_offset();
+		auto pt3 = pt_end().pt();
 
 		auto func_bezier = [](double v0, double v1, double v2, double v3, double t) {
 			return (v3 + 3. * (v1 - v2) - v0) * t * t * t + (v2 - 2 * v1 + v0) * 3 * t * t + (v1 - v0) * 3 * t + v0;
@@ -155,10 +155,10 @@ namespace cved {
 		double rel_value;
 		// 端点がおかしくなる問題の解決
 		if (mkaul::real_equal(progress, 0.)) {
-			rel_value = point_start_.y();
+			rel_value = pt_start().y();
 		}
 		else if (mkaul::real_equal(progress, 1.)) {
-			rel_value = point_end_.y();
+			rel_value = pt_end().y();
 		}
 		else {
 			rel_value = func_bezier(pt0.y, pt1.y, pt2.y, pt3.y, t);
@@ -168,40 +168,40 @@ namespace cved {
 
 	void BezierCurve::clear() noexcept {
 		handle_left_.set_position(
-			point_start_.point() + mkaul::Point{
-				(point_end_.x() - point_start_.x()) * 0.3,
-				(point_end_.y() - point_start_.y()) * 0.3,
+			pt_start().pt() + mkaul::Point{
+				(pt_end().x() - pt_start().x()) * 0.3,
+				(pt_end().y() - pt_start().y()) * 0.3,
 			}
 		);
 		handle_right_.set_position(
-			point_end_.point() + mkaul::Point{
-				(point_start_.x() - point_end_.x()) * 0.3,
-				(point_start_.y() - point_end_.y()) * 0.3,
+			pt_end().pt() + mkaul::Point{
+				(pt_start().x() - pt_end().x()) * 0.3,
+				(pt_start().y() - pt_end().y()) * 0.3,
 			}
 		);
 	}
 
 	void BezierCurve::reverse() noexcept {
-		auto offset_tmp = handle_left_.point_offset();
-		handle_left_.set_point_offset(-handle_right_.point_offset());
-		handle_right_.set_point_offset(-offset_tmp);
+		auto offset_tmp = handle_left_.pt_offset();
+		handle_left_.set_pt_offset(-handle_right_.pt_offset());
+		handle_right_.set_pt_offset(-offset_tmp);
 		GraphCurve::reverse();
 	}
 
 	void BezierCurve::create_data(std::vector<byte>& data) const noexcept {
 		BezierCurveData data_bezier{
 			.data_graph = GraphCurveData{
-				.start_x = point_start_.x(),
-				.start_y = point_start_.y(),
-				.end_x = point_end_.x(),
-				.end_y = point_end_.y(),
+				.start_x = pt_start().x(),
+				.start_y = pt_start().y(),
+				.end_x = pt_end().x(),
+				.end_y = pt_end().y(),
 				.sampling_resolution = get_sampling_resolution(),
 				.quantization_resolution = get_quantization_resolution()
 			},
-			.left_x = handle_left_.point_offset().x,
-			.left_y = handle_left_.point_offset().y,
-			.right_x = handle_right_.point_offset().x,
-			.right_y = handle_right_.point_offset().y
+			.left_x = handle_left_.pt_offset().x,
+			.left_y = handle_left_.pt_offset().y,
+			.right_x = handle_right_.pt_offset().x,
+			.right_y = handle_right_.pt_offset().y
 		};
 		auto bytes_bezier = reinterpret_cast<byte*>(&data_bezier);
 		size_t n = sizeof(BezierCurveData) / sizeof(byte);
@@ -223,10 +223,10 @@ namespace cved {
 			) {
 			return false;
 		}
-		point_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
-		point_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
-		handle_left_.set_point_offset(mkaul::Point{ p_curve_data->left_x, p_curve_data->left_y });
-		handle_right_.set_point_offset(mkaul::Point{ p_curve_data->right_x, p_curve_data->right_y });
+		pt_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
+		pt_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
+		handle_left_.set_pt_offset(mkaul::Point{ p_curve_data->left_x, p_curve_data->left_y });
+		handle_right_.set_pt_offset(mkaul::Point{ p_curve_data->right_x, p_curve_data->right_y });
 		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
 		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
 		return true;
@@ -238,17 +238,17 @@ namespace cved {
 		int ret;
 		float x1, y1, x2, y2;
 		int ix1, iy1, ix2, iy2;
-		const double width = point_end_.x() - point_start_.x();
-		const double height = point_end_.y() - point_start_.y();
+		const double width = pt_end().x() - pt_start().x();
+		const double height = pt_end().y() - pt_start().y();
 
-		x1 = static_cast<float>(handle_left_.point_offset().x / width);
+		x1 = static_cast<float>(handle_left_.pt_offset().x / width);
 		y1 = mkaul::clamp(
-			static_cast<float>(handle_left_.point_offset().y / height),
+			static_cast<float>(handle_left_.pt_offset().y / height),
 			MIN_Y, MAX_Y
 		);
-		x2 = static_cast<float>(1. + handle_right_.point_offset().x / width);
+		x2 = static_cast<float>(1. + handle_right_.pt_offset().x / width);
 		y2 = mkaul::clamp(
-			static_cast<float>(1. + handle_right_.point_offset().y / height),
+			static_cast<float>(1. + handle_right_.pt_offset().y / height),
 			MIN_Y, MAX_Y
 		);
 
@@ -285,8 +285,8 @@ namespace cved {
 
 		int ix1, iy1, ix2, iy2;
 		double x1, y1, x2, y2;
-		const double width = point_end_.x() - point_start_.x();
-		const double height = point_end_.y() - point_start_.y();
+		const double width = pt_end().x() - pt_start().x();
+		const double height = pt_end().y() - pt_start().y();
 
 		iy2 = (int32_t)(tmp / 6600047);
 		ix2 = (int32_t)((tmp - (int64_t)iy2 * 6600047) / 65347);
@@ -301,15 +301,15 @@ namespace cved {
 
 		handle_left_.set_position(
 			mkaul::Point{
-				point_start_.x() + width * x1,
-				point_start_.y() + height * y1
+				pt_start().x() + width * x1,
+				pt_start().y() + height * y1
 			}
 		);
 
 		handle_right_.set_position(
 			mkaul::Point{
-				point_start_.x() + width * x2,
-				point_start_.y() + height * y2
+				pt_start().x() + width * x2,
+				pt_start().y() + height * y2
 			}
 		);
 
@@ -317,13 +317,13 @@ namespace cved {
 	}
 
 	std::string BezierCurve::make_param() const noexcept {
-		const double width = point_end_.x() - point_start_.x();
-		const double height = point_end_.y() - point_start_.y();
+		const double width = pt_end().x() - pt_start().x();
+		const double height = pt_end().y() - pt_start().y();
 
-		float x1 = static_cast<float>(handle_left_.point_offset().x / width);
-		float y1 = static_cast<float>(handle_left_.point_offset().y / height);
-		float x2 = static_cast<float>(handle_right_.point_offset().x / width + 1.f);
-		float y2 = static_cast<float>(handle_right_.point_offset().y / height + 1.f);
+		float x1 = static_cast<float>(handle_left_.pt_offset().x / width);
+		float y1 = static_cast<float>(handle_left_.pt_offset().y / height);
+		float x2 = static_cast<float>(handle_right_.pt_offset().x / width + 1.f);
+		float y2 = static_cast<float>(handle_right_.pt_offset().y / height + 1.f);
 
 		return std::format("{:.2f}, {:.2f}, {:.2f}, {:.2f}", x1, y1, x2, y2);
 	}
@@ -343,10 +343,10 @@ namespace cved {
 			mkaul::WindowRectangle rect_wnd;
 			p_graphics->get_rect(&rect_wnd);
 
-			auto start_client = view.view_to_client(point_start_.point(), rect_wnd);
-			auto left_client = view.view_to_client(point_start_.point() + handle_left_.point_offset(), rect_wnd);
-			auto right_client = view.view_to_client(point_end_.point() + handle_right_.point_offset(), rect_wnd);
-			auto end_client = view.view_to_client(point_end_.point(), rect_wnd);
+			auto start_client = view.view_to_client(pt_start().pt(), rect_wnd);
+			auto left_client = view.view_to_client(pt_start().pt() + handle_left_.pt_offset(), rect_wnd);
+			auto right_client = view.view_to_client(pt_end().pt() + handle_right_.pt_offset(), rect_wnd);
+			auto end_client = view.view_to_client(pt_end().pt(), rect_wnd);
 
 			auto start_cutoff = start_client;
 			auto left_cutoff = left_client;
@@ -370,41 +370,41 @@ namespace cved {
 		}
 	}
 
-	bool BezierCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
-		return handle_left_.is_hovered(point, view) or handle_right_.is_hovered(point, view);
+	bool BezierCurve::is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		return handle_left_.is_hovered(pt, view) or handle_right_.is_hovered(pt, view);
 	}
 
 	bool BezierCurve::handle_check_hover(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
-		return handle_left_.check_hover(point, view) or handle_right_.check_hover(point, view);
+		return handle_left_.check_hover(pt, view) or handle_right_.check_hover(pt, view);
 	}
 
 	bool BezierCurve::handle_update(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
 		bool ks_move_symmetrically = ::GetAsyncKeyState(VK_CONTROL) & 0x8000 and ::GetAsyncKeyState(VK_SHIFT) & 0x8000;
 		bool ret = false;
 
-		if (handle_left_.update(point, view)) {
+		if (handle_left_.update(pt, view)) {
 			if (ks_move_symmetrically) {
 				// フラグ立ち上がり検出
 				if (!flag_prev_move_symmetrically_) {
 					handle_right_.begin_move(view);
 				}
-				handle_right_.move(point_end_.point() - handle_left_.point_offset(), view, false, true);
+				handle_right_.move(pt_end().pt() - handle_left_.pt_offset(), view, false, true);
 			}
 			ret = true;
 		}
-		else if (handle_right_.update(point, view)) {
+		else if (handle_right_.update(pt, view)) {
 			if (ks_move_symmetrically) {
 				// フラグ立ち上がり検出
 				if (!flag_prev_move_symmetrically_) {
 					handle_left_.begin_move(view);
 				}
-				handle_left_.move(point_start_.point() - handle_right_.point_offset(), view, false, true);
+				handle_left_.move(pt_start().pt() - handle_right_.pt_offset(), view, false, true);
 			}
 			ret = true;
 		}
@@ -418,13 +418,13 @@ namespace cved {
 		handle_right_.end_control();
 	}
 
-	BezierCurve::ActivePoint BezierCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		bool start = point_start_.check_hover(point, view);
-		bool end = point_end_.check_hover(point, view);
+	BezierCurve::ActivePoint BezierCurve::pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
+		bool start = pt_start_.check_hover(pt, view);
+		bool end = pt_end_.check_hover(pt, view);
 
 		if (start or end) {
-			handle_buffer_left_.set_point_offset(handle_left_.point_offset());
-			handle_buffer_right_.set_point_offset(handle_right_.point_offset());
+			handle_buffer_left_.set_pt_offset(handle_left_.pt_offset());
+			handle_buffer_right_.set_pt_offset(handle_right_.pt_offset());
 
 			if (start) return ActivePoint::Start;
 			else return ActivePoint::End;
@@ -432,42 +432,42 @@ namespace cved {
 		else return ActivePoint::Null;
 	}
 
-	bool BezierCurve::point_begin_move(ActivePoint active_point) noexcept {
-		handle_buffer_left_.set_point_offset(handle_left_.point_offset());
-		handle_buffer_right_.set_point_offset(handle_right_.point_offset());
+	bool BezierCurve::pt_begin_move(ActivePoint active_pt) noexcept {
+		handle_buffer_left_.set_pt_offset(handle_left_.pt_offset());
+		handle_buffer_right_.set_pt_offset(handle_right_.pt_offset());
 		return true;
 	}
 
-	BezierCurve::ActivePoint BezierCurve::point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		bool moved_start = point_start_.update(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
-		bool moved_end = point_end_.update(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
+	BezierCurve::ActivePoint BezierCurve::pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
+		bool moved_start = pt_start_.update(mkaul::Point{ std::min(pt.x, pt_end().x()), pt.y });
+		bool moved_end = pt_end_.update(mkaul::Point{ std::max(pt.x, pt_start().x()), pt.y });
 
 		if (moved_start or moved_end) {
-			handle_left_.set_position(point_start_.point() + handle_buffer_left_.point_offset());
-			handle_right_.set_position(point_end_.point() + handle_buffer_right_.point_offset());
+			handle_left_.set_position(pt_start().pt() + handle_buffer_left_.pt_offset());
+			handle_right_.set_position(pt_end().pt() + handle_buffer_right_.pt_offset());
 			if (moved_start) return ActivePoint::Start;
 			else return ActivePoint::End;
 		}
 		else return ActivePoint::Null;
 	}
 
-	bool BezierCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
-		if (GraphCurve::point_move(active_point, point)) {
-			handle_left_.set_position(point_start_.point() + handle_buffer_left_.point_offset());
-			handle_right_.set_position(point_end_.point() + handle_buffer_right_.point_offset());
+	bool BezierCurve::pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept {
+		if (GraphCurve::pt_move(active_pt, pt)) {
+			handle_left_.set_position(pt_start().pt() + handle_buffer_left_.pt_offset());
+			handle_right_.set_position(pt_end().pt() + handle_buffer_right_.pt_offset());
 			return true;
 		}
 		else return false;
 	}
 
-	void BezierCurve::point_end_move() noexcept {
+	void BezierCurve::pt_end_move() noexcept {
 		handle_left_.end_move();
 		handle_right_.end_move();
 	}
 
-	void BezierCurve::point_end_control() noexcept {
+	void BezierCurve::pt_end_control() noexcept {
 		handle_left_.end_control();
 		handle_right_.end_control();
-		GraphCurve::point_end_control();
+		GraphCurve::pt_end_control();
 	}
 }

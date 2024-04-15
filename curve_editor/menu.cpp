@@ -11,12 +11,12 @@ namespace cved {
 	bool Menu::show(
 		HWND hwnd,
 		UINT flags,
-		const mkaul::Point<LONG>* p_custom_point_screen
+		const mkaul::Point<LONG>* p_custom_pt_screen
 	) noexcept {
 		POINT tmp;
 		::GetCursorPos(&tmp);
-		if (p_custom_point_screen) {
-			tmp = p_custom_point_screen->to<POINT>();
+		if (p_custom_pt_screen) {
+			tmp = p_custom_pt_screen->to<POINT>();
 		}
 		update_state();
 		int ret = ::TrackPopupMenu(

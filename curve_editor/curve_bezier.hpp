@@ -20,9 +20,9 @@ namespace cved {
 	public:
 		// コンストラクタ
 		BezierCurve(
-			const mkaul::Point<double>& point_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& point_end = mkaul::Point{ 1., 1. },
-			bool point_fixed = false,
+			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			const mkaul::Point<double>& handle_left = mkaul::Point<double>{},
@@ -63,30 +63,30 @@ namespace cved {
 		// ハンドルを取得 (右)
 		auto handle_right() const noexcept { return const_cast<BezierHandle*>(&handle_right_); }
 
-		bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
+		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
 
 		// ハンドルの移動を開始
 		bool handle_check_hover(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept override;
 		// ハンドルの位置をアップデート
 		bool handle_update(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept override;
 		// ハンドルの移動を終了
 		void handle_end_control() noexcept override;
 
 		// ポイントの移動を開始
-		ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
-		bool point_begin_move(ActivePoint active_point) noexcept override;
+		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
+		bool pt_begin_move(ActivePoint active_pt) noexcept override;
 		// ポイントの位置をアップデート
-		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
+		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
 		// ポイントを強制的に動かす
-		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept override;
+		bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept override;
 		// ポイントの移動を終了
-		void point_end_move() noexcept override;
-		void point_end_control() noexcept override;
+		void pt_end_move() noexcept override;
+		void pt_end_control() noexcept override;
 	};
 }

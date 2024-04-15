@@ -8,29 +8,29 @@
 namespace cved {
 	// コンストラクタ
 	ElasticCurve::ElasticCurve(
-		const mkaul::Point<double>& point_start,
-		const mkaul::Point<double>& point_end,
-		bool point_fixed,
+		const mkaul::Point<double>& pt_start,
+		const mkaul::Point<double>& pt_end,
+		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		double amp,
 		double freq,
 		double decay
 	) : 
-		NumericGraphCurve{ point_start, point_end, point_fixed, prev, next },
+		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
 		handle_amp_{},
 		handle_freq_decay_{},
 		amp_{ amp },
 		freq_{ freq },
 		decay_{ decay }
 	{
-		handle_amp_.from_param(amp, point_start, point_end);
-		handle_freq_decay_.from_param(freq, decay, point_start, point_end);
+		handle_amp_.from_param(amp, pt_start, pt_end);
+		handle_freq_decay_.from_param(freq, decay, pt_start, pt_end);
 	}
 
 	// カーブの値を取得
 	double ElasticCurve::curve_function(double progress, double start, double end) const noexcept {
-		progress = mkaul::clamp((progress - point_start_.x()) / (point_end_.x() - point_start_.x()), 0., 1.);
+		progress = mkaul::clamp((progress - pt_start().x()) / (pt_end().x() - pt_start().x()), 0., 1.);
 
 		if (handle_freq_decay_.is_reverse()) {
 			progress = 1. - progress;
@@ -98,13 +98,13 @@ namespace cved {
 		if (handle_freq_decay_.is_reverse()) {
 			ret = 1. - ret;
 		}
-		return start + (end - start) * (point_start_.y() + (point_end_.y() - point_start_.y()) * ret);
+		return start + (end - start) * (pt_start().y() + (pt_end().y() - pt_start().y()) * ret);
 	}
 
 	// カーブを初期化
 	void ElasticCurve::clear() noexcept {
-		handle_amp_.from_param(DEFAULT_AMP, point_start_, point_end_);
-		handle_freq_decay_.from_param(DEFAULT_FREQ, DEFAULT_DECAY, point_start_, point_end_);
+		handle_amp_.from_param(DEFAULT_AMP, pt_start(), pt_end());
+		handle_freq_decay_.from_param(DEFAULT_FREQ, DEFAULT_DECAY, pt_start(), pt_end());
 		amp_ = DEFAULT_AMP;
 		freq_ = DEFAULT_FREQ;
 		decay_ = DEFAULT_DECAY;
@@ -112,19 +112,19 @@ namespace cved {
 
 	// カーブを反転
 	void ElasticCurve::reverse() noexcept {
-		handle_freq_decay_.reverse(point_start_, point_end_);
+		handle_freq_decay_.reverse(pt_start(), pt_end());
 		GraphCurve::reverse();
-		handle_amp_.from_param(amp_, point_start_, point_end_);
-		handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
+		handle_amp_.from_param(amp_, pt_start(), pt_end());
+		handle_freq_decay_.from_param(freq_, decay_, pt_start(), pt_end());
 	}
 
 	void ElasticCurve::create_data(std::vector<byte>& data) const noexcept {
 		ElasticCurveData data_elastic{
 			.data_graph = GraphCurveData{
-				.start_x = point_start_.x(),
-				.start_y = point_start_.y(),
-				.end_x = point_end_.x(),
-				.end_y = point_end_.y(),
+				.start_x = pt_start().x(),
+				.start_y = pt_start().y(),
+				.end_x = pt_end().x(),
+				.end_y = pt_end().y(),
 				.sampling_resolution = get_sampling_resolution(),
 				.quantization_resolution = get_quantization_resolution()
 			},
@@ -149,13 +149,13 @@ namespace cved {
 			) {
 			return false;
 		}
-		point_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
-		point_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
-		handle_amp_.from_param(p_curve_data->amp, point_start_, point_end_);
-		handle_freq_decay_.from_param(p_curve_data->freq, p_curve_data->decay, point_start_, point_end_);
-		amp_ = handle_amp_.get_amp(point_start_, point_end_);
-		freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
-		decay_ = handle_freq_decay_.get_decay(point_start_, point_end_);
+		pt_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
+		pt_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
+		handle_amp_.from_param(p_curve_data->amp, pt_start(), pt_end());
+		handle_freq_decay_.from_param(p_curve_data->freq, p_curve_data->decay, pt_start(), pt_end());
+		amp_ = handle_amp_.get_amp(pt_start(), pt_end());
+		freq_ = handle_freq_decay_.get_freq(pt_start(), pt_end());
+		decay_ = handle_freq_decay_.get_decay(pt_start(), pt_end());
 		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
 		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
 		return true;
@@ -186,11 +186,11 @@ namespace cved {
 		int number;
 
 		if (mkaul::in_range(code, -10211201, -1, true)) {
-			handle_freq_decay_.set_is_reverse(true, point_start_, point_end_);
+			handle_freq_decay_.set_is_reverse(true, pt_start(), pt_end());
 			number = -code - 1;
 		}
 		else if (mkaul::in_range(code, 1, 10211201, true)) {
-			handle_freq_decay_.set_is_reverse(false, point_start_, point_end_);
+			handle_freq_decay_.set_is_reverse(false, pt_start(), pt_end());
 			number = code - 1;
 		}
 		else return false;
@@ -204,8 +204,8 @@ namespace cved {
 		decay_ = -10. * std::log(-k * 0.01 + 1.) + 1.;
 		amp_ = std::clamp(a, 0, 100) * 0.01;
 
-		handle_amp_.from_param(amp_, point_start_, point_end_);
-		handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
+		handle_amp_.from_param(amp_, pt_start(), pt_end());
+		handle_freq_decay_.from_param(freq_, decay_, pt_start(), pt_end());
 
 		return true;
 	}
@@ -225,8 +225,8 @@ namespace cved {
 			mkaul::WindowRectangle rect_wnd;
 			p_graphics->get_rect(&rect_wnd);
 
-			auto amp_left_client = view.view_to_client(handle_amp_.point_left().point(), rect_wnd);
-			auto amp_right_client = view.view_to_client(handle_amp_.point_right().point(), rect_wnd);
+			auto amp_left_client = view.view_to_client(handle_amp_.pt_left(), rect_wnd);
+			auto amp_right_client = view.view_to_client(handle_amp_.pt_right(), rect_wnd);
 			auto tmp_amp_left = amp_left_client;
 			auto tmp_amp_right = amp_right_client;
 
@@ -247,8 +247,8 @@ namespace cved {
 			);
 
 			// FreqDecayHandleの描画
-			auto freq_decay_client_root = view.view_to_client(mkaul::Point{ handle_freq_decay_.point().x(), point_end_.y() }, rect_wnd);
-			auto freq_decay_client_tip = view.view_to_client(handle_freq_decay_.point().point(), rect_wnd);
+			auto freq_decay_client_root = view.view_to_client(mkaul::Point{ handle_freq_decay_.pt().x, pt_end().y() }, rect_wnd);
+			auto freq_decay_client_tip = view.view_to_client(handle_freq_decay_.pt(), rect_wnd);
 			auto tmp_freq_decay_root = freq_decay_client_root;
 			auto tmp_freq_decay_tip = freq_decay_client_tip;
 
@@ -270,24 +270,24 @@ namespace cved {
 	}
 
 	// カーソルがハンドルにホバーしているかどうか
-	bool ElasticCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
-		return handle_amp_.is_hovered(point, view) or handle_freq_decay_.is_hovered(point, view);
+	bool ElasticCurve::is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		return handle_amp_.is_hovered(pt, view) or handle_freq_decay_.is_hovered(pt, view);
 	}
 
 	// カーソルがハンドルにホバーしているかをチェックし、操作を開始
 	bool ElasticCurve::handle_check_hover(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
-		return handle_amp_.check_hover(point, view) or handle_freq_decay_.check_hover(point, view);
+		return handle_amp_.check_hover(pt, view) or handle_freq_decay_.check_hover(pt, view);
 	}
 
 	// ハンドルの位置をアップデート
-	bool ElasticCurve::handle_update(const mkaul::Point<double>& point, const GraphView&) noexcept {
-		if (handle_amp_.update(point, point_start_, point_end_) or handle_freq_decay_.update(point, point_start_, point_end_)) {
-			amp_ = handle_amp_.get_amp(point_start_, point_end_);
-			freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
-			decay_ = handle_freq_decay_.get_decay(point_start_, point_end_);
+	bool ElasticCurve::handle_update(const mkaul::Point<double>& pt, const GraphView&) noexcept {
+		if (handle_amp_.update(pt, pt_start(), pt_end()) or handle_freq_decay_.update(pt, pt_start(), pt_end())) {
+			amp_ = handle_amp_.get_amp(pt_start(), pt_end());
+			freq_ = handle_freq_decay_.get_freq(pt_start(), pt_end());
+			decay_ = handle_freq_decay_.get_decay(pt_start(), pt_end());
 			return true;
 		}
 		else return false;
@@ -300,14 +300,14 @@ namespace cved {
 	}
 
 	// カーソルがポイントにホバーしているかをチェックし、操作を開始
-	ElasticCurve::ActivePoint ElasticCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		bool start = point_start_.check_hover(point, view);
-		bool end = point_end_.check_hover(point, view);
+	ElasticCurve::ActivePoint ElasticCurve::pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
+		bool start = pt_start_.check_hover(pt, view);
+		bool end = pt_end_.check_hover(pt, view);
 		
 		if (start or end) {
-			amp_ = handle_amp_.get_amp(point_start_, point_end_);
-			freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
-			decay_ = handle_freq_decay_.get_decay(point_start_, point_end_);
+			amp_ = handle_amp_.get_amp(pt_start(), pt_end());
+			freq_ = handle_freq_decay_.get_freq(pt_start(), pt_end());
+			decay_ = handle_freq_decay_.get_decay(pt_start(), pt_end());
 			if (start) return ActivePoint::Start;
 			else return ActivePoint::End;
 		}
@@ -315,21 +315,21 @@ namespace cved {
 	}
 
 	// ポイントの移動を開始
-	bool ElasticCurve::point_begin_move(ActivePoint active_point) noexcept {
-		amp_ = handle_amp_.get_amp(point_start_, point_end_);
-		freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
-		decay_ = handle_freq_decay_.get_decay(point_start_, point_end_);
+	bool ElasticCurve::pt_begin_move(ActivePoint active_pt) noexcept {
+		amp_ = handle_amp_.get_amp(pt_start(), pt_end());
+		freq_ = handle_freq_decay_.get_freq(pt_start(), pt_end());
+		decay_ = handle_freq_decay_.get_decay(pt_start(), pt_end());
 		return true;
 	}
 
 	// ポイントを位置をアップデート
-	ElasticCurve::ActivePoint ElasticCurve::point_update(const mkaul::Point<double>& point, const GraphView&) noexcept {
-		bool moved_start = point_start_.update(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
-		bool moved_end = point_end_.update(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
+	ElasticCurve::ActivePoint ElasticCurve::pt_update(const mkaul::Point<double>& pt, const GraphView&) noexcept {
+		bool moved_start = pt_start_.update(mkaul::Point{ std::min(pt.x, pt_end().x()), pt.y });
+		bool moved_end = pt_end_.update(mkaul::Point{ std::max(pt.x, pt_start().x()), pt.y });
 
 		if (moved_start or moved_end) {
-			handle_amp_.from_param(amp_, point_start_, point_end_);
-			handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
+			handle_amp_.from_param(amp_, pt_start(), pt_end());
+			handle_freq_decay_.from_param(freq_, decay_, pt_start(), pt_end());
 			if (moved_start) return ActivePoint::Start;
 			else return ActivePoint::End;
 		}
@@ -337,10 +337,10 @@ namespace cved {
 	}
 
 	// ポイントを強制的に動かす
-	bool ElasticCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
-		if (GraphCurve::point_move(active_point, point)) {
-			handle_amp_.from_param(amp_, point_start_, point_end_);
-			handle_freq_decay_.from_param(freq_, decay_, point_start_, point_end_);
+	bool ElasticCurve::pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept {
+		if (GraphCurve::pt_move(active_pt, pt)) {
+			handle_amp_.from_param(amp_, pt_start(), pt_end());
+			handle_freq_decay_.from_param(freq_, decay_, pt_start(), pt_end());
 			return true;
 		}
 		else return false;

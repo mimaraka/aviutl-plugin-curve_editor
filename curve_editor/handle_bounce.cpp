@@ -3,73 +3,73 @@
 
 
 namespace cved {
-	void BounceHandle::reverse(const ControlPoint& point_start, const ControlPoint& point_end) noexcept {
+	void BounceHandle::reverse(const ControlPoint& pt_start, const ControlPoint& pt_end) noexcept {
 		is_reverse_ = !is_reverse_;
 		move(
 			mkaul::Point{
-				point_start.x() + point_end.x() - point_.x(),
-				point_start.y() + point_end.y() - point_.y()
-			}, point_start, point_end
+				pt_start.x() + pt_end.x() - ctl_pt_.x(),
+				pt_start.y() + pt_end.y() - ctl_pt_.y()
+			}, pt_start, pt_end
 		);
 	}
 
-	void BounceHandle::set_is_reverse(bool is_reverse, const ControlPoint& point_start, const ControlPoint& point_end) noexcept {
+	void BounceHandle::set_is_reverse(bool is_reverse, const ControlPoint& pt_start, const ControlPoint& pt_end) noexcept {
 		if (is_reverse_ != is_reverse) {
-			reverse(point_start, point_end);
+			reverse(pt_start, pt_end);
 		}
 	}
 
-	bool BounceHandle::is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
-		return point_.is_hovered(point, view);
+	bool BounceHandle::is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		return ctl_pt_.is_hovered(pt, view);
 	}
 
-	bool BounceHandle::check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
-		return point_.check_hover(point, view);
+	bool BounceHandle::check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
+		return ctl_pt_.check_hover(pt, view);
 	}
 
 	bool BounceHandle::update(
-		const mkaul::Point<double>& point,
-		const ControlPoint& point_start,
-		const ControlPoint& point_end
+		const mkaul::Point<double>& pt,
+		const ControlPoint& pt_start,
+		const ControlPoint& pt_end
 	) noexcept {
-		return point_.update(
+		return ctl_pt_.update(
 			mkaul::Point{
-				mkaul::clamp(point.x, point_start.x(), point_end.x()),
-				mkaul::clamp(point.y, point_start.y(), point_end.y())
+				mkaul::clamp(pt.x, pt_start.x(), pt_end.x()),
+				mkaul::clamp(pt.y, pt_start.y(), pt_end.y())
 			}
 		);
 	}
 
 	void BounceHandle::move(
-		const mkaul::Point<double>& point,
-		const ControlPoint& point_start,
-		const ControlPoint& point_end
+		const mkaul::Point<double>& pt,
+		const ControlPoint& pt_start,
+		const ControlPoint& pt_end
 	) noexcept {
-		point_.move(
+		ctl_pt_.move(
 			mkaul::Point{
-				mkaul::clamp(point.x, point_start.x(), point_end.x()),
-				mkaul::clamp(point.y, point_start.y(), point_end.y())
+				mkaul::clamp(pt.x, pt_start.x(), pt_end.x()),
+				mkaul::clamp(pt.y, pt_start.y(), pt_end.y())
 			}
 		);
 	}
 
-	double BounceHandle::get_cor(const ControlPoint& point_start, const ControlPoint& point_end) const noexcept {
-		double y = (point_.y() - point_start.y()) / (point_end.y() - point_start.y());
+	double BounceHandle::get_cor(const ControlPoint& pt_start, const ControlPoint& pt_end) const noexcept {
+		double y = (ctl_pt_.y() - pt_start.y()) / (pt_end.y() - pt_start.y());
 		if (is_reverse_) {
 			y = 1. - y;
 		}
 		return std::sqrt(1. - mkaul::clamp(y, 0.001, 1.));
 	}
 
-	double BounceHandle::get_period(const ControlPoint& point_start, const ControlPoint& point_end) const noexcept {
-		double x = (point_.x() - point_start.x()) / (point_end.x() - point_start.x());
+	double BounceHandle::get_period(const ControlPoint& pt_start, const ControlPoint& pt_end) const noexcept {
+		double x = (ctl_pt_.x() - pt_start.x()) / (pt_end.x() - pt_start.x());
 		if (is_reverse_) {
 			x = 1. - x;
 		}
-		return 2. * std::clamp(x, 0.001, 1.) / (get_cor(point_start, point_end) + 1.);
+		return 2. * std::clamp(x, 0.001, 1.) / (get_cor(pt_start, pt_end) + 1.);
 	}
 
-	void BounceHandle::from_param(double cor, double period, const ControlPoint& point_start, const ControlPoint& point_end) noexcept {
+	void BounceHandle::from_param(double cor, double period, const ControlPoint& pt_start, const ControlPoint& pt_end) noexcept {
 		double x = mkaul::clamp(period * (cor + 1.) * 0.5, 0., 1.);
 		double y = mkaul::clamp(1. - cor * cor, 0., 1.);
 		if (is_reverse_) {
@@ -79,13 +79,13 @@ namespace cved {
 
 		move(
 			mkaul::Point{
-				point_start.x() + x * (point_end.x() - point_start.x()),
-				point_start.y() + y * (point_end.y() - point_start.y())
-			}, point_start, point_end
+				pt_start.x() + x * (pt_end.x() - pt_start.x()),
+				pt_start.y() + y * (pt_end.y() - pt_start.y())
+			}, pt_start, pt_end
 		);
 	}
 	
 	void BounceHandle::end_control() noexcept {
-		point_.end_control();
+		ctl_pt_.end_control();
 	}
 }

@@ -14,9 +14,9 @@ namespace cved {
 		// 量子化
 		if (0u < quantization_resolution_) {
 			double tmp1 = (ret - start) / (end - start);
-			double tmp2 = (tmp1 - point_start_.y()) / (point_end_.y() - point_start_.y());
+			double tmp2 = (tmp1 - pt_start_.y()) / (pt_end_.y() - pt_start_.y());
 			double tmp3 = std::floor(tmp2 * (double)quantization_resolution_) / (double)quantization_resolution_;
-			double tmp4 = point_start_.y() + tmp3 * (point_end_.y() - point_start_.y());
+			double tmp4 = pt_start_.y() + tmp3 * (pt_end_.y() - pt_start_.y());
 			ret = start + tmp4 * (end - start);
 		}
 		return ret;
@@ -58,7 +58,7 @@ namespace cved {
 		}
 	}
 
-	void GraphCurve::draw_point(
+	void GraphCurve::draw_pt(
 		mkaul::graphics::Graphics* p_graphics,
 		const View& view,
 		float radius,
@@ -67,8 +67,8 @@ namespace cved {
 		mkaul::WindowRectangle rect_wnd;
 		p_graphics->get_rect(&rect_wnd);
 
-		auto client_start = view.view_to_client(point_start_.point(), rect_wnd);
-		auto client_end = view.view_to_client(point_end_.point(), rect_wnd);
+		auto client_start = view.view_to_client(pt_start_.pt(), rect_wnd);
+		auto client_end = view.view_to_client(pt_end_.pt(), rect_wnd);
 		p_graphics->fill_ellipse(
 			client_start,
 			radius, radius, color
@@ -80,27 +80,27 @@ namespace cved {
 	}
 
 	void GraphCurve::reverse() noexcept {
-		auto point_tmp = point_start_.point();
-		point_start_ = mkaul::Point{ 1., 1. } - point_end_.point();
-		point_end_ = mkaul::Point{ 1., 1. } - point_tmp;
+		auto pt_tmp = pt_start_.pt();
+		pt_start_ = mkaul::Point{ 1., 1. } - pt_end_.pt();
+		pt_end_ = mkaul::Point{ 1., 1. } - pt_tmp;
 	}
 
-	bool GraphCurve::is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
-		return is_point_hovered(point, view) or is_handle_hovered(point, view);
+	bool GraphCurve::is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		return is_pt_hovered(pt, view) or is_handle_hovered(pt, view);
 	}
 
-	bool GraphCurve::is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
-		return point_start_.is_hovered(point, view) or point_end_.is_hovered(point, view);
+	bool GraphCurve::is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		return pt_start_.is_hovered(pt, view) or pt_end_.is_hovered(pt, view);
 	}
 
-	bool GraphCurve::point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept {
-		switch (active_point) {
+	bool GraphCurve::pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept {
+		switch (active_pt) {
 		case ActivePoint::Start:
-			point_start_.move(mkaul::Point{ std::min(point.x, point_end_.x()), point.y });
+			pt_start_.move(mkaul::Point{ std::min(pt.x, pt_end_.x()), pt.y });
 			break;
 
 		case ActivePoint::End:
-			point_end_.move(mkaul::Point{ std::max(point.x, point_start_.x()), point.y });
+			pt_end_.move(mkaul::Point{ std::max(pt.x, pt_start_.x()), pt.y });
 			break;
 
 		default:
@@ -109,8 +109,8 @@ namespace cved {
 		return true;
 	}
 
-	void GraphCurve::point_end_control() noexcept {
-		point_start_.end_control();
-		point_end_.end_control();
+	void GraphCurve::pt_end_control() noexcept {
+		pt_start_.end_control();
+		pt_end_.end_control();
 	}
 }

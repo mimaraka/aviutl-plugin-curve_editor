@@ -15,8 +15,8 @@ namespace cved {
 		uint32_t quantization_resolution_ = 0u;
 
 	protected:
-		ControlPoint point_start_;
-		ControlPoint point_end_;
+		ControlPoint pt_start_;
+		ControlPoint pt_end_;
 
 	public:
 		enum class ActivePoint {
@@ -26,14 +26,14 @@ namespace cved {
 		};
 
 		GraphCurve(
-			const mkaul::Point<double>& point_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& point_end = mkaul::Point{ 1., 1. },
-			bool point_fixed = false,
+			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr
 		) :
-			point_start_{ point_start, point_fixed },
-			point_end_{ point_end, point_fixed },
+			pt_start_{ pt_start, pt_fixed },
+			pt_end_{ pt_end, pt_fixed },
 			prev_{prev},
 			next_{next}
 		{}
@@ -70,39 +70,39 @@ namespace cved {
 			const mkaul::ColorF& color = mkaul::ColorF{}
 		) const noexcept = 0;
 
-		void draw_point(
+		void draw_pt(
 			mkaul::graphics::Graphics* p_graphics,
 			const View& view,
 			float radius,
 			const mkaul::ColorF& color = mkaul::ColorF{}
 		) const noexcept;
 
-		const auto& point_start() const noexcept { return point_start_; }
-		const auto& point_end() const noexcept { return point_end_; }
+		const auto& pt_start() const noexcept { return pt_start_; }
+		const auto& pt_end() const noexcept { return pt_end_; }
 
 		virtual void reverse() noexcept;
 
-		bool is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
-		virtual bool is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
-		virtual bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept = 0;
+		bool is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
+		virtual bool is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
+		virtual bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept = 0;
 
 		virtual bool handle_check_hover(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept = 0;
 
 		virtual bool handle_update(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept = 0;
 
 		virtual void handle_end_control() noexcept = 0;
 
-		virtual ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept = 0;
-		virtual bool point_begin_move(ActivePoint active_point) noexcept = 0;
-		virtual ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept = 0;
-		virtual bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept;
-		virtual void point_end_move() noexcept {};
-		virtual void point_end_control() noexcept;
+		virtual ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept = 0;
+		virtual bool pt_begin_move(ActivePoint active_pt) noexcept = 0;
+		virtual ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept = 0;
+		virtual bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept;
+		virtual void pt_end_move() noexcept {};
+		virtual void pt_end_control() noexcept;
 	};
 }
