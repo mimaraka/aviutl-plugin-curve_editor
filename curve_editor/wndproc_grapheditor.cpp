@@ -19,7 +19,6 @@ namespace cved {
 	{
 		using StringId = global::StringTable::StringId;
 
-		constexpr float BOX_WIDTH = 20.f;
 		constexpr float CURVE_THICKNESS_VELOCITY = 1.f;
 		constexpr float HANDLE_THICKNESS = 2.f;
 		constexpr float POINT_RADIUS = 4.4f;
@@ -39,8 +38,10 @@ namespace cved {
 		auto& editor = global::editor.editor_graph();
 		const auto& config = global::config;
 
-		RECT rect_wnd;
-		::GetClientRect(hwnd, &rect_wnd);
+		RECT rect_tmp;
+		::GetClientRect(hwnd, &rect_tmp);
+		mkaul::WindowRectangle rect_wnd{ rect_tmp };
+
 
 		// pointer
 		using namespace mkaul::graphics;
@@ -185,12 +186,12 @@ namespace cved {
 
 			// Auto Apply
 			if (global::config.get_auto_apply() and !editor.numeric_curve()) {
-				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::RedrawAviutl, NULL);
+				::SendMessageA(::GetParent(global::window_main.get_hwnd()), WM_COMMAND, (WPARAM)WindowCommand::RedrawAviutl, NULL);
 			}
 
 			// パラメータボタンの更新
 			if (editor.numeric_curve()) {
-				global::window_toolbar.send_command((WPARAM)WindowCommand::UpdateParam);
+				global::window_toolbar.send_command((WPARAM)WindowCommand::UpdateParamPanel);
 			}
 
 			view.end_move();
@@ -304,7 +305,7 @@ namespace cved {
 							menu_bezier_handle.show(p_curve_bezier->handle_right(), view, hwnd);
 						}
 						return 0;
-						}
+					}
 					// カーブの始点にホバーしていた場合
 					if ((*it)->point_start().is_hovered(pt_view, view)) {
 						size_t idx = std::distance(p_curve_normal->get_curve_segments().begin(), it);
@@ -318,7 +319,6 @@ namespace cved {
 
 			// コマンド
 		case WM_COMMAND:
-			if (menu_graph.callback(wparam, lparam)) return 0;
 			switch (wparam) {
 			case (UINT)WindowCommand::Update:
 				::InvalidateRect(hwnd, NULL, FALSE);
