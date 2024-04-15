@@ -2,6 +2,7 @@
 #include "actctx_manager.hpp"
 #include "config.hpp"
 #include "constants.hpp"
+#include "curve_editor.hpp"
 #include "global.hpp"
 #include "wndproc_main.hpp"
 
@@ -13,38 +14,42 @@ namespace cved {
 		switch (wparam) {
 			// [R]
 		case 82:
-			if (global::window_editor.get_hwnd())
-				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Reverse, 0);
+			global::window_grapheditor.send_command((WPARAM)WindowCommand::Reverse);
 			return 0;
 
 			// [C]
 		case 67:
-			if (::GetAsyncKeyState(VK_CONTROL) < 0 and global::config.get_edit_mode() == EditMode::Bezier)
-				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Copy, 0);
+			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000 and global::editor.editor_graph().numeric_curve()) {
+				global::window_toolbar.send_command((WPARAM)WindowCommand::Copy);
+			}
 			return 0;
 
 			// [S]
 		case 83:
-			if (::GetAsyncKeyState(VK_CONTROL) < 0)
-				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Save, 0);
+			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000) {
+				global::window_toolbar.send_command((WPARAM)WindowCommand::Save);
+			}
 			return 0;
 
 			// [<]
 		case VK_LEFT:
-			if (global::config.get_edit_mode() == EditMode::Normal and global::window_toolbar.get_hwnd())
-				::SendMessageA(global::window_toolbar.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::IdBack, 0);
+			if (!global::editor.editor_graph().numeric_curve()) {
+				global::window_toolbar.send_command((WPARAM)WindowCommand::IdBack);
+			}
 			return 0;
 
 			// [>]
 		case VK_RIGHT:
-			if (global::config.get_edit_mode() == EditMode::Normal and global::window_toolbar.get_hwnd())
-				::SendMessageA(global::window_toolbar.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::IdNext, 0);
+			if (!global::editor.editor_graph().numeric_curve()) {
+				global::window_toolbar.send_command((WPARAM)WindowCommand::IdNext);
+			}
 			return 0;
 
 			// [Home]
 		case VK_HOME:
-			if (global::window_editor.get_hwnd())
-				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Fit, 0);
+			if (global::editor.editor_graph().current_curve()) {
+				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
+			}
 			return 0;
 
 			// [A]
@@ -54,8 +59,7 @@ namespace cved {
 
 			// [Delete]
 		case VK_DELETE:
-			if (global::window_editor.get_hwnd())
-				::SendMessageA(global::window_editor.get_hwnd(), WM_COMMAND, (WPARAM)WindowCommand::Clear, 0);
+			global::window_toolbar.send_command((WPARAM)WindowCommand::Clear);
 			return 0;
 		}
 		return 0;
