@@ -65,7 +65,7 @@ namespace cved {
 
 		case WM_PAINT:
 		{
-			RECT rect_color = { 160, 29, 188, 42 };
+			RECT rect_color = { 160, 28, 188, 41 };
 			::MapDialogRect(hwnd, &rect_color);
 			PAINTSTRUCT ps;
 			HDC hdc = ::BeginPaint(hwnd, &ps);
