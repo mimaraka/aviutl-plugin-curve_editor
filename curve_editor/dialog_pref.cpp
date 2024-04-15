@@ -40,7 +40,7 @@ namespace cved {
 
 	void PrefDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_list_categories_ = ::GetDlgItem(hwnd, IDC_LIST_CATEGORY);
-		RECT rect_child = { 100, 7, 400, 217 };
+		RECT rect_child = { 100, 7, 400, 207 };
 		::MapDialogRect(hwnd, &rect_child);
 
 		for (auto& category : categories_) {
@@ -116,11 +116,11 @@ namespace cved {
 			case IDOK:
 				save_config();
 				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
-				::EndDialog(hwnd, 1);
+				::EndDialog(hwnd, IDOK);
 				return TRUE;
 
 			case IDCANCEL:
-				::EndDialog(hwnd, 1);
+				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;
 
 			case IDC_BUTTON_APPLY:
