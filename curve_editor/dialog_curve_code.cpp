@@ -67,13 +67,14 @@ namespace cved {
 					}
 				}
 				else {
-					::EndDialog(hwnd, 1);
+					::EndDialog(hwnd, IDOK);
 					return TRUE;
 				}
+				return TRUE;
 			}
 
 			case IDCANCEL:
-				::EndDialog(hwnd, 1);
+				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;
 			}
 			break;

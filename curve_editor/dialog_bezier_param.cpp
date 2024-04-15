@@ -9,6 +9,7 @@ namespace cved {
 
 	void BezierParamDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_edit_ = ::GetDlgItem(hwnd, IDC_EDIT_BEZIER_PARAM);
+		::SetFocus(hwnd_edit_);
 	}
 
 
@@ -19,6 +20,16 @@ namespace cved {
 			return TRUE;
 
 		case WM_COMMAND:
+			switch (LOWORD(wparam)) {
+			case IDOK:
+				// Get the text from the edit control
+				::EndDialog(hwnd, IDOK);
+				break;
+
+			case IDCANCEL:
+				::EndDialog(hwnd, IDCANCEL);
+				break;
+			}
 			break;
 		}
 		return FALSE;
