@@ -16,7 +16,9 @@ namespace cved {
 				.start_x = point_start_.x(),
 				.start_y = point_start_.y(),
 				.end_x = point_end_.x(),
-				.end_y = point_end_.y()
+				.end_y = point_end_.y(),
+				.sampling_resolution = get_sampling_resolution(),
+				.quantization_resolution = get_quantization_resolution()
 			}
 		};
 		auto bytes_linear = reinterpret_cast<byte*>(&data_linear);
@@ -38,6 +40,8 @@ namespace cved {
 		}
 		point_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
 		point_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
+		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
+		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
 		return true;
 	}
 

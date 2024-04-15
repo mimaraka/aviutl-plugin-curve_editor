@@ -71,12 +71,27 @@ namespace cved {
 			p_curve->create_data(tmp);
 			std::copy(tmp.begin(), tmp.end(), std::back_inserter(data));
 		}
+		GraphCurveData data_graph = {
+			.start_x = point_start().x(),
+			.start_y = point_start().y(),
+			.end_x = point_end().x(),
+			.end_y = point_end().y(),
+			.sampling_resolution = get_sampling_resolution(),
+			.quantization_resolution = get_quantization_resolution()
+		};
+		auto bytes_graph = reinterpret_cast<byte*>(&data_graph);
+		size_t n = sizeof(GraphCurveData) / sizeof(byte);
+		data.insert(data.begin(), bytes_graph, bytes_graph + n);
 	}
 
 	// カーブのデータを読み込み
 	bool NormalCurve::load_data(const byte* data, size_t size) noexcept {
 		std::vector<std::unique_ptr<GraphCurve>> vec_tmp;
-		for (size_t idx = 0u; idx < size;) {
+		auto data_graph = reinterpret_cast<const GraphCurveData*>(data);
+		set_sampling_resolution(data_graph->sampling_resolution);
+		set_quantization_resolution(data_graph->quantization_resolution);
+
+		for (size_t idx = sizeof(GraphCurveData) / sizeof(byte); idx < size;) {
 			std::unique_ptr<GraphCurve> new_curve;
 
 			switch (*(data + idx)) {

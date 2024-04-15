@@ -124,7 +124,9 @@ namespace cved {
 				.start_x = point_start_.x(),
 				.start_y = point_start_.y(),
 				.end_x = point_end_.x(),
-				.end_y = point_end_.y()
+				.end_y = point_end_.y(),
+				.sampling_resolution = get_sampling_resolution(),
+				.quantization_resolution = get_quantization_resolution()
 			},
 			.amp = amp_,
 			.freq = freq_,
@@ -154,6 +156,8 @@ namespace cved {
 		amp_ = handle_amp_.get_amp(point_start_, point_end_);
 		freq_ = handle_freq_decay_.get_freq(point_start_, point_end_);
 		decay_ = handle_freq_decay_.get_decay(point_start_, point_end_);
+		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
+		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
 		return true;
 	}
 

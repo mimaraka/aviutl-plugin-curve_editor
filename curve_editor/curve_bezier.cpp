@@ -194,7 +194,9 @@ namespace cved {
 				.start_x = point_start_.x(),
 				.start_y = point_start_.y(),
 				.end_x = point_end_.x(),
-				.end_y = point_end_.y()
+				.end_y = point_end_.y(),
+				.sampling_resolution = get_sampling_resolution(),
+				.quantization_resolution = get_quantization_resolution()
 			},
 			.left_x = handle_left_.point_offset().x,
 			.left_y = handle_left_.point_offset().y,
@@ -225,6 +227,8 @@ namespace cved {
 		point_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
 		handle_left_.set_point_offset(mkaul::Point{ p_curve_data->left_x, p_curve_data->left_y });
 		handle_right_.set_point_offset(mkaul::Point{ p_curve_data->right_x, p_curve_data->right_y });
+		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
+		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
 		return true;
 	}
 

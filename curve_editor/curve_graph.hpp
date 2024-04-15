@@ -9,13 +9,14 @@
 namespace cved {
 	// カーブ(グラフ)
 	class GraphCurve : public Curve {
-	protected:
-		ControlPoint point_start_;
-		ControlPoint point_end_;
 		GraphCurve* prev_;
 		GraphCurve* next_;
 		uint32_t sampling_resolution_ = 0u;
 		uint32_t quantization_resolution_ = 0u;
+
+	protected:
+		ControlPoint point_start_;
+		ControlPoint point_end_;
 
 	public:
 		enum class ActivePoint {
