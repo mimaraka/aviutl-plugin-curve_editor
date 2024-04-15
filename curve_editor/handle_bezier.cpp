@@ -74,12 +74,12 @@ namespace cved {
 	void BezierHandle::snap() noexcept {
 		double distance_start, distance_end;
 		if (type_ == Type::Left) {
-			distance_start = std::abs(point_offset_.y());
-			distance_end = std::abs(p_curve_->point_end().y() - p_curve_->point_start().y() - point_offset_.y());
+			distance_start = std::abs(pt_offset_.y());
+			distance_end = std::abs(p_curve_->pt_end().y() - p_curve_->pt_start().y() - pt_offset_.y());
 		}
 		else {
-			distance_start = std::abs(p_curve_->point_end().y() - p_curve_->point_start().y() + point_offset_.y());
-			distance_end = std::abs(point_offset_.y());
+			distance_start = std::abs(p_curve_->pt_end().y() - p_curve_->pt_start().y() + pt_offset_.y());
+			distance_end = std::abs(pt_offset_.y());
 		}
 		snap_state_ = distance_end <= distance_start ? SnapState::SnapEnd : SnapState::SnapStart;
 	}
@@ -115,16 +115,16 @@ namespace cved {
 	void BezierHandle::adjust_angle(const GraphView& view) noexcept {
 		double length = get_handle_length(view);
 		const GraphCurve* p_curve_neighbor = nullptr;
-		mkaul::Point<double> point_dest;
+		mkaul::Point<double> pt_dest;
 
 		if (type_ == Type::Left) {
 			p_curve_neighbor = p_curve_->prev();
 			if (!p_curve_neighbor) return;
-			auto point_origin = p_curve_->point_start().point();
-			double slope = p_curve_neighbor->get_velocity(point_origin.x, 0., 1.);
+			auto pt_origin = p_curve_->pt_start().pt();
+			double slope = p_curve_neighbor->get_velocity(pt_origin.x, 0., 1.);
 			double angle = std::atan(slope * view.scale_y() / view.scale_x());
-			point_dest = get_dest_point(
-				point_origin + mkaul::Point<double>{
+			pt_dest = get_dest_pt(
+				pt_origin + mkaul::Point<double>{
 					length * std::cos(angle) / view.scale_x(),
 					length * std::sin(angle) / view.scale_y()
 				},
@@ -135,12 +135,12 @@ namespace cved {
 		else {
 			p_curve_neighbor = p_curve_->next();
 			if (!p_curve_neighbor) return;
-			auto point_origin = p_curve_->point_end().point();
+			auto pt_origin = p_curve_->pt_end().pt();
 			// TODO: この0.000001は適当な値
-			double slope = p_curve_neighbor->get_velocity(point_origin.x + 0.000001, 0., 1.);
+			double slope = p_curve_neighbor->get_velocity(pt_origin.x + 0.000001, 0., 1.);
 			double angle = std::atan(slope * view.scale_y() / view.scale_x());
-			point_dest = get_dest_point(
-				point_origin - mkaul::Point<double>{
+			pt_dest = get_dest_pt(
+				pt_origin - mkaul::Point<double>{
 					length * std::cos(angle) / view.scale_x(),
 					length * std::sin(angle) / view.scale_y()
 				},
@@ -148,143 +148,143 @@ namespace cved {
 				true
 			);
 		}
-		point_offset_.move(point_dest);
+		pt_offset_.move(pt_dest);
 	}
 
 	// 始点に移動
 	void BezierHandle::move_to_root() noexcept {
 		if (type_ == Type::Left) {
-			point_offset_.move(p_curve_->point_start().point());
+			pt_offset_.move(p_curve_->pt_start().pt());
 		}
 		else {
-			point_offset_.move(p_curve_->point_end().point());
+			pt_offset_.move(p_curve_->pt_end().pt());
 		}
 	}
 
 	// ハンドルの角度を取得
 	double BezierHandle::get_handle_angle(const GraphView& view) const noexcept {
-		return std::atan2(point_offset_.y() * view.scale_y(), point_offset_.x() * view.scale_x());
+		return std::atan2(pt_offset_.y() * view.scale_y(), pt_offset_.x() * view.scale_x());
 	}
 
 	// ハンドルの長さを取得
 	double BezierHandle::get_handle_length(const GraphView& view) const noexcept {
-		double x = point_offset_.x();
-		double y = point_offset_.y();
+		double x = pt_offset_.x();
+		double y = pt_offset_.y();
 
 		return std::sqrt(x * x * view.scale_x() * view.scale_x() + y * y * view.scale_y() * view.scale_y());
 	}
 
 	// 指定したポイントの基準点からの角度を取得
 	double BezierHandle::get_cursor_angle(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) const noexcept {
-		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
+		const mkaul::Point pt_origin = type_ == Type::Left ? p_curve_->pt_start().pt() : p_curve_->pt_end().pt();
 		return std::atan2(
-			(point.y - point_origin.y) * view.scale_y(),
-			(point.x - point_origin.x) * view.scale_x()
+			(pt.y - pt_origin.y) * view.scale_y(),
+			(pt.x - pt_origin.x) * view.scale_x()
 		);
 	}
 
 	// 指定したポイントの基準点からの長さを取得
 	double BezierHandle::get_cursor_length(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) const noexcept {
-		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
+		const mkaul::Point pt_origin = type_ == Type::Left ? p_curve_->pt_start().pt() : p_curve_->pt_end().pt();
 		return std::sqrt(
-			(point.x - point_origin.x) * (point.x - point_origin.x) * view.scale_x() * view.scale_x() +
-			(point.y - point_origin.y) * (point.y - point_origin.y) * view.scale_y() * view.scale_y()
+			(pt.x - pt_origin.x) * (pt.x - pt_origin.x) * view.scale_x() * view.scale_x() +
+			(pt.y - pt_origin.y) * (pt.y - pt_origin.y) * view.scale_y() * view.scale_y()
 		);
 	}
 
 	// 移動先のハンドルの座標を取得
-	mkaul::Point<double> BezierHandle::get_dest_point(
-		const mkaul::Point<double>& point,
+	mkaul::Point<double> BezierHandle::get_dest_pt(
+		const mkaul::Point<double>& pt,
 		const GraphView& view,
 		bool keep_angle
 	) const noexcept {
-		mkaul::Point<double> point_origin, point_opposite, ret;
+		mkaul::Point<double> pt_origin, pt_opposite, ret;
 
 		if (type_ == Type::Left) {
-			point_origin = p_curve_->point_start().point();
-			point_opposite = p_curve_->point_end().point();
+			pt_origin = p_curve_->pt_start().pt();
+			pt_opposite = p_curve_->pt_end().pt();
 		}
 		else {
-			point_origin = p_curve_->point_end().point();
-			point_opposite = p_curve_->point_start().point();
+			pt_origin = p_curve_->pt_end().pt();
+			pt_opposite = p_curve_->pt_start().pt();
 		}
 
 		if (snap_state_ != SnapState::Unsnapped) {
-			ret.x = point.x - point_origin.x;
+			ret.x = pt.x - pt_origin.x;
 			if (snap_state_ == SnapState::SnapStart) {
-				ret.y = p_curve_->point_start().y() - point_origin.y;
+				ret.y = p_curve_->pt_start().y() - pt_origin.y;
 			}
 			else {
-				ret.y = p_curve_->point_end().y() - point_origin.y;
+				ret.y = p_curve_->pt_end().y() - pt_origin.y;
 			}
 		}
 		else if (locked_angle_) {
-			double length = get_cursor_length(point, view);
+			double length = get_cursor_length(pt, view);
 			ret = mkaul::Point{
 				length * std::cos(buffer_angle_) / view.scale_x(),
 				length * std::sin(buffer_angle_) / view.scale_y()
 			};
 		}
 		else if (locked_length_) {
-			double angle = get_cursor_angle(point, view);
+			double angle = get_cursor_angle(pt, view);
 			ret = mkaul::Point{
 				buffer_length_ * std::cos(angle) / view.scale_x(),
 				buffer_length_ * std::sin(angle) / view.scale_y()
 			};
 		}
 		else {
-			ret = point - point_origin;
+			ret = pt - pt_origin;
 		}
-		limit_range(&ret, locked_angle_ or locked_length_ or keep_angle);
+		limit_range(ret, locked_angle_ or locked_length_ or keep_angle);
 		return ret;
 	}
 
 	void BezierHandle::limit_range(
-		mkaul::Point<double>* p_point_offset,
+		mkaul::Point<double>& pt_offset,
 		bool keep_angle
 	) const noexcept {
-		mkaul::Point<double> point_origin, point_opposite;
+		mkaul::Point<double> pt_origin, pt_opposite;
 
 		if (type_ == Type::Left) {
-			point_origin = p_curve_->point_start().point();
-			point_opposite = p_curve_->point_end().point();
+			pt_origin = p_curve_->pt_start().pt();
+			pt_opposite = p_curve_->pt_end().pt();
 		}
 		else {
-			point_origin = p_curve_->point_end().point();
-			point_opposite = p_curve_->point_start().point();
+			pt_origin = p_curve_->pt_end().pt();
+			pt_opposite = p_curve_->pt_start().pt();
 		}
-		double width = point_opposite.x - point_origin.x;
+		double width = pt_opposite.x - pt_origin.x;
 		// ハンドルが範囲外にある場合
-		if (p_point_offset->x * mkaul::sign(width) < 0.) {
-			p_point_offset->x = 0.;
+		if (pt_offset.x * mkaul::sign(width) < 0.) {
+			pt_offset.x = 0.;
 		}
-		else if (std::abs(width) < std::abs(p_point_offset->x)) {
-			double tmp = p_point_offset->x;
-			p_point_offset->x = width;
+		else if (std::abs(width) < std::abs(pt_offset.x)) {
+			double tmp = pt_offset.x;
+			pt_offset.x = width;
 			if (keep_angle) {
-				p_point_offset->y *= width / tmp;
+				pt_offset.y *= width / tmp;
 			}
 		}
 	}
 
 	// カーソルがハンドルにホバーしているか
-	bool BezierHandle::is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
-		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
-		return point_offset_.is_hovered(point - point_origin, view);
+	bool BezierHandle::is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		const mkaul::Point pt_origin = type_ == Type::Left ? p_curve_->pt_start().pt() : p_curve_->pt_end().pt();
+		return pt_offset_.is_hovered(pt - pt_origin, view);
 	}
 
 	// ハンドルの移動を開始する
 	bool BezierHandle::check_hover(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
-		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
+		const mkaul::Point pt_origin = type_ == Type::Left ? p_curve_->pt_start().pt() : p_curve_->pt_end().pt();
 		bool ks_snap = key_state_snap();
 		bool ks_lock_angle = key_state_lock_angle();
 		bool ks_lock_length = key_state_lock_length();
@@ -293,7 +293,7 @@ namespace cved {
 		flag_prev_lock_angle_ = ks_lock_angle;
 		flag_prev_lock_length_ = ks_lock_length;
 
-		if (point_offset_.check_hover(point - point_origin, view)) {
+		if (pt_offset_.check_hover(pt - pt_origin, view)) {
 			if (ks_snap) {
 				snap();
 			}
@@ -337,16 +337,16 @@ namespace cved {
 	}
 
 	bool BezierHandle::update(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
 
-		if (point_offset_.is_controlled()) {
+		if (pt_offset_.is_controlled()) {
 			update_flags(view);
-			point_offset_.move(get_dest_point(point, view));
+			pt_offset_.move(get_dest_pt(pt, view));
 			if (handle_opposite_ and global::config.get_align_handle()) {
-				const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
-				handle_opposite_->move(point_origin - point_offset_.point(), view, true);
+				const mkaul::Point pt_origin = type_ == Type::Left ? p_curve_->pt_start().pt() : p_curve_->pt_end().pt();
+				handle_opposite_->move(pt_origin - pt_offset_.pt(), view, true);
 			}
 			return true;
 		}
@@ -354,7 +354,7 @@ namespace cved {
 	}
 
 	void BezierHandle::move(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view,
 		bool aligned,
 		bool moved_symmetrically
@@ -362,23 +362,23 @@ namespace cved {
 		if (!aligned and !moved_symmetrically) {
 			update_flags(view);
 		}
-		point_offset_.move(get_dest_point(point, view));
+		pt_offset_.move(get_dest_pt(pt, view));
 		// ポイントの向かいのハンドルを連動させる
 		if (!aligned and handle_opposite_ and global::config.get_align_handle()) {
-			const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
-			handle_opposite_->move(point_origin - point_offset_.point(), view, true);
+			const mkaul::Point pt_origin = type_ == Type::Left ? p_curve_->pt_start().pt() : p_curve_->pt_end().pt();
+			handle_opposite_->move(pt_origin - pt_offset_.pt(), view, true);
 		}
 	}
 
 	void BezierHandle::set_position(
-		const mkaul::Point<double>& point
+		const mkaul::Point<double>& pt
 	) noexcept {
 		mkaul::Point<double> ret;
-		const mkaul::Point point_origin = type_ == Type::Left ? p_curve_->point_start().point() : p_curve_->point_end().point();
+		const mkaul::Point pt_origin = type_ == Type::Left ? p_curve_->pt_start().pt() : p_curve_->pt_end().pt();
 
-		ret = point - point_origin;
-		limit_range(&ret, true);
-		point_offset_.move(ret);
+		ret = pt - pt_origin;
+		limit_range(ret, true);
+		pt_offset_.move(ret);
 	}
 
 	// ハンドルの移動を終了する
@@ -392,7 +392,7 @@ namespace cved {
 	}
 
 	void BezierHandle::end_control() noexcept {
-		point_offset_.end_control();
+		pt_offset_.end_control();
 		end_move();
 	}
 }

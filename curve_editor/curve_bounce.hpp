@@ -17,9 +17,9 @@ namespace cved {
 	public:
 		// コンストラクタ
 		BounceCurve(
-			const mkaul::Point<double>& point_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& point_end = mkaul::Point{ 1., 1. },
-			bool point_fixed = false,
+			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			double cor = DEFAULT_COR,
@@ -51,22 +51,22 @@ namespace cved {
 			const mkaul::ColorF& color = mkaul::ColorF{}
 		) const noexcept override;
 
-		bool is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept override;
+		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
 
 		bool handle_check_hover(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept override;
 
 		bool handle_update(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept override;
 		void handle_end_control() noexcept override;
 
-		ActivePoint point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
-		bool point_begin_move(ActivePoint active_point) noexcept override;
-		ActivePoint point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept override;
-		bool point_move(ActivePoint active_point, const mkaul::Point<double>& point) noexcept override;
+		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
+		bool pt_begin_move(ActivePoint active_pt) noexcept override;
+		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
+		bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept override;
 	};
 }

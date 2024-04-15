@@ -441,10 +441,10 @@ namespace cved {
 			{
 				mkaul::WindowRectangle rect_tmp;
 				button_mode.get_rect(&rect_tmp);
-				POINT point_tmp = { rect_tmp.right / 2, 0 };
-				::ClientToScreen(button_mode.get_hwnd(), &point_tmp);
-				mkaul::Point<LONG> point_screen{ point_tmp };
-				menu_edit_mode.show(hwnd, TPM_CENTERALIGN, &point_screen);
+				POINT pt_tmp = { rect_tmp.right / 2, 0 };
+				::ClientToScreen(button_mode.get_hwnd(), &pt_tmp);
+				mkaul::Point<LONG> pt_screen{ pt_tmp };
+				menu_edit_mode.show(hwnd, TPM_CENTERALIGN, &pt_screen);
 				break;
 			}
 

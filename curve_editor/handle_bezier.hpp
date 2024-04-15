@@ -25,7 +25,7 @@ namespace cved {
 
 	private:
 		// ポイント (基準点からのオフセット)
-		ControlPoint point_offset_;
+		ControlPoint pt_offset_;
 		// 右か左か
 		const Type type_;
 		// ポイントが固定されているかどうか
@@ -55,23 +55,23 @@ namespace cved {
 
 		// 指定したポイントの基準点からの角度を取得
 		double get_cursor_angle(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) const noexcept;
 		// 指定したポイントの基準点からの長さを取得
 		double get_cursor_length(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) const noexcept;
 		// 移動後のハンドルの座標を取得
-		mkaul::Point<double> get_dest_point(
-			const mkaul::Point<double>& point,
+		mkaul::Point<double> get_dest_pt(
+			const mkaul::Point<double>& pt,
 			const GraphView& view,
 			bool keep_angle = false
 		) const noexcept;
 		// 座標の範囲制限
 		void limit_range(
-			mkaul::Point<double>* p_point_offset,
+			mkaul::Point<double>& pt_offset,
 			bool keep_angle
 		) const noexcept;
 
@@ -97,12 +97,12 @@ namespace cved {
 		BezierHandle(
 			BezierCurve* p_curve,
 			Type type,
-			const mkaul::Point<double>& point_offset = mkaul::Point<double>{},
+			const mkaul::Point<double>& pt_offset = mkaul::Point<double>{},
 			bool fixed = false,
 			BezierHandle* handle_opposite = nullptr
 		) :
 			p_curve_{ p_curve },
-			point_offset_{ point_offset },
+			pt_offset_{ pt_offset },
 			type_{ type },
 			fixed_{ fixed },
 			handle_opposite_{ handle_opposite },
@@ -145,15 +145,15 @@ namespace cved {
 		void move_to_root() noexcept;
 
 		// ハンドルのオフセット座標を取得
-		const auto& point_offset() const noexcept { return point_offset_.point(); }
-		void set_point_offset(const mkaul::Point<double>& point_offset) noexcept { point_offset_.move(point_offset); }
+		const auto& pt_offset() const noexcept { return pt_offset_.pt(); }
+		void set_pt_offset(const mkaul::Point<double>& pt_offset) noexcept { pt_offset_.move(pt_offset); }
 
 		// カーソルがハンドルにホバーされているかどうか
-		bool is_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept;
+		bool is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
 
 		// ハンドルの移動を開始
 		bool check_hover(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept;
 
@@ -162,13 +162,13 @@ namespace cved {
 		) noexcept;
 
 		bool update(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view
 		) noexcept;
 
 		// ハンドルを動かす
 		void move(
-			const mkaul::Point<double>& point,
+			const mkaul::Point<double>& pt,
 			const GraphView& view,
 			bool aligned = false,
 			bool moved_symmetrically = false
@@ -176,7 +176,7 @@ namespace cved {
 
 		// ハンドルを強制的に動かす
 		void set_position(
-			const mkaul::Point<double>& point
+			const mkaul::Point<double>& pt
 		) noexcept;
 
 		// ハンドルの移動を終了

@@ -18,7 +18,7 @@ namespace cved {
 		double scale_y_;
 		bool moving_;
 		bool scaling_;
-		mkaul::Point<float> point_buffer_;
+		mkaul::Point<float> pt_buffer_;
 		mkaul::Point<double> center_buffer_;
 		double scale_x_buffer_;
 		double scale_y_buffer_;
@@ -30,7 +30,7 @@ namespace cved {
 			scale_y_{ 1. },
 			moving_{ false },
 			scaling_{ false },
-			point_buffer_{},
+			pt_buffer_{},
 			center_buffer_{},
 			scale_x_buffer_{ 1. },
 			scale_y_buffer_{ 1. }
@@ -40,13 +40,13 @@ namespace cved {
 		auto scale_x() const noexcept { return scale_x_; }
 		auto scale_y() const noexcept { return scale_y_; }
 
-		void begin_move(const mkaul::Point<float>& point) noexcept;
-		bool move(const mkaul::Point<float>& point, const mkaul::WindowRectangle& rect_wnd) noexcept;
+		void begin_move(const mkaul::Point<float>& pt) noexcept;
+		bool move(const mkaul::Point<float>& pt, const mkaul::WindowRectangle& rect_wnd) noexcept;
 		void move(double scroll_amount, bool vertical) noexcept;
 		void end_move() noexcept { moving_ = false; }
 
-		void begin_scale(const mkaul::Point<float>& point) noexcept;
-		bool scale(const mkaul::Point<float>& point) noexcept;
+		void begin_scale(const mkaul::Point<float>& pt) noexcept;
+		bool scale(const mkaul::Point<float>& pt) noexcept;
 		void scale(double scroll_amount) noexcept;
 		void end_scale() noexcept { scaling_ = false; }
 
@@ -56,10 +56,10 @@ namespace cved {
 
 		double client_to_view_x(const float x_client, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
 		double client_to_view_y(const float y_client, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
-		mkaul::Point<double> client_to_view(const mkaul::Point<float>& point_client, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
+		mkaul::Point<double> client_to_view(const mkaul::Point<float>& pt_client, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
 		
 		float view_to_client_x(const double x_view, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
 		float view_to_client_y(const double y_view, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
-		mkaul::Point<float> view_to_client(const mkaul::Point<double>& point_view, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
+		mkaul::Point<float> view_to_client(const mkaul::Point<double>& pt_view, const mkaul::WindowRectangle& rect_wnd) const noexcept override;
 	};
 }

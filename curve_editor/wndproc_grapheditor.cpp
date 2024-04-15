@@ -136,7 +136,7 @@ namespace cved {
 					true,
 					config.get_theme().handle
 				);
-				editor.current_curve()->draw_point(p_graphics.get(), view, POINT_RADIUS, config.get_theme().handle);
+				editor.current_curve()->draw_pt(p_graphics.get(), view, POINT_RADIUS, config.get_theme().handle);
 			}
 			p_graphics->end_draw();
 			return 0;
@@ -147,7 +147,7 @@ namespace cved {
 			// ハンドルにホバーしていた時
 			if (
 				editor.current_curve()->handle_check_hover(pt_view, view)
-				or editor.current_curve()->point_check_hover(pt_view, view) != GraphCurve::ActivePoint::Null
+				or editor.current_curve()->pt_check_hover(pt_view, view) != GraphCurve::ActivePoint::Null
 				) {
 				::SetCursor(::LoadCursorA(NULL, IDC_HAND));
 				::SetCapture(hwnd);
@@ -177,7 +177,7 @@ namespace cved {
 			dnd.drop();
 
 			editor.current_curve()->handle_end_control();
-			editor.current_curve()->point_end_control();
+			editor.current_curve()->pt_end_control();
 
 			// Auto Copy
 			if (global::config.get_auto_copy() and editor.numeric_curve()) {
@@ -206,7 +206,7 @@ namespace cved {
 				if (editor.curve_normal()->delete_curve(pt_view, view)
 					or editor.curve_normal()->add_curve(pt_view, view)
 					) {
-					editor.current_curve()->point_check_hover(pt_view, view);
+					editor.current_curve()->pt_check_hover(pt_view, view);
 					::SetCursor(::LoadCursorA(NULL, IDC_HAND));
 					::InvalidateRect(hwnd, NULL, FALSE);
 				}
@@ -242,7 +242,7 @@ namespace cved {
 			// ハンドルアップデート時に再描画
 			if (
 				editor.current_curve()->handle_update(pt_view, view)
-				or editor.current_curve()->point_update(pt_view, view) != GraphCurve::ActivePoint::Null
+				or editor.current_curve()->pt_update(pt_view, view) != GraphCurve::ActivePoint::Null
 				) {
 				::InvalidateRect(hwnd, NULL, FALSE);
 			}
@@ -307,7 +307,7 @@ namespace cved {
 						return 0;
 					}
 					// カーブの始点にホバーしていた場合
-					if ((*it)->point_start().is_hovered(pt_view, view)) {
+					if ((*it)->pt_start().is_hovered(pt_view, view)) {
 						size_t idx = std::distance(p_curve_normal->get_curve_segments().begin(), it);
 						menu_curve.show(idx, hwnd);
 						return 0;

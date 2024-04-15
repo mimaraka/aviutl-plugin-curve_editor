@@ -10,10 +10,10 @@
 
 namespace cved {
 	NormalCurve::NormalCurve(
-		const mkaul::Point<double>& point_start,
-		const mkaul::Point<double>& point_end
+		const mkaul::Point<double>& pt_start,
+		const mkaul::Point<double>& pt_end
 	) :
-		GraphCurve{ point_start, point_end, true, nullptr, nullptr },
+		GraphCurve{ pt_start, pt_end, true, nullptr, nullptr },
 		curve_segments_{}
 	{
 		clear();
@@ -22,19 +22,19 @@ namespace cved {
 	// カーブの値を取得
 	double NormalCurve::curve_function(double progress, double start, double end) const noexcept {
 		for (auto it = curve_segments_.begin(), ed = curve_segments_.end(); it != ed; it++) {
-			if (*it == curve_segments_.front() and progress < (*it)->point_start().x()) {
+			if (*it == curve_segments_.front() and progress < (*it)->pt_start().x()) {
 				return start;
 			}
-			else if (*it == curve_segments_.back() and (*it)->point_end().x() < progress) {
+			else if (*it == curve_segments_.back() and (*it)->pt_end().x() < progress) {
 				return end;
 			}
 			else {
-				if (*it != curve_segments_.back() and mkaul::in_range(progress, (*it)->point_end().x(), (*std::next(it))->point_start().x())) {
+				if (*it != curve_segments_.back() and mkaul::in_range(progress, (*it)->pt_end().x(), (*std::next(it))->pt_start().x())) {
 					// 線形補間
-					double tmp = (progress - (*it)->point_end().x()) / ((*std::next(it))->point_start().x() - (*it)->point_end().x());
-					return ((*std::next(it))->point_start().y() - (*it)->point_end().y()) * tmp + (*it)->point_end().y();
+					double tmp = (progress - (*it)->pt_end().x()) / ((*std::next(it))->pt_start().x() - (*it)->pt_end().x());
+					return ((*std::next(it))->pt_start().y() - (*it)->pt_end().y()) * tmp + (*it)->pt_end().y();
 				}
-				else if (mkaul::in_range(progress, (*it)->point_start().x(), (*it)->point_end().x(), true)) {
+				else if (mkaul::in_range(progress, (*it)->pt_start().x(), (*it)->pt_end().x(), true)) {
 					return (*it)->get_value(progress, start, end);
 				}
 			}
@@ -71,10 +71,10 @@ namespace cved {
 			std::copy(tmp.begin(), tmp.end(), std::back_inserter(data));
 		}
 		GraphCurveData data_graph = {
-			.start_x = point_start().x(),
-			.start_y = point_start().y(),
-			.end_x = point_end().x(),
-			.end_y = point_end().y(),
+			.start_x = pt_start().x(),
+			.start_y = pt_start().y(),
+			.end_x = pt_end().x(),
+			.end_y = pt_end().y(),
 			.sampling_resolution = get_sampling_resolution(),
 			.quantization_resolution = get_quantization_resolution()
 		};
@@ -127,13 +127,13 @@ namespace cved {
 		return true;
 	}
 
-	bool NormalCurve::load_data_v1(const byte* data, size_t point_n) noexcept {
+	bool NormalCurve::load_data_v1(const byte* data, size_t pt_n) noexcept {
 		constexpr int GRAPH_RESOLUTION = 10000;
 		
 		struct CurvePoint {
 			struct {
 				int32_t x, y;
-			} point_center, point_left, point_right;
+			} pt_center, pt_left, pt_right;
 			enum class Type : int32_t {
 				DefaultLeft,
 				DefaultRight,
@@ -141,27 +141,27 @@ namespace cved {
 			} type;
 		};
 
-		auto points = reinterpret_cast<const CurvePoint*>(data);
+		auto pts = reinterpret_cast<const CurvePoint*>(data);
 		std::vector<std::unique_ptr<GraphCurve>> vec_tmp;
 
-		for (size_t i = 0u; i < point_n; i++) {
+		for (size_t i = 0u; i < pt_n; i++) {
 			// Typeとポイントの座標の整合性チェック
 			// 最初の要素
 			if (i == 0u) {
 				if (
-					points[i].type != CurvePoint::Type::DefaultLeft
-					or points[i].point_center.x != 0
-					or points[i].point_center.y != 0
+					pts[i].type != CurvePoint::Type::DefaultLeft
+					or pts[i].pt_center.x != 0
+					or pts[i].pt_center.y != 0
 					) {
 					return false;
 				}
 			}
 			// 最後の要素
-			else if (i == point_n - 1u) {
+			else if (i == pt_n - 1u) {
 				if (
-					points[i].type != CurvePoint::Type::DefaultRight
-					or points[i].point_center.x != GRAPH_RESOLUTION
-					or points[i].point_center.y != GRAPH_RESOLUTION
+					pts[i].type != CurvePoint::Type::DefaultRight
+					or pts[i].pt_center.x != GRAPH_RESOLUTION
+					or pts[i].pt_center.y != GRAPH_RESOLUTION
 					) {
 					return false;
 				}
@@ -169,55 +169,55 @@ namespace cved {
 			// 最初と最後の要素以外
 			else {
 				if (
-					points[i].type != CurvePoint::Type::Extended
-					or !mkaul::in_range(points[i].point_center.x, 0, GRAPH_RESOLUTION)
+					pts[i].type != CurvePoint::Type::Extended
+					or !mkaul::in_range(pts[i].pt_center.x, 0, GRAPH_RESOLUTION)
 					) {
 					return false;
 				}
 			}
 			// 
 			// 最後の要素以外
-			if (i < point_n - 1u) {
+			if (i < pt_n - 1u) {
 				// カーブの整合性チェック
 				if (
-					points[i + 1u].point_center.x < points[i].point_center.x
-					or !mkaul::in_range(points[i].point_right.x, points[i].point_center.x, points[i + 1u].point_center.x)
-					or !mkaul::in_range(points[i + 1u].point_left.x, points[i].point_center.x, points[i + 1u].point_center.x)
+					pts[i + 1u].pt_center.x < pts[i].pt_center.x
+					or !mkaul::in_range(pts[i].pt_right.x, pts[i].pt_center.x, pts[i + 1u].pt_center.x)
+					or !mkaul::in_range(pts[i + 1u].pt_left.x, pts[i].pt_center.x, pts[i + 1u].pt_center.x)
 					) {
 					return false;
 				}
 
 				std::unique_ptr<GraphCurve> new_curve = std::make_unique<BezierCurve>();
 				// ポイントの移動
-				new_curve->point_begin_move(GraphCurve::ActivePoint::Start);
-				new_curve->point_move(
+				new_curve->pt_begin_move(GraphCurve::ActivePoint::Start);
+				new_curve->pt_move(
 					GraphCurve::ActivePoint::Start,
 					mkaul::Point{
-						points[i].point_center.x / (double)GRAPH_RESOLUTION,
-						points[i].point_center.y / (double)GRAPH_RESOLUTION
+						pts[i].pt_center.x / (double)GRAPH_RESOLUTION,
+						pts[i].pt_center.y / (double)GRAPH_RESOLUTION
 					}
 				);
-				new_curve->point_move(
+				new_curve->pt_move(
 					GraphCurve::ActivePoint::End,
 					mkaul::Point{
-						points[i + 1u].point_center.x / (double)GRAPH_RESOLUTION,
-						points[i + 1u].point_center.y / (double)GRAPH_RESOLUTION
+						pts[i + 1u].pt_center.x / (double)GRAPH_RESOLUTION,
+						pts[i + 1u].pt_center.y / (double)GRAPH_RESOLUTION
 					}
 				);
-				new_curve->point_end_move();
+				new_curve->pt_end_move();
 
 				// ハンドルの移動
 				auto p_curve_bezier = dynamic_cast<BezierCurve*>(new_curve.get());
-				p_curve_bezier->handle_left()->set_point_offset(
+				p_curve_bezier->handle_left()->set_pt_offset(
 					mkaul::Point{
-						(points[i].point_right.x - points[i].point_center.x) / (double)GRAPH_RESOLUTION,
-						(points[i].point_right.y - points[i].point_center.y) / (double)GRAPH_RESOLUTION
+						(pts[i].pt_right.x - pts[i].pt_center.x) / (double)GRAPH_RESOLUTION,
+						(pts[i].pt_right.y - pts[i].pt_center.y) / (double)GRAPH_RESOLUTION
 					}
 				);
-				p_curve_bezier->handle_right()->set_point_offset(
+				p_curve_bezier->handle_right()->set_pt_offset(
 					mkaul::Point{
-						(points[i + 1u].point_left.x - points[i + 1u].point_center.x) / (double)GRAPH_RESOLUTION,
-						(points[i + 1u].point_left.y - points[i + 1u].point_center.y) / (double)GRAPH_RESOLUTION
+						(pts[i + 1u].pt_left.x - pts[i + 1u].pt_center.x) / (double)GRAPH_RESOLUTION,
+						(pts[i + 1u].pt_left.y - pts[i + 1u].pt_center.y) / (double)GRAPH_RESOLUTION
 					}
 				);
 
@@ -271,7 +271,7 @@ namespace cved {
 
 					p_graphics->get_rect(&rect_wnd);
 					// 点線を引く(クライアントでの)X座標
-					auto x_client = view.view_to_client((*it)->point_start().point(), rect_wnd).x;
+					auto x_client = view.view_to_client((*it)->pt_start().pt(), rect_wnd).x;
 					p_graphics->draw_line(
 						mkaul::Point{ x_client, 0.f },
 						mkaul::Point{ x_client, (float)rect_wnd.bottom },
@@ -281,39 +281,39 @@ namespace cved {
 				}
 				// 各カーブのハンドル・ポイントを描画
 				(*it)->draw_handle(p_graphics, view, thickness, root_radius, tip_radius, tip_thickness, cutoff_line, color);
-				(*it)->draw_point(p_graphics, view, root_radius, color);
+				(*it)->draw_pt(p_graphics, view, root_radius, color);
 			}
 		}
 	}
 
 	// ポイントを追加
-	bool NormalCurve::add_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+	bool NormalCurve::add_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
 		constexpr double HANDLE_DEFAULT_LENGTH = 50;
 
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			// X座標がカーブの始点と終点の範囲内であった場合
-			if (mkaul::in_range(point.x, (*it)->point_start().x(), (*it)->point_end().x())) {
+			if (mkaul::in_range(pt.x, (*it)->pt_start().x(), (*it)->pt_end().x())) {
 				std::unique_ptr<GraphCurve> new_curve{
 					new BezierCurve{
-						point,
-						(*it)->point_end().point(),
+						pt,
+						(*it)->pt_end().pt(),
 						false,
 						(*it).get(),
 						(*it)->next(),
 						mkaul::Point{
-							((*it)->point_end().x() - point.x) * 0.3,
-							((*it)->point_end().y() - point.y) * 0.3,
+							((*it)->pt_end().x() - pt.x) * 0.3,
+							((*it)->pt_end().y() - pt.y) * 0.3,
 						},
 						mkaul::Point{
-							(point.x - (*it)->point_end().x()) * 0.3,
-							(point.y - (*it)->point_end().y()) * 0.3,
+							(pt.x - (*it)->pt_end().x()) * 0.3,
+							(pt.y - (*it)->pt_end().y()) * 0.3,
 						}
 					}
 				};
 				// 既存のカーブを移動させる
-				(*it)->point_begin_move(ActivePoint::End);
-				(*it)->point_move(ActivePoint::End, point);
-				(*it)->point_end_move();
+				(*it)->pt_begin_move(ActivePoint::End);
+				(*it)->pt_move(ActivePoint::End, pt);
+				(*it)->pt_end_move();
 
 				// 左のカーブがベジェの場合、右のハンドルをnew_curveの右ハンドルにコピーする
 				// TODO: このあたりの処理がゴリ押しだから何とかしたい
@@ -321,13 +321,13 @@ namespace cved {
 					auto bezier_prev = dynamic_cast<BezierCurve*>((*it).get());
 					auto bezier_new = dynamic_cast<BezierCurve*>(new_curve.get());
 					bezier_new->handle_right()->set_position(
-						new_curve->point_end().point() + bezier_prev->handle_right()->point_offset()
+						new_curve->pt_end().pt() + bezier_prev->handle_right()->pt_offset()
 					);
 					bezier_new->handle_left()->set_position(
-						new_curve->point_start().point() + mkaul::Point{ HANDLE_DEFAULT_LENGTH / view.scale_x(), 0. }
+						new_curve->pt_start().pt() + mkaul::Point{ HANDLE_DEFAULT_LENGTH / view.scale_x(), 0. }
 					);
 					bezier_prev->handle_right()->set_position(
-						new_curve->point_start().point() - mkaul::Point{ HANDLE_DEFAULT_LENGTH / view.scale_x(), 0. }
+						new_curve->pt_start().pt() - mkaul::Point{ HANDLE_DEFAULT_LENGTH / view.scale_x(), 0. }
 					);
 				}
 
@@ -344,14 +344,14 @@ namespace cved {
 	}
 
 	// ポイントを削除
-	bool NormalCurve::delete_curve(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+	bool NormalCurve::delete_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			// 先頭のカーブでない場合
 			if (*it != curve_segments_.front()) {
 				// カーソルが始点にホバーしている場合
-				if ((*it)->point_start().is_hovered(point, view)) {
+				if ((*it)->pt_start().is_hovered(pt, view)) {
 					// 前のカーブの終点を削除するカーブの終点に移動させる
-					(*std::prev(it))->point_move(ActivePoint::End, (*it)->point_end().point());
+					(*std::prev(it))->pt_move(ActivePoint::End, (*it)->pt_end().pt());
 
 					// 自身と前のカーブがともにベジェの場合
 					if (typeid(**it) == typeid(BezierCurve) and typeid(**std::prev(it)) == typeid(BezierCurve)) {
@@ -359,7 +359,7 @@ namespace cved {
 						auto bezier_prev = dynamic_cast<BezierCurve*>((*std::prev(it)).get());
 						auto bezier_self = dynamic_cast<BezierCurve*>((*it).get());
 						bezier_prev->handle_right()->set_position(
-							(*it)->point_end().point() + bezier_self->handle_right()->point_offset()
+							(*it)->pt_end().pt() + bezier_self->handle_right()->pt_offset()
 						);
 					}
 					// ハンドルの整列が有効で、かつ自身が非ベジェのカーブで、自身の両端がベジェのカーブの場合
@@ -375,7 +375,7 @@ namespace cved {
 						auto bezier_next = dynamic_cast<BezierCurve*>((*std::next(it)).get());
 						bezier_prev->handle_right()->lock_length(view);
 						bezier_prev->handle_right()->move(
-							(*it)->point_end().point() - bezier_next->handle_left()->point_offset(),
+							(*it)->pt_end().pt() - bezier_next->handle_left()->pt_offset(),
 							view, true
 						);
 						bezier_prev->handle_right()->unlock_length();
@@ -401,8 +401,8 @@ namespace cved {
 		switch (segment_type) {
 		case CurveSegmentType::Linear:
 			new_curve = std::make_unique<LinearCurve>(
-				current_curve->point_start().point(),
-				current_curve->point_end().point(),
+				current_curve->pt_start().pt(),
+				current_curve->pt_end().pt(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -412,8 +412,8 @@ namespace cved {
 		case CurveSegmentType::Bezier:
 			// TODO: ハンドルの整列が有効かつ隣がベジェのカーブの場合にハンドルを回転させる処理
 			new_curve = std::make_unique<BezierCurve>(
-				current_curve->point_start().point(),
-				current_curve->point_end().point(),
+				current_curve->pt_start().pt(),
+				current_curve->pt_end().pt(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -423,8 +423,8 @@ namespace cved {
 
 		case CurveSegmentType::Elastic:
 			new_curve = std::make_unique<ElasticCurve>(
-				current_curve->point_start().point(),
-				current_curve->point_end().point(),
+				current_curve->pt_start().pt(),
+				current_curve->pt_end().pt(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -433,8 +433,8 @@ namespace cved {
 
 		case CurveSegmentType::Bounce:
 			new_curve = std::make_unique<BounceCurve>(
-				current_curve->point_start().point(),
-				current_curve->point_end().point(),
+				current_curve->pt_start().pt(),
+				current_curve->pt_end().pt(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -456,18 +456,18 @@ namespace cved {
 		return true;
 	}
 
-	bool NormalCurve::is_point_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+	bool NormalCurve::is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
 		for (auto& curve : curve_segments_) {
-			if (curve->is_point_hovered(point, view)) {
+			if (curve->is_pt_hovered(pt, view)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool NormalCurve::is_handle_hovered(const mkaul::Point<double>& point, const GraphView& view) const noexcept {
+	bool NormalCurve::is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
 		for (auto& curve : curve_segments_) {
-			if (curve->is_handle_hovered(point, view)) {
+			if (curve->is_handle_hovered(pt, view)) {
 				return true;
 			}
 		}
@@ -476,14 +476,14 @@ namespace cved {
 
 	// カーソルがハンドルにホバーしているかを判定
 	bool NormalCurve::handle_check_hover(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			auto previous = *it != curve_segments_.front() ? (*std::prev(it)).get() : nullptr;
 			auto next = *it != curve_segments_.back() ? (*std::next(it)).get() : nullptr;
 
-			if ((*it)->handle_check_hover(point, view)) {
+			if ((*it)->handle_check_hover(pt, view)) {
 				return true;
 			}
 		}
@@ -492,14 +492,14 @@ namespace cved {
 
 	// ハンドルの位置をアップデート
 	bool NormalCurve::handle_update(
-		const mkaul::Point<double>& point,
+		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			auto previous = *it != curve_segments_.front() ? (*std::prev(it)).get() : nullptr;
 			auto next = *it != curve_segments_.back() ? (*std::next(it)).get() : nullptr;
 
-			if ((*it)->handle_update(point, view)) {
+			if ((*it)->handle_update(pt, view)) {
 				return true;
 			}
 		}
@@ -512,49 +512,49 @@ namespace cved {
 		}
 	}
 
-	NormalCurve::ActivePoint NormalCurve::point_check_hover(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+	NormalCurve::ActivePoint NormalCurve::pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
-			// 必ずpoint_endに最初にヒットする
-			auto ret = (*it)->point_check_hover(point, view);
+			// 必ずpt_endに最初にヒットする
+			auto ret = (*it)->pt_check_hover(pt, view);
 
 			if (ret == ActivePoint::End and *it != curve_segments_.back()) {
-				// 後ろのカーブのpoint_startもbegin_move()させる
-				(*std::next(it))->point_begin_move(ActivePoint::Start);
+				// 後ろのカーブのpt_startもbegin_move()させる
+				(*std::next(it))->pt_begin_move(ActivePoint::Start);
 				return ret;
 			}
 			else {
-				(*it)->point_end_control();
+				(*it)->pt_end_control();
 			}
 		}
 		return ActivePoint::Null;
 	}
 
-	NormalCurve::ActivePoint NormalCurve::point_update(const mkaul::Point<double>& point, const GraphView& view) noexcept {
+	NormalCurve::ActivePoint NormalCurve::pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
 		auto ret = ActivePoint::Null;
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			auto next = *it != curve_segments_.back() ? (*std::next(it)).get() : nullptr;
-			double min_x = (*it)->point_start().x();
-			double max_x = next ? next->point_end().x() : 1.;
-			double x = mkaul::clamp(point.x, min_x, max_x);
-			auto pt = mkaul::Point{ x, point.y };
-			auto tmp = (*it)->point_update(pt, view);
-			if (tmp == ActivePoint::End and next) {
-				next->point_move(ActivePoint::Start, pt);
-				ret = tmp;
+			double min_x = (*it)->pt_start().x();
+			double max_x = next ? next->pt_end().x() : 1.;
+			double x = mkaul::clamp(pt.x, min_x, max_x);
+			auto pt_tmp = mkaul::Point{ x, pt.y };
+			auto active_pt = (*it)->pt_update(pt_tmp, view);
+			if (active_pt == ActivePoint::End and next) {
+				next->pt_move(ActivePoint::Start, pt);
+				ret = active_pt;
 			}
 		}
 		return ret;
 	}
 
-	void NormalCurve::point_end_move() noexcept {
+	void NormalCurve::pt_end_move() noexcept {
 		for (auto& curve : curve_segments_) {
-			curve->point_end_move();
+			curve->pt_end_move();
 		}
 	}
 
-	void NormalCurve::point_end_control() noexcept {
+	void NormalCurve::pt_end_control() noexcept {
 		for (auto& curve : curve_segments_) {
-			curve->point_end_control();
+			curve->pt_end_control();
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace cved {
 			const GraphView& view,
 			HWND hwnd,
 			UINT flags = NULL,
-			const mkaul::Point<LONG>* p_custom_point_screen = nullptr
+			const mkaul::Point<LONG>* p_custom_pt_screen = nullptr
 		) noexcept;
 	};
 }

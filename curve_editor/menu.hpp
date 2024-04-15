@@ -17,7 +17,7 @@ namespace cved {
 		bool show(
 			HWND hwnd,
 			UINT flags = NULL,
-			const mkaul::Point<LONG>* p_custom_point_screen = nullptr
+			const mkaul::Point<LONG>* p_custom_pt_screen = nullptr
 		) noexcept;
 	};
 }

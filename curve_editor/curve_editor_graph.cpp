@@ -175,7 +175,7 @@ namespace cved {
 				// 28バイト
 				struct {
 					uint8_t dummy[SIZE_CURVE_POINT];
-				} curve_point[POINT_N];
+				} curve_pt[POINT_N];
 				uint32_t size;
 			};
 
