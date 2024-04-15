@@ -70,6 +70,7 @@ namespace cved {
 		case WM_CLOSE:
 		case WM_DESTROY:
 			p_graphics->release();
+			dnd.exit();
 			return 0;
 
 		case WM_SIZE:
@@ -251,11 +252,14 @@ namespace cved {
 				::InvalidateRect(hwnd, NULL, FALSE);
 			}
 
-			// ドラッグ時にカーソルを変更
+			// ドラッグ時
 			if (dnd.is_dragging()) {
-				if (!::PtInRect(&rect_wnd, pt_client.to<POINT>())) {
-					::SetCursor(::LoadCursorA(global::fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
+				// カーソルを変更
+				if (!rect_wnd.pt_in_rect(pt_client)) {
+					::SetCursor(::LoadCursorA(hinst, MAKEINTRESOURCEA(IDC_DRAG)));
 				}
+				// カーソルホバー時にトラックバーのボタンをハイライト
+				dnd.highlight();
 			}
 			return 0;
 
