@@ -1,5 +1,7 @@
 #include "dialog_pref_appearance.hpp"
 #include <Commctrl.h>
+#include <format>
+#include <string_view>
 #include "config.hpp"
 #include "enum.hpp"
 #include "global.hpp"
@@ -20,6 +22,13 @@ namespace cved {
 		hwnd_slider_curve_drawing_interval_ = ::GetDlgItem(hwnd, IDC_SLIDER_CURVE_DRAWING_INTERVAL);
 		hwnd_static_curve_thickness_ = ::GetDlgItem(hwnd, IDC_STATIC_CURVE_THICKNESS);
 		hwnd_static_curve_drawing_interval_ = ::GetDlgItem(hwnd, IDC_STATIC_CURVE_DRAWING_INTERVAL);
+		hwnd_check_set_bg_image_ = ::GetDlgItem(hwnd, IDC_CHECK_BACKGROUND_IMAGE);
+		hwnd_static_bg_image_1_ = ::GetDlgItem(hwnd, IDC_STATIC_BACKGROUND_IMAGE);
+		hwnd_static_bg_image_2_ = ::GetDlgItem(hwnd, IDC_STATIC_BACKGROUND_IMAGE2);
+		hwnd_edit_bg_image_path_ = ::GetDlgItem(hwnd, IDC_EDIT_BACKGROUND_IMAGE);
+		hwnd_button_bg_image_path_ = ::GetDlgItem(hwnd, IDC_BUTTON_BACKGROUND_IMAGE);
+		hwnd_slider_bg_image_opacity_ = ::GetDlgItem(hwnd, IDC_SLIDER_IMAGE_OPACITY);
+		hwnd_static_bg_image_opacity_ = ::GetDlgItem(hwnd, IDC_STATIC_IMAGE_OPACITY);
 		hwnd_check_show_trace_ = ::GetDlgItem(hwnd, IDC_CHECK_SHOW_TRACE);
 
 		for (uint32_t i = 0u; i < (uint32_t)ThemeId::NumThemeId; i++) {
@@ -33,6 +42,7 @@ namespace cved {
 
 		::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
 		::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
+		::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETRANGE, TRUE, MAKELPARAM(0, 100));
 	}
 
 
@@ -44,6 +54,8 @@ namespace cved {
 			.lpCustColors = custom_colors,
 			.Flags = CC_FULLOPEN | CC_RGBINIT
 		};
+		static char image_path[MAX_PATH + 1];
+		image_path[MAX_PATH] = '\0';
 
 		switch (message) {
 		case WM_INITDIALOG:
@@ -61,11 +73,15 @@ namespace cved {
 				int value_int = ::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_GETPOS, NULL, NULL);
 				::SetWindowTextA(hwnd_static_curve_drawing_interval_, std::format("{:.1f}", value_int * 0.1f).c_str());
 			}
+			else if (lparam == (LPARAM)hwnd_slider_bg_image_opacity_) {
+				int value_int = ::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL);
+				::SetWindowTextA(hwnd_static_bg_image_opacity_, std::format("{}%", value_int).c_str());
+			}
 			return TRUE;
 
 		case WM_PAINT:
 		{
-			RECT rect_color = { 160, 28, 188, 41 };
+			RECT rect_color = { 150, 28, 195, 41 };
 			::MapDialogRect(hwnd, &rect_color);
 			PAINTSTRUCT ps;
 			HDC hdc = ::BeginPaint(hwnd, &ps);
@@ -92,15 +108,45 @@ namespace cved {
 					(WPARAM)global::config.get_show_trace(),
 					NULL
 				);
+				::SendMessageA(
+					hwnd_check_set_bg_image_,
+					BM_SETCHECK,
+					(WPARAM)global::config.get_set_bg_image(),
+					NULL
+				);
+				if (global::config.get_set_bg_image()) {
+					::EnableWindow(hwnd_static_bg_image_1_, TRUE);
+					::EnableWindow(hwnd_edit_bg_image_path_, TRUE);
+					::EnableWindow(hwnd_button_bg_image_path_, TRUE);
+					::EnableWindow(hwnd_static_bg_image_2_, TRUE);
+					::EnableWindow(hwnd_slider_bg_image_opacity_, TRUE);
+					::EnableWindow(hwnd_static_bg_image_opacity_, TRUE);
+				}
+				else {
+					::EnableWindow(hwnd_static_bg_image_1_, FALSE);
+					::EnableWindow(hwnd_edit_bg_image_path_, FALSE);
+					::EnableWindow(hwnd_button_bg_image_path_, FALSE);
+					::EnableWindow(hwnd_static_bg_image_2_, FALSE);
+					::EnableWindow(hwnd_slider_bg_image_opacity_, FALSE);
+					::EnableWindow(hwnd_static_bg_image_opacity_, FALSE);
+				};
+				::SetWindowTextA(hwnd_edit_bg_image_path_, global::config.get_bg_image_path().string().c_str());
+				::SendMessageA(hwnd_edit_bg_image_path_, EM_SETLIMITTEXT, MAX_PATH, NULL);
+
 				::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_thickness() * 10.f));
 				::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_drawing_interval() * 10.f));
+				::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETPOS, TRUE, (LPARAM)round(global::config.get_bg_image_opacity() * 100.f));
+
 				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_thickness_);
 				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_drawing_interval_);
+				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_bg_image_opacity_);
+
 				return TRUE;
 
 			case (UINT)WindowCommand::SaveConfig:
 				global::config.set_theme_id((ThemeId)::SendMessageA(hwnd_combo_theme_, CB_GETCURSEL, NULL, NULL));
 				global::config.set_show_trace((bool)::SendMessageA(hwnd_check_show_trace_, BM_GETCHECK, NULL, NULL));
+				global::config.set_set_bg_image((bool)::SendMessageA(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL));
 				global::config.set_curve_color(cc.rgbResult);
 				global::config.set_curve_thickness(
 					(float)::SendMessageA(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL) * 0.1f
@@ -108,6 +154,18 @@ namespace cved {
 				global::config.set_curve_drawing_interval(
 					(float)::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_GETPOS, NULL, NULL) * 0.1f
 				);
+
+				global::config.set_bg_image_opacity(
+					(float)::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL) * 0.01f
+				);
+				{
+					char buffer[MAX_PATH];
+					::GetWindowTextA(hwnd_edit_bg_image_path_, buffer, MAX_PATH);
+					global::config.set_bg_image_path(std::filesystem::path(buffer));
+				}
+				if (global::config.get_set_bg_image()) {
+					global::window_grapheditor.send_command((WPARAM)WindowCommand::SetBackgroundImage);
+				}
 				return TRUE;
 
 			case IDC_BUTTON_CURVE_COLOR:
@@ -115,6 +173,50 @@ namespace cved {
 					::InvalidateRect(hwnd, NULL, FALSE);
 				}
 				return TRUE;
+
+			case IDC_CHECK_BACKGROUND_IMAGE:
+				if (::SendMessageA(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL)) {
+					::EnableWindow(hwnd_static_bg_image_1_, TRUE);
+					::EnableWindow(hwnd_edit_bg_image_path_, TRUE);
+					::EnableWindow(hwnd_button_bg_image_path_, TRUE);
+					::EnableWindow(hwnd_static_bg_image_2_, TRUE);
+					::EnableWindow(hwnd_slider_bg_image_opacity_, TRUE);
+					::EnableWindow(hwnd_static_bg_image_opacity_, TRUE);
+				}
+				else {
+					::EnableWindow(hwnd_static_bg_image_1_, FALSE);
+					::EnableWindow(hwnd_edit_bg_image_path_, FALSE);
+					::EnableWindow(hwnd_button_bg_image_path_, FALSE);
+					::EnableWindow(hwnd_static_bg_image_2_, FALSE);
+					::EnableWindow(hwnd_slider_bg_image_opacity_, FALSE);
+					::EnableWindow(hwnd_static_bg_image_opacity_, FALSE);
+				}
+				return TRUE;
+
+			case IDC_BUTTON_BACKGROUND_IMAGE:
+			{
+				using namespace std::literals::string_view_literals;
+
+				constexpr const char* TEMPLATE_IMAGE = "*.bmp;*.jpg;*.jpeg;*.png";
+				std::string str_filter = std::format(
+					"{0} ({1})\0{1}\0"sv,
+					global::string_table[StringId::WordImageFiles],
+					TEMPLATE_IMAGE
+				);
+				OPENFILENAMEA ofn{
+					.lStructSize = sizeof(OPENFILENAMEA),
+					.hwndOwner = hwnd,
+					.lpstrFilter = str_filter.c_str(),
+					.lpstrFile = image_path,
+					.nMaxFile = MAX_PATH + 1,
+					.lpstrTitle = global::string_table[StringId::LabelSelectBackgroundImage],
+					.Flags = OFN_FILEMUSTEXIST
+				};
+				if (::GetOpenFileNameA(&ofn)) {
+					::SetWindowTextA(hwnd_edit_bg_image_path_, ofn.lpstrFile);
+				}
+				return TRUE;
+			}
 			}
 			break;
 		}
