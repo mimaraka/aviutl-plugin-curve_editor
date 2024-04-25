@@ -46,6 +46,7 @@ namespace cved {
 		// pointer
 		using namespace mkaul::graphics;
 		static std::unique_ptr<Graphics> p_graphics = Factory::create_graphics();
+		static std::unique_ptr<Bitmap> p_bitmap_bg = nullptr;
 
 		mkaul::Point<long> pt_client = {
 			GET_X_LPARAM(lparam),
@@ -63,6 +64,10 @@ namespace cved {
 				::DestroyWindow(hwnd);
 				return 0;
 			}
+			if (config.get_set_bg_image()) {
+				p_bitmap_bg = p_graphics->load_bitmap_from_filename(config.get_bg_image_path());
+			}
+
 			dnd.init();
 			view.fit(rect_wnd);
 			return 0;
@@ -71,6 +76,9 @@ namespace cved {
 		case WM_CLOSE:
 		case WM_DESTROY:
 			p_graphics->release();
+			if (p_bitmap_bg != nullptr) {
+				p_bitmap_bg->release();
+			}
 			dnd.exit();
 			return 0;
 
@@ -87,6 +95,37 @@ namespace cved {
 
 			p_graphics->begin_draw();
 			p_graphics->fill_background(config.get_theme().bg_graph);
+
+			// 背景画像の描画
+			if (config.get_set_bg_image() and p_bitmap_bg != nullptr) {
+				double aspect_wnd = (double)rect_wnd.get_width() / (double)rect_wnd.get_height();
+				double aspect_bitmap = (double)p_bitmap_bg->get_width() / (double)p_bitmap_bg->get_height();
+				mkaul::Rectangle<float> rect_f;
+				// ビットマップの方が横長
+				if (aspect_wnd < aspect_bitmap) {
+					float scale = (float)rect_wnd.get_height() / (float)p_bitmap_bg->get_height();
+					// 上下の辺を合わせる
+					rect_f = mkaul::Rectangle{
+						(rect_wnd.get_width() - (float)p_bitmap_bg->get_width() * scale) * 0.5f,
+						0.f,
+						(rect_wnd.get_width() + (float)p_bitmap_bg->get_width() * scale) * 0.5f,
+						(float)rect_wnd.get_height()
+					};
+				}
+				// ウィンドウの方が横長
+				else {
+					float scale = (float)rect_wnd.get_width() / (float)p_bitmap_bg->get_width();
+					// 左右の辺を合わせる
+					rect_f = mkaul::Rectangle{
+						0.f,
+						(rect_wnd.get_height() - (float)p_bitmap_bg->get_height() * scale) * 0.5f,
+						(float)rect_wnd.get_width(),
+						(rect_wnd.get_height() + (float)p_bitmap_bg->get_height() * scale) * 0.5f
+					};
+				}
+				p_graphics->draw_bitmap(p_bitmap_bg.get(), rect_f, config.get_bg_image_opacity());
+			}
+
 			view.draw_grid(p_graphics.get(), rect_wnd);
 
 			color_overlay.change_brightness(BRIGHTNESS_GRAPH_INVALID);
@@ -337,6 +376,12 @@ namespace cved {
 					global::window_main.send_command((WPARAM)WindowCommand::Update);
 				}
 			}
+
+			// 背景画像の設定
+			case (UINT)WindowCommand::SetBackgroundImage:
+				// 新しいビットマップの割り当て/古いビットマップの解放
+				p_bitmap_bg = p_graphics->load_bitmap_from_filename(config.get_bg_image_path());
+				break;
 			}
 			return 0;
 		}
