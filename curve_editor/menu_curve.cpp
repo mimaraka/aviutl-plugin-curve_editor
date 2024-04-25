@@ -125,10 +125,9 @@ namespace cved {
 
 		case ID_CURVE_REVERSE:
 		{
-			auto p_curve = global::editor.editor_graph().curve_normal();
-			if (p_curve) {
-				// TODO: カーブの位置を固定させたまま反転させる
-				//p_curve->get_curve_segments()[idx]->reverse();
+			auto p_curve_normal = global::editor.editor_graph().curve_normal();
+			if (p_curve_normal) {
+				p_curve_normal->reverse_segment(idx);
 				global::window_grapheditor.redraw();
 			}
 			break;

@@ -50,7 +50,7 @@ namespace cved {
 	}
 
 	// カーブを反転
-	void NormalCurve::reverse() noexcept {
+	void NormalCurve::reverse(bool) noexcept {
 		std::reverse(curve_segments_.begin(), curve_segments_.end());
 
 		for (auto& p_curve : curve_segments_) {
@@ -59,6 +59,12 @@ namespace cved {
 			auto tmp = p_curve->prev();
 			p_curve->set_prev(p_curve->next());
 			p_curve->set_next(tmp);
+		}
+	}
+
+	void NormalCurve::reverse_segment(size_t idx) noexcept {
+		if (idx < curve_segments_.size()) {
+			curve_segments_[idx]->reverse(true);
 		}
 	}
 

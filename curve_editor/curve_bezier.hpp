@@ -35,7 +35,7 @@ namespace cved {
 		// カーブの値を取得する
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		void reverse() noexcept override;
+		void reverse(bool fix_pt = false) noexcept override;
 
 		// カーブから一意な整数値を生成
 		int32_t encode() const noexcept override;

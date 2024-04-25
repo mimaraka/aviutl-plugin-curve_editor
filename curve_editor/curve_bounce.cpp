@@ -63,9 +63,9 @@ namespace cved {
 		period_ = DEFAULT_PERIOD;
 	}
 
-	void BounceCurve::reverse() noexcept {
+	void BounceCurve::reverse(bool fix_pt) noexcept {
 		handle_.reverse(pt_start(), pt_end());
-		GraphCurve::reverse();
+		GraphCurve::reverse(fix_pt);
 		handle_.from_param(cor_, period_, pt_start(), pt_end());
 	}
 

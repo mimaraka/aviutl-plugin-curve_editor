@@ -181,11 +181,11 @@ namespace cved {
 		);
 	}
 
-	void BezierCurve::reverse() noexcept {
+	void BezierCurve::reverse(bool fix_pt) noexcept {
 		auto offset_tmp = handle_left_.pt_offset();
 		handle_left_.set_pt_offset(-handle_right_.pt_offset());
 		handle_right_.set_pt_offset(-offset_tmp);
-		GraphCurve::reverse();
+		GraphCurve::reverse(fix_pt);
 	}
 
 	void BezierCurve::create_data(std::vector<byte>& data) const noexcept {

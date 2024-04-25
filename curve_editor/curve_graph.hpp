@@ -80,7 +80,7 @@ namespace cved {
 		const auto& pt_start() const noexcept { return pt_start_; }
 		const auto& pt_end() const noexcept { return pt_end_; }
 
-		virtual void reverse() noexcept;
+		virtual void reverse(bool fix_pt = false) noexcept;
 
 		bool is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
 		virtual bool is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
