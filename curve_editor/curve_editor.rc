@@ -142,28 +142,35 @@ IDD_PREF_APPEARANCE DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_SLIDER_CURVE_THICKNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,160,46,80,12
-    LTEXT           "カーブの色",IDC_STATIC,10,30,143,8
-    LTEXT           "テーマ",IDC_STATIC,10,15,150,8
-    COMBOBOX        IDC_COMBO_THEME,160,13,80,52,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "変更",IDC_BUTTON_CURVE_COLOR,190,27,50,14
-    CONTROL         "直前の編集状態を表示",IDC_CHECK_SHOW_TRACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,89,150,10
-    LTEXT           "カーブの太さ",IDC_STATIC,10,47,150,8
-    LTEXT           "カーブの描画間隔\n(値が小さいほど高精度だが高負荷)",IDC_STATIC,10,66,150,17
-    CONTROL         "",IDC_SLIDER_CURVE_DRAWING_INTERVAL,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,160,67,80,12
-    LTEXT           "0.0",IDC_STATIC_CURVE_THICKNESS,246,47,51,8
-    LTEXT           "0.0",IDC_STATIC_CURVE_DRAWING_INTERVAL,246,68,51,8
+    CONTROL         "",IDC_SLIDER_CURVE_THICKNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,46,95,12
+    LTEXT           "カーブの色",IDC_STATIC,10,30,133,8
+    LTEXT           "テーマ",IDC_STATIC,10,15,140,8
+    COMBOBOX        IDC_COMBO_THEME,150,13,95,52,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "変更",IDC_BUTTON_CURVE_COLOR,195,27,50,14
+    CONTROL         "直前の編集状態を表示",IDC_CHECK_SHOW_TRACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,131,140,10
+    LTEXT           "カーブの太さ",IDC_STATIC,10,47,140,8
+    LTEXT           "カーブの描画間隔\n(値が小さいほど高精度だが高負荷)",IDC_STATIC,10,66,140,17
+    CONTROL         "",IDC_SLIDER_CURVE_DRAWING_INTERVAL,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,67,95,12
+    LTEXT           "0.0",IDC_STATIC_CURVE_THICKNESS,245,47,52,8
+    LTEXT           "0.0",IDC_STATIC_CURVE_DRAWING_INTERVAL,245,68,52,8
     GROUPBOX        "外観設定",IDC_STATIC,3,3,294,194
+    CONTROL         "背景画像を設定",IDC_CHECK_BACKGROUND_IMAGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,90,140,10
+    LTEXT           "画像のパス",IDC_STATIC_BACKGROUND_IMAGE,21,103,36,8
+    EDITTEXT        IDC_EDIT_BACKGROUND_IMAGE,150,100,95,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "参照",IDC_BUTTON_BACKGROUND_IMAGE,245,100,52,14
+    LTEXT           "画像の不透明度",IDC_STATIC_BACKGROUND_IMAGE2,21,118,56,8
+    CONTROL         "",IDC_SLIDER_IMAGE_OPACITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,117,95,12
+    LTEXT           "0%",IDC_STATIC_IMAGE_OPACITY,245,118,52,8
 END
 
 IDD_PREF_BEHAVIOR DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "ポップアップを表示",IDC_CHECK_SHOW_POPUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,150,10
-    LTEXT           "描画方式",IDC_STATIC,10,15,150,8
-    COMBOBOX        IDC_COMBO_GRAPHIC_METHOD,160,13,80,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "ショートカットキーを有効にする",IDC_CHECK_ENABLE_HOTKEYS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,41,150,10
+    CONTROL         "ポップアップを表示",IDC_CHECK_SHOW_POPUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,140,10
+    LTEXT           "描画方式",IDC_STATIC,10,15,140,8
+    COMBOBOX        IDC_COMBO_GRAPHIC_METHOD,150,13,95,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "ショートカットキーを有効にする",IDC_CHECK_ENABLE_HOTKEYS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,41,140,10
     GROUPBOX        "動作設定",IDC_STATIC,3,3,294,194
 END
 
@@ -188,7 +195,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,198,76,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,252,76,50,14
     LTEXT           "「autosaver」プラグイン(autosaver.auf)がインストールされていません。\n拡張編集標準の自動バックアップ機能では、Curve Editorの一部のデータが保持されないため、プロジェクトの自動保存を行いたい場合は、このプラグインをインストールする必要があります。\n\n「autosaver」のダウンロードページに移動しますか？",IDC_STATIC,7,7,295,47
-    CONTROL         "今後は表示しない",IDC_DONTSHOWAGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,74,10
+    CONTROL         "今後は表示しない",IDC_CHECK_DONTSHOWAGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,74,10
 END
 
 IDD_PREF_GENERAL DIALOGEX 0, 0, 300, 200
@@ -196,8 +203,8 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     LTEXT           "言語/Language",IDC_STATIC,10,15,52,8
-    COMBOBOX        IDC_COMBO_LANGUAGE,160,13,80,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "アップデートを通知",IDC_CHECK_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,150,10
+    COMBOBOX        IDC_COMBO_LANGUAGE,150,13,95,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "アップデートを通知",IDC_CHECK_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,140,10
     GROUPBOX        "一般設定",IDC_STATIC,3,3,294,194
 END
 
@@ -219,7 +226,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,190,106,50,14
     CTEXT           "Curve Editor",IDC_STATIC,7,7,233,9
     LTEXT           "Version :\nDeveloped by\nTranslated by",IDC_STATIC_PLUGIN_INFO,7,50,131,26
-    CONTROL         "<a href=""https://github.com/mimaraka/aviutl-plugin-curve_editor?tab=MIT-1-ov-file#readme"">ライセンス</a>\n<a href=""https://forms.gle/S1vazu2xgrzQwxUW6"">バグを報告</a>",IDC_SYSLINK1,
+    CONTROL         "<a href=""https://github.com/mimaraka/aviutl-plugin-curve_editor?tab=MIT-1-ov-file#readme"">ライセンス</a>\n<a href=""https://forms.gle/S1vazu2xgrzQwxUW6"">バグを報告</a>",IDC_SYSLINK_ABOUT,
                     "SysLink",WS_TABSTOP,7,82,64,20
 END
 
@@ -288,10 +295,9 @@ BEGIN
         LEFTMARGIN, 3
         RIGHTMARGIN, 297
         VERTGUIDE, 10
-        VERTGUIDE, 160
-        VERTGUIDE, 188
-        VERTGUIDE, 210
-        VERTGUIDE, 240
+        VERTGUIDE, 150
+        VERTGUIDE, 195
+        VERTGUIDE, 245
         TOPMARGIN, 3
         BOTTOMMARGIN, 197
         HORZGUIDE, 27
@@ -303,8 +309,8 @@ BEGIN
         LEFTMARGIN, 3
         RIGHTMARGIN, 297
         VERTGUIDE, 10
-        VERTGUIDE, 160
-        VERTGUIDE, 240
+        VERTGUIDE, 150
+        VERTGUIDE, 245
         TOPMARGIN, 3
         BOTTOMMARGIN, 197
         HORZGUIDE, 13
@@ -335,8 +341,8 @@ BEGIN
         LEFTMARGIN, 3
         RIGHTMARGIN, 297
         VERTGUIDE, 10
-        VERTGUIDE, 160
-        VERTGUIDE, 240
+        VERTGUIDE, 150
+        VERTGUIDE, 245
         VERTGUIDE, 297
         TOPMARGIN, 3
         BOTTOMMARGIN, 197
@@ -555,6 +561,7 @@ BEGIN
     IDS_WORD_VERSION        "バージョン"
     IDS_WORD_EDIT_MODE      "編集モード"
     IDS_WORD_LANGUAGE_AUTOMATIC "自動"
+    IDS_WORD_IMAGE_FILES    "画像ファイル"
 END
 
 STRINGTABLE
@@ -579,6 +586,11 @@ END
 STRINGTABLE
 BEGIN
     IDS_LABEL_MENU_UPDATE_AVAILABLE "*アップデートが利用可能です！"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LABEL_SELECT_BG_IMAGE "背景画像を選択"
 END
 
 #endif    // 日本語 (日本) resources
@@ -709,6 +721,7 @@ BEGIN
     IDS_WORD_VERSION        "Version"
     IDS_WORD_EDIT_MODE      "Edit Mode"
     IDS_WORD_LANGUAGE_AUTOMATIC "Automatic"
+    IDS_WORD_IMAGE_FILES    "Image FIles"
 END
 
 STRINGTABLE
@@ -732,6 +745,11 @@ END
 STRINGTABLE
 BEGIN
     IDS_WARNING_PREF_RESET  "Are you sure to reset all preferences?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LABEL_SELECT_BG_IMAGE "Select Background Image"
 END
 
 #endif    // 英語 (米国) resources

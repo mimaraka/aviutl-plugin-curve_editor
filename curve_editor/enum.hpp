@@ -64,7 +64,8 @@ namespace cved {
 		AddUpdateNotification	= 0x0b1a,
 		UpdateParamPanel		= 0x0b1b,
 		UpdateIdPanel			= 0x0b1c,
-		MoveWindow				= 0x0b1d
+		MoveWindow				= 0x0b1d,
+		SetBackgroundImage		= 0x0b1e
 	};
 
 	enum class ThemeId {

@@ -1,4 +1,5 @@
 #include "preferences.hpp"
+#include <strconv2/strconv2.h>
 #include "global.hpp"
 #include "json_loader.hpp"
 
@@ -12,12 +13,15 @@ namespace cved {
 		curve_thickness = 1.2f;
 		curve_drawing_interval = 1.f;
 		graphic_method = mkaul::graphics::Factory::GraphicEngine::Directx;
+		bg_image_path = "";
+		bg_image_opacity = 0.3f;
 		show_popup = true;
 		show_trace = true;
 		auto_copy = false;
 		auto_apply = true;
 		reverse_wheel = false;
 		notify_update = false;
+		set_bg_image = false;
 	}
 
 	void Preferences::from_json(const nlohmann::json& data) noexcept {
@@ -34,6 +38,11 @@ namespace cved {
 		JsonLoader::get_value(data, "auto_apply", auto_apply);
 		JsonLoader::get_value(data, "reverse_wheel", reverse_wheel);
 		JsonLoader::get_value(data, "notify_update", notify_update);
+		JsonLoader::get_value(data, "set_bg_image", set_bg_image);
+		std::string str_tmp;
+		JsonLoader::get_value(data, "bg_image_path", str_tmp);
+		bg_image_path = utf8_to_sjis(str_tmp);
+		JsonLoader::get_value(data, "bg_image_opacity", bg_image_opacity);
 	}
 
 	void Preferences::to_json(nlohmann::json* p_json) const noexcept {
@@ -50,7 +59,10 @@ namespace cved {
 			{"auto_copy", auto_copy},
 			{"auto_apply", auto_apply},
 			{"reverse_wheel", reverse_wheel},
-			{"notify_update", notify_update}
+			{"notify_update", notify_update},
+			{"set_bg_image", set_bg_image},
+			{"bg_image_path", sjis_to_utf8(bg_image_path.string())},
+			{"bg_image_opacity", bg_image_opacity}
 		};
 	}
 

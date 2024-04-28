@@ -49,9 +49,11 @@ namespace cved {
 				LabelPreferenceAppearance,
 				LabelPreferenceBehavior,
 				LabelPreferenceEditing,
+				LabelSelectBackgroundImage,
 				WordVersion,
 				WordEditMode,
 				WordLanguageAutomatic,
+				WordImageFiles,
 				NumStringId
 			};
 
