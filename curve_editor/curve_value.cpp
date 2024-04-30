@@ -5,8 +5,10 @@
 namespace cved {
 	ValueCurve::ValueCurve(
 		const mkaul::Point<double>& pt_start,
-		const mkaul::Point<double>& pt_end
-	)
+		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution
+	) noexcept
 	{
 		
 	}

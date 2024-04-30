@@ -12,13 +12,15 @@ namespace cved {
 	BezierCurve::BezierCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		const mkaul::Point<double>& handle_left,
 		const mkaul::Point<double>& handle_right
-	) :
-		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
+	) noexcept :
+		NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next },
 		handle_left_{ this, BezierHandle::Type::Left, handle_left },
 		handle_right_{ this, BezierHandle::Type::Right, handle_right },
 		handle_buffer_left_{ this, BezierHandle::Type::Left },

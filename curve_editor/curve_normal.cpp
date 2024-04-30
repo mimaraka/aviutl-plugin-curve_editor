@@ -11,9 +11,11 @@
 namespace cved {
 	NormalCurve::NormalCurve(
 		const mkaul::Point<double>& pt_start,
-		const mkaul::Point<double>& pt_end
-	) :
-		GraphCurve{ pt_start, pt_end, true, nullptr, nullptr },
+		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution
+	) noexcept :
+		GraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, true, nullptr, nullptr },
 		curve_segments_{}
 	{
 		clear();
@@ -297,6 +299,7 @@ namespace cved {
 					new BezierCurve{
 						pt,
 						(*it)->pt_end().pt(),
+						0u, 0u,
 						false,
 						(*it).get(),
 						(*it)->next(),
@@ -403,6 +406,8 @@ namespace cved {
 			new_curve = std::make_unique<LinearCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -414,6 +419,8 @@ namespace cved {
 			new_curve = std::make_unique<BezierCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -425,6 +432,8 @@ namespace cved {
 			new_curve = std::make_unique<ElasticCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -435,6 +444,8 @@ namespace cved {
 			new_curve = std::make_unique<BounceCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()

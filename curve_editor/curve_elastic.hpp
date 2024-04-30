@@ -23,13 +23,15 @@ namespace cved {
 		ElasticCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			double amp = DEFAULT_AMP,
 			double freq = DEFAULT_FREQ,
 			double decay = DEFAULT_DECAY
-		);
+		) noexcept;
 
 		// カーブの値を取得
 		double curve_function(double progress, double start, double end) const noexcept override;

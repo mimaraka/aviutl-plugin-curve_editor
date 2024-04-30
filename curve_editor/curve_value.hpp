@@ -13,8 +13,10 @@ namespace cved {
 	public:
 		ValueCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. }
-		);
+			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u
+		) noexcept;
 
 		const auto& get_curve_segments() const noexcept { return curve_segments_; }
 		double curve_function(double progress, double start, double end) const noexcept override;

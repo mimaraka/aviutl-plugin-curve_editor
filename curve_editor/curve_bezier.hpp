@@ -22,12 +22,14 @@ namespace cved {
 		BezierCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			const mkaul::Point<double>& handle_left = mkaul::Point<double>{},
 			const mkaul::Point<double>& handle_right = mkaul::Point<double>{}
-		);
+		) noexcept;
 
 		void set_prev(GraphCurve* p) noexcept override;
 		void set_next(GraphCurve* p) noexcept override;

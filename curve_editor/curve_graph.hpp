@@ -11,8 +11,8 @@ namespace cved {
 	class GraphCurve : public Curve {
 		GraphCurve* prev_;
 		GraphCurve* next_;
-		uint32_t sampling_resolution_ = 0u;
-		uint32_t quantization_resolution_ = 0u;
+		uint32_t sampling_resolution_;
+		uint32_t quantization_resolution_;
 
 	protected:
 		ControlPoint pt_start_;
@@ -25,15 +25,20 @@ namespace cved {
 			End
 		};
 
+		// コンストラクタ
 		GraphCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr
-		) :
+		) noexcept :
 			pt_start_{ pt_start, pt_fixed },
 			pt_end_{ pt_end, pt_fixed },
+			sampling_resolution_{ sampling_resolution },
+			quantization_resolution_{ quantization_resolution },
 			prev_{prev},
 			next_{next}
 		{}

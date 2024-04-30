@@ -26,10 +26,13 @@ namespace cved {
 		}
 
 	public:
+		// コンストラクタ
 		NormalCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. }
-		);
+			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u
+		) noexcept;
 
 		auto& get_curve_segments() noexcept { return curve_segments_; }
 

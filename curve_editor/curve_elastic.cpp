@@ -10,14 +10,16 @@ namespace cved {
 	ElasticCurve::ElasticCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		double amp,
 		double freq,
 		double decay
-	) : 
-		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
+	) noexcept : 
+		NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next },
 		handle_amp_{},
 		handle_freq_decay_{},
 		amp_{ amp },
