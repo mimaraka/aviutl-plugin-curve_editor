@@ -139,6 +139,9 @@ namespace cved {
 			auto get_notify_update() const noexcept { return pref_.notify_update; }
 			void set_notify_update(bool notify_update) noexcept { pref_.notify_update = notify_update; }
 
+			auto get_enable_hotkeys() const noexcept { return pref_.enable_hotkeys; }
+			void set_enable_hotkeys(bool enable_hotkeys) noexcept { pref_.enable_hotkeys = enable_hotkeys; }
+
 			auto get_ignore_autosaver_warning() const noexcept { return ignore_autosaver_warning_; }
 			void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 

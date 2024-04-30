@@ -18,6 +18,7 @@ namespace cved {
 		auto_apply = true;
 		reverse_wheel = false;
 		notify_update = false;
+		enable_hotkeys = true;
 	}
 
 	void Preferences::from_json(const nlohmann::json& data) noexcept {
@@ -34,6 +35,7 @@ namespace cved {
 		JsonLoader::get_value(data, "auto_apply", auto_apply);
 		JsonLoader::get_value(data, "reverse_wheel", reverse_wheel);
 		JsonLoader::get_value(data, "notify_update", notify_update);
+		JsonLoader::get_value(data, "enable_hotkeys", enable_hotkeys);
 	}
 
 	void Preferences::to_json(nlohmann::json* p_json) const noexcept {
@@ -50,7 +52,8 @@ namespace cved {
 			{"auto_copy", auto_copy},
 			{"auto_apply", auto_apply},
 			{"reverse_wheel", reverse_wheel},
-			{"notify_update", notify_update}
+			{"notify_update", notify_update},
+			{"enable_hotkeys", enable_hotkeys}
 		};
 	}
 
