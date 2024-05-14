@@ -517,11 +517,13 @@ namespace cved {
 
 			case (WPARAM)WindowCommand::IdBack:
 				global::editor.advance_idx(-1);
+				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
 				global::window_main.send_command((WPARAM)WindowCommand::Update);
 				break;
 
 			case (WPARAM)WindowCommand::IdNext:
 				global::editor.advance_idx(1);
+				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
 				global::window_main.send_command((WPARAM)WindowCommand::Update);
 				break;
 			}
