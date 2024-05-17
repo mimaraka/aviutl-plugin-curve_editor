@@ -20,6 +20,10 @@ namespace cved {
 		handle_.from_param(cor, period, pt_start, pt_end);
 	}
 
+	// コピーコンストラクタ
+	BounceCurve::BounceCurve(const BounceCurve& curve) noexcept : NumericGraphCurve{ curve }, handle_{ curve.handle_ }, cor_{ curve.cor_ }, period_{ curve.period_ } {}
+
+	// カーブの関数
 	double BounceCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - pt_start().x()) / (pt_end().x() - pt_start().x()), 0., 1.);
 

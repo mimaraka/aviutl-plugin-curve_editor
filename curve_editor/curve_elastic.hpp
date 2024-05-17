@@ -33,6 +33,9 @@ namespace cved {
 			double decay = DEFAULT_DECAY
 		) noexcept;
 
+		// コピーコンストラクタ
+		ElasticCurve(const ElasticCurve& curve) noexcept;
+
 		// カーブの値を取得
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;

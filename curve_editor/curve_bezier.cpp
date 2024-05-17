@@ -37,6 +37,16 @@ namespace cved {
 		}
 	}
 
+	// コピーコンストラクタ
+	BezierCurve::BezierCurve(const BezierCurve& curve) noexcept :
+		NumericGraphCurve{ curve },
+		handle_left_{this, curve.handle_left_.type(), curve.handle_left_.pt_offset(), curve.handle_left_.is_fixed() },
+		handle_right_{ this, curve.handle_right_.type(), curve.handle_right_.pt_offset(), curve.handle_right_.is_fixed() },
+		handle_buffer_left_{ this, BezierHandle::Type::Left },
+		handle_buffer_right_{ this, BezierHandle::Type::Right },
+		flag_prev_move_symmetrically_{ curve.flag_prev_move_symmetrically_ }
+	{}
+
 	void BezierCurve::set_prev(GraphCurve* p) noexcept {
 		BezierHandle* handle_opposite;
 		if (p and typeid(*p) == typeid(BezierCurve)) {

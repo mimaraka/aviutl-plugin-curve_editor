@@ -36,6 +36,8 @@ namespace cved {
 		) noexcept;
 
 		// コピーコンストラクタ
+		NormalCurve(const NormalCurve& curve) noexcept;
+
 		// セグメント数を取得
 		auto segment_n() const noexcept { return curve_segments_.size(); }
 		// セグメントを取得

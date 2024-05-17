@@ -81,10 +81,10 @@ namespace cved {
 
 	void GraphCurve::reverse(bool fix_pt) noexcept {
 		if (!fix_pt) {
-		auto pt_tmp = pt_start_.pt();
-		pt_start_ = mkaul::Point{ 1., 1. } - pt_end_.pt();
-		pt_end_ = mkaul::Point{ 1., 1. } - pt_tmp;
-	}
+			auto pt_tmp = pt_start_.pt();
+			pt_start_ = mkaul::Point{ 1., 1. } - pt_end_.pt();
+			pt_end_ = mkaul::Point{ 1., 1. } - pt_tmp;
+		}
 	}
 
 	bool GraphCurve::is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {

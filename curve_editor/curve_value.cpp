@@ -13,6 +13,10 @@ namespace cved {
 		
 	}
 
+	ValueCurve::ValueCurve(const ValueCurve& curve) noexcept
+	{
+	}
+
 	double ValueCurve::curve_function(double progress, double start, double end) const noexcept
 	{
 		return 0.;

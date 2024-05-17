@@ -43,6 +43,16 @@ namespace cved {
 			next_{next}
 		{}
 
+		// コピーコンストラクタ
+		GraphCurve(const GraphCurve& curve) noexcept :
+			pt_start_{ curve.pt_start_ },
+			pt_end_{ curve.pt_end_ },
+			sampling_resolution_{ curve.sampling_resolution_ },
+			quantization_resolution_{ curve.quantization_resolution_ },
+			prev_{ nullptr },
+			next_{ nullptr }
+		{}
+
 		auto prev() const noexcept { return prev_; }
 		auto next() const noexcept { return next_; }
 		virtual void set_prev(GraphCurve* p) noexcept { prev_ = p; }

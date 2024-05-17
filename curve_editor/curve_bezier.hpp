@@ -31,6 +31,9 @@ namespace cved {
 			const mkaul::Point<double>& handle_right = mkaul::Point<double>{}
 		) noexcept;
 
+		// コピーコンストラクタ
+		BezierCurve(const BezierCurve& curve) noexcept;
+
 		void set_prev(GraphCurve* p) noexcept override;
 		void set_next(GraphCurve* p) noexcept override;
 

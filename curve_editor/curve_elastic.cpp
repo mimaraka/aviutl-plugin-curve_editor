@@ -30,6 +30,18 @@ namespace cved {
 		handle_freq_decay_.from_param(freq, decay, pt_start, pt_end);
 	}
 
+
+	// コピーコンストラクタ
+	ElasticCurve::ElasticCurve(const ElasticCurve& curve) noexcept :
+		NumericGraphCurve{ curve },
+		handle_amp_{ curve.handle_amp_ },
+		handle_freq_decay_{ curve.handle_freq_decay_ },
+		amp_{ curve.amp_ },
+		freq_{ curve.freq_ },
+		decay_{ curve.decay_ }
+	{}
+
+
 	// カーブの値を取得
 	double ElasticCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - pt_start().x()) / (pt_end().x() - pt_start().x()), 0., 1.);

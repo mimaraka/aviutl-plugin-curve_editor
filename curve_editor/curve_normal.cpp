@@ -21,6 +21,44 @@ namespace cved {
 		clear();
 	}
 
+	// コピーコンストラクタ
+	NormalCurve::NormalCurve(const NormalCurve& curve) noexcept :
+		GraphCurve{ curve },
+		curve_segments_{}
+	{
+		// TODO: 分岐処理を消したい
+		for (const auto& p_curve : curve.curve_segments_) {
+			std::unique_ptr<GraphCurve> new_curve;
+			if (typeid(*p_curve.get()) == typeid(BezierCurve)) {
+				new_curve = std::make_unique<BezierCurve>(*dynamic_cast<BezierCurve*>(p_curve.get()));
+			}
+			else if (typeid(*p_curve.get()) == typeid(LinearCurve)) {
+				new_curve = std::make_unique<LinearCurve>(*dynamic_cast<LinearCurve*>(p_curve.get()));
+			}
+			else if (typeid(*p_curve.get()) == typeid(ElasticCurve)) {
+				new_curve = std::make_unique<ElasticCurve>(*dynamic_cast<ElasticCurve*>(p_curve.get()));
+			}
+			else if (typeid(*p_curve.get()) == typeid(BounceCurve)) {
+				new_curve = std::make_unique<BounceCurve>(*dynamic_cast<BounceCurve*>(p_curve.get()));
+			}
+			else continue;
+			if (!curve_segments_.empty()) {
+				new_curve->set_prev(curve_segments_.back().get());
+				curve_segments_.back()->set_next(new_curve.get());
+			}
+			curve_segments_.emplace_back(std::move(new_curve));
+		}
+	}
+
+	bool NormalCurve::adjust_segment_handle_angle(size_t idx, BezierHandle::Type handle_type, const GraphView& view) noexcept {
+		if (check_segment_type<BezierCurve>(idx)) {
+			auto curve_bezier = dynamic_cast<BezierCurve*>(curve_segments_[idx].get());
+			curve_bezier->adjust_handle_angle(handle_type, view);
+			return true;
+		}
+		return false;
+	}
+
 	// カーブの値を取得
 	double NormalCurve::curve_function(double progress, double start, double end) const noexcept {
 		for (auto it = curve_segments_.begin(), ed = curve_segments_.end(); it != ed; it++) {

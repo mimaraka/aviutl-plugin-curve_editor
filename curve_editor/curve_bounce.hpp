@@ -29,6 +29,9 @@ namespace cved {
 		);
 		~BounceCurve() {}
 
+		// コピーコンストラクタ
+		BounceCurve(const BounceCurve& curve) noexcept;
+
 		// カーブの値を生成
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
