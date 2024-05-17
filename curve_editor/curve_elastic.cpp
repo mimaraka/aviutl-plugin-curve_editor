@@ -113,9 +113,9 @@ namespace cved {
 	}
 
 	// カーブを反転
-	void ElasticCurve::reverse() noexcept {
+	void ElasticCurve::reverse(bool fix_pt) noexcept {
 		handle_freq_decay_.reverse(pt_start(), pt_end());
-		GraphCurve::reverse();
+		GraphCurve::reverse(fix_pt);
 		handle_amp_.from_param(amp_, pt_start(), pt_end());
 		handle_freq_decay_.from_param(freq_, decay_, pt_start(), pt_end());
 	}

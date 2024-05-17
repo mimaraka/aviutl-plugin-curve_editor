@@ -12,18 +12,19 @@ namespace cved {
 		menu_ = ::GetSubMenu(::LoadMenuA(hinst, MAKEINTRESOURCEA(IDR_MENU_BEZIER_HANDLE)), 0);
 	}
 
-	void BezierHandleMenu::update_state(const BezierHandle* p_handle) noexcept {
-		if (p_handle == nullptr) return;
+	void BezierHandleMenu::update_state(size_t idx, BezierHandle::Type handle_type) noexcept {
+		auto curve_normal = global::editor.editor_graph().curve_normal();
+		if (!curve_normal->check_segment_type<BezierCurve>(idx)) return;
 
 		bool is_curve_adjacent = false;
 
-		switch (p_handle->type()) {
+		switch (handle_type) {
 		case BezierHandle::Type::Left:
-			is_curve_adjacent = p_handle->p_curve()->prev() != nullptr;
+			is_curve_adjacent = curve_normal->get_segment(idx)->prev() != nullptr;
 			break;
 
 		case BezierHandle::Type::Right:
-			is_curve_adjacent = p_handle->p_curve()->next() != nullptr;
+			is_curve_adjacent = curve_normal->get_segment(idx)->next() != nullptr;
 			break;
 
 		default:
@@ -37,13 +38,14 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_BEZIER_HANDLE_ROTATE, FALSE, &minfo_tmp);
 	}
 
-	HMENU BezierHandleMenu::get_handle(const BezierHandle* p_handle) noexcept {
-		update_state(p_handle);
+	HMENU BezierHandleMenu::get_handle(size_t idx, BezierHandle::Type handle_type) noexcept {
+		update_state(idx, handle_type);
 		return Menu::get_handle();
 	}
 
 	int BezierHandleMenu::show(
-		BezierHandle* p_handle,
+		size_t idx,
+		BezierHandle::Type handle_type,
 		const GraphView& view,
 		HWND hwnd,
 		UINT flags,
@@ -54,7 +56,7 @@ namespace cved {
 		if (p_custom_pt_screen) {
 			tmp = p_custom_pt_screen->to<POINT>();
 		}
-		update_state(p_handle);
+		update_state(idx, handle_type);
 		int ret = ::TrackPopupMenu(
 			menu_,
 			flags | TPM_RETURNCMD | TPM_NONOTIFY,
@@ -62,15 +64,16 @@ namespace cved {
 			tmp.y,
 			0, hwnd, NULL
 		);
-		return callback(p_handle, view, ret);
+		return callback(idx, handle_type, view, ret);
 	}
 
-	bool BezierHandleMenu::callback(BezierHandle* p_handle, const GraphView& view, uint16_t id) noexcept {
+	bool BezierHandleMenu::callback(size_t idx, BezierHandle::Type handle_type, const GraphView& view, uint16_t id) noexcept {
 		using StringId = global::StringTable::StringId;
 		switch (id) {
 		case ID_BEZIER_HANDLE_ROTATE:
-			p_handle->adjust_angle(view);
-			global::window_grapheditor.redraw();
+			if (global::editor.editor_graph().curve_normal()->adjust_segment_handle_angle(idx, handle_type, view)) {
+				global::window_grapheditor.redraw();
+			}
 			break;
 
 		case ID_BEZIER_HANDLE_ROOT:

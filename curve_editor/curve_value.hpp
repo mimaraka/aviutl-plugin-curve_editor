@@ -18,7 +18,8 @@ namespace cved {
 			uint32_t quantization_resolution = 0u
 		) noexcept;
 
-		const auto& get_curve_segments() const noexcept { return curve_segments_; }
+		ValueCurve(const ValueCurve& curve) noexcept;
+
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
 		void create_data(std::vector<byte>& data) const noexcept override;

@@ -37,7 +37,7 @@ namespace cved {
 		// カーブの値を取得する
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		void reverse() noexcept override;
+		void reverse(bool fix_pt = false) noexcept override;
 
 		// カーブから一意な整数値を生成
 		int32_t encode() const noexcept override;
@@ -65,7 +65,14 @@ namespace cved {
 		// ハンドルを取得 (右)
 		auto handle_right() const noexcept { return const_cast<BezierHandle*>(&handle_right_); }
 
+		// カーソルが左右いずれかのハンドルにホバーしているか
 		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
+		// 左ハンドルにホバーしているか
+		bool is_left_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
+		// 右ハンドルにホバーしているか
+		bool is_right_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
+
+		void adjust_handle_angle(BezierHandle::Type type, const GraphView& view) noexcept;
 
 		// ハンドルの移動を開始
 		bool handle_check_hover(

@@ -294,22 +294,19 @@ namespace cved {
 			// TODO: 値指定モードに対応させる
 			if (config.get_edit_mode() == EditMode::Normal) {
 				auto p_curve_normal = editor.curve_normal();
-				for (auto it = p_curve_normal->get_curve_segments().begin(), end = p_curve_normal->get_curve_segments().end(); it != end; it++) {
-					// ベジェのハンドルにホバーしていた場合
-					if (typeid(**it) == typeid(BezierCurve) and (*it)->is_handle_hovered(pt_view, view)) {
-						auto p_curve_bezier = dynamic_cast<BezierCurve*>(it->get());
-						if (p_curve_bezier->handle_left()->is_hovered(pt_view, view)) {
-							menu_bezier_handle.show(p_curve_bezier->handle_left(), view, hwnd);
+				for (size_t i = 0u; i < p_curve_normal->segment_n(); i++) {
+					if (p_curve_normal->check_segment_type<BezierCurve>(i) and p_curve_normal->get_segment(i)->is_handle_hovered(pt_view, view)) {
+						auto p_curve_bezier = dynamic_cast<const BezierCurve*>(p_curve_normal->get_segment(i));
+						if (p_curve_bezier->is_left_handle_hovered(pt_view, view)) {
+							menu_bezier_handle.show(i, BezierHandle::Type::Left, view, hwnd);
 						}
-						else if (p_curve_bezier->handle_right()->is_hovered(pt_view, view)) {
-							menu_bezier_handle.show(p_curve_bezier->handle_right(), view, hwnd);
+						else if (p_curve_bezier->is_right_handle_hovered(pt_view, view)) {
+							menu_bezier_handle.show(i, BezierHandle::Type::Right, view, hwnd);
 						}
 						return 0;
 					}
-					// カーブの始点にホバーしていた場合
-					if ((*it)->pt_start().is_hovered(pt_view, view)) {
-						size_t idx = std::distance(p_curve_normal->get_curve_segments().begin(), it);
-						menu_curve.show(idx, hwnd);
+					if (p_curve_normal->get_segment(i)->pt_start().is_hovered(pt_view, view)) {
+						menu_curve.show(i, hwnd);
 						return 0;
 					}
 				}
@@ -324,11 +321,13 @@ namespace cved {
 				::InvalidateRect(hwnd, NULL, FALSE);
 				break;
 
+			// ビューのフィット
 			case (UINT)WindowCommand::Fit:
 				view.fit(rect_wnd);
 				::InvalidateRect(hwnd, NULL, FALSE);
 				break;
 
+			// カーブの反転
 			case (UINT)WindowCommand::Reverse:
 			{
 				auto curve = editor.current_curve();

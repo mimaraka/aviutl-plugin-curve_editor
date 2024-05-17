@@ -1,6 +1,7 @@
 #pragma once
 
 #include "curve_graph.hpp"
+#include "handle_bezier.hpp"
 #include "enum.hpp"
 
 
@@ -34,11 +35,30 @@ namespace cved {
 			uint32_t quantization_resolution = 0u
 		) noexcept;
 
-		auto& get_curve_segments() noexcept { return curve_segments_; }
+		// コピーコンストラクタ
+		// セグメント数を取得
+		auto segment_n() const noexcept { return curve_segments_.size(); }
+		// セグメントを取得
+		const GraphCurve* get_segment(size_t idx) const noexcept {
+			if (idx < curve_segments_.size()) {
+				return curve_segments_[idx].get();
+			}
+			return nullptr;
+		}
+
+		// セグメントの型をチェック
+		template <class CurveType>
+		bool check_segment_type(size_t idx) const noexcept {
+			auto segment = get_segment(idx);
+			return segment != nullptr and typeid(*segment) == typeid(CurveType);
+		}
+
+		bool adjust_segment_handle_angle(size_t idx, BezierHandle::Type handle_type, const GraphView& view) noexcept;
 
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		void reverse() noexcept override;
+		void reverse(bool fix_pt = false) noexcept override;
+		void reverse_segment(size_t idx) noexcept;
 
 		void create_data(std::vector<byte>& data) const noexcept override;
 		bool load_data(const byte* data, size_t size) noexcept override;

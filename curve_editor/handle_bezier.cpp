@@ -112,14 +112,13 @@ namespace cved {
 		locked_length_ = false;
 	}
 
-	void BezierHandle::adjust_angle(const GraphView& view) noexcept {
+	void BezierHandle::adjust_angle(const GraphCurve* p_curve_neighbor, const GraphView& view) noexcept {
 		double length = get_handle_length(view);
-		const GraphCurve* p_curve_neighbor = nullptr;
 		mkaul::Point<double> pt_dest;
 
-		if (type_ == Type::Left) {
-			p_curve_neighbor = p_curve_->prev();
-			if (!p_curve_neighbor) return;
+		if (!p_curve_neighbor) return;
+
+		if (type_ == Type::Left) {	
 			auto pt_origin = p_curve_->pt_start().pt();
 			double slope = p_curve_neighbor->get_velocity(pt_origin.x, 0., 1.);
 			double angle = std::atan(slope * view.scale_y() / view.scale_x());
@@ -133,8 +132,6 @@ namespace cved {
 			);
 		}
 		else {
-			p_curve_neighbor = p_curve_->next();
-			if (!p_curve_neighbor) return;
 			auto pt_origin = p_curve_->pt_end().pt();
 			// TODO: この0.000001は適当な値
 			double slope = p_curve_neighbor->get_velocity(pt_origin.x + 0.000001, 0., 1.);
@@ -340,7 +337,6 @@ namespace cved {
 		const mkaul::Point<double>& pt,
 		const GraphView& view
 	) noexcept {
-
 		if (pt_offset_.is_controlled()) {
 			update_flags(view);
 			pt_offset_.move(get_dest_pt(pt, view));

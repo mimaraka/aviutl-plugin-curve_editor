@@ -54,13 +54,13 @@ namespace cved {
 		// TODO: 値指定モードに対応させる
 		if (global::config.get_edit_mode() == EditMode::Normal) {
 			auto p_curve_normal = global::editor.editor_graph().curve_normal();
-			if (p_curve_normal and idx < p_curve_normal->get_curve_segments().size()) {
+			if (p_curve_normal and idx < p_curve_normal->segment_n()) {
 				// カーブタイプのサブメニューのチェック状態を更新
 				for (uint32_t i = 0u; i < n_segment_types; i++) {
 					MENUITEMINFOA minfo_tmp;
 					minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
 					minfo_tmp.fMask = MIIM_STATE;
-					minfo_tmp.fState = typeid(*(p_curve_normal->get_curve_segments()[idx])) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
+					minfo_tmp.fState = typeid(*(p_curve_normal->get_segment(idx))) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
 					::SetMenuItemInfoA(submenu_segment_type_, i, TRUE, &minfo_tmp);
 				}
 			}
@@ -125,10 +125,9 @@ namespace cved {
 
 		case ID_CURVE_REVERSE:
 		{
-			auto p_curve = global::editor.editor_graph().curve_normal();
-			if (p_curve) {
-				// TODO: カーブの位置を固定させたまま反転させる
-				//p_curve->get_curve_segments()[idx]->reverse();
+			auto p_curve_normal = global::editor.editor_graph().curve_normal();
+			if (p_curve_normal) {
+				p_curve_normal->reverse_segment(idx);
 				global::window_grapheditor.redraw();
 			}
 			break;
@@ -136,10 +135,10 @@ namespace cved {
 
 		case ID_CURVE_DISCRETIZATION:
 		{
-			auto p_curve = global::editor.editor_graph().curve_normal();
-			if (p_curve) {
+			auto p_curve_normal = global::editor.editor_graph().curve_normal();
+			if (p_curve_normal) {
 				CurveDiscretizationDialog dialog;
-				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve->get_curve_segments()[idx].get()));
+				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve_normal->get_segment(idx)));
 			}
 			break;
 		}

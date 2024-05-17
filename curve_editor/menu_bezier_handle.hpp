@@ -8,14 +8,15 @@
 
 namespace cved {
 	class BezierHandleMenu : public Menu {
-		void update_state(const BezierHandle* p_handle) noexcept;
-		bool callback(BezierHandle* p_handle, const GraphView& view, uint16_t id) noexcept;
+		void update_state(size_t idx, BezierHandle::Type handle_type) noexcept;
+		bool callback(size_t idx, BezierHandle::Type handle_type, const GraphView& view, uint16_t id) noexcept;
 
 	public:
 		BezierHandleMenu(HINSTANCE hinst);
-		HMENU get_handle(const BezierHandle* p_handle) noexcept;
+		HMENU get_handle(size_t idx, BezierHandle::Type handle_type) noexcept;
 		int show(
-			BezierHandle* p_handle,
+			size_t idx,
+			BezierHandle::Type handle_type,
 			const GraphView& view,
 			HWND hwnd,
 			UINT flags = NULL,

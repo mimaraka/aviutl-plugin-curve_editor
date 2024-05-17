@@ -29,6 +29,7 @@ namespace cved {
 		const auto& pt() const noexcept { return pt_; }
 		auto x() const noexcept { return pt_.x; }
 		auto y() const noexcept { return pt_.y; }
+		auto is_fixed() const noexcept { return fixed_; }
 
 		// 引数のポイントがコントロールポイント付近にあるかどうか
 		bool is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
