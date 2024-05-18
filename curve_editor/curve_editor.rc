@@ -188,7 +188,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,198,76,50,14
     PUSHBUTTON      "キャンセル",IDCANCEL,252,76,50,14
     LTEXT           "「autosaver」プラグイン(autosaver.auf)がインストールされていません。\n拡張編集標準の自動バックアップ機能では、Curve Editorの一部のデータが保持されないため、プロジェクトの自動保存を行いたい場合は、このプラグインをインストールする必要があります。\n\n「autosaver」のダウンロードページに移動しますか？",IDC_STATIC,7,7,295,47
-    CONTROL         "今後は表示しない",IDC_DONTSHOWAGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,74,10
+    CONTROL         "今後は表示しない", IDC_CHECK_DONTSHOWAGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,74,10
 END
 
 IDD_PREF_GENERAL DIALOGEX 0, 0, 300, 200
@@ -219,7 +219,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,190,106,50,14
     CTEXT           "Curve Editor",IDC_STATIC,7,7,233,9
     LTEXT           "Version :\nDeveloped by\nTranslated by",IDC_STATIC_PLUGIN_INFO,7,50,131,26
-    CONTROL         "<a href=""https://github.com/mimaraka/aviutl-plugin-curve_editor?tab=MIT-1-ov-file#readme"">ライセンス</a>\n<a href=""https://forms.gle/S1vazu2xgrzQwxUW6"">バグを報告</a>",IDC_SYSLINK1,
+    CONTROL         "<a href=""https://github.com/mimaraka/aviutl-plugin-curve_editor?tab=MIT-1-ov-file#readme"">ライセンス</a>\n<a href=""https://forms.gle/S1vazu2xgrzQwxUW6"">バグを報告</a>",IDC_SYSLINK_ABOUT,
                     "SysLink",WS_TABSTOP,7,82,64,20
 END
 
