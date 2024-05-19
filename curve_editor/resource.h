@@ -30,6 +30,7 @@
 #define IDC_BUTTON_APPLY                1001
 #define IDC_BUTTON_RESET                1002
 #define IDC_BUTTON_CURVE_COLOR          1003
+#define IDC_BUTTON_BACKGROUND_IMAGE     1040
 #define IDC_CHECK_REVERSE_WHEEL         1004
 #define IDC_CHECK_AUTO_COPY             1005
 #define IDC_CHECK_AUTO_APPLY            1006
@@ -53,6 +54,9 @@
 #define IDC_STATIC_SAMPLING             1024
 #define IDC_STATIC_QUANTIZATION         1025
 #define IDC_STATIC_PLUGIN_INFO          1026
+#define IDC_STATIC_BACKGROUND_IMAGE     1041
+#define IDC_STATIC_IMAGE_PATH           1041
+#define IDC_STATIC_BACKGROUND_IMAGE2    1042
 #define IDC_SYSLINK_ABOUT               1027
 #define IDS_ERROR_LUA_NOT_FOUND         4096
 #define IDS_ERROR_EXEDIT_NOT_FOUND      4097
@@ -96,9 +100,11 @@
 #define IDS_LABEL_THEME_NAME_DARK       7936
 #define IDS_LABEL_THEME_LIGHT           7937
 #define IDS_LABEL_THEME_NAME_LIGHT      7937
+#define IDS_LABEL_SELECT_BG_IMAGE       8064
 #define IDS_WORD_VERSION                9216
 #define IDS_WORD_EDIT_MODE              9217
 #define IDS_WORD_LANGUAGE_AUTOMATIC     9218
+#define IDS_WORD_IMAGE_FILES            9219
 #define ID_EDIT_APPLYMODE               40060
 #define ID_GRAPH_ALIGN                  40092
 #define ID_GRAPH_REVERSE                40095

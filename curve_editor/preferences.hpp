@@ -14,12 +14,15 @@ namespace cved {
 		float curve_thickness = 0.f;
 		float curve_drawing_interval = 0.f;
 		mkaul::graphics::Factory::GraphicEngine graphic_method = mkaul::graphics::Factory::GraphicEngine::Directx;
+		std::filesystem::path bg_image_path = "";
+		float bg_image_opacity = 0.f;
 		bool show_popup = false;
 		bool show_trace = false;
 		bool auto_copy = false;
 		bool auto_apply = false;
 		bool reverse_wheel = false;
 		bool notify_update = false;
+		bool set_bg_image = false;
 		bool enable_hotkeys = false;
 
 		void reset() noexcept;

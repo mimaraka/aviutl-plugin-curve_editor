@@ -169,6 +169,10 @@ namespace cved {
 					id = IDS_LABEL_PREFERENCE_EDITING;
 					break;
 
+				case StringId::LabelSelectBackgroundImage:
+					id = IDS_LABEL_SELECT_BG_IMAGE;
+					break;
+
 				case StringId::WordVersion:
 					id = IDS_WORD_VERSION;
 					break;
@@ -179,6 +183,10 @@ namespace cved {
 
 				case StringId::WordLanguageAutomatic:
 					id = IDS_WORD_LANGUAGE_AUTOMATIC;
+					break;
+
+				case StringId::WordImageFiles:
+					id = IDS_WORD_IMAGE_FILES;
 					break;
 
 				default:

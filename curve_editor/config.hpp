@@ -139,6 +139,15 @@ namespace cved {
 			auto get_notify_update() const noexcept { return pref_.notify_update; }
 			void set_notify_update(bool notify_update) noexcept { pref_.notify_update = notify_update; }
 
+			auto get_set_bg_image() const noexcept { return pref_.set_bg_image; }
+			void set_set_bg_image(bool set_bg_image) noexcept { pref_.set_bg_image = set_bg_image; }
+
+			auto get_bg_image_path() const noexcept { return pref_.bg_image_path; }
+			void set_bg_image_path(const std::filesystem::path& bg_image_path) noexcept { pref_.bg_image_path = bg_image_path; }
+
+			auto get_bg_image_opacity() const noexcept { return pref_.bg_image_opacity; }
+			void set_bg_image_opacity(float bg_image_opacity) noexcept { pref_.bg_image_opacity = mkaul::clamp(bg_image_opacity, 0.f, 1.f); }
+
 			auto get_enable_hotkeys() const noexcept { return pref_.enable_hotkeys; }
 			void set_enable_hotkeys(bool enable_hotkeys) noexcept { pref_.enable_hotkeys = enable_hotkeys; }
 
