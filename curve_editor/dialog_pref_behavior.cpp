@@ -14,6 +14,7 @@ namespace cved {
 	void BehaviorPrefDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_combo_graphic_method_ = ::GetDlgItem(hwnd, IDC_COMBO_GRAPHIC_METHOD);
 		hwnd_check_show_popup_ = ::GetDlgItem(hwnd, IDC_CHECK_SHOW_POPUP);
+		hwnd_check_enable_hotkeys_ = ::GetDlgItem(hwnd, IDC_CHECK_ENABLE_HOTKEYS);
 
 		::SendMessageA(hwnd_combo_graphic_method_, CB_ADDSTRING, NULL, (LPARAM)"GDI+");
 		::SendMessageA(hwnd_combo_graphic_method_, CB_ADDSTRING, NULL, (LPARAM)"DirectX");
@@ -37,6 +38,12 @@ namespace cved {
 					(WPARAM)global::config.get_show_popup(),
 					NULL
 				);
+				::SendMessageA(
+					hwnd_check_enable_hotkeys_,
+					BM_SETCHECK,
+					(WPARAM)global::config.get_enable_hotkeys(),
+					NULL
+				);
 				return TRUE;
 
 			case (WPARAM)WindowCommand::SaveConfig:
@@ -45,6 +52,9 @@ namespace cved {
 				);
 				global::config.set_show_popup(
 					::SendMessageA(hwnd_check_show_popup_, BM_GETCHECK, NULL, NULL)
+				);
+				global::config.set_enable_hotkeys(
+					::SendMessageA(hwnd_check_enable_hotkeys_, BM_GETCHECK, NULL, NULL)
 				);
 				return TRUE;
 			}
