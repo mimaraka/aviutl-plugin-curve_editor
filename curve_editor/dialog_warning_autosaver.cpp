@@ -7,6 +7,11 @@
 namespace cved {
 	int AutosaverWarningDialog::i_resource() const noexcept { return IDD_WARNING_AUTOSAVER; }
 
+	void AutosaverWarningDialog::init_controls(HWND hwnd) noexcept {
+		hwnd_check_dontshowagain_ = ::GetDlgItem(hwnd, IDC_CHECK_DONTSHOWAGAIN);
+		::SendMessageA(hwnd_check_dontshowagain_, BM_SETCHECK, global::config.get_ignore_autosaver_warning(), NULL);
+	}
+
 
 	INT_PTR AutosaverWarningDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 		constexpr char URL_GITHUB_AUTOSAVER[] = "https://github.com/ePi5131/autosaver/releases/latest";
@@ -18,6 +23,10 @@ namespace cved {
 			);
 			::EndDialog(hwnd, IDCANCEL);
 			return TRUE;*/
+
+		case WM_INITDIALOG:
+			init_controls(hwnd);
+			return TRUE;
 
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {

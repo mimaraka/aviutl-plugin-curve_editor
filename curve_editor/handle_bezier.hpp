@@ -31,19 +31,19 @@ namespace cved {
 		// ポイントが固定されているかどうか
 		bool fixed_;
 		// 終点・始点のどちらの辺にスナップしているか
-		SnapState snap_state_;
+		SnapState snap_state_ = SnapState::Unsnapped;
 		// 角度固定時に保持する値
-		double buffer_angle_;
+		double buffer_angle_ = 0.;
 		// 長さ固定時に保持する値
-		double buffer_length_;
+		double buffer_length_ = 0.;
 		// 角度が固定されているか
-		bool locked_angle_;
+		bool locked_angle_ = false;
 		// 長さが固定されているか
-		bool locked_length_;
+		bool locked_length_ = false;
 		// 過去のフラグ情報
-		bool flag_prev_snap_;
-		bool flag_prev_lock_angle_;
-		bool flag_prev_lock_length_;
+		bool flag_prev_snap_ = false;
+		bool flag_prev_lock_angle_ = false;
+		bool flag_prev_lock_length_ = false;
 		// 反対側のハンドル(整列対象のハンドル)のポインタ
 		BezierHandle* handle_opposite_;
 		const BezierCurve* const p_curve_;
@@ -105,20 +105,13 @@ namespace cved {
 			pt_offset_{ pt_offset },
 			type_{ type },
 			fixed_{ fixed },
-			handle_opposite_{ handle_opposite },
-			snap_state_{ SnapState::Unsnapped },
-			buffer_angle_{ 0. },
-			buffer_length_{ 0. },
-			locked_angle_{ false },
-			locked_length_{ false },
-			flag_prev_snap_{ false },
-			flag_prev_lock_angle_{ false },
-			flag_prev_lock_length_{ false }
+			handle_opposite_{ handle_opposite }
 		{}
 
 		auto type() const noexcept { return type_; }
 		auto p_curve() const noexcept { return p_curve_; }
 		auto handle_opposite() const noexcept { return handle_opposite_; }
+		auto is_fixed() const noexcept { return fixed_; }
 		void set_handle_opposite(BezierHandle* p) noexcept { handle_opposite_ = p; }
 
 		// 保持されている角度を取得
@@ -140,7 +133,7 @@ namespace cved {
 		void unlock_length() noexcept;
 
 		// ハンドルの角度を隣のカーブの傾きに合わせて回転させる
-		void adjust_angle(const GraphView& view) noexcept;
+		void adjust_angle(const GraphCurve* p_curve_neighbor, const GraphView& view) noexcept;
 		// ハンドルを始点に移動する
 		void move_to_root() noexcept;
 

@@ -10,14 +10,16 @@ namespace cved {
 	ElasticCurve::ElasticCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		double amp,
 		double freq,
 		double decay
-	) : 
-		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
+	) noexcept : 
+		NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next },
 		handle_amp_{},
 		handle_freq_decay_{},
 		amp_{ amp },
@@ -27,6 +29,18 @@ namespace cved {
 		handle_amp_.from_param(amp, pt_start, pt_end);
 		handle_freq_decay_.from_param(freq, decay, pt_start, pt_end);
 	}
+
+
+	// コピーコンストラクタ
+	ElasticCurve::ElasticCurve(const ElasticCurve& curve) noexcept :
+		NumericGraphCurve{ curve },
+		handle_amp_{ curve.handle_amp_ },
+		handle_freq_decay_{ curve.handle_freq_decay_ },
+		amp_{ curve.amp_ },
+		freq_{ curve.freq_ },
+		decay_{ curve.decay_ }
+	{}
+
 
 	// カーブの値を取得
 	double ElasticCurve::curve_function(double progress, double start, double end) const noexcept {
@@ -111,9 +125,9 @@ namespace cved {
 	}
 
 	// カーブを反転
-	void ElasticCurve::reverse() noexcept {
+	void ElasticCurve::reverse(bool fix_pt) noexcept {
 		handle_freq_decay_.reverse(pt_start(), pt_end());
-		GraphCurve::reverse();
+		GraphCurve::reverse(fix_pt);
 		handle_amp_.from_param(amp_, pt_start(), pt_end());
 		handle_freq_decay_.from_param(freq_, decay_, pt_start(), pt_end());
 	}

@@ -22,12 +22,17 @@ namespace cved {
 		BezierCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			const mkaul::Point<double>& handle_left = mkaul::Point<double>{},
 			const mkaul::Point<double>& handle_right = mkaul::Point<double>{}
-		);
+		) noexcept;
+
+		// コピーコンストラクタ
+		BezierCurve(const BezierCurve& curve) noexcept;
 
 		void set_prev(GraphCurve* p) noexcept override;
 		void set_next(GraphCurve* p) noexcept override;
@@ -35,7 +40,7 @@ namespace cved {
 		// カーブの値を取得する
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		void reverse() noexcept override;
+		void reverse(bool fix_pt = false) noexcept override;
 
 		// カーブから一意な整数値を生成
 		int32_t encode() const noexcept override;
@@ -47,6 +52,7 @@ namespace cved {
 
 		std::string make_param() const noexcept;
 
+		// ハンドルを描画
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,
 			const View& view,
@@ -63,7 +69,14 @@ namespace cved {
 		// ハンドルを取得 (右)
 		auto handle_right() const noexcept { return const_cast<BezierHandle*>(&handle_right_); }
 
+		// カーソルが左右いずれかのハンドルにホバーしているか
 		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
+		// 左ハンドルにホバーしているか
+		bool is_left_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
+		// 右ハンドルにホバーしているか
+		bool is_right_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
+
+		void adjust_handle_angle(BezierHandle::Type type, const GraphView& view) noexcept;
 
 		// ハンドルの移動を開始
 		bool handle_check_hover(

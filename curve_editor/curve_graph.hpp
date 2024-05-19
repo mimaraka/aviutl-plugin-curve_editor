@@ -11,8 +11,8 @@ namespace cved {
 	class GraphCurve : public Curve {
 		GraphCurve* prev_;
 		GraphCurve* next_;
-		uint32_t sampling_resolution_ = 0u;
-		uint32_t quantization_resolution_ = 0u;
+		uint32_t sampling_resolution_;
+		uint32_t quantization_resolution_;
 
 	protected:
 		ControlPoint pt_start_;
@@ -25,17 +25,32 @@ namespace cved {
 			End
 		};
 
+		// コンストラクタ
 		GraphCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr
-		) :
+		) noexcept :
 			pt_start_{ pt_start, pt_fixed },
 			pt_end_{ pt_end, pt_fixed },
+			sampling_resolution_{ sampling_resolution },
+			quantization_resolution_{ quantization_resolution },
 			prev_{prev},
 			next_{next}
+		{}
+
+		// コピーコンストラクタ
+		GraphCurve(const GraphCurve& curve) noexcept :
+			pt_start_{ curve.pt_start_ },
+			pt_end_{ curve.pt_end_ },
+			sampling_resolution_{ curve.sampling_resolution_ },
+			quantization_resolution_{ curve.quantization_resolution_ },
+			prev_{ nullptr },
+			next_{ nullptr }
 		{}
 
 		auto prev() const noexcept { return prev_; }
@@ -80,7 +95,7 @@ namespace cved {
 		const auto& pt_start() const noexcept { return pt_start_; }
 		const auto& pt_end() const noexcept { return pt_end_; }
 
-		virtual void reverse() noexcept;
+		virtual void reverse(bool fix_pt = false) noexcept;
 
 		bool is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
 		virtual bool is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;

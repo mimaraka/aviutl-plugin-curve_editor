@@ -12,13 +12,15 @@ namespace cved {
 	BezierCurve::BezierCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		const mkaul::Point<double>& handle_left,
 		const mkaul::Point<double>& handle_right
-	) :
-		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
+	) noexcept :
+		NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next },
 		handle_left_{ this, BezierHandle::Type::Left, handle_left },
 		handle_right_{ this, BezierHandle::Type::Right, handle_right },
 		handle_buffer_left_{ this, BezierHandle::Type::Left },
@@ -34,6 +36,16 @@ namespace cved {
 			set_next(next);
 		}
 	}
+
+	// コピーコンストラクタ
+	BezierCurve::BezierCurve(const BezierCurve& curve) noexcept :
+		NumericGraphCurve{ curve },
+		handle_left_{this, curve.handle_left_.type(), curve.handle_left_.pt_offset(), curve.handle_left_.is_fixed() },
+		handle_right_{ this, curve.handle_right_.type(), curve.handle_right_.pt_offset(), curve.handle_right_.is_fixed() },
+		handle_buffer_left_{ this, BezierHandle::Type::Left },
+		handle_buffer_right_{ this, BezierHandle::Type::Right },
+		flag_prev_move_symmetrically_{ curve.flag_prev_move_symmetrically_ }
+	{}
 
 	void BezierCurve::set_prev(GraphCurve* p) noexcept {
 		BezierHandle* handle_opposite;
@@ -181,11 +193,11 @@ namespace cved {
 		);
 	}
 
-	void BezierCurve::reverse() noexcept {
+	void BezierCurve::reverse(bool fix_pt) noexcept {
 		auto offset_tmp = handle_left_.pt_offset();
 		handle_left_.set_pt_offset(-handle_right_.pt_offset());
 		handle_right_.set_pt_offset(-offset_tmp);
-		GraphCurve::reverse();
+		GraphCurve::reverse(fix_pt);
 	}
 
 	void BezierCurve::create_data(std::vector<byte>& data) const noexcept {
@@ -370,8 +382,31 @@ namespace cved {
 		}
 	}
 
+	// カーソルが左右いずれかのハンドルにホバーしているか
 	bool BezierCurve::is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
-		return handle_left_.is_hovered(pt, view) or handle_right_.is_hovered(pt, view);
+		return is_left_handle_hovered(pt, view) or is_right_handle_hovered(pt, view);
+	}
+
+	// 左ハンドルにホバーしているか
+	bool BezierCurve::is_left_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		return handle_left_.is_hovered(pt, view);
+	}
+
+	// 右ハンドルにホバーしているか
+	bool BezierCurve::is_right_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
+		return handle_right_.is_hovered(pt, view);
+	}
+
+	void BezierCurve::adjust_handle_angle(BezierHandle::Type type, const GraphView& view) noexcept {
+		switch (type) {
+		case BezierHandle::Type::Left:
+			handle_left_.adjust_angle(prev(), view);
+			break;
+
+		case BezierHandle::Type::Right:
+			handle_right_.adjust_angle(next(), view);
+			break;
+		}
 	}
 
 	bool BezierCurve::handle_check_hover(

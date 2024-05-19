@@ -23,6 +23,7 @@ namespace cved {
 		bool reverse_wheel = false;
 		bool notify_update = false;
 		bool set_bg_image = false;
+		bool enable_hotkeys = false;
 
 		void reset() noexcept;
 		void from_json(const nlohmann::json& data) noexcept;

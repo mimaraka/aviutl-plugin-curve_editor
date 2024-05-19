@@ -148,6 +148,9 @@ namespace cved {
 			auto get_bg_image_opacity() const noexcept { return pref_.bg_image_opacity; }
 			void set_bg_image_opacity(float bg_image_opacity) noexcept { pref_.bg_image_opacity = mkaul::clamp(bg_image_opacity, 0.f, 1.f); }
 
+			auto get_enable_hotkeys() const noexcept { return pref_.enable_hotkeys; }
+			void set_enable_hotkeys(bool enable_hotkeys) noexcept { pref_.enable_hotkeys = enable_hotkeys; }
+
 			auto get_ignore_autosaver_warning() const noexcept { return ignore_autosaver_warning_; }
 			void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 

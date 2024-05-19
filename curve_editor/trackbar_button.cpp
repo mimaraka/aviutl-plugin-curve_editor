@@ -63,7 +63,7 @@ namespace cved {
 				return;
 			}
 
-			p_graphics->begin_draw(false);
+			p_graphics->begin_draw();
 			color.set_a(0.3f);
 			p_graphics->fill_rectangle(
 				rect_button_f,

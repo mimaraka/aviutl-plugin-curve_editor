@@ -9,15 +9,21 @@ namespace cved {
 	BounceCurve::BounceCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		double cor,
 		double period
-	) : NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next}, handle_{}, cor_{ cor }, period_{ period } {
+	) : NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next}, handle_{}, cor_{ cor }, period_{ period } {
 		handle_.from_param(cor, period, pt_start, pt_end);
 	}
 
+	// コピーコンストラクタ
+	BounceCurve::BounceCurve(const BounceCurve& curve) noexcept : NumericGraphCurve{ curve }, handle_{ curve.handle_ }, cor_{ curve.cor_ }, period_{ curve.period_ } {}
+
+	// カーブの関数
 	double BounceCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - pt_start().x()) / (pt_end().x() - pt_start().x()), 0., 1.);
 
@@ -63,9 +69,9 @@ namespace cved {
 		period_ = DEFAULT_PERIOD;
 	}
 
-	void BounceCurve::reverse() noexcept {
+	void BounceCurve::reverse(bool fix_pt) noexcept {
 		handle_.reverse(pt_start(), pt_end());
-		GraphCurve::reverse();
+		GraphCurve::reverse(fix_pt);
 		handle_.from_param(cor_, period_, pt_start(), pt_end());
 	}
 

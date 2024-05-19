@@ -23,18 +23,23 @@ namespace cved {
 		ElasticCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
+			uint32_t sampling_resolution = 0u,
+			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			double amp = DEFAULT_AMP,
 			double freq = DEFAULT_FREQ,
 			double decay = DEFAULT_DECAY
-		);
+		) noexcept;
+
+		// コピーコンストラクタ
+		ElasticCurve(const ElasticCurve& curve) noexcept;
 
 		// カーブの値を取得
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		void reverse() noexcept override;
+		void reverse(bool fix_pt = false) noexcept override;
 
 		void create_data(std::vector<byte>& data) const noexcept override;
 		bool load_data(const byte* data, size_t size) noexcept override;

@@ -11,12 +11,52 @@
 namespace cved {
 	NormalCurve::NormalCurve(
 		const mkaul::Point<double>& pt_start,
-		const mkaul::Point<double>& pt_end
-	) :
-		GraphCurve{ pt_start, pt_end, true, nullptr, nullptr },
+		const mkaul::Point<double>& pt_end,
+		uint32_t sampling_resolution,
+		uint32_t quantization_resolution
+	) noexcept :
+		GraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, true, nullptr, nullptr },
 		curve_segments_{}
 	{
 		clear();
+	}
+
+	// コピーコンストラクタ
+	NormalCurve::NormalCurve(const NormalCurve& curve) noexcept :
+		GraphCurve{ curve },
+		curve_segments_{}
+	{
+		// TODO: 分岐処理を消したい
+		for (const auto& p_curve : curve.curve_segments_) {
+			std::unique_ptr<GraphCurve> new_curve;
+			if (typeid(*p_curve.get()) == typeid(BezierCurve)) {
+				new_curve = std::make_unique<BezierCurve>(*dynamic_cast<BezierCurve*>(p_curve.get()));
+			}
+			else if (typeid(*p_curve.get()) == typeid(LinearCurve)) {
+				new_curve = std::make_unique<LinearCurve>(*dynamic_cast<LinearCurve*>(p_curve.get()));
+			}
+			else if (typeid(*p_curve.get()) == typeid(ElasticCurve)) {
+				new_curve = std::make_unique<ElasticCurve>(*dynamic_cast<ElasticCurve*>(p_curve.get()));
+			}
+			else if (typeid(*p_curve.get()) == typeid(BounceCurve)) {
+				new_curve = std::make_unique<BounceCurve>(*dynamic_cast<BounceCurve*>(p_curve.get()));
+			}
+			else continue;
+			if (!curve_segments_.empty()) {
+				new_curve->set_prev(curve_segments_.back().get());
+				curve_segments_.back()->set_next(new_curve.get());
+			}
+			curve_segments_.emplace_back(std::move(new_curve));
+		}
+	}
+
+	bool NormalCurve::adjust_segment_handle_angle(size_t idx, BezierHandle::Type handle_type, const GraphView& view) noexcept {
+		if (check_segment_type<BezierCurve>(idx)) {
+			auto curve_bezier = dynamic_cast<BezierCurve*>(curve_segments_[idx].get());
+			curve_bezier->adjust_handle_angle(handle_type, view);
+			return true;
+		}
+		return false;
 	}
 
 	// カーブの値を取得
@@ -50,7 +90,7 @@ namespace cved {
 	}
 
 	// カーブを反転
-	void NormalCurve::reverse() noexcept {
+	void NormalCurve::reverse(bool) noexcept {
 		std::reverse(curve_segments_.begin(), curve_segments_.end());
 
 		for (auto& p_curve : curve_segments_) {
@@ -59,6 +99,12 @@ namespace cved {
 			auto tmp = p_curve->prev();
 			p_curve->set_prev(p_curve->next());
 			p_curve->set_next(tmp);
+		}
+	}
+
+	void NormalCurve::reverse_segment(size_t idx) noexcept {
+		if (idx < curve_segments_.size()) {
+			curve_segments_[idx]->reverse(true);
 		}
 	}
 
@@ -297,6 +343,7 @@ namespace cved {
 					new BezierCurve{
 						pt,
 						(*it)->pt_end().pt(),
+						0u, 0u,
 						false,
 						(*it).get(),
 						(*it)->next(),
@@ -403,6 +450,8 @@ namespace cved {
 			new_curve = std::make_unique<LinearCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -414,6 +463,8 @@ namespace cved {
 			new_curve = std::make_unique<BezierCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -425,6 +476,8 @@ namespace cved {
 			new_curve = std::make_unique<ElasticCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -435,6 +488,8 @@ namespace cved {
 			new_curve = std::make_unique<BounceCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
+				current_curve->get_sampling_resolution(),
+				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()

@@ -10,59 +10,58 @@
 
 namespace cved {
 	// キー押下時の処理
-	LRESULT on_keydown(WPARAM wparam) {
+	void on_keydown(WPARAM wparam) {
 		switch (wparam) {
 			// [R]
 		case 82:
 			global::window_grapheditor.send_command((WPARAM)WindowCommand::Reverse);
-			return 0;
+			break;
 
 			// [C]
 		case 67:
 			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000 and global::editor.editor_graph().numeric_curve()) {
 				global::window_toolbar.send_command((WPARAM)WindowCommand::Copy);
 			}
-			return 0;
+			break;
 
 			// [S]
 		case 83:
 			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000) {
 				global::window_toolbar.send_command((WPARAM)WindowCommand::Save);
 			}
-			return 0;
+			break;
 
 			// [<]
 		case VK_LEFT:
 			if (!global::editor.editor_graph().numeric_curve()) {
 				global::window_toolbar.send_command((WPARAM)WindowCommand::IdBack);
 			}
-			return 0;
+			break;
 
 			// [>]
 		case VK_RIGHT:
 			if (!global::editor.editor_graph().numeric_curve()) {
 				global::window_toolbar.send_command((WPARAM)WindowCommand::IdNext);
 			}
-			return 0;
+			break;
 
 			// [Home]
 		case VK_HOME:
 			if (global::editor.editor_graph().current_curve()) {
 				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
 			}
-			return 0;
+			break;
 
 			// [A]
 		case 65:
 			global::config.set_align_handle(!global::config.get_align_handle());
-			return 0;
+			break;
 
 			// [Delete]
 		case VK_DELETE:
 			global::window_toolbar.send_command((WPARAM)WindowCommand::Clear);
-			return 0;
+			break;
 		}
-		return 0;
 	}
 
 
@@ -120,7 +119,10 @@ namespace cved {
 		}
 
 		case WM_KEYDOWN:
-			return on_keydown(wparam);
+			if (global::config.get_enable_hotkeys()) {
+				on_keydown(wparam);
+			}
+			return 0;
 
 		case WM_COMMAND:
 			switch (wparam) {

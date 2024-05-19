@@ -74,14 +74,8 @@ namespace cved {
 			ret = curve_bounce.get_value(progress, start, end);
 			break;
 
-			// ステップ
-		case 5:
-			::lua_pushnil(L);
-			return 1;
-			break;
-
 			// スクリプト
-		case 6:
+		case 5:
 			::lua_pushnil(L);
 			return 1;
 			break;
