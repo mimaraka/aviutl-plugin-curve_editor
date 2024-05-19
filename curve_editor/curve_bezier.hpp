@@ -52,6 +52,7 @@ namespace cved {
 
 		std::string make_param() const noexcept;
 
+		// ハンドルを描画
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,
 			const View& view,
