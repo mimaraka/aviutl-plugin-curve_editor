@@ -9,9 +9,9 @@ namespace cved {
 		GraphCurveEditor::GraphCurveEditor() :
 			curves_normal_{},
 			curves_value_{},
-			curve_bezier_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.},true },
-			curve_elastic_{ mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}, true },
-			curve_bounce_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true }
+			curve_bezier_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, 0u, 0u, true},
+			curve_elastic_{ mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}, 0u, 0u, true },
+			curve_bounce_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, 0u, 0u, true }
 		{
 			reset_id_curves();
 			curve_bezier_.clear();
