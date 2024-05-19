@@ -64,7 +64,7 @@ namespace cved {
 			{"notify_update", notify_update},
 			{"set_bg_image", set_bg_image},
 			{"bg_image_path", sjis_to_utf8(bg_image_path.string())},
-			{"bg_image_opacity", bg_image_opacity}
+			{"bg_image_opacity", bg_image_opacity},
 			{"enable_hotkeys", enable_hotkeys}
 		};
 	}

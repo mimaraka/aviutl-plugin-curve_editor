@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 日本語 (日本) resources
+// ���{�� (���{) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_JPN)
 LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
@@ -54,18 +54,18 @@ IDR_MENU_GRAPH MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        POPUP "カーブの適用モード"
+        POPUP "�J�[�u�̓K�p���[�h"
         BEGIN
-            MENUITEM "標準",                          ID_APPLYMODE_NORMAL
-            MENUITEM "中間点無視",                       ID_APPLYMODE_IGNOREMID
+            MENUITEM "�W��",                          ID_APPLYMODE_NORMAL
+            MENUITEM "���ԓ_����",                       ID_APPLYMODE_IGNOREMID
         END
         MENUITEM SEPARATOR
-        MENUITEM "カーブを反転\tR",                   ID_GRAPH_REVERSE
-        MENUITEM "カーブの離散化",                     ID_GRAPH_DESCRITIZATION
+        MENUITEM "�J�[�u�𔽓]\tR",                   ID_GRAPH_REVERSE
+        MENUITEM "�J�[�u�̗��U��",                     ID_GRAPH_DESCRITIZATION
         MENUITEM SEPARATOR
-        MENUITEM "ハンドルを連動させる\tA",               ID_GRAPH_ALIGN
-        MENUITEM "ハンドルを表示",                     ID_GRAPH_SHOWHANDLE
-        MENUITEM "速度グラフを表示",                    ID_GRAPH_VELOCITY
+        MENUITEM "�n���h����A��������\tA",               ID_GRAPH_ALIGN
+        MENUITEM "�n���h����\��",                     ID_GRAPH_SHOWHANDLE
+        MENUITEM "���x�O���t��\��",                    ID_GRAPH_VELOCITY
     END
 END
 
@@ -73,17 +73,17 @@ IDR_MENU_MORE MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        POPUP "ウィンドウのレイアウト"
+        POPUP "�E�B���h�E�̃��C�A�E�g"
         BEGIN
-            MENUITEM "縦",                           ID_LAYOUT_VERTICAL
-            MENUITEM "横",                           ID_LAYOUT_HORIZONTAL
+            MENUITEM "�c",                           ID_LAYOUT_VERTICAL
+            MENUITEM "��",                           ID_LAYOUT_HORIZONTAL
         END
-        MENUITEM "ライブラリの表示",                    ID_MORE_SHOWLIBRARY
+        MENUITEM "���C�u�����̕\��",                    ID_MORE_SHOWLIBRARY
         MENUITEM SEPARATOR
-        MENUITEM "環境設定",                        ID_MORE_PREFERENCES
+        MENUITEM "���ݒ�",                        ID_MORE_PREFERENCES
         MENUITEM SEPARATOR
-        MENUITEM "ヘルプ",                         ID_MORE_HELP
-        MENUITEM "Curve Editorについて",            ID_MORE_ABOUT
+        MENUITEM "�w���v",                         ID_MORE_HELP
+        MENUITEM "Curve Editor�ɂ���",            ID_MORE_ABOUT
     END
 END
 
@@ -91,11 +91,11 @@ IDR_MENU_CURVE MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        MENUITEM "カーブのタイプ",                     ID_CURVE_TYPE
-        MENUITEM "カーブをコピー",                     ID_CURVE_COPY
-        MENUITEM "カーブを貼り付け",                    ID_CURVE_PASTE
-        MENUITEM "選択したカーブを反転",                  ID_CURVE_REVERSE
-        MENUITEM "選択したカーブの離散化",                 ID_CURVE_DISCRETIZATION
+        MENUITEM "�J�[�u�̃^�C�v",                     ID_CURVE_TYPE
+        MENUITEM "�J�[�u���R�s�[",                     ID_CURVE_COPY
+        MENUITEM "�J�[�u��\��t��",                    ID_CURVE_PASTE
+        MENUITEM "�I�������J�[�u�𔽓]",                  ID_CURVE_REVERSE
+        MENUITEM "�I�������J�[�u�̗��U��",                 ID_CURVE_DISCRETIZATION
     END
 END
 
@@ -103,11 +103,11 @@ IDR_MENU_ID MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        MENUITEM "指定したIDに移動",                   ID_ID_JUMP
-        MENUITEM "先頭のIDに移動",                    ID_ID_JUMPTOFIRST
-        MENUITEM "末尾のIDに移動",                    ID_ID_JUMPTOLAST
-        MENUITEM "IDを削除",                       ID_ID_DELETE
-        MENUITEM "全てのIDを削除",                    ID_ID_DELETE_ALL
+        MENUITEM "�w�肵��ID�Ɉړ�",                   ID_ID_JUMP
+        MENUITEM "�擪��ID�Ɉړ�",                    ID_ID_JUMPTOFIRST
+        MENUITEM "������ID�Ɉړ�",                    ID_ID_JUMPTOLAST
+        MENUITEM "ID���폜",                       ID_ID_DELETE
+        MENUITEM "�S�Ă�ID���폜",                    ID_ID_DELETE_ALL
     END
 END
 
@@ -115,8 +115,8 @@ IDR_MENU_BEZIER_HANDLE MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        MENUITEM "ハンドルを始点に移動",                  ID_BEZIER_HANDLE_ROOT
-        MENUITEM "ハンドルを隣のカーブの傾きに合わせて回転",        ID_BEZIER_HANDLE_ROTATE
+        MENUITEM "�n���h�����n�_�Ɉړ�",                  ID_BEZIER_HANDLE_ROOT
+        MENUITEM "�n���h����ׂ̃J�[�u�̌X���ɍ��킹�ĉ�]",        ID_BEZIER_HANDLE_ROTATE
     END
 END
 
@@ -128,14 +128,14 @@ END
 
 IDD_PREF DIALOGEX 0, 0, 407, 237
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "環境設定"
+CAPTION "���ݒ�"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,242,216,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,296,216,50,14
+    PUSHBUTTON      "�L�����Z��",IDCANCEL,296,216,50,14
     LISTBOX         IDC_LIST_CATEGORY,7,7,92,200,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "適用",IDC_BUTTON_APPLY,350,216,50,14
-    PUSHBUTTON      "規定値に戻す",IDC_BUTTON_RESET,7,216,59,14
+    PUSHBUTTON      "�K�p",IDC_BUTTON_APPLY,350,216,50,14
+    PUSHBUTTON      "�K��l�ɖ߂�",IDC_BUTTON_RESET,7,216,59,14
 END
 
 IDD_PREF_APPEARANCE DIALOGEX 0, 0, 300, 200
@@ -143,22 +143,22 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_SLIDER_CURVE_THICKNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,46,95,12
-    LTEXT           "カーブの色",IDC_STATIC,10,30,133,8
-    LTEXT           "テーマ",IDC_STATIC,10,15,140,8
+    LTEXT           "�J�[�u�̐F",IDC_STATIC,10,30,133,8
+    LTEXT           "�e�[�}",IDC_STATIC,10,15,140,8
     COMBOBOX        IDC_COMBO_THEME,150,13,95,52,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "変更",IDC_BUTTON_CURVE_COLOR,195,27,50,14
-    CONTROL         "直前の編集状態を表示",IDC_CHECK_SHOW_TRACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,131,140,10
-    LTEXT           "カーブの太さ",IDC_STATIC,10,47,140,8
-    LTEXT           "カーブの描画間隔\n(値が小さいほど高精度だが高負荷)",IDC_STATIC,10,66,140,17
+    PUSHBUTTON      "�ύX",IDC_BUTTON_CURVE_COLOR,195,27,50,14
+    CONTROL         "���O�̕ҏW��Ԃ�\��",IDC_CHECK_SHOW_TRACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,131,140,10
+    LTEXT           "�J�[�u�̑���",IDC_STATIC,10,47,140,8
+    LTEXT           "�J�[�u�̕`��Ԋu\n(�l���������قǍ����x����������)",IDC_STATIC,10,66,140,17
     CONTROL         "",IDC_SLIDER_CURVE_DRAWING_INTERVAL,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,67,95,12
     LTEXT           "0.0",IDC_STATIC_CURVE_THICKNESS,245,47,52,8
     LTEXT           "0.0",IDC_STATIC_CURVE_DRAWING_INTERVAL,245,68,52,8
-    GROUPBOX        "外観設定",IDC_STATIC,3,3,294,194
-    CONTROL         "背景画像を設定",IDC_CHECK_BACKGROUND_IMAGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,90,140,10
-    LTEXT           "画像のパス",IDC_STATIC_BACKGROUND_IMAGE,21,103,36,8
+    GROUPBOX        "�O�ϐݒ�",IDC_STATIC,3,3,294,194
+    CONTROL         "�w�i�摜��ݒ�",IDC_CHECK_BACKGROUND_IMAGE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,90,140,10
+    LTEXT           "�摜�̃p�X",IDC_STATIC_BACKGROUND_IMAGE,21,103,36,8
     EDITTEXT        IDC_EDIT_BACKGROUND_IMAGE,150,100,95,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "参照",IDC_BUTTON_BACKGROUND_IMAGE,245,100,52,14
-    LTEXT           "画像の不透明度",IDC_STATIC_BACKGROUND_IMAGE2,21,118,56,8
+    PUSHBUTTON      "�Q��",IDC_BUTTON_BACKGROUND_IMAGE,245,100,52,14
+    LTEXT           "�摜�̕s�����x",IDC_STATIC_BACKGROUND_IMAGE2,21,118,56,8
     CONTROL         "",IDC_SLIDER_IMAGE_OPACITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,117,95,12
     LTEXT           "0%",IDC_STATIC_IMAGE_OPACITY,245,118,52,8
 END
@@ -167,24 +167,24 @@ IDD_PREF_BEHAVIOR DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "ポップアップを表示",IDC_CHECK_SHOW_POPUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,140,10
-    LTEXT           "描画方式",IDC_STATIC,10,15,140,8
+    CONTROL         "�|�b�v�A�b�v��\��",IDC_CHECK_SHOW_POPUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,140,10
+    LTEXT           "�`�����",IDC_STATIC,10,15,140,8
     COMBOBOX        IDC_COMBO_GRAPHIC_METHOD,150,13,95,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "ショートカットキーを有効にする",IDC_CHECK_ENABLE_HOTKEYS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,41,140,10
-    GROUPBOX        "動作設定",IDC_STATIC,3,3,294,194
+    CONTROL         "�V���[�g�J�b�g�L�[��L���ɂ���",IDC_CHECK_ENABLE_HOTKEYS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,41,140,10
+    GROUPBOX        "����ݒ�",IDC_STATIC,3,3,294,194
 END
 
 IDD_PREF_EDITING DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "マウスホイールを反転",IDC_CHECK_REVERSE_WHEEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,24,276,10
-    CONTROL         "値を自動でコピー(ベジェ・振動・バウンス)",IDC_CHECK_AUTO_COPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,106,280,10
-    CONTROL         "ハンドルを動かしたときにカーブを自動で反映(標準・値指定)",IDC_CHECK_AUTO_APPLY,
+    CONTROL         "�}�E�X�z�C�[���𔽓]",IDC_CHECK_REVERSE_WHEEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,24,276,10
+    CONTROL         "�l�������ŃR�s�[(�x�W�F�E�U���E�o�E���X)",IDC_CHECK_AUTO_COPY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,106,280,10
+    CONTROL         "�n���h���𓮂������Ƃ��ɃJ�[�u�������Ŕ��f(�W���E�l�w��)",IDC_CHECK_AUTO_APPLY,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,118,280,10
-    LTEXT           "(AviUtlで重い編集をしている時などは、この設定をオフにするとCurve Editorの動作が軽くなります。)",IDC_STATIC,20,130,270,18
-    GROUPBOX        "グラフエディタ",IDC_STATIC,10,13,280,87
-    GROUPBOX        "編集設定",IDC_STATIC,3,3,294,194
+    LTEXT           "(AviUtl�ŏd���ҏW�����Ă��鎞�Ȃǂ́A���̐ݒ���I�t�ɂ����Curve Editor�̓��삪�y���Ȃ�܂��B)",IDC_STATIC,20,130,270,18
+    GROUPBOX        "�O���t�G�f�B�^",IDC_STATIC,10,13,280,87
+    GROUPBOX        "�ҏW�ݒ�",IDC_STATIC,3,3,294,194
 END
 
 IDD_WARNING_AUTOSAVER DIALOGEX 0, 0, 309, 97
@@ -193,30 +193,30 @@ CAPTION "Curve Editor"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,198,76,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,252,76,50,14
-    LTEXT           "「autosaver」プラグイン(autosaver.auf)がインストールされていません。\n拡張編集標準の自動バックアップ機能では、Curve Editorの一部のデータが保持されないため、プロジェクトの自動保存を行いたい場合は、このプラグインをインストールする必要があります。\n\n「autosaver」のダウンロードページに移動しますか？",IDC_STATIC,7,7,295,47
-    CONTROL         "今後は表示しない",IDC_CHECK_DONTSHOWAGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,74,10
+    PUSHBUTTON      "�L�����Z��",IDCANCEL,252,76,50,14
+    LTEXT           "�uautosaver�v�v���O�C��(autosaver.auf)���C���X�g�[������Ă��܂���B\n�g���ҏW�W���̎����o�b�N�A�b�v�@�\�ł́ACurve Editor�̈ꕔ�̃f�[�^���ێ�����Ȃ����߁A�v���W�F�N�g�̎����ۑ����s�������ꍇ�́A���̃v���O�C�����C���X�g�[������K�v������܂��B\n\n�uautosaver�v�̃_�E�����[�h�y�[�W�Ɉړ����܂����H",IDC_STATIC,7,7,295,47
+    CONTROL         "����͕\�����Ȃ�",IDC_CHECK_DONTSHOWAGAIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,60,74,10
 END
 
 IDD_PREF_GENERAL DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "言語/Language",IDC_STATIC,10,15,52,8
+    LTEXT           "����/Language",IDC_STATIC,10,15,52,8
     COMBOBOX        IDC_COMBO_LANGUAGE,150,13,95,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "アップデートを通知",IDC_CHECK_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,140,10
-    GROUPBOX        "一般設定",IDC_STATIC,3,3,294,194
+    CONTROL         "�A�b�v�f�[�g��ʒm",IDC_CHECK_NOTIFY_UPDATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,29,140,10
+    GROUPBOX        "��ʐݒ�",IDC_STATIC,3,3,294,194
 END
 
 IDD_CURVE_CODE DIALOGEX 0, 0, 250, 70
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "カーブのコードを入力"
+CAPTION "�J�[�u�̃R�[�h�����"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,139,49,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,193,49,50,14
+    PUSHBUTTON      "�L�����Z��",IDCANCEL,193,49,50,14
     EDITTEXT        IDC_EDIT_CURVE_CODE,7,23,236,14,ES_AUTOHSCROLL
-    LTEXT           "カーブのコードを半角数字で入力してください。",IDC_STATIC,7,7,154,8
+    LTEXT           "�J�[�u�̃R�[�h�𔼊p�����œ��͂��Ă��������B",IDC_STATIC,7,7,154,8
 END
 
 IDD_ABOUT DIALOGEX 0, 0, 247, 127
@@ -226,33 +226,33 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,190,106,50,14
     CTEXT           "Curve Editor",IDC_STATIC,7,7,233,9
     LTEXT           "Version :\nDeveloped by\nTranslated by",IDC_STATIC_PLUGIN_INFO,7,50,131,26
-    CONTROL         "<a href=""https://github.com/mimaraka/aviutl-plugin-curve_editor?tab=MIT-1-ov-file#readme"">ライセンス</a>\n<a href=""https://forms.gle/S1vazu2xgrzQwxUW6"">バグを報告</a>",IDC_SYSLINK_ABOUT,
+    CONTROL         "<a href=""https://github.com/mimaraka/aviutl-plugin-curve_editor?tab=MIT-1-ov-file#readme"">���C�Z���X</a>\n<a href=""https://forms.gle/S1vazu2xgrzQwxUW6"">�o�O���</a>",IDC_SYSLINK_ABOUT,
                     "SysLink",WS_TABSTOP,7,82,64,20
 END
 
 IDD_BEZIER_PARAM DIALOGEX 0, 0, 250, 70
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "ベジェのパラメータを入力"
+CAPTION "�x�W�F�̃p�����[�^�����"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,139,49,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,193,49,50,14
+    PUSHBUTTON      "�L�����Z��",IDCANCEL,193,49,50,14
     EDITTEXT        IDC_EDIT_BEZIER_PARAM,7,23,236,14,ES_AUTOHSCROLL
-    LTEXT           "ベジェのパラメータを""x1, y1, x2, y2""の形式で入力してください。",IDC_STATIC,7,7,236,8
+    LTEXT           "�x�W�F�̃p�����[�^��""x1, y1, x2, y2""�̌`���œ��͂��Ă��������B",IDC_STATIC,7,7,236,8
 END
 
 IDD_CURVE_DISCRETIZATION DIALOGEX 0, 0, 130, 119
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "カーブの離散化"
+CAPTION "�J�[�u�̗��U��"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,19,97,50,15
     CONTROL         "",IDC_SLIDER_SAMPLING,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,29,96,13
-    GROUPBOX        "標本化",IDC_STATIC,7,7,116,40
-    PUSHBUTTON      "キャンセル",IDCANCEL,73,97,50,15
-    GROUPBOX        "量子化",IDC_STATIC,7,52,116,40
-    LTEXT           "解像度 (0で標本化なし)",IDC_STATIC,9,19,85,8
-    LTEXT           "解像度 (0で量子化なし)",IDC_STATIC,9,64,85,8
+    GROUPBOX        "�W�{��",IDC_STATIC,7,7,116,40
+    PUSHBUTTON      "�L�����Z��",IDCANCEL,73,97,50,15
+    GROUPBOX        "�ʎq��",IDC_STATIC,7,52,116,40
+    LTEXT           "�𑜓x (0�ŕW�{���Ȃ�)",IDC_STATIC,9,19,85,8
+    LTEXT           "�𑜓x (0�ŗʎq���Ȃ�)",IDC_STATIC,9,64,85,8
     LTEXT           "0",IDC_STATIC_SAMPLING,107,30,16,8
     LTEXT           "0",IDC_STATIC_QUANTIZATION,108,74,15,8
     CONTROL         "",IDC_SLIDER_QUANTIZATION,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,74,96,13
@@ -260,13 +260,13 @@ END
 
 IDD_ID_JUMPTO DIALOGEX 0, 0, 250, 70
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "指定したIDに移動"
+CAPTION "�w�肵��ID�Ɉړ�"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,139,49,50,14
-    PUSHBUTTON      "キャンセル",IDCANCEL,193,49,50,14
+    PUSHBUTTON      "�L�����Z��",IDCANCEL,193,49,50,14
     EDITTEXT        IDC_EDIT_CURVE_CODE,7,23,236,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "移動するIDを入力してください。",IDC_STATIC,7,7,154,8
+    LTEXT           "�ړ�����ID����͂��Ă��������B",IDC_STATIC,7,7,154,8
 END
 
 
@@ -508,97 +508,97 @@ IDC_DRAG                CURSOR                  "resources\\cursor\\drag.cur"
 
 STRINGTABLE
 BEGIN
-    IDS_ERROR_LUA_NOT_FOUND "AviUtlのディレクトリまたは""plugins""フォルダ内に""lua51.dll""が見つかりません。"
+    IDS_ERROR_LUA_NOT_FOUND "AviUtl�̃f�B���N�g���܂���""plugins""�t�H���_����""lua51.dll""��������܂���B"
     IDS_ERROR_EXEDIT_NOT_FOUND 
-                            "拡張編集プラグイン ver.0.92(exedit.auf)が見つからないか、バージョンが異なります。"
-    IDS_ERROR_EXEDIT_HOOK_FAILED "拡張編集プラグインのフックに失敗しました。"
-    IDS_ERROR_GRAPHICS_INIT_FAILED "描画環境の初期化に失敗しました。"
-    IDS_ERROR_CONNECTION_FAILED "ネットワーク接続に失敗しました。"
-    IDS_ERROR_INVALID_INPUT "無効な入力値です。"
-    IDS_ERROR_OUT_OF_RANGE  "値が範囲外です。"
-    IDS_ERROR_CODE_COPY_FAILED "カーブのコードのコピーに失敗しました。"
+                            "�g���ҏW�v���O�C�� ver.0.92(exedit.auf)��������Ȃ����A�o�[�W�������قȂ�܂��B"
+    IDS_ERROR_EXEDIT_HOOK_FAILED "�g���ҏW�v���O�C���̃t�b�N�Ɏ��s���܂����B"
+    IDS_ERROR_GRAPHICS_INIT_FAILED "�`����̏������Ɏ��s���܂����B"
+    IDS_ERROR_CONNECTION_FAILED "�l�b�g���[�N�ڑ��Ɏ��s���܂����B"
+    IDS_ERROR_INVALID_INPUT "�����ȓ��͒l�ł��B"
+    IDS_ERROR_OUT_OF_RANGE  "�l���͈͊O�ł��B"
+    IDS_ERROR_CODE_COPY_FAILED "�J�[�u�̃R�[�h�̃R�s�[�Ɏ��s���܂����B"
     IDS_ERROR_DATA_LOAD_FAILED 
-                            "カーブのデータの読み込みに失敗しました。\nデータが破損しているか、互換性のないバージョンでデータが作成された可能性があります。\n\n(以前のデータを保持したい場合は、このままプロジェクトを保存せずに閉じます。)"
+                            "�J�[�u�̃f�[�^�̓ǂݍ��݂Ɏ��s���܂����B\n�f�[�^���j�����Ă��邩�A�݊����̂Ȃ��o�[�W�����Ńf�[�^���쐬���ꂽ�\��������܂��B\n\n(�ȑO�̃f�[�^��ێ��������ꍇ�́A���̂܂܃v���W�F�N�g��ۑ������ɕ��܂��B)"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_LABEL_EDIT_MODE_NORMAL "標準"
-    IDS_LABEL_EDIT_MODE_VALUE "値指定"
-    IDS_LABEL_EDIT_MODE_BEZIER "ベジェ"
-    IDS_LABEL_EDIT_MODE_ELASTIC "振動"
-    IDS_LABEL_EDIT_MODE_BOUNCE "バウンス"
-    IDS_LABEL_EDIT_MODE_SCRIPT "スクリプト"
-    IDS_LABEL_CURVE_SEGMENT_TYPE_LINEAR "直線"
-    IDS_LABEL_TOOLTIP_COPY  "カーブのコード/IDをコピー"
-    IDS_LABEL_TOOLTIP_READ  "カーブのコードを読み取る"
-    IDS_LABEL_TOOLTIP_SAVE  "カーブをプリセットとして保存"
-    IDS_LABEL_TOOLTIP_CLEAR "カーブを初期化"
-    IDS_LABEL_TOOLTIP_FIT   "ビューをフィット"
-    IDS_LABEL_TOOLTIP_MORE  "もっと見る"
-    IDS_LABEL_TOOLTIP_ID_BACK "前のIDに戻る"
-    IDS_LABEL_TOOLTIP_ID_NEXT "次のIDに進む"
+    IDS_LABEL_EDIT_MODE_NORMAL "�W��"
+    IDS_LABEL_EDIT_MODE_VALUE "�l�w��"
+    IDS_LABEL_EDIT_MODE_BEZIER "�x�W�F"
+    IDS_LABEL_EDIT_MODE_ELASTIC "�U��"
+    IDS_LABEL_EDIT_MODE_BOUNCE "�o�E���X"
+    IDS_LABEL_EDIT_MODE_SCRIPT "�X�N���v�g"
+    IDS_LABEL_CURVE_SEGMENT_TYPE_LINEAR "����"
+    IDS_LABEL_TOOLTIP_COPY  "�J�[�u�̃R�[�h/ID���R�s�["
+    IDS_LABEL_TOOLTIP_READ  "�J�[�u�̃R�[�h��ǂݎ��"
+    IDS_LABEL_TOOLTIP_SAVE  "�J�[�u���v���Z�b�g�Ƃ��ĕۑ�"
+    IDS_LABEL_TOOLTIP_CLEAR "�J�[�u��������"
+    IDS_LABEL_TOOLTIP_FIT   "�r���[���t�B�b�g"
+    IDS_LABEL_TOOLTIP_MORE  "�����ƌ���"
+    IDS_LABEL_TOOLTIP_ID_BACK "�O��ID�ɖ߂�"
+    IDS_LABEL_TOOLTIP_ID_NEXT "����ID�ɐi��"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_INFO_LATEST_VERSION "お使いのバージョンは最新です。"
-    IDS_INFO_UPDATE_AVAILABLE "アップデートが利用可能です。ダウンロードしますか？"
-    IDS_INFO_RESTART_AVIUTL "この変更はAviUtlの再起動後に適用されます。"
+    IDS_INFO_LATEST_VERSION "���g���̃o�[�W�����͍ŐV�ł��B"
+    IDS_INFO_UPDATE_AVAILABLE "�A�b�v�f�[�g�����p�\�ł��B�_�E�����[�h���܂����H"
+    IDS_INFO_RESTART_AVIUTL "���̕ύX��AviUtl�̍ċN����ɓK�p����܂��B"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_WARNING_DELETE_CURVE "編集中のカーブを初期化します。よろしいですか？"
-    IDS_WARNING_DELETE_ALL_CURVES "すべてのカーブを初期化します。よろしいですか？"
-    IDS_WARNING_PREF_RESET  "すべての設定を規定値に戻します。よろしいですか？"
-    IDS_WARNING_DELETE_ID   "現在のIDを削除します。よろしいですか？"
-    IDS_WARNING_DELETE_ALL_IDS "すべてのIDを削除します。よろしいですか？"
+    IDS_WARNING_DELETE_CURVE "�ҏW���̃J�[�u�����������܂��B��낵���ł����H"
+    IDS_WARNING_DELETE_ALL_CURVES "���ׂẴJ�[�u�����������܂��B��낵���ł����H"
+    IDS_WARNING_PREF_RESET  "���ׂĂ̐ݒ���K��l�ɖ߂��܂��B��낵���ł����H"
+    IDS_WARNING_DELETE_ID   "���݂�ID���폜���܂��B��낵���ł����H"
+    IDS_WARNING_DELETE_ALL_IDS "���ׂĂ�ID���폜���܂��B��낵���ł����H"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_WORD_VERSION        "バージョン"
-    IDS_WORD_EDIT_MODE      "編集モード"
-    IDS_WORD_LANGUAGE_AUTOMATIC "自動"
-    IDS_WORD_IMAGE_FILES    "画像ファイル"
+    IDS_WORD_VERSION        "�o�[�W����"
+    IDS_WORD_EDIT_MODE      "�ҏW���[�h"
+    IDS_WORD_LANGUAGE_AUTOMATIC "����"
+    IDS_WORD_IMAGE_FILES    "�摜�t�@�C��"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_LABEL_TOOLTIP_CURRENT_ID "編集中のID"
+    IDS_LABEL_TOOLTIP_CURRENT_ID "�ҏW����ID"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_LABEL_PREFERENCE_GENERAL "一般"
-    IDS_LABEL_PREFERENCE_APPEARANCE "外観"
-    IDS_LABEL_PREFERENCE_BEHAVIOR "動作"
-    IDS_LABEL_PREFERENCE_EDITING "編集"
+    IDS_LABEL_PREFERENCE_GENERAL "���"
+    IDS_LABEL_PREFERENCE_APPEARANCE "�O��"
+    IDS_LABEL_PREFERENCE_BEHAVIOR "����"
+    IDS_LABEL_PREFERENCE_EDITING "�ҏW"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_LABEL_THEME_NAME_DARK "ダーク"
-    IDS_LABEL_THEME_NAME_LIGHT "ライト"
+    IDS_LABEL_THEME_NAME_DARK "�_�[�N"
+    IDS_LABEL_THEME_NAME_LIGHT "���C�g"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_LABEL_MENU_UPDATE_AVAILABLE "*アップデートが利用可能です！"
+    IDS_LABEL_MENU_UPDATE_AVAILABLE "*�A�b�v�f�[�g�����p�\�ł��I"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_LABEL_SELECT_BG_IMAGE "背景画像を選択"
+    IDS_LABEL_SELECT_BG_IMAGE "�w�i�摜��I��"
 END
 
-#endif    // 日本語 (日本) resources
+#endif    // ���{�� (���{) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// 英語 (米国) resources
+// �p�� (�č�) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -752,7 +752,7 @@ BEGIN
     IDS_LABEL_SELECT_BG_IMAGE "Select Background Image"
 END
 
-#endif    // 英語 (米国) resources
+#endif    // �p�� (�č�) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
