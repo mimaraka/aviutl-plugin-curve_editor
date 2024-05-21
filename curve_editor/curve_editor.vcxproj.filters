@@ -102,9 +102,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="version.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="wndproc_main.hpp">
       <Filter>Header Files\Window Procedure</Filter>
     </ClInclude>
@@ -282,9 +279,6 @@
     <ClInclude Include="notification.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="json_loader.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="dialog_curve_discretization.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
@@ -299,6 +293,12 @@
     </ClInclude>
     <ClInclude Include="dialog_id_jumpto.hpp">
       <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="json_loader.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="version.hpp">
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -351,9 +351,6 @@
       <Filter>Source Files\Window Procedure</Filter>
     </ClCompile>
     <ClCompile Include="preset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="curve_linear.cpp">
@@ -467,9 +464,6 @@
     <ClCompile Include="preferences.cpp">
       <Filter>Source Files\Config</Filter>
     </ClCompile>
-    <ClCompile Include="json_loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="curve_editor_script.cpp">
       <Filter>Source Files\Curve\Editor</Filter>
     </ClCompile>
@@ -487,6 +481,12 @@
     </ClCompile>
     <ClCompile Include="dialog_id_jumpto.cpp">
       <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="json_loader.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="version.cpp">
+      <Filter>Source Files\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
