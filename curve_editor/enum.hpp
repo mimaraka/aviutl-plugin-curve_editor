@@ -82,6 +82,7 @@ namespace cved {
 	enum class ApplyMode {
 		Normal,
 		IgnoreMidPoint,
+		Interpolate,
 		NumApplyMode
 	};
 

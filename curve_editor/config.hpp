@@ -91,7 +91,9 @@ namespace cved {
 			bool set_layout_mode(LayoutMode layout_mode) noexcept;
 
 			auto get_apply_mode(EditMode edit_mode) const noexcept { return apply_mode_[(size_t)edit_mode]; }
+			auto get_apply_mode() const noexcept { return get_apply_mode(get_edit_mode()); }
 			bool set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept;
+			bool set_apply_mode(ApplyMode apply_mode) noexcept { return set_apply_mode(get_edit_mode(), apply_mode); }
 
 			const auto& get_curve_color() const noexcept { return pref_.curve_color; }
 			void set_curve_color(mkaul::ColorF curve_color) noexcept { pref_.curve_color = curve_color; }

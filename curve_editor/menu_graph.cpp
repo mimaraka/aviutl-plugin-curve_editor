@@ -3,19 +3,44 @@
 #include "curve_editor.hpp"
 #include "dialog_curve_discretization.hpp"
 #include "global.hpp"
+#include "string_table.hpp"
 #include "resource.h"
 
 
 
 namespace cved {
 	GraphMenu::GraphMenu(HINSTANCE hinst) {
+		using StringId = global::StringTable::StringId;
+
 		menu_ = ::GetSubMenu(::LoadMenuA(hinst, MAKEINTRESOURCEA(IDR_MENU_GRAPH)), 0);
+		
+		// 適用モードのサブメニューの作成
+		submenu_apply_mode_ = ::CreatePopupMenu();
+		MENUITEMINFOA minfo_tmp;
+		minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
+		minfo_tmp.fMask = MIIM_TYPE | MIIM_ID;
+		minfo_tmp.fType = MFT_RADIOCHECK;
+
+		for (size_t i = 0; i < (size_t)ApplyMode::NumApplyMode; i++) {
+			minfo_tmp.wID = (WORD)WindowCommand::ChangeApplyMode+ i;
+			minfo_tmp.dwTypeData = const_cast<char*>(global::string_table[(StringId)((size_t)StringId::LabelApplyModeNormal + i)]);
+			::InsertMenuItemA(submenu_apply_mode_, i, TRUE, &minfo_tmp);
+		}
+
+		// 適用モードのサブメニューの設定
+		minfo_tmp.fMask = MIIM_SUBMENU;
+		minfo_tmp.hSubMenu = submenu_apply_mode_;
+		::SetMenuItemInfoA(menu_, ID_GRAPH_APPLYMODE, FALSE, &minfo_tmp);
 	}
 
 	void GraphMenu::update_state() noexcept {
 		MENUITEMINFOA minfo_tmp;
 		minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
 		minfo_tmp.fMask = MIIM_STATE;
+		for (size_t i = 0; i < (size_t)ApplyMode::NumApplyMode; i++) {
+			minfo_tmp.fState = (ApplyMode)i == global::config.get_apply_mode() ? MFS_CHECKED : MFS_UNCHECKED;
+			::SetMenuItemInfoA(submenu_apply_mode_, i, TRUE, &minfo_tmp);
+		}
 		minfo_tmp.fState = global::config.get_align_handle() ? MFS_CHECKED : MFS_UNCHECKED;
 		::SetMenuItemInfoA(menu_, ID_GRAPH_ALIGN, FALSE, &minfo_tmp);
 		minfo_tmp.fState = global::config.get_show_handle() ? MFS_CHECKED : MFS_UNCHECKED;
@@ -29,6 +54,18 @@ namespace cved {
 	}
 
 	bool GraphMenu::callback(uint16_t id) noexcept {
+		if (mkaul::in_range(
+			id,
+			(uint16_t)WindowCommand::ChangeApplyMode,
+			(uint16_t)WindowCommand::ChangeApplyMode + (uint16_t)ApplyMode::NumApplyMode - 1u,
+			true
+		)) {
+			ApplyMode new_mode = (ApplyMode)(id - (uint16_t)WindowCommand::ChangeApplyMode);
+			if (new_mode != global::config.get_apply_mode()) {
+				global::config.set_apply_mode(new_mode);
+			}
+			return true;
+		}
 		switch (id) {
 		case ID_GRAPH_REVERSE:
 			global::window_grapheditor.send_command((WPARAM)WindowCommand::Reverse);

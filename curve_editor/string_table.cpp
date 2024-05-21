@@ -109,6 +109,18 @@ namespace cved {
 					id = IDS_LABEL_CURVE_SEGMENT_TYPE_LINEAR;
 					break;
 
+				case StringId::LabelApplyModeNormal:
+					id = IDS_LABEL_APPLY_MODE_NORMAL;
+					break;
+
+				case StringId::LabelApplyModeIgnoreMidPoint:
+					id = IDS_LABEL_APPLY_MODE_IGNORE_MIDPOINT;
+					break;
+
+				case StringId::LabelApplyModeInterpolate:
+					id = IDS_LABEL_APPLY_MODE_INTERPOLATE;
+					break;
+
 				case StringId::LabelTooltipCopy:
 					id = IDS_LABEL_TOOLTIP_COPY;
 					break;
