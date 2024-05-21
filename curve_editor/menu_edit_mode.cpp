@@ -16,7 +16,7 @@ namespace cved {
 
 		for (uint32_t i = 0u; i < (uint32_t)EditMode::NumEditMode; i++) {
 			minfo_tmp.dwTypeData = const_cast<char*>(global::config.get_edit_mode_str((EditMode)i));
-			minfo_tmp.wID = (uint32_t)WindowCommand::EditModeNormal + i;
+			minfo_tmp.wID = (uint32_t)WindowCommand::ChangeEditMode + i;
 			::InsertMenuItemA(menu_, i, TRUE, &minfo_tmp);
 		}
 	}
@@ -39,14 +39,14 @@ namespace cved {
 	bool EditModeMenu::callback(uint16_t id) noexcept {
 		if (mkaul::in_range(
 			id,
-			(uint16_t)WindowCommand::EditModeNormal,
-			(uint16_t)WindowCommand::EditModeNormal + (uint16_t)EditMode::NumEditMode - 1u,
+			(uint16_t)WindowCommand::ChangeEditMode,
+			(uint16_t)WindowCommand::ChangeEditMode + (uint16_t)EditMode::NumEditMode - 1u,
 			true
 		)) {
-			EditMode new_mode = (EditMode)(id - (uint16_t)WindowCommand::EditModeNormal);
+			EditMode new_mode = (EditMode)(id - (uint16_t)WindowCommand::ChangeEditMode);
 			// 編集モードが変更された場合
 			if (new_mode != global::config.get_edit_mode()) {
-				global::config.set_edit_mode((EditMode)(id - (uint16_t)WindowCommand::EditModeNormal));
+				global::config.set_edit_mode((EditMode)(id - (uint16_t)WindowCommand::ChangeEditMode));
 				global::window_main.send_command((WPARAM)WindowCommand::Update);
 				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
 			}
