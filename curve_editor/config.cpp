@@ -114,15 +114,11 @@ namespace cved {
 		}
 
 		bool Config::set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept {
-			switch (apply_mode) {
-			case ApplyMode::Normal:
-			case ApplyMode::IgnoreMidPoint:
+			if (mkaul::in_range((size_t)apply_mode, 0u, (size_t)ApplyMode::NumApplyMode - 1u, true)) {
 				apply_mode_[(size_t)edit_mode] = apply_mode;
 				return true;
-
-			default:
-				return false;
 			}
+			else return false;
 		}
 
 		void Config::set_curve_thickness(float curve_thickness) noexcept {

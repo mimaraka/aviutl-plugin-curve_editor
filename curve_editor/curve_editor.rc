@@ -54,11 +54,7 @@ IDR_MENU_GRAPH MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        POPUP "カーブの適用モード"
-        BEGIN
-            MENUITEM "標準",                          ID_APPLYMODE_NORMAL
-            MENUITEM "中間点無視",                       ID_APPLYMODE_IGNOREMID
-        END
+        MENUITEM "カーブの適用モード",                   ID_GRAPH_APPLYMODE
         MENUITEM SEPARATOR
         MENUITEM "カーブを反転\tR",                   ID_GRAPH_REVERSE
         MENUITEM "カーブの離散化",                     ID_GRAPH_DESCRITIZATION
@@ -593,6 +589,13 @@ BEGIN
     IDS_LABEL_SELECT_BG_IMAGE "背景画像を選択"
 END
 
+STRINGTABLE
+BEGIN
+    IDS_LABEL_APPLY_MODE_NORMAL "標準"
+    IDS_LABEL_APPLY_MODE_IGNORE_MIDPOINT "中間点無視"
+    IDS_LABEL_APPLY_MODE_INTERPOLATE "補間"
+END
+
 #endif    // 日本語 (日本) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -613,11 +616,7 @@ IDR_MENU_GRAPH MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        POPUP "Apply Mode"
-        BEGIN
-            MENUITEM "Normal",                      ID_APPLYMODE_NORMAL
-            MENUITEM "Ignore Mid-point",            ID_APPLYMODE_IGNOREMID
-        END
+        MENUITEM "Apply Mode",                  ID_GRAPH_APPLYMODE
         MENUITEM SEPARATOR
         MENUITEM "Reverse Curve\tR",            ID_GRAPH_REVERSE
         MENUITEM "Discretize Curve",            ID_GRAPH_DESCRITIZATION
@@ -750,6 +749,13 @@ END
 STRINGTABLE
 BEGIN
     IDS_LABEL_SELECT_BG_IMAGE "Select Background Image"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_LABEL_APPLY_MODE_NORMAL "Normal"
+    IDS_LABEL_APPLY_MODE_IGNORE_MIDPOINT "Ignore Mid-point"
+    IDS_LABEL_APPLY_MODE_INTERPOLATE "Interpolate"
 END
 
 #endif    // 英語 (米国) resources
