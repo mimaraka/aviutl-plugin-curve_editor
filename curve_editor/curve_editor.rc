@@ -76,7 +76,7 @@ BEGIN
         END
         MENUITEM "ライブラリの表示",                    ID_MORE_SHOWLIBRARY
         MENUITEM SEPARATOR
-        MENUITEM "環境設定",                        ID_MORE_PREFERENCES
+        MENUITEM "環境設定...",                     ID_MORE_PREFERENCES
         MENUITEM SEPARATOR
         MENUITEM "ヘルプ",                         ID_MORE_HELP
         MENUITEM "Curve Editorについて",            ID_MORE_ABOUT
@@ -99,7 +99,7 @@ IDR_MENU_ID MENU
 BEGIN
     POPUP "Menu"
     BEGIN
-        MENUITEM "指定したIDに移動",                   ID_ID_JUMP
+        MENUITEM "指定したIDに移動...",                ID_ID_JUMP
         MENUITEM "先頭のIDに移動",                    ID_ID_JUMPTOFIRST
         MENUITEM "末尾のIDに移動",                    ID_ID_JUMPTOLAST
         MENUITEM "IDを削除",                       ID_ID_DELETE
@@ -638,7 +638,7 @@ BEGIN
         END
         MENUITEM "Show Library",                ID_MORE_SHOWLIBRARY
         MENUITEM SEPARATOR
-        MENUITEM "Preferences",                 ID_MORE_PREFERENCES
+        MENUITEM "Preferences...",              ID_MORE_PREFERENCES
         MENUITEM SEPARATOR
         MENUITEM "Help",                        ID_MORE_HELP
         MENUITEM "About Curve Editor",          ID_MORE_ABOUT
