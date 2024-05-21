@@ -26,6 +26,7 @@ namespace cved {
 			void jump_to_last_idx() noexcept;
 			bool is_idx_first() noexcept { return current_idx() == 0u; }
 			bool is_idx_last() noexcept;
+			void delete_last_idx() noexcept;
 			void reset_id_curves() noexcept;
 
 			auto& editor_graph() noexcept { return editor_graph_; }

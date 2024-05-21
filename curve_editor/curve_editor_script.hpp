@@ -22,6 +22,7 @@ namespace cved {
 			auto idx() const noexcept { return index_; }
 			bool set_idx(size_t idx) noexcept;
 			void jump_to_last_idx() noexcept;
+			void delete_last_idx() noexcept;
 			bool is_idx_last() const noexcept { return index_ == curves_script_.size() - 1; }
 		};
 	}

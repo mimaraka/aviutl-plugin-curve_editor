@@ -53,6 +53,24 @@ namespace cved {
 			idx_value_ = curves_value_.size() - 1;
 		}
 
+		void GraphCurveEditor::delete_last_idx_normal() noexcept {
+			if (1u < curves_normal_.size()) {
+				curves_normal_.pop_back();
+				if (idx_normal_ == curves_normal_.size()) {
+					idx_normal_ = curves_normal_.size() - 1;
+				}
+			}
+		}
+
+		void GraphCurveEditor::delete_last_idx_value() noexcept {
+			if (1u < curves_value_.size()) {
+				curves_value_.pop_back();
+				if (idx_value_ == curves_value_.size()) {
+					idx_value_ = curves_value_.size() - 1;
+				}
+			}
+		}
+
 		void GraphCurveEditor::reset_id_curves() noexcept {
 			curves_normal_.clear();
 			curves_normal_.emplace_back(NormalCurve{});

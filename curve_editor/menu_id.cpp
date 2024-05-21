@@ -21,7 +21,7 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_ID_JUMPTOFIRST, FALSE, &minfo_tmp);
 		minfo_tmp.fState = global::editor.is_idx_last() ? MFS_DISABLED : MFS_ENABLED;
 		::SetMenuItemInfoA(menu_, ID_ID_JUMPTOLAST, FALSE, &minfo_tmp);
-		minfo_tmp.fState = global::editor.is_idx_last() ? MFS_ENABLED : MFS_DISABLED;
+		minfo_tmp.fState = global::editor.is_idx_last() and !global::editor.is_idx_first() ? MFS_ENABLED : MFS_DISABLED;
 		::SetMenuItemInfoA(menu_, ID_ID_DELETE, FALSE, &minfo_tmp);
 	}
 
@@ -48,6 +48,7 @@ namespace cved {
 			);
 			if (resp == IDOK) {
 				// TODO: ID削除処理を実装
+				global::editor.delete_last_idx();
 				global::window_main.send_command((WPARAM)WindowCommand::Update);
 			}
 			break;

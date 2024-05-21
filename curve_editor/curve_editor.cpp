@@ -93,6 +93,25 @@ namespace cved {
 			}
 		}
 
+		void CurveEditor::delete_last_idx() noexcept {
+			switch (global::config.get_edit_mode()) {
+			case EditMode::Normal:
+				editor_graph_.delete_last_idx_normal();
+				break;
+
+			case EditMode::Value:
+				editor_graph_.delete_last_idx_value();
+				break;
+
+			case EditMode::Script:
+				editor_script_.delete_last_idx();
+				break;
+
+			default:
+				break;
+			}
+		}
+
 		void CurveEditor::reset_id_curves() noexcept {
 			editor_graph_.reset_id_curves();
 			editor_script_.reset();

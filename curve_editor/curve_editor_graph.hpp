@@ -42,6 +42,8 @@ namespace cved {
 			bool set_idx_value(size_t idx) noexcept;
 			void jump_to_last_idx_normal() noexcept;
 			void jump_to_last_idx_value() noexcept;
+			void delete_last_idx_normal() noexcept;
+			void delete_last_idx_value() noexcept;
 			bool is_idx_normal_last() const noexcept { return idx_normal_ == curves_normal_.size() - 1; }
 			bool is_idx_value_last() const noexcept { return idx_value_ == curves_value_.size() - 1; }
 

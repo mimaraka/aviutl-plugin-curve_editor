@@ -26,5 +26,15 @@ namespace cved {
 		void ScriptCurveEditor::jump_to_last_idx() noexcept {
 			index_ = curves_script_.size() - 1;
 		}
+
+		// 最後のインデックスを削除する
+		void ScriptCurveEditor::delete_last_idx() noexcept {
+			if (1u < curves_script_.size()) {
+				curves_script_.pop_back();
+				if (index_ == curves_script_.size()) {
+					index_ = curves_script_.size() - 1;
+				}
+			}
+		}
 	}
 }
