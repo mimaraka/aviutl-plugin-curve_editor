@@ -1,0 +1,10 @@
+﻿[*]
+charset = utf-8
+indent_size = 4
+indent_style = tab
+
+[*.rc]
+charset = utf-16le
+
+[*.{lua,obj,anm,scn,cam,tra}]
+charset = shift-jis
