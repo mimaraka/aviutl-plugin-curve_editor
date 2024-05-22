@@ -17,6 +17,7 @@ namespace cved {
 			edit_mode_ = EditMode::Normal;
 			layout_mode_ = LayoutMode::Vertical;
 			apply_mode_.fill(ApplyMode::Normal);
+			set_apply_mode(EditMode::Value, ApplyMode::IgnoreMidPoint);
 			current_theme_ = THEME_DARK;
 			curve_code_bezier_ = 145674282;
 			curve_code_elastic_ = 2554290;
