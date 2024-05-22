@@ -13,6 +13,7 @@
 #define IDD_CURVE_DISCRETIZATION        136
 #define IDD_ID_JUMPTO                   137
 #define IDD_CURVE_CODE                  138
+#define IDD_MODIFIER                    139
 #define IDB_COPY                        256
 #define IDB_READ                        257
 #define IDB_SAVE                        258
@@ -31,6 +32,11 @@
 #define IDC_BUTTON_RESET                769
 #define IDC_BUTTON_CURVE_COLOR          770
 #define IDC_BUTTON_BACKGROUND_IMAGE     771
+#define IDC_BUTTON_ADD                  772
+#define IDC_BUTTON_EDIT                 773
+#define IDC_BUTTON_UP                   774
+#define IDC_BUTTON_DOWN                 775
+#define IDC_BUTTON_DELETE               776
 #define IDC_CHECK_REVERSE_WHEEL         1024
 #define IDC_CHECK_AUTO_COPY             1025
 #define IDC_CHECK_AUTO_APPLY            1026
@@ -47,6 +53,7 @@
 #define IDC_EDIT_BEZIER_PARAM           1409
 #define IDC_EDIT_BACKGROUND_IMAGE       1410
 #define IDC_LIST_CATEGORY               1536
+#define IDC_LIST_MODIFIER               1537
 #define IDC_SLIDER_CURVE_THICKNESS      1664
 #define IDC_SLIDER_CURVE_DRAWING_INTERVAL 1665
 #define IDC_SLIDER_SAMPLING             1666
@@ -135,8 +142,8 @@
 #define ID_CURVE_COPY                   40138
 #define ID_CURVE_PASTE                  40139
 #define ID_MANIFEST_VISUALSTYLE         40142
-#define ID_CURVE_DISCRETIZATION         40143
-#define ID_GRAPH_DESCRITIZATION         40147
+#define ID_CURVE_MODIFIER               40143
+#define ID_GRAPH_MODIFIER               40147
 #define ID_ID_JUMP                      40151
 #define ID_ID_DELETE                    40153
 #define ID_ID_JUMPTOFIRST               40155
