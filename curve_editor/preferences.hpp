@@ -1,7 +1,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/graphics.hpp>
 #include "enum.hpp"
 
 

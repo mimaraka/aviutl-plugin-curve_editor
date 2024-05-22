@@ -1,5 +1,5 @@
 #include "dialog_pref_behavior.hpp"
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/graphics.hpp>
 #include "config.hpp"
 #include "enum.hpp"
 #include "my_messagebox.hpp"

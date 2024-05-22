@@ -1,5 +1,5 @@
 #include "wndproc_library.hpp"
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/graphics.hpp>
 #include "config.hpp"
 
 

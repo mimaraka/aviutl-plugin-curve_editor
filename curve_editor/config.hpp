@@ -3,8 +3,8 @@
 #include "enum.hpp"
 #include "preferences.hpp"
 #include "theme.hpp"
-#include <mkaul/include/color.hpp>
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/color.hpp>
+#include <mkaul/graphics.hpp>
 #include <nlohmann/json.hpp>
 
 

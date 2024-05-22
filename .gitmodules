@@ -1,0 +1,17 @@
+[submodule "curve_editor/external/json"]
+	path = curve_editor/external/json
+	url = https://github.com/nlohmann/json
+	branch = master
+[submodule "curve_editor/external/PerlinNoise"]
+	path = curve_editor/external/PerlinNoise
+	url = https://github.com/Reputeless/PerlinNoise
+[submodule "curve_editor/external/strconv"]
+	path = curve_editor/external/strconv
+	url = https://github.com/javacommons/strconv
+[submodule "curve_editor/external/aviutl_exedit_sdk"]
+	path = curve_editor/external/aviutl_exedit_sdk
+	url = https://github.com/ePi5131/aviutl_exedit_sdk
+[submodule "curve_editor/external/aviutl-mkaul"]
+	path = curve_editor/external/aviutl-mkaul
+	url = https://github.com/mimaraka/aviutl-mkaul
+	branch = develop

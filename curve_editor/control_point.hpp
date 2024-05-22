@@ -1,7 +1,7 @@
 #pragma once
 
 #include "view_graph.hpp"
-#include <mkaul/include/point.hpp>
+#include <mkaul/point.hpp>
 
 
 

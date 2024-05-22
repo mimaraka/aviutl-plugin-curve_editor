@@ -1,8 +1,8 @@
 #pragma once
 
 #include "exedit_hook.hpp"
-#include <mkaul/include/rectangle.hpp>
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/rectangle.hpp>
+#include <mkaul/graphics.hpp>
 
 
 

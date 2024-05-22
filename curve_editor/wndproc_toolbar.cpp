@@ -1,7 +1,7 @@
 #include "wndproc_toolbar.hpp"
 #include <thread>
-#include <mkaul/include/graphics.hpp>
-#include <mkaul/include/ui.hpp>
+#include <mkaul/graphics.hpp>
+#include <mkaul/ui.hpp>
 #include "config.hpp"
 #include "constants.hpp"
 #include "curve_editor.hpp"

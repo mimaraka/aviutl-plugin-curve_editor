@@ -90,7 +90,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\boost_1_69_0\include\boost-1_83\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\PerlinNoise\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\aviutl-mkaul\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,7 +119,7 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\boost_1_69_0\include\boost-1_83\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\PerlinNoise\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\aviutl-mkaul\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

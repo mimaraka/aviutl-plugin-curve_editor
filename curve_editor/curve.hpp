@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/graphics.hpp>
 
 
 

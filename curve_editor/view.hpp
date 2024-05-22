@@ -1,7 +1,7 @@
 #pragma once
 
-#include <mkaul/include/point.hpp>
-#include <mkaul/include/rectangle.hpp>
+#include <mkaul/point.hpp>
+#include <mkaul/rectangle.hpp>
 
 
 

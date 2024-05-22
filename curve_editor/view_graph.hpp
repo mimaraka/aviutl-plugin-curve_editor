@@ -1,7 +1,7 @@
 #pragma once
 
 #include "view.hpp"
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/graphics.hpp>
 
 
 

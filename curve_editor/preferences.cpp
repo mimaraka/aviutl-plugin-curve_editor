@@ -1,5 +1,5 @@
 #include "preferences.hpp"
-#include <strconv2/strconv2.h>
+#include <strconv2.h>
 #include "global.hpp"
 #include "json_loader.hpp"
 

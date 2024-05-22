@@ -1,8 +1,8 @@
 #pragma once
 
 #include <aviutl.hpp>
-#include <mkaul/include/window.hpp>
-#include <mkaul/include/exedit.hpp>
+#include <mkaul/window.hpp>
+#include <mkaul/exedit.hpp>
 #include "curve.hpp"
 #include "theme.hpp"
 

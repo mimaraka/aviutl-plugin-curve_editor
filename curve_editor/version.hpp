@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mkaul/include/version.hpp>
+#include <mkaul/version.hpp>
 
 
 namespace cved {

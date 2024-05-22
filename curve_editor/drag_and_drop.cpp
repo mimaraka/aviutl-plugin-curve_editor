@@ -3,7 +3,7 @@
 #include "curve_editor.hpp"
 #include "global.hpp"
 #include "util.hpp"
-#include <mkaul/include/util_hook.hpp>
+#include <mkaul/util_hook.hpp>
 
 
 

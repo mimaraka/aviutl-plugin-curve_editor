@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mkaul/include/color.hpp>
+#include <mkaul/color.hpp>
 
 
 namespace cved {

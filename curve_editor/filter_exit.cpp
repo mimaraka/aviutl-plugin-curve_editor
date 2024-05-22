@@ -1,5 +1,5 @@
 #include "filter_exit.hpp"
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/graphics.hpp>
 #include "config.hpp"
 
 

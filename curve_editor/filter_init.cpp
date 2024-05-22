@@ -1,6 +1,6 @@
 #include "filter_init.hpp"
 #include <CommCtrl.h>
-#include <mkaul/include/aviutl.hpp>
+#include <mkaul/aviutl.hpp>
 #include "actctx_manager.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"

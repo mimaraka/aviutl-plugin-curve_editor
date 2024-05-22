@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mkaul/include/window.hpp>
+#include <mkaul/window.hpp>
 #include "curve.hpp"
 
 

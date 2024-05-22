@@ -1,6 +1,6 @@
 #include "wndproc_grapheditor.hpp"
 #include <windowsx.h>
-#include <mkaul/include/point.hpp>
+#include <mkaul/point.hpp>
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "drag_and_drop.hpp"

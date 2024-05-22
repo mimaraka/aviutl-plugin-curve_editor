@@ -1,6 +1,6 @@
 #include <windowsx.h>
-#include <mkaul/include/rectangle.hpp>
-#include <mkaul/include/graphics.hpp>
+#include <mkaul/rectangle.hpp>
+#include <mkaul/graphics.hpp>
 #include "wndproc_main.hpp"
 #include "wndproc_grapheditor.hpp"
 #include "wndproc_toolbar.hpp"
