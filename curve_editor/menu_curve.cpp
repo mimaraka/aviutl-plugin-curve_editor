@@ -133,7 +133,7 @@ namespace cved {
 			break;
 		}
 
-		case ID_CURVE_DISCRETIZATION:
+		case ID_CURVE_MODIFIER:
 		{
 			auto p_curve_normal = global::editor.editor_graph().curve_normal();
 			if (p_curve_normal) {
