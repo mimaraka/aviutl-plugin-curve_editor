@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ で生成されたインクルード ファイル。
 // curve_editor.rc で使用
 //
@@ -10,10 +10,11 @@
 #define IDD_PREF_GENERAL                133
 #define IDD_WARNING_AUTOSAVER           134
 #define IDD_BEZIER_PARAM                135
-#define IDD_CURVE_DISCRETIZATION        136
+#define IDD_MODIFIER_DISCRETIZATION     136
 #define IDD_ID_JUMPTO                   137
 #define IDD_CURVE_CODE                  138
 #define IDD_MODIFIER                    139
+#define IDD_MODIFIER_NOISER             153
 #define IDB_COPY                        256
 #define IDB_READ                        257
 #define IDB_SAVE                        258
@@ -36,7 +37,8 @@
 #define IDC_BUTTON_EDIT                 773
 #define IDC_BUTTON_UP                   774
 #define IDC_BUTTON_DOWN                 775
-#define IDC_BUTTON_DELETE               776
+#define IDC_BUTTON_REMOVE               776
+#define IDC_BUTTON_RENAME               777
 #define IDC_CHECK_REVERSE_WHEEL         1024
 #define IDC_CHECK_AUTO_COPY             1025
 #define IDC_CHECK_AUTO_APPLY            1026
@@ -84,6 +86,7 @@
 #define IDS_WARNING_PREF_RESET          5122
 #define IDS_WARNING_DELETE_ID           5123
 #define IDS_WARNING_DELETE_ALL_IDS      5124
+#define IDS_WARNING_REMOVE_MODIFIER     5125
 #define IDS_INFO_LATEST_VERSION         6144
 #define IDS_INFO_UPDATE_AVAILABLE       6145
 #define IDS_INFO_RESTART_AVIUTL         6146
@@ -115,6 +118,8 @@
 #define IDS_LABEL_THEME_LIGHT           7937
 #define IDS_LABEL_THEME_NAME_LIGHT      7937
 #define IDS_LABEL_SELECT_BG_IMAGE       8064
+#define IDS_LABEL_MODIFIER_DISCRETIZER  8192
+#define IDS_LABEL_MODIFIER_NOISER       8193
 #define IDS_WORD_VERSION                9216
 #define IDS_WORD_EDIT_MODE              9217
 #define IDS_WORD_LANGUAGE_AUTOMATIC     9218
@@ -156,7 +161,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        152
+#define _APS_NEXT_RESOURCE_VALUE        155
 #define _APS_NEXT_COMMAND_VALUE         40167
 #define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           101

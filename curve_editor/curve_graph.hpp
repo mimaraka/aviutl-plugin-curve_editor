@@ -2,6 +2,7 @@
 
 #include "curve.hpp"
 #include "control_point.hpp"
+#include "modifier.hpp"
 #include "view_graph.hpp"
 
 
@@ -13,6 +14,7 @@ namespace cved {
 		GraphCurve* next_;
 		uint32_t sampling_resolution_;
 		uint32_t quantization_resolution_;
+		std::vector<std::unique_ptr<Modifier>> modifiers_;
 
 	protected:
 		ControlPoint pt_start_;
@@ -62,6 +64,14 @@ namespace cved {
 		void set_sampling_resolution(uint32_t sampling_resolution) noexcept { sampling_resolution_ = sampling_resolution; }
 		auto get_quantization_resolution() const noexcept { return quantization_resolution_; }
 		void set_quantization_resolution(uint32_t quantization_resolution) noexcept { quantization_resolution_ = quantization_resolution; }
+
+		const auto& modifiers() const noexcept { return modifiers_; }
+		void add_modifier(std::unique_ptr<Modifier>&& modifier) noexcept { modifiers_.emplace_back(std::move(modifier)); }
+		void add_modifier(std::unique_ptr<Modifier>& modifier) noexcept { modifiers_.emplace_back(std::move(modifier)); }
+		bool remove_modifier(size_t idx) noexcept;
+		void clear_modifiers() noexcept { modifiers_.clear(); }
+		void set_modifiers(std::vector<std::unique_ptr<Modifier>>& modifiers) noexcept { modifiers_ = std::move(modifiers); }
+		void pop_modifier() noexcept { modifiers_.pop_back(); }
 
 		double get_value(double progress, double start, double end) const noexcept override;
 

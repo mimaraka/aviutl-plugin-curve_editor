@@ -1,4 +1,4 @@
-#include "dialog_curve_discretization.hpp"
+#include "dialog_modifier_discretization.hpp"
 #include <Commctrl.h>
 #include "global.hpp"
 #include "resource.h"
@@ -6,10 +6,10 @@
 
 
 namespace cved {
-	int CurveDiscretizationDialog::i_resource() const noexcept { return IDD_CURVE_DISCRETIZATION; }
+	int CurveDiscretizationDialog::i_resource() const noexcept { return IDD_MODIFIER_DISCRETIZATION; }
 
 
-	void CurveDiscretizationDialog::init_controls(HWND hwnd, GraphCurve* p_curve) noexcept {
+	void CurveDiscretizationDialog::init_controls(HWND hwnd, const GraphCurve* p_curve) noexcept {
 		hwnd_slider_sampling_ = ::GetDlgItem(hwnd, IDC_SLIDER_SAMPLING);
 		hwnd_slider_quantization_ = ::GetDlgItem(hwnd, IDC_SLIDER_QUANTIZATION);
 		hwnd_static_sampling_ = ::GetDlgItem(hwnd, IDC_STATIC_SAMPLING);

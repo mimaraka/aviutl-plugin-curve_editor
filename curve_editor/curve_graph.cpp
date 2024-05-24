@@ -4,22 +4,11 @@
 
 namespace cved {
 	double GraphCurve::get_value(double progress, double start, double end) const noexcept {
-		// 離散化の設定
-		double prog = progress;
-		// 標本化
-		if (0u < sampling_resolution_) {
-			prog = std::floor(prog * (double)sampling_resolution_) / (double)sampling_resolution_;
+		CurveFunction func_ret = [this](double prog, double st, double ed) {return curve_function(prog, st, ed); };
+		for (const auto& modifier : modifiers_) {
+			func_ret = modifier->apply(func_ret);
 		}
-		double ret = curve_function(prog, start, end);
-		// 量子化
-		if (0u < quantization_resolution_) {
-			double tmp1 = (ret - start) / (end - start);
-			double tmp2 = (tmp1 - pt_start_.y()) / (pt_end_.y() - pt_start_.y());
-			double tmp3 = std::floor(tmp2 * (double)quantization_resolution_) / (double)quantization_resolution_;
-			double tmp4 = pt_start_.y() + tmp3 * (pt_end_.y() - pt_start_.y());
-			ret = start + tmp4 * (end - start);
-		}
-		return ret;
+		return func_ret(progress, start, end);
 	}
 
 	void GraphCurve::draw_curve(
@@ -114,5 +103,13 @@ namespace cved {
 	void GraphCurve::pt_end_control() noexcept {
 		pt_start_.end_control();
 		pt_end_.end_control();
+	}
+
+	bool GraphCurve::remove_modifier(size_t idx) noexcept {
+		if (idx < modifiers_.size()) {
+			modifiers_.erase(modifiers_.begin() + idx);
+			return true;
+		}
+		else return false;
 	}
 }

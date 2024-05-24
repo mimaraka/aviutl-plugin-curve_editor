@@ -1,7 +1,7 @@
 #include "menu_graph.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
-#include "dialog_curve_discretization.hpp"
+#include "dialog_modifier.hpp"
 #include "global.hpp"
 #include "string_table.hpp"
 #include "resource.h"
@@ -88,7 +88,7 @@ namespace cved {
 
 		case ID_GRAPH_MODIFIER:
 		{
-			CurveDiscretizationDialog dialog;
+			ModifierDialog dialog;
 			auto p_curve_graph = global::editor.editor_graph().current_curve();
 			if (p_curve_graph) {
 				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve_graph));

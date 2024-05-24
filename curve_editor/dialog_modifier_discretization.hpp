@@ -14,6 +14,6 @@ namespace cved {
 
 		int i_resource() const noexcept override;
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
-		void init_controls(HWND hwnd, GraphCurve* p_curve) noexcept;
+		void init_controls(HWND hwnd, const GraphCurve* p_curve) noexcept;
 	};
 }

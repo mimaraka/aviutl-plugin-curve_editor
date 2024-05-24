@@ -1,7 +1,7 @@
 #include "menu_curve.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
-#include "dialog_curve_discretization.hpp"
+#include "dialog_modifier.hpp"
 #include "enum.hpp"
 #include "global.hpp"
 #include "string_table.hpp"
@@ -137,7 +137,7 @@ namespace cved {
 		{
 			auto p_curve_normal = global::editor.editor_graph().curve_normal();
 			if (p_curve_normal) {
-				CurveDiscretizationDialog dialog;
+				ModifierDialog dialog;
 				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve_normal->get_segment(idx)));
 			}
 			break;
