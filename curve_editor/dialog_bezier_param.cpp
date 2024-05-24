@@ -24,11 +24,11 @@ namespace cved {
 			case IDOK:
 				// Get the text from the edit control
 				::EndDialog(hwnd, IDOK);
-				break;
+				return TRUE;
 
 			case IDCANCEL:
 				::EndDialog(hwnd, IDCANCEL);
-				break;
+				return TRUE;
 			}
 			break;
 		}

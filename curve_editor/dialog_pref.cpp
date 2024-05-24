@@ -43,6 +43,7 @@ namespace cved {
 		RECT rect_child = { 100, 7, 400, 207 };
 		::MapDialogRect(hwnd, &rect_child);
 
+		::SendMessageA(hwnd_list_categories_, WM_SETREDRAW, FALSE, NULL);
 		for (auto& category : categories_) {
 			// リストに項目を追加
 			::SendMessageA(hwnd_list_categories_, LB_ADDSTRING, NULL, (LPARAM)category.name);
@@ -64,6 +65,7 @@ namespace cved {
 				TRUE
 			);
 		}
+		::SendMessageA(hwnd_list_categories_, WM_SETREDRAW, TRUE, NULL);
 		::SendMessageA(hwnd_list_categories_, LB_SETCURSEL, 0, NULL);
 	}
 

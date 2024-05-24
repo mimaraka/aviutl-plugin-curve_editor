@@ -30,7 +30,6 @@ namespace cved {
 		switch (id) {
 		case ID_ID_JUMP:
 		{
-			// TODO: IDジャンプ処理を実装
 			IdJumptoDialog dialog;
 			if (dialog.show(global::fp->hwnd) == IDOK) {
 				global::window_main.send_command((WPARAM)WindowCommand::Update);
@@ -47,7 +46,6 @@ namespace cved {
 				MessageBoxButton::OkCancel
 			);
 			if (resp == IDOK) {
-				// TODO: ID削除処理を実装
 				global::editor.delete_last_idx();
 				global::window_main.send_command((WPARAM)WindowCommand::Update);
 			}

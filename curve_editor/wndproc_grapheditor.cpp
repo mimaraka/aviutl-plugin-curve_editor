@@ -374,6 +374,7 @@ namespace cved {
 					curve->reverse();
 					global::window_main.send_command((WPARAM)WindowCommand::Update);
 				}
+				break;
 			}
 
 			// 背景画像の設定

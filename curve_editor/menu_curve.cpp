@@ -91,14 +91,14 @@ namespace cved {
 			tmp = p_custom_pt_screen->to<POINT>();
 		}
 		update_state(idx);
-		int ret = ::TrackPopupMenu(
+		auto ret = ::TrackPopupMenu(
 			menu_,
 			flags | TPM_RETURNCMD | TPM_NONOTIFY,
 			tmp.x,
 			tmp.y,
 			0, hwnd, NULL
 		);
-		return callback(idx, ret);
+		return callback(idx, static_cast<uint16_t>(ret));
 	}
 
 	bool CurveMenu::callback(size_t idx, uint16_t id) noexcept {
