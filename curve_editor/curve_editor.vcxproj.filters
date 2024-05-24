@@ -329,7 +329,7 @@
     <ClCompile Include="string_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="func_lua.cpp">
+    <ClCompile Include="lua_export.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="wndproc_editor.cpp">

@@ -335,7 +335,7 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
     </ClCompile>
     <ClCompile Include="dll_export.cpp" />
     <ClCompile Include="exedit_hook.cpp" />
-    <ClCompile Include="func_lua.cpp" />
+    <ClCompile Include="lua_export.cpp" />
     <ClCompile Include="handle_bezier.cpp" />
     <ClCompile Include="handle_bounce.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
