@@ -285,9 +285,6 @@
     <ClInclude Include="notification.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dialog_modifier_discretization.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
     <ClInclude Include="drag_and_drop.hpp">
       <Filter>Header Files\Exedit Hook</Filter>
     </ClInclude>
@@ -316,6 +313,12 @@
       <Filter>Header Files\Curve\Modifier</Filter>
     </ClInclude>
     <ClInclude Include="dialog_modifier.hpp">
+      <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_modifier_noiser.hpp">
+      <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_modifier_discretizer.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
   </ItemGroup>
@@ -485,9 +488,6 @@
     <ClCompile Include="curve_editor_script.cpp">
       <Filter>Source Files\Curve\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="dialog_modifier_discretization.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
     <ClCompile Include="drag_and_drop.cpp">
       <Filter>Source Files\Exedit Hook</Filter>
     </ClCompile>
@@ -513,6 +513,15 @@
       <Filter>Source Files\Curve\Modifier</Filter>
     </ClCompile>
     <ClCompile Include="dialog_modifer.cpp">
+      <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="modifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_modifier_noiser.cpp">
+      <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_modifier_discretizer.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
   </ItemGroup>
