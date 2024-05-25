@@ -18,7 +18,7 @@ namespace cved {
 		::SendMessageA(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::WordLanguageAutomatic]);
 		::SendMessageA(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)"日本語 (Japanese)");
 		::SendMessageA(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)"English");
-		::SendMessageA(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)" (Korean)");
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"한국어 (Korean)");
 	}
 
 	INT_PTR GeneralPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
