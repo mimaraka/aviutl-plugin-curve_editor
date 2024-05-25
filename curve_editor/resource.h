@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ で生成されたインクルード ファイル。
 // curve_editor.rc で使用
 //
@@ -40,6 +40,7 @@
 #define IDC_CHECK_ENABLE_HOTKEYS        1030
 #define IDC_CHECK_SHOW_TRACE            1031
 #define IDC_CHECK_BACKGROUND_IMAGE      1032
+#define IDC_STATIC_LOGO                 1049
 #define IDC_COMBO_LANGUAGE              1280
 #define IDC_COMBO_THEME                 1281
 #define IDC_COMBO_GRAPHIC_METHOD        1282
@@ -151,7 +152,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        152
 #define _APS_NEXT_COMMAND_VALUE         40167
-#define _APS_NEXT_CONTROL_VALUE         1048
+#define _APS_NEXT_CONTROL_VALUE         1050
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

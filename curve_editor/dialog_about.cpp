@@ -15,12 +15,17 @@ namespace cved {
 		using StringId = global::StringTable::StringId;
 		hwnd_static_info_ = ::GetDlgItem(hwnd, IDC_STATIC_PLUGIN_INFO);
 		::SetWindowTextA(hwnd_static_info_, std::format(
-			"{} : {}\nDeveloped by {}\nTranslated by {}",
+			"{} : {}\n\nDeveloped by {}\nTranslated by {}",
 			global::string_table[StringId::WordVersion],
 			global::PLUGIN_VERSION.str(),
 			global::PLUGIN_DEVELOPER,
 			global::PLUGIN_TRANSLATOR
 		).c_str());
+
+		// TODO: ロゴ画像が容易でき次第削除する
+		HWND hwnd_static_logo = ::GetDlgItem(hwnd, IDC_STATIC_LOGO);
+		HFONT font = ::CreateFontA(48, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Yu Gothic UI");
+		::SendMessage(hwnd_static_logo, WM_SETFONT, (WPARAM)font, TRUE);
 	}
 
 

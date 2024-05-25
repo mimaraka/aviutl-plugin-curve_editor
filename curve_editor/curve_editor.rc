@@ -220,10 +220,10 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,190,106,50,14
-    CTEXT           "Curve Editor",IDC_STATIC,7,7,233,9
-    LTEXT           "Version :\nDeveloped by\nTranslated by",IDC_STATIC_PLUGIN_INFO,7,50,131,26
+    CTEXT           "Curve Editor",IDC_STATIC_LOGO,7,7,233,35
+    LTEXT           "Version :\n\nDeveloped by\nTranslated by",IDC_STATIC_PLUGIN_INFO,7,48,131,36
     CONTROL         "<a href=""https://github.com/mimaraka/aviutl-plugin-curve_editor?tab=MIT-1-ov-file#readme"">ライセンス</a>\n<a href=""https://forms.gle/S1vazu2xgrzQwxUW6"">バグを報告</a>",IDC_SYSLINK_ABOUT,
-                    "SysLink",WS_TABSTOP,7,82,64,20
+                    "SysLink",WS_TABSTOP,7,85,64,18
 END
 
 IDD_BEZIER_PARAM DIALOGEX 0, 0, 250, 70
