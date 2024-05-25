@@ -9,6 +9,7 @@ namespace cved {
 		uint32_t seed,
 		double amplitude,
 		double frequency,
+		double phase,
 		int32_t octaves,
 		double decay_hardness
 	) noexcept
@@ -16,15 +17,16 @@ namespace cved {
 		seed_{ seed },
 		amplitude_{ amplitude },
 		frequency_{ frequency },
+		phase_{ phase },
 		octaves_{ octaves },
-		decay_hardness_{ decay_hardness }
+		decay_sharpness_{ decay_hardness }
 	{}
 
-	CurveFunction Noiser::apply(const CurveFunction& function) const noexcept {
+	CurveFunction Noiser::convert(const CurveFunction& function) const noexcept {
 		return [this, function](double progress, double start, double end) {
 			siv::PerlinNoise perlin{ seed_ };
-			const auto noise = amplitude_ * perlin.octave1D(progress * frequency_, octaves_);
-			const auto coef = (1 - std::exp(-decay_hardness_ * progress)) * (1 - std::exp(-decay_hardness_ * (1 - progress)));
+			const auto noise = amplitude_ * perlin.octave1D(progress * frequency_ + phase_, octaves_);
+			const auto coef = (1 - std::exp(-decay_sharpness_ * progress)) * (1 - std::exp(-decay_sharpness_ * (1 - progress)));
 			return function(progress, start, end) + noise * coef * (end - start);
 		};
 	}

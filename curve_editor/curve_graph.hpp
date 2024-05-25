@@ -66,6 +66,7 @@ namespace cved {
 		void set_quantization_resolution(uint32_t quantization_resolution) noexcept { quantization_resolution_ = quantization_resolution; }
 
 		const auto& modifiers() const noexcept { return modifiers_; }
+		Modifier* get_modifier(size_t idx) const noexcept;
 		void add_modifier(std::unique_ptr<Modifier>&& modifier) noexcept { modifiers_.emplace_back(std::move(modifier)); }
 		void add_modifier(std::unique_ptr<Modifier>& modifier) noexcept { modifiers_.emplace_back(std::move(modifier)); }
 		bool remove_modifier(size_t idx) noexcept;

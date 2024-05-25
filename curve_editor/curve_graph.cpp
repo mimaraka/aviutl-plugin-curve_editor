@@ -105,6 +105,13 @@ namespace cved {
 		pt_end_.end_control();
 	}
 
+	Modifier* GraphCurve::get_modifier(size_t idx) const noexcept {
+		if (idx < modifiers_.size()) {
+			return modifiers_[idx].get();
+		}
+		else return nullptr;
+	}
+
 	bool GraphCurve::remove_modifier(size_t idx) noexcept {
 		if (idx < modifiers_.size()) {
 			modifiers_.erase(modifiers_.begin() + idx);

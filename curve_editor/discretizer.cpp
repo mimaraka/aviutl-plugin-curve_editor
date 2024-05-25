@@ -17,7 +17,7 @@ namespace cved {
 		p_pt_end_{ p_pt_end }
 	{}
 
-	CurveFunction Discretizer::apply(const CurveFunction& function) const noexcept {
+	CurveFunction Discretizer::convert(const CurveFunction& function) const noexcept {
 		return [this, function](double progress, double start, double end) {
 			// 離散化の設定
 			double prog = progress;

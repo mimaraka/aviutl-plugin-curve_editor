@@ -48,6 +48,19 @@
 #define IDC_CHECK_ENABLE_HOTKEYS        1030
 #define IDC_CHECK_SHOW_TRACE            1031
 #define IDC_CHECK_BACKGROUND_IMAGE      1032
+#define IDC_EDIT_SEED                   1048
+#define IDC_SLIDER_AMP                  1049
+#define IDC_STATIC_AMP                  1050
+#define IDC_SLIDER_FREQ                 1051
+#define IDC_CHECK1                      1051
+#define IDC_CHECK_BYPASS                1051
+#define IDC_STATIC_FREQ                 1052
+#define IDC_SLIDER_OCTAVES              1053
+#define IDC_STATIC_OCTAVES              1054
+#define IDC_SLIDER_PHASE                1055
+#define IDC_STATIC_PHASE                1056
+#define IDC_SLIDER_DECAY_SHARPNESS      1057
+#define IDC_STATIC_DECAY_SHARPNESS      1058
 #define IDC_COMBO_LANGUAGE              1280
 #define IDC_COMBO_THEME                 1281
 #define IDC_COMBO_GRAPHIC_METHOD        1282
@@ -163,7 +176,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        155
 #define _APS_NEXT_COMMAND_VALUE         40167
-#define _APS_NEXT_CONTROL_VALUE         1048
+#define _APS_NEXT_CONTROL_VALUE         1052
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

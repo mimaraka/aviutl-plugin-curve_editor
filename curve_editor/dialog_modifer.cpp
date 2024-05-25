@@ -1,4 +1,6 @@
 #include "dialog_modifier.hpp"
+#include "dialog_modifier_discretizer.hpp"
+#include "dialog_modifier_noiser.hpp"
 #include "discretizer.hpp"
 #include "noiser.hpp"
 #include "constants.hpp"
@@ -23,6 +25,7 @@ namespace cved {
 		hwnd_button_up_ = ::GetDlgItem(hwnd, IDC_BUTTON_UP);
 		hwnd_button_down_ = ::GetDlgItem(hwnd, IDC_BUTTON_DOWN);
 		hwnd_button_remove_ = ::GetDlgItem(hwnd, IDC_BUTTON_REMOVE);
+		hwnd_check_bypass_ = ::GetDlgItem(hwnd, IDC_CHECK_BYPASS);
 		hwnd_list_modifier_ = ::GetDlgItem(hwnd, IDC_LIST_MODIFIER);
 		menu_modifier_ = ::CreatePopupMenu();
 
@@ -45,14 +48,16 @@ namespace cved {
 	}
 
 
-	void ModifierDialog::update(const GraphCurve* p_curve) noexcept {
+	void ModifierDialog::update_buttons(const GraphCurve* p_curve) noexcept {
 		int idx = ::SendMessageA(hwnd_list_modifier_, LB_GETCURSEL, NULL, NULL);
+		auto modifier = p_curve->get_modifier(idx);
 		if (idx != LB_ERR) {
 			::EnableWindow(hwnd_button_edit_, TRUE);
 			::EnableWindow(hwnd_button_rename_, TRUE);
 			::EnableWindow(hwnd_button_up_, idx != 0);
 			::EnableWindow(hwnd_button_down_, idx != ::SendMessageA(hwnd_list_modifier_, LB_GETCOUNT, NULL, NULL) - 1);
 			::EnableWindow(hwnd_button_remove_, TRUE);
+			::EnableWindow(hwnd_check_bypass_, TRUE);
 		}
 		else {
 			::EnableWindow(hwnd_button_edit_, FALSE);
@@ -60,8 +65,18 @@ namespace cved {
 			::EnableWindow(hwnd_button_up_, FALSE);
 			::EnableWindow(hwnd_button_down_, FALSE);
 			::EnableWindow(hwnd_button_remove_, FALSE);
+			::EnableWindow(hwnd_check_bypass_, FALSE);
 		}
+		if (modifier) {
+			::SendMessageA(hwnd_check_bypass_, BM_SETCHECK, !modifier->enabled() ? BST_CHECKED : BST_UNCHECKED, NULL);
+		}
+		else {
+			::SendMessageA(hwnd_check_bypass_, BM_SETCHECK, BST_UNCHECKED, NULL);
+		}
+	}
 
+
+	void ModifierDialog::update_list(const GraphCurve* p_curve) noexcept {
 		::SendMessageA(hwnd_list_modifier_, LB_RESETCONTENT, NULL, NULL);
 		for (const auto& modifier : p_curve->modifiers()) {
 			::SendMessageA(hwnd_list_modifier_, LB_ADDSTRING, NULL, (LPARAM)modifier->name().c_str());
@@ -76,7 +91,10 @@ namespace cved {
 		switch (message) {
 		case WM_INITDIALOG:
 			p_curve = reinterpret_cast<GraphCurve*>(lparam);
-			if (!p_curve) return FALSE;
+			if (!p_curve) {
+				::EndDialog(hwnd, IDCANCEL);
+				return TRUE;
+			}
 
 			// 編集前のモディファイアの状態を保存
 			for (const auto& modifier : p_curve->modifiers()) {
@@ -89,7 +107,8 @@ namespace cved {
 			}
 
 			init_controls(hwnd, p_curve);
-			update(p_curve);
+			update_list(p_curve);
+			update_buttons(p_curve);
 			return TRUE;
 
 		case WM_COMMAND:
@@ -135,14 +154,32 @@ namespace cved {
 						break;
 					}
 					p_curve->add_modifier(new_modifier);
-					update(p_curve);
+					update_list(p_curve);
+					::SendMessageA(hwnd_list_modifier_, LB_SETCURSEL, ::SendMessageA(hwnd_list_modifier_, LB_GETCOUNT, NULL, NULL) - 1, NULL);
+					update_buttons(p_curve);
 					global::window_grapheditor.redraw();
 				}
 				return TRUE;
 			}
 
 			case IDC_BUTTON_EDIT:
+			{
+				int idx = ::SendMessageA(hwnd_list_modifier_, LB_GETCURSEL, NULL, NULL);
+				if (idx != LB_ERR) {
+					auto p_modifier = p_curve->get_modifier(idx);
+					if (typeid(*p_modifier) == typeid(Discretizer)) {
+						auto p_discretizer = dynamic_cast<const Discretizer*>(p_modifier);
+						DiscretizerModifierDialog dialog;
+						dialog.show(hwnd, reinterpret_cast<LPARAM>(p_discretizer));
+					}
+					else if (typeid(*p_modifier) == typeid(Noiser)) {
+						auto p_noiser = dynamic_cast<const Noiser*>(p_modifier);
+						NoiserModifierDialog dialog;
+						dialog.show(hwnd, reinterpret_cast<LPARAM>(p_noiser));
+					}
+				}
 				return TRUE;
+			}
 
 			case IDC_BUTTON_RENAME:
 				return TRUE;
@@ -163,21 +200,33 @@ namespace cved {
 				);
 				if (ret == IDOK) {
 					auto idx = ::SendMessageA(hwnd_list_modifier_, LB_GETCURSEL, NULL, NULL);
-					p_curve->remove_modifier(idx);
-					update(p_curve);
-					global::window_grapheditor.redraw();
+					if (idx != LB_ERR) {
+						p_curve->remove_modifier(idx);
+						update_list(p_curve);
+						update_buttons(p_curve);
+						global::window_grapheditor.redraw();
+					}
+				}
+				return TRUE;
+			}
+
+			case IDC_CHECK_BYPASS:
+			{
+				auto idx = ::SendMessageA(hwnd_list_modifier_, LB_GETCURSEL, NULL, NULL);
+				if (idx != LB_ERR) {
+					auto p_modifier = p_curve->get_modifier(idx);
+					if (p_modifier) {
+						p_modifier->set_enabled(::SendMessageA(hwnd_check_bypass_, BM_GETCHECK, NULL, NULL) == BST_UNCHECKED);
+						global::window_grapheditor.redraw();
+					}
 				}
 				return TRUE;
 			}
 			}
 			switch (HIWORD(wparam)) {
 			case LBN_SELCHANGE:
-			{
-				auto idx = ::SendMessageA(hwnd_list_modifier_, LB_GETCURSEL, NULL, NULL);
-				update(p_curve);
-				::SendMessageA(hwnd_list_modifier_, LB_SETCURSEL, (WPARAM)idx, NULL);
+				update_buttons(p_curve);
 				return TRUE;
-			}
 			}
 			break;
 		}

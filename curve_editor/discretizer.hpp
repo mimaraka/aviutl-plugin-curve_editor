@@ -35,6 +35,6 @@ namespace cved {
 		auto quantization_resolution() const noexcept { return quantization_resolution_; }
 		void set_quantization_resolution(uint32_t quantization_resolution) noexcept { quantization_resolution_ = quantization_resolution; }
 
-		CurveFunction apply(const CurveFunction& function) const noexcept override;
+		CurveFunction convert(const CurveFunction& function) const noexcept override;
 	};
 }
