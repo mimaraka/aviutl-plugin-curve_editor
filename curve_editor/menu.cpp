@@ -26,6 +26,6 @@ namespace cved {
 			tmp.y,
 			0, hwnd, NULL
 		);
-		return callback(ret);
+		return callback((uint16_t)ret);
 	}
 }
