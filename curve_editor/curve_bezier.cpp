@@ -366,10 +366,10 @@ namespace cved {
 			auto end_cutoff = end_client;
 
 			if (cutoff_line) {
-				util::get_cutoff_line(&start_cutoff, left_client, start_client, root_radius + 4.f);
-				util::get_cutoff_line(&left_cutoff, start_client, left_client, tip_radius + 4.f);
-				util::get_cutoff_line(&right_cutoff, end_client, right_client, tip_radius + 4.f);
-				util::get_cutoff_line(&end_cutoff, right_client, end_client, root_radius + 4.f);
+				util::get_clipped_line_pos(&start_cutoff, left_client, start_client, root_radius + 4.f);
+				util::get_clipped_line_pos(&left_cutoff, start_client, left_client, tip_radius + 4.f);
+				util::get_clipped_line_pos(&right_cutoff, end_client, right_client, tip_radius + 4.f);
+				util::get_clipped_line_pos(&end_cutoff, right_client, end_client, root_radius + 4.f);
 			}
 			// 線 (左ハンドル)
 			p_graphics->draw_line(start_cutoff, left_cutoff, color, mkaul::graphics::Stroke{ thickness });

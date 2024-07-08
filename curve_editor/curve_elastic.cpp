@@ -252,8 +252,8 @@ namespace cved {
 			);
 
 			if (cutoff_line) {
-				util::get_cutoff_line(&tmp_amp_left, amp_right_client, amp_left_client, tip_radius + 4.f);
-				util::get_cutoff_line(&tmp_amp_right, amp_left_client, amp_right_client, tip_radius + 4.f);
+				util::get_clipped_line_pos(&tmp_amp_left, amp_right_client, amp_left_client, tip_radius + 4.f);
+				util::get_clipped_line_pos(&tmp_amp_right, amp_left_client, amp_right_client, tip_radius + 4.f);
 			}
 
 			p_graphics->draw_line(
@@ -267,8 +267,8 @@ namespace cved {
 			auto tmp_freq_decay_tip = freq_decay_client_tip;
 
 			if (cutoff_line) {
-				util::get_cutoff_line(&tmp_freq_decay_root, freq_decay_client_tip, freq_decay_client_root, root_radius + 4.f);
-				util::get_cutoff_line(&tmp_freq_decay_tip, freq_decay_client_root, freq_decay_client_tip, tip_radius + 4.f);
+				util::get_clipped_line_pos(&tmp_freq_decay_root, freq_decay_client_tip, freq_decay_client_root, root_radius + 4.f);
+				util::get_clipped_line_pos(&tmp_freq_decay_tip, freq_decay_client_root, freq_decay_client_tip, tip_radius + 4.f);
 			}
 
 			p_graphics->draw_ellipse(

@@ -8,7 +8,7 @@
 namespace cved {
 	namespace util {
 		// 長さを減算
-		void get_cutoff_line(mkaul::Point<float>* pt, const mkaul::Point<float>& start, const mkaul::Point<float>& end, float length) {
+		void get_clipped_line_pos(mkaul::Point<float>* pt, const mkaul::Point<float>& start, const mkaul::Point<float>& end, float length) {
 			float old_length = (float)mkaul::distance(start, end);
 
 			if (old_length == 0) {
