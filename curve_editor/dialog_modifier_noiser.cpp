@@ -70,6 +70,7 @@ namespace cved {
 				double value = static_cast<double>(::SendMessageA(hwnd_slider_frequency_, TBM_GETPOS, NULL, NULL)) * 0.1;
 				if (p_noiser) {
 					p_noiser->set_frequency(value);
+					p_noiser->update();
 				}
 				::SetWindowTextA(hwnd_static_frequency_, std::format("{:.1f}", value).c_str());
 				global::window_grapheditor.redraw();
@@ -86,6 +87,7 @@ namespace cved {
 				int32_t value = ::SendMessageA(hwnd_slider_octaves_, TBM_GETPOS, NULL, NULL);
 				if (p_noiser) {
 					p_noiser->set_octaves(value);
+					p_noiser->update();
 				}
 				::SetWindowTextA(hwnd_static_octaves_, std::to_string(value).c_str());
 				global::window_grapheditor.redraw();
@@ -122,6 +124,7 @@ namespace cved {
 					if (p_noiser) {
 						try {
 							p_noiser->set_seed(std::stoul(buffer));
+							p_noiser->update();
 						}
 						catch (std::invalid_argument&) {}
 						catch (std::out_of_range&) {}

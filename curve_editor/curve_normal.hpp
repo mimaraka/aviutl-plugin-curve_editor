@@ -1,6 +1,7 @@
 #pragma once
 
 #include "curve_graph.hpp"
+#include <cereal/types/vector.hpp>
 #include "handle_bezier.hpp"
 #include "enum.hpp"
 
@@ -11,28 +12,11 @@ namespace cved {
 	class NormalCurve : public GraphCurve {
 		std::vector<std::unique_ptr<GraphCurve>> curve_segments_;
 
-		template <class CurveType, class CurveDataType>
-		static bool load_segment_data(
-			const byte* data,
-			size_t& idx,
-			size_t size,
-			std::unique_ptr<GraphCurve>& p_curve
-		) noexcept {
-			constexpr size_t n = sizeof(CurveDataType) / sizeof(byte);
-			if (size < idx + n) return false;
-			p_curve = std::make_unique<CurveType>();
-			if (!p_curve->load_data(data + idx, n)) return false;
-			idx += n;
-			return true;
-		}
-
 	public:
 		// コンストラクタ
 		NormalCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u
+			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. }
 		) noexcept;
 
 		// コピーコンストラクタ
@@ -62,9 +46,7 @@ namespace cved {
 		void reverse(bool fix_pt = false) noexcept override;
 		void reverse_segment(size_t idx) noexcept;
 
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
-		bool load_data_v1(const byte* data, size_t pt_n) noexcept;
+		bool load_v1_data(const byte* data, size_t pt_n) noexcept;
 
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,
@@ -106,5 +88,34 @@ namespace cved {
 		// ポイントの移動を終了
 		void pt_end_move() noexcept override;
 		void pt_end_control() noexcept override;
+
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<GraphCurve>(this),
+				curve_segments_
+			);
+		}
+
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<GraphCurve>(this),
+				curve_segments_
+			);
+
+			for (auto begin = curve_segments_.begin(), end = curve_segments_.end(), it = begin; it != end; ++it) {
+				if (it != begin) {
+					(*it)->set_prev((*std::prev(it)).get());
+				}
+				if (it != std::prev(end)) {
+					(*it)->set_next((*std::next(it)).get());
+				}
+			}
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::NormalCurve, 0)
+CEREAL_REGISTER_TYPE(cved::NormalCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::NormalCurve)

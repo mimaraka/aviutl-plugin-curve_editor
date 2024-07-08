@@ -2,8 +2,27 @@
 
 #include "view_graph.hpp"
 #include <mkaul/point.hpp>
+#include <cereal/cereal.hpp>
 
 
+
+namespace cereal {
+	template <class Archive>
+	void save(Archive& archive, const mkaul::Point<double>& pt) {
+		archive(
+			pt.x,
+			pt.y
+		);
+	}
+
+	template <class Archive>
+	void load(Archive& archive, mkaul::Point<double>& pt) {
+		archive(
+			pt.x,
+			pt.y
+		);
+	}
+}
 
 namespace cved {
 	// 操作可能なポイント
@@ -40,5 +59,23 @@ namespace cved {
 		void move(const mkaul::Point<double>& pt) noexcept;
 
 		void end_control() noexcept { controlled_ = false; }
+
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				pt_,
+				fixed_
+			);
+		}
+
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				pt_,
+				fixed_
+			);
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::ControlPoint, 0)

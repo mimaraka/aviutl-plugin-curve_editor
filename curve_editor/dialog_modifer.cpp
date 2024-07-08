@@ -99,10 +99,10 @@ namespace cved {
 			// 編集前のモディファイアの状態を保存
 			for (const auto& modifier : p_curve->modifiers()) {
 				if (typeid(*modifier) == typeid(Discretizer)) {
-					modifiers_prev.push_back(std::make_unique<Discretizer>(dynamic_cast<Discretizer&>(*modifier)));
+					modifiers_prev.emplace_back(std::make_unique<Discretizer>(dynamic_cast<Discretizer&>(*modifier)));
 				}
 				else if (typeid(*modifier) == typeid(Noiser)) {
-					modifiers_prev.push_back(std::make_unique<Noiser>(dynamic_cast<Noiser&>(*modifier)));
+					modifiers_prev.emplace_back(std::make_unique<Noiser>(dynamic_cast<Noiser&>(*modifier)));
 				}
 			}
 
@@ -143,7 +143,7 @@ namespace cved {
 					std::unique_ptr<Modifier> new_modifier;
 					switch ((ModifierType)(ret - 1)) {
 					case ModifierType::Discretizer:
-						new_modifier = std::make_unique<Discretizer>(&p_curve->pt_start(), &p_curve->pt_end());
+						new_modifier = std::make_unique<Discretizer>();
 						break;
 
 					case ModifierType::Noiser:
@@ -153,6 +153,7 @@ namespace cved {
 					default:
 						break;
 					}
+					new_modifier->set_curve(p_curve);
 					p_curve->add_modifier(new_modifier);
 					update_list(p_curve);
 					::SendMessageA(hwnd_list_modifier_, LB_SETCURSEL, ::SendMessageA(hwnd_list_modifier_, LB_GETCOUNT, NULL, NULL) - 1, NULL);

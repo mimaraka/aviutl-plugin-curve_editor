@@ -1,12 +1,12 @@
 #include "noiser.hpp"
-#include <PerlinNoise.hpp>
 #include "string_table.hpp"
+#include "curve_graph.hpp"
 
 
 
 namespace cved {
 	Noiser::Noiser(
-		uint32_t seed,
+		int32_t seed,
 		double amplitude,
 		double frequency,
 		double phase,
@@ -19,14 +19,25 @@ namespace cved {
 		frequency_{ frequency },
 		phase_{ phase },
 		octaves_{ octaves },
-		decay_sharpness_{ decay_hardness }
-	{}
+		decay_sharpness_{ decay_hardness },
+		noise_{}
+	{
+		noise_.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+		noise_.SetFractalType(FastNoiseLite::FractalType_FBm);
+		update();
+	}
+
+	void Noiser::update() noexcept {
+		noise_.SetSeed(seed_);
+		noise_.SetFrequency((float)frequency_);
+		noise_.SetFractalOctaves(octaves_);
+	}
 
 	CurveFunction Noiser::convert(const CurveFunction& function) const noexcept {
 		return [this, function](double progress, double start, double end) {
-			siv::PerlinNoise perlin{ seed_ };
-			const auto noise = amplitude_ * perlin.octave1D(progress * frequency_ + phase_, octaves_);
-			const auto coef = (1 - std::exp(-decay_sharpness_ * progress)) * (1 - std::exp(-decay_sharpness_ * (1 - progress)));
+			const double prog_rel = (progress - p_curve_->pt_start().x()) / (p_curve_->pt_end().x() - p_curve_->pt_start().x());
+			const auto noise = amplitude_ * noise_.GetNoise(prog_rel - phase_, 0.);
+			const auto coef = (1 - std::exp(-decay_sharpness_ * prog_rel)) * (1 - std::exp(-decay_sharpness_ * (1 - prog_rel)));
 			return function(progress, start, end) + noise * coef * (end - start);
 		};
 	}

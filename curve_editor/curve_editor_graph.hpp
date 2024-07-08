@@ -2,6 +2,7 @@
 
 #define NOMINMAX
 #include <vector>
+#include <cereal/types/vector.hpp>
 #include "curve.hpp"
 #include "curve_graph.hpp"
 #include "curve_graph_numeric.hpp"
@@ -60,12 +61,21 @@ namespace cved {
 			const auto& copied_curve() const noexcept { return copied_curve_; }
 			bool is_copying() const noexcept { return copied_curve_.get() != nullptr; }
 
-			void create_data_normal(std::vector<byte>& data) const noexcept;
-			bool load_data_normal(const byte* data, size_t size) noexcept;
 			// v1.xのデータはNormalCurveに適用される
-			bool load_data_v1(const byte* data) noexcept;
-			void create_data_value(std::vector<byte>& data) const noexcept;
-			bool load_data_value(const byte* data, size_t size) noexcept;
+			bool load_v1_data(const byte* data) noexcept;
+
+			// TODO: Valueを追加
+			template <class Archive>
+			void serialize(Archive& archive, const std::uint32_t) {
+				archive(
+					curves_normal_,
+					curve_bezier_,
+					curve_elastic_,
+					curve_bounce_
+				);
+			}
 		};
 	}
 }
+
+CEREAL_CLASS_VERSION(cved::global::GraphCurveEditor, 0)

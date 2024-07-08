@@ -1,5 +1,4 @@
 #include "curve_elastic.hpp"
-#include "curve_data.hpp"
 #include "enum.hpp"
 #include "util.hpp"
 
@@ -10,8 +9,6 @@ namespace cved {
 	ElasticCurve::ElasticCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
-		uint32_t sampling_resolution,
-		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
@@ -19,7 +16,7 @@ namespace cved {
 		double freq,
 		double decay
 	) noexcept : 
-		NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next },
+		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
 		handle_amp_{},
 		handle_freq_decay_{},
 		amp_{ amp },
@@ -130,49 +127,6 @@ namespace cved {
 		GraphCurve::reverse(fix_pt);
 		handle_amp_.from_param(amp_, pt_start(), pt_end());
 		handle_freq_decay_.from_param(freq_, decay_, pt_start(), pt_end());
-	}
-
-	void ElasticCurve::create_data(std::vector<byte>& data) const noexcept {
-		ElasticCurveData data_elastic{
-			.data_graph = GraphCurveData{
-				.start_x = pt_start().x(),
-				.start_y = pt_start().y(),
-				.end_x = pt_end().x(),
-				.end_y = pt_end().y(),
-				.sampling_resolution = get_sampling_resolution(),
-				.quantization_resolution = get_quantization_resolution()
-			},
-			.amp = amp_,
-			.freq = freq_,
-			.decay = decay_
-		};
-		auto bytes_elastic = reinterpret_cast<byte*>(&data_elastic);
-		size_t n = sizeof(ElasticCurveData) / sizeof(byte);
-		data = std::vector<byte>{ bytes_elastic, bytes_elastic + n };
-		data.insert(data.begin(), (byte)CurveSegmentType::Elastic);
-	}
-
-	bool ElasticCurve::load_data(const byte* data, size_t size) noexcept {
-		if (size < sizeof(ElasticCurveData) / sizeof(byte)) return false;
-		auto p_curve_data = reinterpret_cast<const ElasticCurveData*>(data);
-		// カーブの整合性チェック
-		if (
-			!mkaul::real_in_range(p_curve_data->data_graph.start_x, 0., 1., true)
-			or !mkaul::real_in_range(p_curve_data->data_graph.end_x, 0., 1., true)
-			or p_curve_data->data_graph.end_x < p_curve_data->data_graph.start_x
-			) {
-			return false;
-		}
-		pt_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
-		pt_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
-		handle_amp_.from_param(p_curve_data->amp, pt_start(), pt_end());
-		handle_freq_decay_.from_param(p_curve_data->freq, p_curve_data->decay, pt_start(), pt_end());
-		amp_ = handle_amp_.get_amp(pt_start(), pt_end());
-		freq_ = handle_freq_decay_.get_freq(pt_start(), pt_end());
-		decay_ = handle_freq_decay_.get_decay(pt_start(), pt_end());
-		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
-		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
-		return true;
 	}
 
 	// カーブのコードを生成

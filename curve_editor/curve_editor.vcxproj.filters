@@ -99,9 +99,6 @@
     <ClInclude Include="global.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="curve_data.hpp">
-      <Filter>Header Files\Curve</Filter>
-    </ClInclude>
     <ClInclude Include="string_table.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -320,6 +317,9 @@
     </ClInclude>
     <ClInclude Include="dialog_modifier_discretizer.hpp">
       <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="modifier_base.hpp">
+      <Filter>Header Files\Curve\Modifier</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

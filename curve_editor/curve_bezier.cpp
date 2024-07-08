@@ -2,7 +2,6 @@
 #include <mkaul/graphics.hpp>
 #include <mkaul/util.hpp>
 #include "config.hpp"
-#include "curve_data.hpp"
 #include "util.hpp"
 
 
@@ -12,15 +11,13 @@ namespace cved {
 	BezierCurve::BezierCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
-		uint32_t sampling_resolution,
-		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		const mkaul::Point<double>& handle_left,
 		const mkaul::Point<double>& handle_right
 	) noexcept :
-		NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next },
+		NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next },
 		handle_left_{ this, BezierHandle::Type::Left, handle_left },
 		handle_right_{ this, BezierHandle::Type::Right, handle_right },
 		handle_buffer_left_{ this, BezierHandle::Type::Left },
@@ -198,50 +195,6 @@ namespace cved {
 		handle_left_.set_pt_offset(-handle_right_.pt_offset());
 		handle_right_.set_pt_offset(-offset_tmp);
 		GraphCurve::reverse(fix_pt);
-	}
-
-	void BezierCurve::create_data(std::vector<byte>& data) const noexcept {
-		BezierCurveData data_bezier{
-			.data_graph = GraphCurveData{
-				.start_x = pt_start().x(),
-				.start_y = pt_start().y(),
-				.end_x = pt_end().x(),
-				.end_y = pt_end().y(),
-				.sampling_resolution = get_sampling_resolution(),
-				.quantization_resolution = get_quantization_resolution()
-			},
-			.left_x = handle_left_.pt_offset().x,
-			.left_y = handle_left_.pt_offset().y,
-			.right_x = handle_right_.pt_offset().x,
-			.right_y = handle_right_.pt_offset().y
-		};
-		auto bytes_bezier = reinterpret_cast<byte*>(&data_bezier);
-		size_t n = sizeof(BezierCurveData) / sizeof(byte);
-		data = std::vector<byte>{ bytes_bezier, bytes_bezier + n };
-		data.insert(data.begin(), (byte)CurveSegmentType::Bezier);
-	}
-
-	bool BezierCurve::load_data(const byte* data, size_t size) noexcept {
-		if (size < sizeof(BezierCurveData) / sizeof(byte)) return false;
-		auto p_curve_data = reinterpret_cast<const BezierCurveData*>(data);
-		// カーブの整合性チェック
-		// TODO: コードの共通化
-		if (
-			!mkaul::real_in_range(p_curve_data->data_graph.start_x, 0., 1., true)
-			or !mkaul::real_in_range(p_curve_data->data_graph.end_x, 0., 1., true)
-			or p_curve_data->data_graph.end_x < p_curve_data->data_graph.start_x
-			or !mkaul::real_in_range(p_curve_data->left_x, 0., p_curve_data->data_graph.end_x - p_curve_data->data_graph.start_x, true)
-			or !mkaul::real_in_range(p_curve_data->right_x, p_curve_data->data_graph.start_x - p_curve_data->data_graph.end_x, 0., true)
-			) {
-			return false;
-		}
-		pt_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
-		pt_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
-		handle_left_.set_pt_offset(mkaul::Point{ p_curve_data->left_x, p_curve_data->left_y });
-		handle_right_.set_pt_offset(mkaul::Point{ p_curve_data->right_x, p_curve_data->right_y });
-		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
-		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
-		return true;
 	}
 
 	int32_t BezierCurve::encode() const noexcept {

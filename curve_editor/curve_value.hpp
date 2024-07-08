@@ -13,17 +13,13 @@ namespace cved {
 	public:
 		ValueCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u
+			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. }
 		) noexcept;
 
 		ValueCurve(const ValueCurve& curve) noexcept;
 
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
 
 		void draw_handle(
 			mkaul::graphics::Graphics* p_graphics,

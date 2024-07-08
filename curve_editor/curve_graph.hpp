@@ -1,6 +1,10 @@
 #pragma once
 
 #include "curve.hpp"
+#include <cereal/types/base_class.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/polymorphic.hpp>
 #include "control_point.hpp"
 #include "modifier.hpp"
 #include "view_graph.hpp"
@@ -12,8 +16,6 @@ namespace cved {
 	class GraphCurve : public Curve {
 		GraphCurve* prev_;
 		GraphCurve* next_;
-		uint32_t sampling_resolution_;
-		uint32_t quantization_resolution_;
 		std::vector<std::unique_ptr<Modifier>> modifiers_;
 
 	protected:
@@ -31,16 +33,12 @@ namespace cved {
 		GraphCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr
 		) noexcept :
 			pt_start_{ pt_start, pt_fixed },
 			pt_end_{ pt_end, pt_fixed },
-			sampling_resolution_{ sampling_resolution },
-			quantization_resolution_{ quantization_resolution },
 			prev_{prev},
 			next_{next}
 		{}
@@ -49,8 +47,6 @@ namespace cved {
 		GraphCurve(const GraphCurve& curve) noexcept :
 			pt_start_{ curve.pt_start_ },
 			pt_end_{ curve.pt_end_ },
-			sampling_resolution_{ curve.sampling_resolution_ },
-			quantization_resolution_{ curve.quantization_resolution_ },
 			prev_{ nullptr },
 			next_{ nullptr }
 		{}
@@ -59,11 +55,6 @@ namespace cved {
 		auto next() const noexcept { return next_; }
 		virtual void set_prev(GraphCurve* p) noexcept { prev_ = p; }
 		virtual void set_next(GraphCurve* p) noexcept { next_ = p; }
-
-		auto get_sampling_resolution() const noexcept { return sampling_resolution_; }
-		void set_sampling_resolution(uint32_t sampling_resolution) noexcept { sampling_resolution_ = sampling_resolution; }
-		auto get_quantization_resolution() const noexcept { return quantization_resolution_; }
-		void set_quantization_resolution(uint32_t quantization_resolution) noexcept { quantization_resolution_ = quantization_resolution; }
 
 		const auto& modifiers() const noexcept { return modifiers_; }
 		Modifier* get_modifier(size_t idx) const noexcept;
@@ -130,5 +121,31 @@ namespace cved {
 		virtual bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept;
 		virtual void pt_end_move() noexcept {};
 		virtual void pt_end_control() noexcept;
+
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				pt_start_,
+				pt_end_,
+				modifiers_
+			);
+		}
+
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				pt_start_,
+				pt_end_,
+				modifiers_
+			);
+
+			for (auto& modifier : modifiers_) {
+				modifier->set_curve(this);
+			}
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::GraphCurve, 0)
+CEREAL_REGISTER_TYPE(cved::GraphCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Curve, cved::GraphCurve)

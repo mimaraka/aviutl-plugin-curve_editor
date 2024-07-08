@@ -27,7 +27,7 @@ namespace cved {
 		// ポイント (基準点からのオフセット)
 		ControlPoint pt_offset_;
 		// 右か左か
-		const Type type_;
+		Type type_;
 		// ポイントが固定されているかどうか
 		bool fixed_;
 		// 終点・始点のどちらの辺にスナップしているか
@@ -175,5 +175,14 @@ namespace cved {
 		// ハンドルの移動を終了
 		void end_move() noexcept;
 		void end_control() noexcept;
+
+		template <class Archive>
+		void serialize(Archive& archive) {
+			archive(
+				pt_offset_,
+				type_,
+				fixed_
+			);
+		}
 	};
 }

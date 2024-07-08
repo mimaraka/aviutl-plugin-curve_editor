@@ -22,8 +22,6 @@ namespace cved {
 		BezierCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
@@ -46,9 +44,6 @@ namespace cved {
 		int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
-
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
 
 		std::string make_param() const noexcept;
 
@@ -101,5 +96,27 @@ namespace cved {
 		// ポイントの移動を終了
 		void pt_end_move() noexcept override;
 		void pt_end_control() noexcept override;
+
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				handle_left_,
+				handle_right_
+			);
+		}
+
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				handle_left_,
+				handle_right_
+			);
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::BezierCurve, 0)
+CEREAL_REGISTER_TYPE(cved::BezierCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::NumericGraphCurve, cved::BezierCurve)

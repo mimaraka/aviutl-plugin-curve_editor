@@ -26,7 +26,7 @@ namespace cved {
 
 	INT_PTR DiscretizerModifierDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 		static Discretizer* p_discretizer = nullptr;
-		static Discretizer discretizer_prev{nullptr, nullptr};
+		static Discretizer discretizer_prev;
 
 		switch (message) {
 		case WM_INITDIALOG:
