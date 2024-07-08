@@ -13,39 +13,39 @@ namespace cved {
 		inline class Config {
 		private:
 			static constexpr Theme THEME_DARK = {
-			mkaul::ColorF{27, 27, 27},
-			mkaul::ColorF{27, 27, 27},
-			mkaul::ColorF{19, 19, 19},
-			mkaul::ColorF{240, 240, 240},
-			mkaul::ColorF{57, 57, 57},
-			mkaul::ColorF{95, 95, 95},
-			mkaul::ColorF{240, 240, 240},
-			mkaul::ColorF{243, 243, 243},
-			mkaul::ColorF{180, 180, 180},
-			mkaul::ColorF{230, 230, 230},
-			mkaul::ColorF{68, 68, 68},
-			mkaul::ColorF{240, 240, 240},
-			mkaul::ColorF{35, 35, 35},
-			mkaul::ColorF{180, 180, 180},
-			mkaul::ColorF{200, 200, 200}
+				.bg						= mkaul::ColorF{27, 27, 27},
+				.bg_graph				= mkaul::ColorF{27, 27, 27},
+				.bg_editbox				= mkaul::ColorF{19, 19, 19},
+				.separator				= mkaul::ColorF{240, 240, 240},
+				.curve_trace			= mkaul::ColorF{57, 57, 57},
+				.curve_velocity			= mkaul::ColorF{95, 95, 95},
+				.curve_preset			= mkaul::ColorF{240, 240, 240},
+				.handle					= mkaul::ColorF{243, 243, 243},
+				.handle_preset			= mkaul::ColorF{180, 180, 180},
+				.button_selected		= mkaul::ColorF{230, 230, 230},
+				.button_unselected		= mkaul::ColorF{68, 68, 68},
+				.button_label			= mkaul::ColorF{240, 240, 240},
+				.button_label_selected	= mkaul::ColorF{35, 35, 35},
+				.preset_label			= mkaul::ColorF{180, 180, 180},
+				.editbox_text			= mkaul::ColorF{200, 200, 200}
 			};
 
 			static constexpr Theme THEME_LIGHT = {
-			mkaul::ColorF{244, 244, 244},
-			mkaul::ColorF{230, 230, 230},
-			mkaul::ColorF{252, 252, 252},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{205, 205, 205},
-			mkaul::ColorF{160, 160, 160},
-			mkaul::ColorF{100, 100, 100},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{160, 160, 160},
-			mkaul::ColorF{230, 230, 230},
-			mkaul::ColorF{188, 188, 188},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{70, 70, 70},
-			mkaul::ColorF{100, 100, 100}
+				.bg						= mkaul::ColorF{244, 244, 244},
+				.bg_graph				= mkaul::ColorF{230, 230, 230},
+				.bg_editbox				= mkaul::ColorF{252, 252, 252},
+				.separator				= mkaul::ColorF{70, 70, 70},
+				.curve_trace			= mkaul::ColorF{205, 205, 205},
+				.curve_velocity			= mkaul::ColorF{160, 160, 160},
+				.curve_preset			= mkaul::ColorF{100, 100, 100},
+				.handle					= mkaul::ColorF{70, 70, 70},
+				.handle_preset			= mkaul::ColorF{160, 160, 160},
+				.button_selected		= mkaul::ColorF{230, 230, 230},
+				.button_unselected		= mkaul::ColorF{188, 188, 188},
+				.button_label			= mkaul::ColorF{70, 70, 70},
+				.button_label_selected	= mkaul::ColorF{70, 70, 70},
+				.preset_label			= mkaul::ColorF{70, 70, 70},
+				.editbox_text			= mkaul::ColorF{100, 100, 100}
 			};
 
 			Preferences pref_;
