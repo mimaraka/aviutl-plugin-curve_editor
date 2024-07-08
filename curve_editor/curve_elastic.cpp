@@ -61,7 +61,7 @@ namespace cved {
 				coef = 1. - prog;
 			}
 			else {
-				double tmp = std::exp(-decay_);
+				const double tmp = std::exp(-decay_);
 				coef = (std::pow(tmp, prog) - tmp) / (1. - tmp);
 			}
 			return 1. - coef * std::cos(2. * std::numbers::pi * freq_ * prog);
@@ -101,8 +101,8 @@ namespace cved {
 		for (int i = 0; i < 4; i++) {
 			extremum_t -= func_elastic_derivative(extremum_t) / func_elastic_derivative_2(extremum_t);
 		}
-		double extremum_x = func_elastic(extremum_t);
-		double tmp = func_elastic(progress);
+		const double extremum_x = func_elastic(extremum_t);
+		const double tmp = func_elastic(progress);
 		if (progress < extremum_t) {
 			ret = (amp_ * (extremum_x - 1.) + 1.) / extremum_x * tmp;
 		}
