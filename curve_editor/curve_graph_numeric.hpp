@@ -13,5 +13,23 @@ namespace cved {
 		virtual int32_t encode() const noexcept = 0;
 		// 整数値からカーブに変換
 		virtual bool decode(int32_t code) noexcept = 0;
+
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<GraphCurve>(this)
+			);
+		}
+
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<GraphCurve>(this)
+			);
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::NumericGraphCurve, 0)
+CEREAL_REGISTER_TYPE(cved::NumericGraphCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::NumericGraphCurve)

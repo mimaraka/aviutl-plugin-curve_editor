@@ -31,9 +31,16 @@ namespace cved {
 
 			auto& editor_graph() noexcept { return editor_graph_; }
 			auto& editor_script() noexcept { return editor_script_; }
-			
-			void create_data(std::vector<byte>& data) const noexcept;
-			bool load_data(const byte* data, size_t size) noexcept;
+
+			template <class Archive>
+			void serialize(Archive& archive, const std::uint32_t) {
+				archive(
+					editor_graph_,
+					editor_script_
+				);
+			}
 		} editor;
 	}
 }
+
+CEREAL_CLASS_VERSION(cved::global::CurveEditor, 0)

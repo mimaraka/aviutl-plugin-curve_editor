@@ -1,6 +1,5 @@
 #include "curve_normal.hpp"
 #include "config.hpp"
-#include "curve_data.hpp"
 #include "curve_bezier.hpp"
 #include "curve_bounce.hpp"
 #include "curve_elastic.hpp"
@@ -11,11 +10,9 @@
 namespace cved {
 	NormalCurve::NormalCurve(
 		const mkaul::Point<double>& pt_start,
-		const mkaul::Point<double>& pt_end,
-		uint32_t sampling_resolution,
-		uint32_t quantization_resolution
+		const mkaul::Point<double>& pt_end
 	) noexcept :
-		GraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, true, nullptr, nullptr },
+		GraphCurve{ pt_start, pt_end, true, nullptr, nullptr },
 		curve_segments_{}
 	{
 		clear();
@@ -108,72 +105,7 @@ namespace cved {
 		}
 	}
 
-	// カーブのデータを作成
-	void NormalCurve::create_data(std::vector<byte>& data) const noexcept {
-		data.clear();
-		for (const auto& p_curve : curve_segments_) {
-			std::vector<byte> tmp;
-			p_curve->create_data(tmp);
-			std::copy(tmp.begin(), tmp.end(), std::back_inserter(data));
-		}
-		GraphCurveData data_graph = {
-			.start_x = pt_start().x(),
-			.start_y = pt_start().y(),
-			.end_x = pt_end().x(),
-			.end_y = pt_end().y(),
-			.sampling_resolution = get_sampling_resolution(),
-			.quantization_resolution = get_quantization_resolution()
-		};
-		auto bytes_graph = reinterpret_cast<byte*>(&data_graph);
-		size_t n = sizeof(GraphCurveData) / sizeof(byte);
-		data.insert(data.begin(), bytes_graph, bytes_graph + n);
-	}
-
-	// カーブのデータを読み込み
-	bool NormalCurve::load_data(const byte* data, size_t size) noexcept {
-		std::vector<std::unique_ptr<GraphCurve>> vec_tmp;
-		auto data_graph = reinterpret_cast<const GraphCurveData*>(data);
-		set_sampling_resolution(data_graph->sampling_resolution);
-		set_quantization_resolution(data_graph->quantization_resolution);
-
-		for (size_t idx = sizeof(GraphCurveData) / sizeof(byte); idx < size;) {
-			std::unique_ptr<GraphCurve> new_curve;
-
-			switch (*(data + idx)) {
-			case (byte)CurveSegmentType::Linear:
-				idx++;
-				if (!load_segment_data<LinearCurve, LinearCurveData>(data, idx, size, new_curve)) return false;
-				break;
-
-			case (byte)CurveSegmentType::Bezier:
-				idx++;
-				if (!load_segment_data<BezierCurve, BezierCurveData>(data, idx, size, new_curve)) return false;
-				break;
-
-			case (byte)CurveSegmentType::Elastic:
-				idx++;
-				if (!load_segment_data<ElasticCurve, ElasticCurveData>(data, idx, size, new_curve)) return false;
-				break;
-
-			case (byte)CurveSegmentType::Bounce:
-				idx++;
-				if (!load_segment_data<BounceCurve, BounceCurveData>(data, idx, size, new_curve)) return false;
-				break;
-
-			default:
-				return false;
-			}
-			if (!vec_tmp.empty()) {
-				new_curve->set_prev(vec_tmp.back().get());
-				vec_tmp.back()->set_next(new_curve.get());
-			}
-			vec_tmp.emplace_back(std::move(new_curve));
-		}
-		curve_segments_ = std::move(vec_tmp);
-		return true;
-	}
-
-	bool NormalCurve::load_data_v1(const byte* data, size_t pt_n) noexcept {
+	bool NormalCurve::load_v1_data(const byte* data, size_t pt_n) noexcept {
 		constexpr int GRAPH_RESOLUTION = 10000;
 		
 		struct CurvePoint {
@@ -343,7 +275,6 @@ namespace cved {
 					new BezierCurve{
 						pt,
 						(*it)->pt_end().pt(),
-						0u, 0u,
 						false,
 						(*it).get(),
 						(*it)->next(),
@@ -450,8 +381,6 @@ namespace cved {
 			new_curve = std::make_unique<LinearCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
-				current_curve->get_sampling_resolution(),
-				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -463,8 +392,6 @@ namespace cved {
 			new_curve = std::make_unique<BezierCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
-				current_curve->get_sampling_resolution(),
-				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -476,8 +403,6 @@ namespace cved {
 			new_curve = std::make_unique<ElasticCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
-				current_curve->get_sampling_resolution(),
-				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()
@@ -488,8 +413,6 @@ namespace cved {
 			new_curve = std::make_unique<BounceCurve>(
 				current_curve->pt_start().pt(),
 				current_curve->pt_end().pt(),
-				current_curve->get_sampling_resolution(),
-				current_curve->get_quantization_resolution(),
 				false,
 				current_curve->prev(),
 				current_curve->next()

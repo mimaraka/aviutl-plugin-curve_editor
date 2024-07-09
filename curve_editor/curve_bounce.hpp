@@ -19,8 +19,6 @@ namespace cved {
 		BounceCurve(
 			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u,
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
@@ -36,9 +34,6 @@ namespace cved {
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
-
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
 
 		// カーブから一意な整数値を生成
 		int32_t encode() const noexcept override;
@@ -73,5 +68,28 @@ namespace cved {
 		bool pt_begin_move(ActivePoint active_pt) noexcept override;
 		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
 		bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept override;
+
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				cor_,
+				period_
+			);
+		}
+
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				cor_,
+				period_
+			);
+			handle_.from_param(cor_, period_, pt_start_, pt_end_);
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::BounceCurve, 0)
+CEREAL_REGISTER_TYPE(cved::BounceCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::BounceCurve)

@@ -69,6 +69,10 @@ namespace cved {
 					id = IDS_WARNING_DELETE_ALL_IDS;
 					break;
 
+				case StringId::WarningRemoveModifier:
+					id = IDS_WARNING_REMOVE_MODIFIER;
+					break;
+
 				case StringId::InfoLatestVersion:
 					id = IDS_INFO_LATEST_VERSION;
 					break;
@@ -183,6 +187,14 @@ namespace cved {
 
 				case StringId::LabelSelectBackgroundImage:
 					id = IDS_LABEL_SELECT_BG_IMAGE;
+					break;
+
+				case StringId::LabelModifierDiscretizer:
+					id = IDS_LABEL_MODIFIER_DISCRETIZER;
+					break;
+
+				case StringId::LabelModifierNoiser:
+					id = IDS_LABEL_MODIFIER_NOISER;
 					break;
 
 				case StringId::WordVersion:

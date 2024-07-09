@@ -28,6 +28,12 @@ namespace cved {
 		Script
 	};
 
+	enum class ModifierType : uint32_t {
+		Discretizer,
+		Noiser,
+		NumModifierType
+	};
+
 	enum class WindowCommand: uint32_t {
 		Update					= 0x0800,
 		Copy					= 0x0801,

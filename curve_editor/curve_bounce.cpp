@@ -1,5 +1,4 @@
 #include "curve_bounce.hpp"
-#include "curve_data.hpp"
 #include "enum.hpp"
 
 
@@ -9,14 +8,12 @@ namespace cved {
 	BounceCurve::BounceCurve(
 		const mkaul::Point<double>& pt_start,
 		const mkaul::Point<double>& pt_end,
-		uint32_t sampling_resolution,
-		uint32_t quantization_resolution,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		double cor,
 		double period
-	) : NumericGraphCurve{ pt_start, pt_end, sampling_resolution, quantization_resolution, pt_fixed, prev, next}, handle_{}, cor_{ cor }, period_{ period } {
+	) : NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next}, handle_{}, cor_{ cor }, period_{ period } {
 		handle_.from_param(cor, period, pt_start, pt_end);
 	}
 
@@ -73,46 +70,6 @@ namespace cved {
 		handle_.reverse(pt_start(), pt_end());
 		GraphCurve::reverse(fix_pt);
 		handle_.from_param(cor_, period_, pt_start(), pt_end());
-	}
-
-	void BounceCurve::create_data(std::vector<byte>& data) const noexcept {
-		BounceCurveData data_bounce{
-			.data_graph = GraphCurveData{
-				.start_x = pt_start().x(),
-				.start_y = pt_start().y(),
-				.end_x = pt_end().x(),
-				.end_y = pt_end().y(),
-				.sampling_resolution = get_sampling_resolution(),
-				.quantization_resolution = get_quantization_resolution()
-			},
-			.cor = cor_,
-			.period = period_
-		};
-		auto bytes_bounce = reinterpret_cast<byte*>(&data_bounce);
-		size_t n = sizeof(BounceCurveData) / sizeof(byte);
-		data = std::vector<byte>{ bytes_bounce, bytes_bounce + n };
-		data.insert(data.begin(), (byte)CurveSegmentType::Bounce);
-	}
-
-	bool BounceCurve::load_data(const byte* data, size_t size) noexcept {
-		if (size < sizeof(BounceCurveData) / sizeof(byte)) return false;
-		auto p_curve_data = reinterpret_cast<const BounceCurveData*>(data);
-		// カーブの整合性チェック
-		if (
-			!mkaul::real_in_range(p_curve_data->data_graph.start_x, 0., 1., true)
-			or !mkaul::real_in_range(p_curve_data->data_graph.end_x, 0., 1., true)
-			or p_curve_data->data_graph.end_x < p_curve_data->data_graph.start_x
-			) {
-			return false;
-		}
-		pt_start_.move(mkaul::Point{ p_curve_data->data_graph.start_x, p_curve_data->data_graph.start_y });
-		pt_end_.move(mkaul::Point{ p_curve_data->data_graph.end_x, p_curve_data->data_graph.end_y });
-		handle_.from_param(p_curve_data->cor, p_curve_data->period, pt_start(), pt_end());
-		cor_ = handle_.get_cor(pt_start(), pt_end());
-		period_ = handle_.get_period(pt_start(), pt_end());
-		set_sampling_resolution(p_curve_data->data_graph.sampling_resolution);
-		set_quantization_resolution(p_curve_data->data_graph.quantization_resolution);
-		return true;
 	}
 
 	int32_t BounceCurve::encode() const noexcept {

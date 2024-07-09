@@ -5,9 +5,7 @@
 namespace cved {
 	ValueCurve::ValueCurve(
 		const mkaul::Point<double>& pt_start,
-		const mkaul::Point<double>& pt_end,
-		uint32_t sampling_resolution,
-		uint32_t quantization_resolution
+		const mkaul::Point<double>& pt_end
 	) noexcept
 	{
 		
@@ -24,15 +22,6 @@ namespace cved {
 
 	void ValueCurve::clear() noexcept
 	{
-	}
-
-	void ValueCurve::create_data(std::vector<byte>& data) const noexcept
-	{
-	}
-
-	bool ValueCurve::load_data(const byte* data, size_t size) noexcept
-	{
-		return false;
 	}
 
 	void ValueCurve::draw_handle(

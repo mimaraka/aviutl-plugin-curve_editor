@@ -1,7 +1,7 @@
 #include "menu_graph.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
-#include "dialog_curve_discretization.hpp"
+#include "dialog_modifier.hpp"
 #include "global.hpp"
 #include "string_table.hpp"
 #include "resource.h"
@@ -50,7 +50,7 @@ namespace cved {
 		// 標準モード以外は離散化のメニューを無効にする
 		// TODO: 値指定モードへの対応
 		minfo_tmp.fState = global::config.get_edit_mode() == EditMode::Normal ? MFS_ENABLED : MFS_DISABLED;
-		::SetMenuItemInfoA(menu_, ID_GRAPH_DESCRITIZATION, FALSE, &minfo_tmp);
+		::SetMenuItemInfoA(menu_, ID_GRAPH_MODIFIER, FALSE, &minfo_tmp);
 	}
 
 	bool GraphMenu::callback(uint16_t id) noexcept {
@@ -86,9 +86,9 @@ namespace cved {
 			global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
 			break;
 
-		case ID_GRAPH_DESCRITIZATION:
+		case ID_GRAPH_MODIFIER:
 		{
-			CurveDiscretizationDialog dialog;
+			ModifierDialog dialog;
 			auto p_curve_graph = global::editor.editor_graph().current_curve();
 			if (p_curve_graph) {
 				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve_graph));
