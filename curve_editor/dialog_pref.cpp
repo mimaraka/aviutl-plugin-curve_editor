@@ -35,7 +35,7 @@ namespace cved {
 	}
 
 
-	int PrefDialog::i_resource() const noexcept { return IDD_PREF; }
+	int PrefDialog::resource_id() const noexcept { return IDD_PREF; }
 
 
 	void PrefDialog::init_controls(HWND hwnd) noexcept {
@@ -103,7 +103,7 @@ namespace cved {
 	}
 
 
-	INT_PTR PrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR PrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		using StringId = global::StringTable::StringId;
 
 		switch (message) {
@@ -117,7 +117,7 @@ namespace cved {
 			switch (LOWORD(wparam)) {
 			case IDOK:
 				save_config();
-				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
+				//global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				::EndDialog(hwnd, IDOK);
 				return TRUE;
 
@@ -127,7 +127,7 @@ namespace cved {
 
 			case IDC_BUTTON_APPLY:
 				save_config();
-				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
+				//global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				return TRUE;
 
 			case IDC_BUTTON_RESET:
@@ -140,7 +140,7 @@ namespace cved {
 				if (resp == IDOK) {
 					global::config.reset_pref();
 					load_config();
-					global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
+					//global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				}
 				return TRUE;
 			}

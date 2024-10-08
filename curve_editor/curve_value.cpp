@@ -4,8 +4,8 @@
 
 namespace cved {
 	ValueCurve::ValueCurve(
-		const mkaul::Point<double>& pt_start,
-		const mkaul::Point<double>& pt_end
+		const mkaul::Point<double>& anchor_start,
+		const mkaul::Point<double>& anchor_end
 	) noexcept
 	{
 		
@@ -24,17 +24,9 @@ namespace cved {
 	{
 	}
 
-	void ValueCurve::draw_handle(
-		mkaul::graphics::Graphics* p_graphics,
-		const View& view,
-		float thickness,
-		float root_radius,
-		float tip_radius,
-		float tip_thickness,
-		bool cutoff_line,
-		const mkaul::ColorF& color
-	) const noexcept
+	bool ValueCurve::is_default() const noexcept
 	{
+		return true;
 	}
 
 	bool ValueCurve::add_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept
@@ -50,53 +42,5 @@ namespace cved {
 	bool ValueCurve::replace_curve(size_t idx, CurveSegmentType segment_type) noexcept
 	{
 		return false;
-	}
-
-	bool ValueCurve::is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept
-	{
-		return false;
-	}
-
-	bool ValueCurve::is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept
-	{
-		return false;
-	}
-
-	bool ValueCurve::handle_check_hover(
-		const mkaul::Point<double>& pt,
-		const GraphView& view
-	) noexcept
-	{
-		return false;
-	}
-
-	bool ValueCurve::handle_update(
-		const mkaul::Point<double>& pt,
-		const GraphView& view
-	) noexcept
-	{
-		return false;
-	}
-
-	void ValueCurve::handle_end_control() noexcept
-	{
-	}
-
-	ValueCurve::ActivePoint ValueCurve::pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept
-	{
-		return ActivePoint{};
-	}
-
-	ValueCurve::ActivePoint ValueCurve::pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept
-	{
-		return ActivePoint{};
-	}
-
-	void ValueCurve::pt_end_move() noexcept
-	{
-	}
-
-	void ValueCurve::pt_end_control() noexcept
-	{
 	}
 }

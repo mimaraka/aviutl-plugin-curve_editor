@@ -11,7 +11,7 @@ namespace cved {
 		center_buffer_ = center_;
 	}
 
-	bool GraphView::move(const mkaul::Point<float>& pt, const mkaul::WindowRectangle& rect_wnd) noexcept {
+	bool GraphView::move(const mkaul::Point<float>& pt, const mkaul::WindowRectangle&) noexcept {
 		if (moving_) {
 			auto pt_offset = pt - pt_buffer_;
 			center_ = center_buffer_ - mkaul::Point{ pt_offset.x / scale_x_, -pt_offset.y / scale_y_ };

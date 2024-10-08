@@ -49,6 +49,18 @@ namespace cved {
 					id = IDS_ERROR_DATA_LOAD_FAILED;
 					break;
 
+				case StringId::ErrorWebView2InitFailed:
+					id = IDS_ERROR_WEBVIEW2_INIT_FAILED;
+					break;
+
+				case StringId::ErrorCommCtrlInitFailed:
+					id = IDS_ERROR_COMMCTRL_INIT_FAILED;
+					break;
+
+				case StringId::ErrorPageLoadFailed:
+					id = IDS_ERROR_PAGE_LOAD_FAILED;
+					break;
+
 				case StringId::WarningDeleteCurve:
 					id = IDS_WARNING_DELETE_CURVE;
 					break;
@@ -58,7 +70,7 @@ namespace cved {
 					break;
 
 				case StringId::WarningResetPreferences:
-					id = IDS_WARNING_PREF_RESET;
+					id = IDS_WARNING_RESET_PREFERENCES;
 					break;
 
 				case StringId::WarningDeleteId:
@@ -189,12 +201,20 @@ namespace cved {
 					id = IDS_LABEL_SELECT_BG_IMAGE;
 					break;
 
-				case StringId::LabelModifierDiscretizer:
-					id = IDS_LABEL_MODIFIER_DISCRETIZER;
+				case StringId::LabelModifierDiscretization:
+					id = IDS_LABEL_MODIFIER_DISCRETIZATION;
 					break;
 
-				case StringId::LabelModifierNoiser:
-					id = IDS_LABEL_MODIFIER_NOISER;
+				case StringId::LabelModifierNoise:
+					id = IDS_LABEL_MODIFIER_NOISE;
+					break;
+
+				case StringId::LabelModifierSineWave:
+					id = IDS_LABEL_MODIFIER_SINE_WAVE;
+					break;
+
+				case StringId::LabelModifierSquareWave:
+					id = IDS_LABEL_MODIFIER_SQUARE_WAVE;
 					break;
 
 				case StringId::WordVersion:

@@ -9,7 +9,7 @@
 
 
 namespace cved {
-	int BehaviorPrefDialog::i_resource() const noexcept { return IDD_PREF_BEHAVIOR; }
+	int BehaviorPrefDialog::resource_id() const noexcept { return IDD_PREF_BEHAVIOR; }
 
 	void BehaviorPrefDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_combo_graphic_method_ = ::GetDlgItem(hwnd, IDC_COMBO_GRAPHIC_METHOD);
@@ -20,7 +20,7 @@ namespace cved {
 		::SendMessageA(hwnd_combo_graphic_method_, CB_ADDSTRING, NULL, (LPARAM)"DirectX");
 	}
 
-	INT_PTR BehaviorPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR BehaviorPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		using StringId = global::StringTable::StringId;
 
 		switch (message) {

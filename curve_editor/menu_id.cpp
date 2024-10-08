@@ -32,7 +32,7 @@ namespace cved {
 		{
 			IdJumptoDialog dialog;
 			if (dialog.show(global::fp->hwnd) == IDOK) {
-				global::window_main.send_command((WPARAM)WindowCommand::Update);
+				//global::window_main.send_command((WPARAM)WindowCommand::Update);
 			}
 			break;
 		}
@@ -47,19 +47,19 @@ namespace cved {
 			);
 			if (resp == IDOK) {
 				global::editor.delete_last_idx();
-				global::window_main.send_command((WPARAM)WindowCommand::Update);
+				//global::window_main.send_command((WPARAM)WindowCommand::Update);
 			}
 			break;
 		}
 		
 		case ID_ID_JUMPTOFIRST:
 			global::editor.set_idx(0);
-			global::window_main.send_command((WPARAM)WindowCommand::Update);
+			//global::window_main.send_command((WPARAM)WindowCommand::Update);
 			break;
 
 		case ID_ID_JUMPTOLAST:
 			global::editor.jump_to_last_idx();
-			global::window_main.send_command((WPARAM)WindowCommand::Update);
+			//global::window_main.send_command((WPARAM)WindowCommand::Update);
 			break;
 
 		default:

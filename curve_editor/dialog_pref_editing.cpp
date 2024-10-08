@@ -8,7 +8,7 @@
 
 
 namespace cved {
-	int EditingPrefDialog::i_resource() const noexcept { return IDD_PREF_EDITING; }
+	int EditingPrefDialog::resource_id() const noexcept { return IDD_PREF_EDITING; }
 
 	void EditingPrefDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_check_reverse_wheel_ = ::GetDlgItem(hwnd, IDC_CHECK_REVERSE_WHEEL);
@@ -16,7 +16,7 @@ namespace cved {
 		hwnd_check_auto_apply_ = ::GetDlgItem(hwnd, IDC_CHECK_AUTO_APPLY);
 	}
 
-	INT_PTR EditingPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR EditingPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		switch (message) {
 		case WM_INITDIALOG:
 			init_controls(hwnd);

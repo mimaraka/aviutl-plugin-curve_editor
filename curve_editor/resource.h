@@ -14,15 +14,9 @@
 #define IDD_ID_JUMPTO                   137
 #define IDD_CURVE_CODE                  138
 #define IDD_MODIFIER                    139
-#define IDD_MODIFIER_NOISER             153
-#define IDB_COPY                        256
-#define IDB_READ                        257
-#define IDB_SAVE                        258
-#define IDB_CLEAR                       259
-#define IDB_FIT                         260
-#define IDB_MORE                        261
-#define IDB_BACK                        262
-#define IDB_NEXT                        263
+#define IDD_MODIFIER_NOISE              153
+#define IDD_MODIFIER_SINE_WAVE          154
+#define IDD_MODIFIER_SQUARE_WAVE        155
 #define IDR_MENU_MORE                   384
 #define IDR_MENU_CURVE                  385
 #define IDR_MENU_GRAPH                  386
@@ -62,6 +56,11 @@
 #define IDC_SLIDER_DECAY_SHARPNESS      1057
 #define IDC_STATIC_DECAY_SHARPNESS      1058
 #define IDC_STATIC_LOGO                 1059
+#define IDC_LIST_ID_JUMPTO              1060
+#define IDC_EDIT_ID_JUMPTO              1061
+#define IDC_BUTTON_BACK                 1063
+#define IDC_BUTTON_FORWARD              1064
+#define IDC_STATIC_RANGE                1067
 #define IDC_COMBO_LANGUAGE              1280
 #define IDC_COMBO_THEME                 1281
 #define IDC_COMBO_GRAPHIC_METHOD        1282
@@ -71,12 +70,12 @@
 #define IDC_LIST_CATEGORY               1536
 #define IDC_LIST_MODIFIER               1537
 #define IDC_SLIDER_CURVE_THICKNESS      1664
-#define IDC_SLIDER_CURVE_DRAWING_INTERVAL 1665
+#define IDC_SLIDER_CURVE_RESOLUTION     1665
 #define IDC_SLIDER_SAMPLING             1666
 #define IDC_SLIDER_QUANTIZATION         1667
 #define IDC_SLIDER_IMAGE_OPACITY        1668
 #define IDC_STATIC_CURVE_THICKNESS      1669
-#define IDC_STATIC_CURVE_DRAWING_INTERVAL 1670
+#define IDC_STATIC_CURVE_RESOLUTION     1670
 #define IDC_STATIC_SAMPLING             1671
 #define IDC_STATIC_QUANTIZATION         1672
 #define IDC_STATIC_PLUGIN_INFO          1673
@@ -94,10 +93,14 @@
 #define IDS_ERROR_OUT_OF_RANGE          4102
 #define IDS_ERROR_CODE_COPY_FAILED      4103
 #define IDS_ERROR_DATA_LOAD_FAILED      4104
+#define IDS_ERROR_WEBVIEW2_INIT_FAILED  4105
+#define IDS_ERROR_COMMCTRL_INIT_FAILED  4106
+#define IDS_ERROR_PAGE_LOAD_FAILED      4107
 #define IDS_WARNING_DELETE_CURVE        5120
 #define IDS_WARNING_DELETE_ALL_CURVES   5121
+#define IDS_ERROR_DELETE_ALL_CURVES     5121
 #define IDS_WARNING_AUTOSAVER_NOT_FOUND 5122
-#define IDS_WARNING_PREF_RESET          5122
+#define IDS_WARNING_RESET_PREFERENCES   5122
 #define IDS_WARNING_DELETE_ID           5123
 #define IDS_WARNING_DELETE_ALL_IDS      5124
 #define IDS_WARNING_REMOVE_MODIFIER     5125
@@ -132,8 +135,11 @@
 #define IDS_LABEL_THEME_LIGHT           7937
 #define IDS_LABEL_THEME_NAME_LIGHT      7937
 #define IDS_LABEL_SELECT_BG_IMAGE       8064
-#define IDS_LABEL_MODIFIER_DISCRETIZER  8192
-#define IDS_LABEL_MODIFIER_NOISER       8193
+#define IDS_LABEL_MODIFIER_DISCRETIZATION 8192
+#define IDS_LABEL_MODIFIER_NOISE        8193
+#define IDS_LABEL_MODIFIER_SINEWAVE     8194
+#define IDS_LABEL_MODIFIER_SINE_WAVE    8194
+#define IDS_LABEL_MODIFIER_SQUARE_WAVE  8195
 #define IDS_WORD_VERSION                9216
 #define IDS_WORD_EDIT_MODE              9217
 #define IDS_WORD_LANGUAGE_AUTOMATIC     9218
@@ -170,14 +176,17 @@
 #define ID_BEZIER_HANDLE_ROTATE         40159
 #define ID_BEZIER_HANDLE_ROOT           40161
 #define ID_ID_DELETE_ALL                40163
+#define ID_MORE_RELOAD                  40168
+#define ID_GRAPH_SHOW_X_SCALE           40172
+#define ID_GRAPH_SHOW_Y_SCALE           40173
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        155
-#define _APS_NEXT_COMMAND_VALUE         40167
-#define _APS_NEXT_CONTROL_VALUE         1060
+#define _APS_NEXT_COMMAND_VALUE         40176
+#define _APS_NEXT_CONTROL_VALUE         1068
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

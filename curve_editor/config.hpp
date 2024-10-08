@@ -48,6 +48,8 @@ namespace cved {
 				.editbox_text			= mkaul::ColorF{100, 100, 100}
 			};
 
+			static constexpr char CONFIG_FILE_NAME[] = "config.json";
+
 			Preferences pref_;
 
 			EditMode edit_mode_ = EditMode::Normal;
@@ -59,6 +61,8 @@ namespace cved {
 			int curve_code_elastic_ = 0;
 			int curve_code_bounce_ = 0;
 
+			bool show_x_scale_ = false;
+			bool show_y_scale_ = false;
 			bool show_handle_ = false;
 			bool show_library_ = false;
 			bool show_velocity_graph_ = false;
@@ -67,7 +71,8 @@ namespace cved {
 			int separator_ = 0;
 			int preset_size_ = 0;
 
-			std::filesystem::path aviutl_directory_;
+			std::filesystem::path dir_aviutl_;
+			std::filesystem::path dir_plugin_;
 
 		public:
 			void init(HINSTANCE hinst) noexcept;
@@ -103,6 +108,9 @@ namespace cved {
 			auto get_curve_drawing_interval() const noexcept { return pref_.curve_drawing_interval; }
 			void set_curve_drawing_interval(float curve_drawing_interval) noexcept;
 
+			auto get_curve_resolution() const noexcept { return pref_.curve_resolution; }
+			void set_curve_resolution(uint32_t curve_resolution) noexcept;
+
 			auto get_graphic_method() const noexcept { return pref_.graphic_method; }
 			bool set_graphic_method(mkaul::graphics::Factory::GraphicEngine graphic_method) noexcept;
 
@@ -121,6 +129,12 @@ namespace cved {
 
 			auto get_auto_apply() const noexcept { return pref_.auto_apply; }
 			void set_auto_apply(bool auto_apply) noexcept { pref_.auto_apply = auto_apply; }
+
+			auto get_show_x_scale() const noexcept { return show_x_scale_; }
+			void set_show_x_scale(bool show_x_scale) noexcept { show_x_scale_ = show_x_scale; }
+
+			auto get_show_y_scale() const noexcept { return show_y_scale_; }
+			void set_show_y_scale(bool show_y_scale) noexcept { show_y_scale_ = show_y_scale; }
 
 			auto get_show_handle() const noexcept { return show_handle_; }
 			void set_show_handle(bool show_handle) noexcept { show_handle_ = show_handle; }
@@ -152,6 +166,9 @@ namespace cved {
 			auto get_enable_hotkeys() const noexcept { return pref_.enable_hotkeys; }
 			void set_enable_hotkeys(bool enable_hotkeys) noexcept { pref_.enable_hotkeys = enable_hotkeys; }
 
+			auto get_enable_animation() const noexcept { return pref_.enable_animation; }
+			void set_enable_animation(bool enable_animation) noexcept { pref_.enable_animation = enable_animation; }
+
 			auto get_ignore_autosaver_warning() const noexcept { return ignore_autosaver_warning_; }
 			void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 
@@ -161,7 +178,8 @@ namespace cved {
 			auto get_preset_size() const noexcept { return preset_size_; }
 			void set_preset_size(int preset_size) noexcept;
 
-			const auto& get_aviutl_directory() const noexcept { return aviutl_directory_; }
+			const auto& get_dir_aviutl() const noexcept { return dir_aviutl_; }
+			const auto& get_dir_plugin() const noexcept { return dir_plugin_; }
 
 			void reset_pref() noexcept { pref_.reset(); }
 

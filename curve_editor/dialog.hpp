@@ -11,7 +11,7 @@ namespace cved {
 		static INT_PTR CALLBACK message_router(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 		virtual INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) = 0;
 		virtual void init_controls(HWND) noexcept {};
-		virtual int i_resource() const noexcept = 0;
+		virtual int resource_id() const noexcept = 0;
 
 	public:
 		HWND create(HWND hwnd, LPARAM init_param = NULL) noexcept;

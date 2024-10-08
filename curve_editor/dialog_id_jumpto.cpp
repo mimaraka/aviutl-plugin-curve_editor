@@ -4,65 +4,43 @@
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "string_table.hpp"
+#include "my_webview2.hpp"
 #include "resource.h"
 
 
 
 namespace cved {
-	int IdJumptoDialog::i_resource() const noexcept { return IDD_ID_JUMPTO; }
+	int IdJumptoDialog::resource_id() const noexcept { return IDD_ID_JUMPTO; }
 
 
 	void IdJumptoDialog::init_controls(HWND hwnd) noexcept {
-		hwnd_edit_ = ::GetDlgItem(hwnd, IDC_EDIT_CURVE_CODE);
-		::SendMessageA(hwnd_edit_, EM_SETLIMITTEXT, MAX_TEXT, NULL);
-		::SetFocus(hwnd_edit_);
+		hwnd_edit_ = ::GetDlgItem(hwnd, IDC_EDIT_ID_JUMPTO);
+		hwnd_list_ = ::GetDlgItem(hwnd, IDC_LIST_ID_JUMPTO);
+		hwnd_button_back_ = ::GetDlgItem(hwnd, IDC_BUTTON_BACK);
+		hwnd_button_forward_ = ::GetDlgItem(hwnd, IDC_BUTTON_FORWARD);
 	}
 
 
-	INT_PTR IdJumptoDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR IdJumptoDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		using StringId = global::StringTable::StringId;
 
 		switch (message) {
 		case WM_INITDIALOG:
-			init_controls(hwnd);
 			return TRUE;
 
-		case WM_KEYDOWN:
-			if (wparam == VK_RETURN) {
-				::SendMessageA(hwnd, WM_COMMAND, MAKEWPARAM(IDOK, 0), 0);
-				return TRUE;
-			}
+		case WM_DESTROY:
+		case WM_CLOSE:
 			break;
 
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case IDOK:
-			{
-				char buffer[MAX_TEXT + 1u];
-				::GetDlgItemTextA(hwnd, IDC_EDIT_CURVE_CODE, buffer, MAX_TEXT);
-				try {
-					if (global::editor.set_idx((size_t)(std::stoi(buffer) - 1))) {
-						::EndDialog(hwnd, IDOK);
-					}
-					// 入力値が範囲外の場合
-					else {
-						if (global::config.get_show_popup()) {
-							my_messagebox(global::string_table[StringId::ErrorOutOfRange], hwnd, MessageBoxIcon::Error);
-						}
-					}
-				}
-				catch (std::invalid_argument&) {}
-				catch (std::out_of_range&) {}
-
-				return TRUE;
-			}
-
 			case IDCANCEL:
-				::EndDialog(hwnd, IDCANCEL);
+				::EndDialog(hwnd, 1);
 				return TRUE;
 			}
 			break;
 		}
 		return FALSE;
 	}
-}
+} // namespace cved

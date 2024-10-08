@@ -13,8 +13,10 @@ namespace cved {
 		std::string script_;
 
 	public:
-		double curve_function(double progress, double start, double end) const noexcept override { return start; }
+		std::string get_type() const noexcept override { return "script"; }
+		double curve_function(double, double start, double) const noexcept override { return start; }
 		void clear() noexcept override {}
+		bool is_default() const noexcept override { return true; }
 
 		const auto& script() const noexcept { return script_; }
 

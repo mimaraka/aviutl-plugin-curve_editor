@@ -13,6 +13,7 @@ namespace cved {
 		mkaul::ColorF curve_color = mkaul::ColorF{};
 		float curve_thickness = 0.f;
 		float curve_drawing_interval = 0.f;
+		uint32_t curve_resolution = 0u;
 		mkaul::graphics::Factory::GraphicEngine graphic_method = mkaul::graphics::Factory::GraphicEngine::Directx;
 		std::filesystem::path bg_image_path = "";
 		float bg_image_opacity = 0.f;
@@ -24,6 +25,7 @@ namespace cved {
 		bool notify_update = false;
 		bool set_bg_image = false;
 		bool enable_hotkeys = false;
+		bool enable_animation = false;
 
 		void reset() noexcept;
 		void from_json(const nlohmann::json& data) noexcept;

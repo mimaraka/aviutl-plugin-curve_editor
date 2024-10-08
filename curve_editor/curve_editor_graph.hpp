@@ -48,6 +48,7 @@ namespace cved {
 			bool is_idx_normal_last() const noexcept { return idx_normal_ == curves_normal_.size() - 1; }
 			bool is_idx_value_last() const noexcept { return idx_value_ == curves_value_.size() - 1; }
 
+			GraphCurve* get_curve(EditMode mode) noexcept;
 			GraphCurve* current_curve() noexcept;
 			NumericGraphCurve* numeric_curve() noexcept;
 			NormalCurve* curve_normal(size_t idx) noexcept;

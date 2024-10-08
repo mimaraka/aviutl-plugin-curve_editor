@@ -10,7 +10,7 @@
 
 
 namespace cved {
-	int CurveCodeDialog::i_resource() const noexcept { return IDD_CURVE_CODE; }
+	int CurveCodeDialog::resource_id() const noexcept { return IDD_CURVE_CODE; }
 
 
 	void CurveCodeDialog::init_controls(HWND hwnd) noexcept {
@@ -20,7 +20,7 @@ namespace cved {
 	}
 
 
-	INT_PTR CurveCodeDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR CurveCodeDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		using StringId = global::StringTable::StringId;
 		const std::regex regex_code{ R"(^-?\d+$)" };
 
@@ -48,7 +48,7 @@ namespace cved {
 					if (std::regex_match(buffer, regex_code)) {
 						try {
 							if (p_curve->decode(std::stoi(buffer))) {
-								global::window_main.send_command((WPARAM)WindowCommand::Update);
+								//global::window_main.send_command((WPARAM)WindowCommand::Update);
 								::EndDialog(hwnd, 1);
 								break;
 							}

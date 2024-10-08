@@ -8,7 +8,7 @@ namespace cved {
 		init_param_ = init_param;
 		return ::CreateDialogParamA(
 			global::fp->dll_hinst,
-			MAKEINTRESOURCEA(i_resource()),
+			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,
 			reinterpret_cast<LPARAM>(this)
@@ -19,7 +19,7 @@ namespace cved {
 		init_param_ = init_param;
 		return ::DialogBoxParamA(
 			global::fp->dll_hinst,
-			MAKEINTRESOURCEA(i_resource()),
+			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,
 			reinterpret_cast<LPARAM>(this)

@@ -8,7 +8,7 @@
 
 
 namespace cved {
-	int AboutDialog::i_resource() const noexcept { return IDD_ABOUT; }
+	int AboutDialog::resource_id() const noexcept { return IDD_ABOUT; }
 
 
 	void AboutDialog::init_controls(HWND hwnd) noexcept {
@@ -54,6 +54,7 @@ namespace cved {
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case IDOK:
+			case IDCANCEL:
 				::EndDialog(hwnd, 1);
 				return TRUE;
 			}

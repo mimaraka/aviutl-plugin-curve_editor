@@ -29,8 +29,10 @@ namespace cved {
 	};
 
 	enum class ModifierType : uint32_t {
-		Discretizer,
-		Noiser,
+		Discretization,
+		Noise,
+		SineWave,
+		SquareWave,
 		NumModifierType
 	};
 
@@ -66,7 +68,8 @@ namespace cved {
 		UpdateParamPanel		= 0x0b1b,
 		UpdateIdPanel			= 0x0b1c,
 		MoveWindow				= 0x0b1d,
-		SetBackgroundImage		= 0x0b1e
+		SetBackgroundImage		= 0x0b1e,
+		Reload					= 0x0b1f
 	};
 
 	enum class ThemeId {

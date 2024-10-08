@@ -4,7 +4,7 @@
 
 
 namespace cved {
-	int BezierParamDialog::i_resource() const noexcept { return IDD_BEZIER_PARAM; }
+	int BezierParamDialog::resource_id() const noexcept { return IDD_BEZIER_PARAM; }
 
 
 	void BezierParamDialog::init_controls(HWND hwnd) noexcept {
@@ -13,7 +13,7 @@ namespace cved {
 	}
 
 
-	INT_PTR BezierParamDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR BezierParamDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		switch (message) {
 		case WM_INITDIALOG:
 			init_controls(hwnd);

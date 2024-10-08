@@ -30,7 +30,7 @@ namespace cved {
 		HWND hwnd_list_categories_ = NULL;
 		std::vector<CategoryInfo> categories_;
 
-		int i_resource() const noexcept override;
+		int resource_id() const noexcept override;
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd) noexcept override;
 		void update() noexcept;

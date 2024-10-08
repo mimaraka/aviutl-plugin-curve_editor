@@ -11,7 +11,7 @@
 
 
 namespace cved {
-	int AppearancePrefDialog::i_resource() const noexcept { return IDD_PREF_APPEARANCE; }
+	int AppearancePrefDialog::resource_id() const noexcept { return IDD_PREF_APPEARANCE; }
 
 	void AppearancePrefDialog::init_controls(HWND hwnd) noexcept {
 		using StringId = global::StringTable::StringId;
@@ -19,9 +19,9 @@ namespace cved {
 		hwnd_combo_theme_ = ::GetDlgItem(hwnd, IDC_COMBO_THEME);
 		hwnd_button_curve_color_ = ::GetDlgItem(hwnd, IDC_BUTTON_CURVE_COLOR);
 		hwnd_slider_curve_thickness_ = ::GetDlgItem(hwnd, IDC_SLIDER_CURVE_THICKNESS);
-		hwnd_slider_curve_drawing_interval_ = ::GetDlgItem(hwnd, IDC_SLIDER_CURVE_DRAWING_INTERVAL);
+		hwnd_slider_curve_quality_ = ::GetDlgItem(hwnd, IDC_SLIDER_CURVE_RESOLUTION);
 		hwnd_static_curve_thickness_ = ::GetDlgItem(hwnd, IDC_STATIC_CURVE_THICKNESS);
-		hwnd_static_curve_drawing_interval_ = ::GetDlgItem(hwnd, IDC_STATIC_CURVE_DRAWING_INTERVAL);
+		hwnd_static_curve_quality_ = ::GetDlgItem(hwnd, IDC_STATIC_CURVE_RESOLUTION);
 		hwnd_check_set_bg_image_ = ::GetDlgItem(hwnd, IDC_CHECK_BACKGROUND_IMAGE);
 		hwnd_static_bg_image_1_ = ::GetDlgItem(hwnd, IDC_STATIC_BACKGROUND_IMAGE);
 		hwnd_static_bg_image_2_ = ::GetDlgItem(hwnd, IDC_STATIC_BACKGROUND_IMAGE2);
@@ -41,7 +41,7 @@ namespace cved {
 		}
 
 		::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
-		::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
+		::SendMessageA(hwnd_slider_curve_quality_, TBM_SETRANGE, TRUE, MAKELPARAM(100, 1000));
 		::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETRANGE, TRUE, MAKELPARAM(0, 100));
 	}
 
@@ -69,9 +69,9 @@ namespace cved {
 				int value_int = ::SendMessageA(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL);
 				::SetWindowTextA(hwnd_static_curve_thickness_, std::format("{:.1f}", value_int * 0.1f).c_str());
 			}
-			else if (lparam == (LPARAM)hwnd_slider_curve_drawing_interval_) {
-				int value_int = ::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_GETPOS, NULL, NULL);
-				::SetWindowTextA(hwnd_static_curve_drawing_interval_, std::format("{:.1f}", value_int * 0.1f).c_str());
+			else if (lparam == (LPARAM)hwnd_slider_curve_quality_) {
+				int value_int = ::SendMessageA(hwnd_slider_curve_quality_, TBM_GETPOS, NULL, NULL);
+				::SetWindowTextA(hwnd_static_curve_quality_, std::format("{}", value_int).c_str());
 			}
 			else if (lparam == (LPARAM)hwnd_slider_bg_image_opacity_) {
 				int value_int = ::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL);
@@ -134,11 +134,11 @@ namespace cved {
 				::SendMessageA(hwnd_edit_bg_image_path_, EM_SETLIMITTEXT, MAX_PATH, NULL);
 
 				::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_thickness() * 10.f));
-				::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_drawing_interval() * 10.f));
+				::SendMessageA(hwnd_slider_curve_quality_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_resolution()));
 				::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETPOS, TRUE, (LPARAM)round(global::config.get_bg_image_opacity() * 100.f));
 
 				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_thickness_);
-				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_drawing_interval_);
+				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_quality_);
 				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_bg_image_opacity_);
 
 				return TRUE;
@@ -151,8 +151,8 @@ namespace cved {
 				global::config.set_curve_thickness(
 					(float)::SendMessageA(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL) * 0.1f
 				);
-				global::config.set_curve_drawing_interval(
-					(float)::SendMessageA(hwnd_slider_curve_drawing_interval_, TBM_GETPOS, NULL, NULL) * 0.1f
+				global::config.set_curve_resolution(
+					(uint32_t)::SendMessageA(hwnd_slider_curve_quality_, TBM_GETPOS, NULL, NULL)
 				);
 
 				global::config.set_bg_image_opacity(
@@ -164,7 +164,7 @@ namespace cved {
 					global::config.set_bg_image_path(std::filesystem::path(buffer));
 				}
 				if (global::config.get_set_bg_image()) {
-					global::window_grapheditor.send_command((WPARAM)WindowCommand::SetBackgroundImage);
+					//global::window_grapheditor.send_command((WPARAM)WindowCommand::SetBackgroundImage);
 				}
 				return TRUE;
 
@@ -197,7 +197,7 @@ namespace cved {
 			{
 				using namespace std::literals::string_view_literals;
 
-				constexpr const char* TEMPLATE_IMAGE = "*.bmp;*.jpg;*.jpeg;*.png";
+				constexpr const char* TEMPLATE_IMAGE = "*.bmp;*.jpg;*.jpeg;*.png;*.gif";
 				std::string str_filter = std::format(
 					"{0} ({1})\0{1}\0"sv,
 					global::string_table[StringId::WordImageFiles],

@@ -5,10 +5,28 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
-#include "control_point.hpp"
 #include "modifier.hpp"
 #include "view_graph.hpp"
 
+
+
+namespace cereal {
+	template <class Archive>
+	void save(Archive& archive, const mkaul::Point<double>& pt) {
+		archive(
+			pt.x,
+			pt.y
+		);
+	}
+
+	template <class Archive>
+	void load(Archive& archive, mkaul::Point<double>& pt) {
+		archive(
+			pt.x,
+			pt.y
+		);
+	}
+}
 
 
 namespace cved {
@@ -17,10 +35,9 @@ namespace cved {
 		GraphCurve* prev_;
 		GraphCurve* next_;
 		std::vector<std::unique_ptr<Modifier>> modifiers_;
-
-	protected:
-		ControlPoint pt_start_;
-		ControlPoint pt_end_;
+		mkaul::Point<double> anchor_start_;
+		mkaul::Point<double> anchor_end_;
+		bool anchor_fixed_;
 
 	public:
 		enum class ActivePoint {
@@ -31,22 +48,24 @@ namespace cved {
 
 		// コンストラクタ
 		GraphCurve(
-			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			bool pt_fixed = false,
+			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. },
+			bool anchor_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr
 		) noexcept :
-			pt_start_{ pt_start, pt_fixed },
-			pt_end_{ pt_end, pt_fixed },
+			anchor_start_{ anchor_start },
+			anchor_end_{ anchor_end },
+			anchor_fixed_{ anchor_fixed },
 			prev_{prev},
 			next_{next}
 		{}
 
 		// コピーコンストラクタ
 		GraphCurve(const GraphCurve& curve) noexcept :
-			pt_start_{ curve.pt_start_ },
-			pt_end_{ curve.pt_end_ },
+			anchor_start_{ curve.anchor_start_ },
+			anchor_end_{ curve.anchor_end_ },
+			anchor_fixed_{ curve.anchor_fixed_ },
 			prev_{ nullptr },
 			next_{ nullptr }
 		{}
@@ -67,66 +86,26 @@ namespace cved {
 
 		double get_value(double progress, double start, double end) const noexcept override;
 
-		void draw_curve(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float thickness = 1.f,
-			float drawing_interval = 1.f,
-			const mkaul::ColorF& color = mkaul::ColorF{},
-			bool velocity = false
-		) const noexcept;
+		const auto& anchor_start() const noexcept { return anchor_start_; }
+		const auto& anchor_end() const noexcept { return anchor_end_; }
 
-		virtual void draw_handle(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float thickness,
-			float root_radius,
-			float tip_radius,
-			float tip_thickness,
-			bool cutoff_line,
-			const mkaul::ColorF& color = mkaul::ColorF{}
-		) const noexcept = 0;
-
-		void draw_pt(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float radius,
-			const mkaul::ColorF& color = mkaul::ColorF{}
-		) const noexcept;
-
-		const auto& pt_start() const noexcept { return pt_start_; }
-		const auto& pt_end() const noexcept { return pt_end_; }
+		double get_anchor_start_x() const noexcept { return anchor_start_.x; }
+		double get_anchor_start_y() const noexcept { return anchor_start_.y; }
+		double get_anchor_end_x() const noexcept { return anchor_end_.x; }
+		double get_anchor_end_y() const noexcept { return anchor_end_.y; }
+		void set_anchor_start(double x, double y) noexcept;
+		void set_anchor_start(const mkaul::Point<double>& pt) noexcept { set_anchor_start(pt.x, pt.y); }
+		void set_anchor_end(double x, double y) noexcept;
+		void set_anchor_end(const mkaul::Point<double>& pt) noexcept { set_anchor_end(pt.x, pt.y); }
 
 		virtual void reverse(bool fix_pt = false) noexcept;
-
-		bool is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
-		virtual bool is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
-		virtual bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept = 0;
-
-		virtual bool handle_check_hover(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept = 0;
-
-		virtual bool handle_update(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept = 0;
-
-		virtual void handle_end_control() noexcept = 0;
-
-		virtual ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept = 0;
-		virtual bool pt_begin_move(ActivePoint active_pt) noexcept = 0;
-		virtual ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept = 0;
-		virtual bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept;
-		virtual void pt_end_move() noexcept {};
-		virtual void pt_end_control() noexcept;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
 			archive(
-				pt_start_,
-				pt_end_,
+				anchor_start_,
+				anchor_end_,
+				anchor_fixed_,
 				modifiers_
 			);
 		}
@@ -134,8 +113,9 @@ namespace cved {
 		template <class Archive>
 		void load(Archive& archive, const std::uint32_t) {
 			archive(
-				pt_start_,
-				pt_end_,
+				anchor_start_,
+				anchor_end_,
+				anchor_fixed_,
 				modifiers_
 			);
 
