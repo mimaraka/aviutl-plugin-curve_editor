@@ -5,7 +5,7 @@
 		processorArchitecture="*"
 		name="Mimaraka.CurveEditor.CurveEditor"
 		type="win32"
-/>
+	/>
 	<description>Description</description>
 	<dependency>
 		<dependentAssembly>
