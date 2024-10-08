@@ -14,6 +14,8 @@ namespace cved {
 		ConfigHostObject() {
 			register_member(L"editMode", DispatchType::PropertyGet, +[] { return global::config.get_edit_mode(); });
 			register_member(L"editMode", DispatchType::PropertyPut, +[](int edit_mode) { global::config.set_edit_mode((EditMode)edit_mode); });
+			register_member(L"editModeNum", DispatchType::PropertyGet, +[] { return (uint32_t)EditMode::NumEditMode; });
+			register_member(L"getEditModeName", DispatchType::Method, +[](int edit_mode) { return global::config.get_edit_mode_str((EditMode)edit_mode); });
 			register_member(L"showXScale", DispatchType::PropertyGet, +[] {return global::config.get_show_x_scale(); });
 			register_member(L"showYScale", DispatchType::PropertyGet, +[] { return global::config.get_show_y_scale(); });
 			register_member(L"showHandle", DispatchType::PropertyGet, +[] { return global::config.get_show_handle(); });

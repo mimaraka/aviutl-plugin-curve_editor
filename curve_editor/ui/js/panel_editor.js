@@ -32,6 +32,10 @@ function updateIdButtons() {
 }
 
 $(document).ready(function() {
+    // ドロップダウンメニューの項目を追加
+    for (let i = 0; i < config.editModeNum; i++) {
+        $('#edit-mode').append(`<option class="dropdown-option" value="${i}">${config.getEditModeName(i)}</option>`);
+    }
     updateSelect();
     updateEditor();
     updateIdButtons();
