@@ -51,7 +51,8 @@ body {
     /* box-shadow: 0 1px 5px 1px rgba(0, 0, 0, 0.3); */
 }
 
-.menu-button:hover {
+.menu-button:hover, .menu-button:focus {
+    outline: none;
     background: var(--color-control-hover);
 }
 

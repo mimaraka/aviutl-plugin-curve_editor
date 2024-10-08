@@ -69,7 +69,8 @@ namespace cved {
 		UpdateIdPanel			= 0x0b1c,
 		MoveWindow				= 0x0b1d,
 		SetBackgroundImage		= 0x0b1e,
-		Reload					= 0x0b1f
+		Reload					= 0x0b1f,
+		StartDnd				= 0x0b20
 	};
 
 	enum class ThemeId {

@@ -4,11 +4,13 @@
 #include "config.hpp"
 #include "constants.hpp"
 #include "curve_editor.hpp"
+#include "drag_and_drop.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "string_table.hpp"
 #include "webmessage_handler.hpp"
 #include "my_webview2.hpp"
+#include "resource.h"
 
 
 
@@ -62,6 +64,7 @@ namespace cved {
 
 		static ActCtxHelper actctx_helper;
 		static MyWebView2 my_webview;
+		static DragAndDrop dnd;
 		static bool init = false;
 
 		switch (message) {
@@ -74,11 +77,13 @@ namespace cved {
 					std::format("{} ({})", global::PLUGIN_NAME, global::PLUGIN_VERSION.preview_type().str(true)).c_str()
 				);
 			}
+			dnd.init();
 			break;
 
 			// AviUtl終了時
 		case WindowMessage::Exit:
 			actctx_helper.exit();
+			dnd.exit();
 			break;
 
 		case WindowMessage::ChangeWindow:
@@ -90,7 +95,7 @@ namespace cved {
 					bounds.from_client_rect(this_->get_hwnd());
 					this_->put_bounds(bounds);
 					this_->navigate(L"panel_main");
-				});
+					});
 			}
 			break;
 
@@ -102,7 +107,7 @@ namespace cved {
 			break;
 		}
 
-			// ドロップダウンリストの位置が更新されない不具合を修正するためにwebviewを再描画(ゴリ押し)
+		// ドロップダウンリストの位置が更新されない不具合を修正するためにwebviewを再描画(ゴリ押し)
 		case WM_MOVE:
 			my_webview.on_move();
 			break;
@@ -110,6 +115,20 @@ namespace cved {
 		case WM_KEYDOWN:
 			if (global::config.get_enable_hotkeys()) {
 				on_keydown(wparam);
+			}
+			break;
+
+		case WM_MOUSEMOVE:
+			if (dnd.is_dragging()) {
+				dnd.update();
+			}
+			break;
+
+		case WM_LBUTTONUP:
+			if (dnd.is_dragging()) {
+				::ReleaseCapture();
+				dnd.drop();
+				my_webview.execute_script(L"onDrop();");
 			}
 			break;
 
@@ -123,6 +142,12 @@ namespace cved {
 
 			case (UINT)WindowCommand::Reload:
 				my_webview.reload();
+				break;
+
+			case (UINT)WindowCommand::StartDnd:
+				::SetCapture(hwnd);
+				::SetCursor(::LoadCursorA(fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
+				dnd.drag();
 				break;
 			}
 			break;

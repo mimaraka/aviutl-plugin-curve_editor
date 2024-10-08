@@ -161,6 +161,10 @@ namespace cved {
 			else if (command == "button-param") {
 				return true;
 			}
+			else if (command == "drag-and-drop") {
+				::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::StartDnd, NULL);
+				return true;
+			}
 			else if (command == "contextmenu-graph") {
 				GraphMenu menu{ hinst };
 				menu.show(hwnd);

@@ -54,9 +54,12 @@ iframe {
     background: var(--color-button-hover);
 }
 
+.button-apply:focus {
+    outline: none;
+}
+
 .button-apply:active {
     background: var(--color-button-active);
-    cursor: url('../assets/drag.cur'), auto;
 }
 
 #separator {

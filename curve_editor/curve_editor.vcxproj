@@ -98,7 +98,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
@@ -134,7 +134,7 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
-      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
     <PostBuildEvent>

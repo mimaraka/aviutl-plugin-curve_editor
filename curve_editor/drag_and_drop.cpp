@@ -64,19 +64,41 @@ namespace cved {
 	bool DragAndDrop::init() noexcept {
 		auto hwnd_objdialog = *global::exedit_internal.p_hwnd_objdialog();
 
-		p_graphics_ = mkaul::graphics::Factory::create_graphics();
-		if (!p_graphics_) return false;
-		p_graphics_->init(hwnd_objdialog);
-
 		for (int i = 0; i < ExEdit::Object::MAX_TRACK; i++) {
 			buttons_[i].init(hwnd_objdialog, i);
+		}
+
+		auto hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &p_factory_);
+		if (FAILED(hr)) {
+			d2d_init_failed_ = true;
+			return false;
+		}
+		D2D1_RENDER_TARGET_PROPERTIES props = D2D1::RenderTargetProperties(
+			D2D1_RENDER_TARGET_TYPE_DEFAULT,
+			D2D1::PixelFormat(
+				DXGI_FORMAT_B8G8R8A8_UNORM,
+				D2D1_ALPHA_MODE_IGNORE
+			),
+			96.f, 96.f,
+			D2D1_RENDER_TARGET_USAGE_NONE,
+			D2D1_FEATURE_LEVEL_DEFAULT
+		);
+		hr = p_factory_->CreateDCRenderTarget(&props, &p_render_target_);
+		if (FAILED(hr)) {
+			d2d_init_failed_ = true;
+			return false;
 		}
 		return true;
 	}
 
 	void DragAndDrop::exit() noexcept {
-		if (p_graphics_) {
-			p_graphics_->release();
+		if (p_render_target_) {
+			p_render_target_->Release();
+			p_render_target_ = nullptr;
+		}
+		if (p_factory_) {
+			p_factory_->Release();
+			p_factory_ = nullptr;
 		}
 	}
 
@@ -88,9 +110,44 @@ namespace cved {
 		else return false;
 	}
 
+	void DragAndDrop::update() noexcept {
+		if (dragging_ and !d2d_init_failed_) {
+			for (const auto& button : buttons_) {
+				if (button.is_visible() and button.is_hovered()) {
+					auto current_obj_idx = *(global::exedit_internal.p_current_obj_idx());
+					if (0 <= current_obj_idx) {
+						std::vector<int32_t> track_idcs;
+						get_applied_track_idcs(current_obj_idx, button.track_idx(), track_idcs);
+						// ハイライト対象のインデックスが変化したときにのみ再描画
+						if (track_idcs != track_idcs_buffer_) {
+							for (const auto idx : track_idcs_buffer_) {
+								buttons_[idx].unhighlight();
+							}
+							for (const auto idx : track_idcs) {
+								buttons_[idx].highlight(p_render_target_);
+							}
+							track_idcs_buffer_ = track_idcs;
+						}
+					}
+					return;
+				}
+			}
+			for (const auto idx : track_idcs_buffer_) {
+				buttons_[idx].unhighlight();
+			}
+			track_idcs_buffer_.clear();
+		}
+	}
+
 	bool DragAndDrop::drop() noexcept {
 		if (dragging_) {
 			dragging_ = false;
+			if (!d2d_init_failed_) {
+				for (const auto idx : track_idcs_buffer_) {
+					buttons_[idx].unhighlight();
+					track_idcs_buffer_.clear();
+				}
+			}
 			for (int i = 0; i < ExEdit::Object::MAX_TRACK; i++) {
 				if (buttons_[i].is_visible() and buttons_[i].is_hovered()) {
 					auto current_obj_idx = *(global::exedit_internal.p_current_obj_idx());
@@ -110,28 +167,12 @@ namespace cved {
 							}
 						}
 						// オブジェクト設定ダイアログの更新
-						reinterpret_cast<BOOL(__cdecl*)(int)>(global::exedit_internal.base_address() + 0x305e0u)(current_obj_idx);
+						reinterpret_cast<BOOL(__cdecl*)(int32_t)>(global::exedit_internal.base_address() + 0x305e0u)(current_obj_idx);
 					}
 					return true;
 				}
 			}
 		}
 		return false;
-	}
-
-	void DragAndDrop::highlight() const noexcept {
-		for (const auto& button : buttons_) {
-			if (button.is_visible() and button.is_hovered()) {
-				auto current_obj_idx = *(global::exedit_internal.p_current_obj_idx());
-				if (0 <= current_obj_idx) {
-					std::vector<int32_t> track_idcs;
-					get_applied_track_idcs(current_obj_idx, button.track_idx(), track_idcs);
-					for (const auto idx : track_idcs) {
-						// TODO: ハイライト処理
-						//buttons_[idx].highlight(p_graphics_.get());
-					}
-				}
-			}
-		}
 	}
 }

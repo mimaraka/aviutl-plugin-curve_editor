@@ -18,12 +18,23 @@ const enablePanel = () => {
     $('#disabled-overlay').remove();
 }
 
-$(window).on('mouseup', function() {
+const onDrag = () => {
+    $('#button-apply').html('トラックバーにドラッグ&ドロップして適用');
+    window.chrome.webview.postMessage({
+        command: 'drag-and-drop'
+    });
+}
+
+const onDrop = () => {
     $('#button-apply').html('適用');
-});
+}
 
 $('#button-apply').on('mousedown', function() {
-    $('#button-apply').html('トラックバーにドラッグ&ドロップして適用');
+    onDrag();
+});
+
+$(window).on('mouseup', function() {
+    onDrop();
 });
 
 let isDragging = false;
