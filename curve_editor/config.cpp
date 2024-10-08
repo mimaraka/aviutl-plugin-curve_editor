@@ -18,7 +18,6 @@ namespace cved {
 			layout_mode_ = LayoutMode::Vertical;
 			apply_mode_.fill(ApplyMode::Normal);
 			set_apply_mode(EditMode::Value, ApplyMode::IgnoreMidPoint);
-			current_theme_ = THEME_DARK;
 			curve_code_bezier_ = 145674282;
 			curve_code_elastic_ = 2554290;
 			curve_code_bounce_ = 10612242;
@@ -60,12 +59,10 @@ namespace cved {
 			switch (theme_id) {
 			case ThemeId::Dark:
 				pref_.theme_id = ThemeId::Dark;
-				current_theme_ = THEME_DARK;
 				return true;
 
 			case ThemeId::Light:
 				pref_.theme_id = ThemeId::Light;
-				current_theme_ = THEME_LIGHT;
 				return true;
 
 			default:

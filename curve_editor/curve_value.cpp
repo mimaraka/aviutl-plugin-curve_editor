@@ -29,12 +29,12 @@ namespace cved {
 		return true;
 	}
 
-	bool ValueCurve::add_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept
+	bool ValueCurve::add_curve(const mkaul::Point<double>& pt, double scale_x) noexcept
 	{
 		return false;
 	}
 
-	bool ValueCurve::delete_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept
+	bool ValueCurve::delete_curve(GraphCurve* p_segment) noexcept
 	{
 		return false;
 	}

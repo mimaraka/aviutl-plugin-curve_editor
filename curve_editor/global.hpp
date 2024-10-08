@@ -6,7 +6,7 @@
 #include <mkaul/window.hpp>
 #include <mkaul/exedit.hpp>
 #include "curve.hpp"
-#include "theme.hpp"
+
 
 
 namespace cved {

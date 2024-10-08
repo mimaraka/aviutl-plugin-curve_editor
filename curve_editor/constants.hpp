@@ -1,7 +1,6 @@
 #pragma once
 
 #include <mkaul/version.hpp>
-#include "theme.hpp"
 
 
 

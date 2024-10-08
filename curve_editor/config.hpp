@@ -2,7 +2,6 @@
 
 #include "enum.hpp"
 #include "preferences.hpp"
-#include "theme.hpp"
 #include <mkaul/color.hpp>
 #include <mkaul/graphics.hpp>
 
@@ -12,42 +11,6 @@ namespace cved {
 	namespace global {
 		inline class Config {
 		private:
-			static constexpr Theme THEME_DARK = {
-				.bg						= mkaul::ColorF{27, 27, 27},
-				.bg_graph				= mkaul::ColorF{27, 27, 27},
-				.bg_editbox				= mkaul::ColorF{19, 19, 19},
-				.separator				= mkaul::ColorF{240, 240, 240},
-				.curve_trace			= mkaul::ColorF{57, 57, 57},
-				.curve_velocity			= mkaul::ColorF{95, 95, 95},
-				.curve_preset			= mkaul::ColorF{240, 240, 240},
-				.handle					= mkaul::ColorF{243, 243, 243},
-				.handle_preset			= mkaul::ColorF{180, 180, 180},
-				.button_selected		= mkaul::ColorF{230, 230, 230},
-				.button_unselected		= mkaul::ColorF{68, 68, 68},
-				.button_label			= mkaul::ColorF{240, 240, 240},
-				.button_label_selected	= mkaul::ColorF{35, 35, 35},
-				.preset_label			= mkaul::ColorF{180, 180, 180},
-				.editbox_text			= mkaul::ColorF{200, 200, 200}
-			};
-
-			static constexpr Theme THEME_LIGHT = {
-				.bg						= mkaul::ColorF{244, 244, 244},
-				.bg_graph				= mkaul::ColorF{230, 230, 230},
-				.bg_editbox				= mkaul::ColorF{252, 252, 252},
-				.separator				= mkaul::ColorF{70, 70, 70},
-				.curve_trace			= mkaul::ColorF{205, 205, 205},
-				.curve_velocity			= mkaul::ColorF{160, 160, 160},
-				.curve_preset			= mkaul::ColorF{100, 100, 100},
-				.handle					= mkaul::ColorF{70, 70, 70},
-				.handle_preset			= mkaul::ColorF{160, 160, 160},
-				.button_selected		= mkaul::ColorF{230, 230, 230},
-				.button_unselected		= mkaul::ColorF{188, 188, 188},
-				.button_label			= mkaul::ColorF{70, 70, 70},
-				.button_label_selected	= mkaul::ColorF{70, 70, 70},
-				.preset_label			= mkaul::ColorF{70, 70, 70},
-				.editbox_text			= mkaul::ColorF{100, 100, 100}
-			};
-
 			static constexpr char CONFIG_FILE_NAME[] = "config.json";
 
 			Preferences pref_;
@@ -55,7 +18,6 @@ namespace cved {
 			EditMode edit_mode_ = EditMode::Normal;
 			LayoutMode layout_mode_ = LayoutMode::Vertical;
 			std::array<ApplyMode, (size_t)EditMode::NumEditMode> apply_mode_ = {};
-			Theme current_theme_;
 
 			int curve_code_bezier_ = 0;
 			int curve_code_elastic_ = 0;
@@ -82,8 +44,6 @@ namespace cved {
 
 			auto get_theme_id() const noexcept { return pref_.theme_id; }
 			bool set_theme_id(ThemeId theme_id) noexcept;
-
-			const auto& get_theme() const noexcept { return current_theme_; }
 
 			auto get_edit_mode() const noexcept { return edit_mode_; }
 			bool set_edit_mode(EditMode edit_mode) noexcept;

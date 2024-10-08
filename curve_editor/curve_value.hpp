@@ -24,8 +24,8 @@ namespace cved {
 		void clear() noexcept override;
 		bool is_default() const noexcept override;
 
-		bool add_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept;
-		bool delete_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept;
+		bool add_curve(const mkaul::Point<double>& pt, double scale_x) noexcept;
+		bool delete_curve(GraphCurve* p_segment) noexcept;
 		bool replace_curve(size_t idx, CurveSegmentType segment_type) noexcept;
 	};
 }

@@ -6,7 +6,6 @@
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include "modifier.hpp"
-#include "view_graph.hpp"
 
 
 

@@ -252,17 +252,12 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClInclude Include="modifier_square_wave.hpp" />
     <ClInclude Include="my_messagebox.hpp" />
     <ClInclude Include="modifier_noise.hpp" />
-    <ClInclude Include="notification.hpp" />
     <ClInclude Include="preferences.hpp" />
     <ClInclude Include="trackbar_button.hpp" />
     <ClInclude Include="preset.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="string_table.hpp" />
-    <ClInclude Include="theme.hpp" />
     <ClInclude Include="util.hpp" />
-    <ClInclude Include="view.hpp" />
-    <ClInclude Include="view_graph.hpp" />
-    <ClInclude Include="view_preset.hpp" />
     <ClInclude Include="webmessage_handler.hpp" />
     <ClInclude Include="my_webview2.hpp" />
   </ItemGroup>
@@ -390,8 +385,6 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClCompile Include="my_webview2.cpp" />
     <ClCompile Include="preset.cpp" />
     <ClCompile Include="string_table.cpp" />
-    <ClCompile Include="view_graph.cpp" />
-    <ClCompile Include="view_preset.cpp" />
     <ClCompile Include="webmessage_handler.cpp" />
   </ItemGroup>
   <ItemGroup>

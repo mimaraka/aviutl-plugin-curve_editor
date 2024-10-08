@@ -14,9 +14,6 @@
     <Filter Include="Source Files\Curve\Editor">
       <UniqueIdentifier>{3e7ea665-8ff6-4961-879c-616bebb916fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\View">
-      <UniqueIdentifier>{bd6163fe-ce55-4a4b-8dac-64f9e5d5784e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Menu">
       <UniqueIdentifier>{757f7728-9757-4416-b7d0-1796cf4c5c04}</UniqueIdentifier>
     </Filter>
@@ -38,9 +35,6 @@
     </Filter>
     <Filter Include="Header Files\Curve\Editor">
       <UniqueIdentifier>{6fc4954d-fb0f-4ba9-a148-9cbe1c6e00df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\View">
-      <UniqueIdentifier>{5868f70f-18fc-469d-afb8-134499c692e1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Menu">
       <UniqueIdentifier>{feb162eb-045d-4525-96f7-62d50e0e1182}</UniqueIdentifier>
@@ -129,9 +123,6 @@
     <ClInclude Include="enum.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="theme.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="preset.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -158,15 +149,6 @@
     </ClInclude>
     <ClInclude Include="curve_linear.hpp">
       <Filter>Header Files\Curve</Filter>
-    </ClInclude>
-    <ClInclude Include="view.hpp">
-      <Filter>Header Files\View</Filter>
-    </ClInclude>
-    <ClInclude Include="view_graph.hpp">
-      <Filter>Header Files\View</Filter>
-    </ClInclude>
-    <ClInclude Include="view_preset.hpp">
-      <Filter>Header Files\View</Filter>
     </ClInclude>
     <ClInclude Include="curve_editor.hpp">
       <Filter>Header Files\Curve\Editor</Filter>
@@ -257,9 +239,6 @@
     </ClInclude>
     <ClInclude Include="preferences.hpp">
       <Filter>Header Files\Config</Filter>
-    </ClInclude>
-    <ClInclude Include="notification.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="drag_and_drop.hpp">
       <Filter>Header Files\Exedit Hook</Filter>
@@ -383,14 +362,8 @@
     <ClCompile Include="curve_graph.cpp">
       <Filter>Source Files\Curve</Filter>
     </ClCompile>
-    <ClCompile Include="view_graph.cpp">
-      <Filter>Source Files\View</Filter>
-    </ClCompile>
     <ClCompile Include="curve_editor_graph.cpp">
       <Filter>Source Files\Curve\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="view_preset.cpp">
-      <Filter>Source Files\View</Filter>
     </ClCompile>
     <ClCompile Include="menu_others.cpp">
       <Filter>Source Files\Menu</Filter>
