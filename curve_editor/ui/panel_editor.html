@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="fontawesome/css/all.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/panel_editor.css" type="text/css" />
+    <script src="js/libs/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="menu-bottom">
+        <div class="menu-row">
+            <div class="menu-button dropdown-container" id="edit-mode-container">
+                <select class="dropdown" name="edit-mode" id="edit-mode" title="編集モード">
+                    <option class="dropdown-option" value="0">標準</option>
+                    <option class="dropdown-option" value="1">値指定</option>
+                    <option class="dropdown-option" value="2">ベジェ</option>
+                    <option class="dropdown-option" value="3">振動</option>
+                    <option class="dropdown-option" value="4">バウンス</option>
+                    <option class="dropdown-option" value="5">スクリプト</option>
+                </select>
+            </div>
+            <div class="menu-buttons-id">
+                <button class="menu-button" id="button-id-back" style="width: 25%;" title="前のIDに戻る">
+                    <i class="fa-solid fa-angle-left"></i>
+                </button>
+                <button class="menu-button" id="button-id" style="width: 50%;" title="編集中のID">
+                    <p class="content">1</p>
+                </button>
+                <button class="menu-button" id="button-id-forward" style="width: 25%;">
+                    <i class="fa-solid fa-angle-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <iframe class="editor" id="editor" name="editor" src="editor_graph.html"></iframe>
+    <script src="js/host_object.js"></script>
+    <script src="js/panel_editor.js"></script>
+</body>
+</html>
