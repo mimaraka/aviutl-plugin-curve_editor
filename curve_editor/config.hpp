@@ -3,7 +3,7 @@
 #include "enum.hpp"
 #include "preferences.hpp"
 #include <mkaul/color.hpp>
-#include <mkaul/graphics.hpp>
+#include <mkaul/util.hpp>
 
 
 
@@ -23,8 +23,8 @@ namespace cved {
 			int curve_code_elastic_ = 0;
 			int curve_code_bounce_ = 0;
 
-			bool show_x_scale_ = false;
-			bool show_y_scale_ = false;
+			bool show_x_label_ = false;
+			bool show_y_label_ = false;
 			bool show_handle_ = false;
 			bool show_library_ = false;
 			bool show_velocity_graph_ = false;
@@ -65,14 +65,8 @@ namespace cved {
 			auto get_curve_thickness() const noexcept { return pref_.curve_thickness; }
 			void set_curve_thickness(float curve_thickness) noexcept;
 
-			auto get_curve_drawing_interval() const noexcept { return pref_.curve_drawing_interval; }
-			void set_curve_drawing_interval(float curve_drawing_interval) noexcept;
-
 			auto get_curve_resolution() const noexcept { return pref_.curve_resolution; }
 			void set_curve_resolution(uint32_t curve_resolution) noexcept;
-
-			auto get_graphic_method() const noexcept { return pref_.graphic_method; }
-			bool set_graphic_method(mkaul::graphics::Factory::GraphicEngine graphic_method) noexcept;
 
 			auto get_curve_code_bezier() const noexcept { return curve_code_bezier_; }
 			auto get_curve_code_elastic() const noexcept { return curve_code_elastic_; }
@@ -90,11 +84,11 @@ namespace cved {
 			auto get_auto_apply() const noexcept { return pref_.auto_apply; }
 			void set_auto_apply(bool auto_apply) noexcept { pref_.auto_apply = auto_apply; }
 
-			auto get_show_x_scale() const noexcept { return show_x_scale_; }
-			void set_show_x_scale(bool show_x_scale) noexcept { show_x_scale_ = show_x_scale; }
+			auto get_show_x_label() const noexcept { return show_x_label_; }
+			void set_show_x_label(bool show_x_label) noexcept { show_x_label_ = show_x_label; }
 
-			auto get_show_y_scale() const noexcept { return show_y_scale_; }
-			void set_show_y_scale(bool show_y_scale) noexcept { show_y_scale_ = show_y_scale; }
+			auto get_show_y_label() const noexcept { return show_y_label_; }
+			void set_show_y_label(bool show_y_label) noexcept { show_y_label_ = show_y_label; }
 
 			auto get_show_handle() const noexcept { return show_handle_; }
 			void set_show_handle(bool show_handle) noexcept { show_handle_ = show_handle; }
@@ -108,8 +102,8 @@ namespace cved {
 			auto get_align_handle() const noexcept { return align_handle_; }
 			void set_align_handle(bool align_handle) noexcept { align_handle_ = align_handle; }
 
-			auto get_reverse_wheel() const noexcept { return pref_.reverse_wheel; }
-			void set_reverse_wheel(bool reverse_wheel) noexcept { pref_.reverse_wheel = reverse_wheel; }
+			auto get_invert_wheel() const noexcept { return pref_.invert_wheel; }
+			void set_invert_wheel(bool invert_wheel) noexcept { pref_.invert_wheel = invert_wheel; }
 
 			auto get_notify_update() const noexcept { return pref_.notify_update; }
 			void set_notify_update(bool notify_update) noexcept { pref_.notify_update = notify_update; }

@@ -12,7 +12,7 @@ function setUnlockedIcon() {
 
 isLocked = false;
 
-$(document).ready(function() {
+$(document).ready(() => {
     setUnlockedIcon();
     if (config.notifyUpdate) {
         fetch('https://api.github.com/repos/mimaraka/aviutl-plugin-curve_editor/releases/latest').then(response => {
@@ -25,27 +25,31 @@ $(document).ready(function() {
     }
 });
 
-$('#button-copy').on('click', function() {
+$('#button-copy').on('click', () => {
     window.top.postMessage({
-        command: 'button-copy'
+        to: 'native',
+        command: 'copy'
     }, '*');
 });
 
-$('#button-read').on('click', function() {
+$('#button-read').on('click', () => {
     window.top.postMessage({
-        command: 'button-read'
+        to: 'native',
+        command: 'read'
     }, '*');
 });
 
-$('#button-save').on('click', function() {
+$('#button-save').on('click', () => {
     window.top.postMessage({
-        command: 'button-save'
+        to: 'native',
+        command: 'save'
     }, '*');
 });
 
-$('#button-lock').on('click', function() {
+$('#button-lock').on('click', () => {
     window.top.postMessage({
-        command: 'button-lock'
+        to: 'native',
+        command: 'lock'
     }, '*');
     if (isLocked) {
         setUnlockedIcon();
@@ -55,14 +59,16 @@ $('#button-lock').on('click', function() {
     $('#button-clear').prop('disabled', isLocked);
 });
 
-$('#button-clear').on('click', function() {
+$('#button-clear').on('click', () => {
     window.top.postMessage({
-        command: 'button-clear'
+        to: 'native',
+        command: 'clear'
     }, '*');
 });
 
-$('#button-others').on('click', function() {
+$('#button-others').on('click', () => {
     window.top.postMessage({
-        command: 'button-others'
+        to: 'native',
+        command: 'others'
     }, '*');
 });

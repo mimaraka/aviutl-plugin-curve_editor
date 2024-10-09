@@ -28,7 +28,7 @@ namespace cved {
 				::SendMessageA(
 					hwnd_check_reverse_wheel_,
 					BM_SETCHECK,
-					(WPARAM)global::config.get_reverse_wheel(),
+					(WPARAM)global::config.get_invert_wheel(),
 					NULL
 				);
 				::SendMessageA(
@@ -46,7 +46,7 @@ namespace cved {
 				return TRUE;
 
 			case (WPARAM)WindowCommand::SaveConfig:
-				global::config.set_reverse_wheel(::SendMessageA(hwnd_check_reverse_wheel_, BM_GETCHECK, NULL, NULL));
+				global::config.set_invert_wheel(::SendMessageA(hwnd_check_reverse_wheel_, BM_GETCHECK, NULL, NULL));
 				global::config.set_auto_copy(::SendMessageA(hwnd_check_auto_copy_, BM_GETCHECK, NULL, NULL));
 				global::config.set_auto_apply(::SendMessageA(hwnd_check_auto_apply_, BM_GETCHECK, NULL, NULL));
 				return TRUE;

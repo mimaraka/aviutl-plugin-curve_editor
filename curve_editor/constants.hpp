@@ -21,14 +21,14 @@ namespace cved {
 		inline constexpr float HANDLE_BORDER_THICKNESS_PRESET = 0.5f;
 		inline constexpr float POINT_SIZE_PREEST = 2.f;
 
-		inline constexpr char PLUGIN_NAME[] = "Curve Editor";
+		inline constexpr auto PLUGIN_NAME = "Curve Editor";
 		inline constexpr auto PLUGIN_VERSION = mkaul::Version{
 			mkaul::VersionNumber{2},
 			mkaul::PreviewType{mkaul::PreviewType::Type::Alpha},
 			mkaul::VersionNumber{2}
 		};
-		inline constexpr char PLUGIN_DEVELOPER[] = "mimaraka";
-		inline constexpr char PLUGIN_TRANSLATOR[] = "Deepdive";
-		inline constexpr char PLUGIN_GITHUB_URL[] = "https://github.com/mimaraka/aviutl-plugin-curve_editor";
+		inline constexpr auto PLUGIN_DEVELOPER = "mimaraka";
+		inline constexpr auto PLUGIN_TRANSLATOR = "Deepdive";
+		inline constexpr auto PLUGIN_GITHUB_URL = "https://github.com/mimaraka/aviutl-plugin-curve_editor";
 	}
 }

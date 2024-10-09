@@ -23,22 +23,22 @@ namespace cved {
 
 		if (message.contains("command")) {
 			auto command = message["command"].get<std::string>();
-			if (command == "button-copy") {
+			if (command == "copy") {
 				auto tmp = std::to_string(global::editor.track_param());
 				if (!util::copy_to_clipboard(hwnd, tmp.c_str()) and config.get_show_popup()) {
 					my_messagebox(global::string_table[StringId::ErrorCodeCopyFailed], hwnd, MessageBoxIcon::Error);
 				}
 				return true;
 			}
-			else if (command == "button-read") {
+			else if (command == "read") {
 				CurveCodeDialog dialog;
 				dialog.show(hwnd);
 				return true;
 			}
-			else if (command == "button-save") {
+			else if (command == "save") {
 				return true;
 			}
-			else if (command == "button-lock") {
+			else if (command == "lock") {
 				if (message.contains("switch")) {
 					bool sw = message["switch"].get<bool>();
 					if (sw) {
@@ -49,7 +49,7 @@ namespace cved {
 					}
 				}
 			}
-			else if (command == "button-clear") {
+			else if (command == "clear") {
 				int response = IDOK;
 				if (config.get_show_popup()) {
 					response = my_messagebox(
@@ -70,7 +70,7 @@ namespace cved {
 				}
 				return true;
 			}
-			else if (command == "button-others") {
+			else if (command == "others") {
 				OthersMenu menu(hinst);
 				menu.show(hwnd);
 				return true;

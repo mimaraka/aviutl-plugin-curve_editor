@@ -5,7 +5,7 @@
 
 
 namespace cved {
-	class BezierParamDialog : public Dialog {
+	class CurveParamDialog : public Dialog {
 		HWND hwnd_edit_ = NULL;
 
 		int resource_id() const noexcept override;

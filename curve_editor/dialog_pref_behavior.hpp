@@ -6,7 +6,6 @@
 
 namespace cved {
 	class BehaviorPrefDialog : public Dialog {
-		HWND hwnd_combo_graphic_method_ = NULL;
 		HWND hwnd_check_show_popup_ = NULL;
 		HWND hwnd_check_enable_hotkeys_ = NULL;
 

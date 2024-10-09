@@ -1,14 +1,28 @@
-window.addEventListener('message', function(event) {
-    if (event.data.to == 'editor-graph') {
-        $('#panel-editor')[0].contentWindow.postMessage(event.data, '*');
+const handleMessage = event => {
+    switch (event.data.to) {
+        case 'native':
+            window.chrome.webview.postMessage(event.data);
+            break;
+
+        case 'toolbar':
+            $('#toolbar')[0].contentWindow.postMessage(event.data, '*');
+            break;
+
+        case 'panel-editor':
+        case 'editor-graph':
+            $('#panel-editor')[0].contentWindow.postMessage(event.data, '*');
+            break;
     }
-    this.chrome.webview.postMessage(event.data);
-});
+}
+
+window.addEventListener('message', handleMessage);
+window.chrome.webview.addEventListener('message', handleMessage);
 
 const disablePanel = () => {
     $('body').append('<div id="disabled-overlay"></div>');
     $('#disabled-overlay').on('mousedown', function() {
         window.chrome.webview.postMessage({
+            to: 'native',
             command: 'flash'
         });
     });
@@ -21,6 +35,7 @@ const enablePanel = () => {
 const onDrag = () => {
     $('#button-apply').html('トラックバーにドラッグ&ドロップして適用');
     window.chrome.webview.postMessage({
+        to: 'native',
         command: 'drag-and-drop'
     });
 }

@@ -58,6 +58,7 @@ const svg = d3.select('#canvas')
         } else if (event.button === 2) {
             event.preventDefault();
             window.top.postMessage({
+                to: 'native',
                 command: 'contextmenu-graph'
             }, '*');
         }

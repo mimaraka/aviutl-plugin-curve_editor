@@ -51,13 +51,16 @@ body {
     /* box-shadow: 0 1px 5px 1px rgba(0, 0, 0, 0.3); */
 }
 
-.menu-button:hover, .menu-button:focus {
-    outline: none;
+.menu-button:hover {
     background: var(--color-control-hover);
 }
 
 .menu-button:active {
     background: var(--color-control-active);
+}
+
+.menu-button:focus {
+    outline-color: var(--color-focus-outline);
 }
 
 .menu-button:disabled {

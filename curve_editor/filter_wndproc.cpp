@@ -133,18 +133,18 @@ namespace cved {
 			break;
 
 		case WM_COMMAND:
-			switch (wparam) {
-			case (UINT)WindowCommand::RedrawAviutl:
+			switch ((WindowCommand)wparam) {
+			case WindowCommand::RedrawAviutl:
 				return TRUE;
 
-			case (UINT)WindowCommand::Update:
+			case WindowCommand::Update:
 				break;
 
-			case (UINT)WindowCommand::Reload:
+			case WindowCommand::Reload:
 				my_webview.reload();
 				break;
 
-			case (UINT)WindowCommand::StartDnd:
+			case WindowCommand::StartDnd:
 				::SetCapture(hwnd);
 				::SetCursor(::LoadCursorA(fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
 				dnd.drag();

@@ -48,7 +48,7 @@ namespace cved {
 					if (std::regex_match(buffer, regex_code)) {
 						try {
 							if (p_curve->decode(std::stoi(buffer))) {
-								//global::window_main.send_command((WPARAM)WindowCommand::Update);
+								::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
 								::EndDialog(hwnd, 1);
 								break;
 							}

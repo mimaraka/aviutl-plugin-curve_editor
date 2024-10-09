@@ -10,6 +10,7 @@
 #define IDD_PREF_GENERAL                133
 #define IDD_WARNING_AUTOSAVER           134
 #define IDD_BEZIER_PARAM                135
+#define IDD_PARAM                       135
 #define IDD_MODIFIER_DISCRETIZATION     136
 #define IDD_ID_JUMPTO                   137
 #define IDD_CURVE_CODE                  138
@@ -17,6 +18,7 @@
 #define IDD_MODIFIER_NOISE              153
 #define IDD_MODIFIER_SINE_WAVE          154
 #define IDD_MODIFIER_SQUARE_WAVE        155
+#define IDD_HANDLE_POSITION             156
 #define IDR_MENU_MORE                   384
 #define IDR_MENU_CURVE                  385
 #define IDR_MENU_GRAPH                  386
@@ -42,6 +44,7 @@
 #define IDC_CHECK_ENABLE_HOTKEYS        1030
 #define IDC_CHECK_SHOW_TRACE            1031
 #define IDC_CHECK_BACKGROUND_IMAGE      1032
+#define IDC_CHECK_ENABLE_ANIMATION      1033
 #define IDC_EDIT_SEED                   1048
 #define IDC_SLIDER_AMP                  1049
 #define IDC_STATIC_AMP                  1050
@@ -61,9 +64,10 @@
 #define IDC_BUTTON_BACK                 1063
 #define IDC_BUTTON_FORWARD              1064
 #define IDC_STATIC_RANGE                1067
+#define IDC_EDIT_X                      1068
+#define IDC_EDIT_Y                      1069
 #define IDC_COMBO_LANGUAGE              1280
 #define IDC_COMBO_THEME                 1281
-#define IDC_COMBO_GRAPHIC_METHOD        1282
 #define IDC_EDIT_CURVE_CODE             1408
 #define IDC_EDIT_BEZIER_PARAM           1409
 #define IDC_EDIT_BACKGROUND_IMAGE       1410
@@ -134,6 +138,7 @@
 #define IDS_LABEL_THEME_NAME_DARK       7936
 #define IDS_LABEL_THEME_LIGHT           7937
 #define IDS_LABEL_THEME_NAME_LIGHT      7937
+#define IDS_LABEL_THEME_NAME_SYSTEM     7938
 #define IDS_LABEL_SELECT_BG_IMAGE       8064
 #define IDS_LABEL_MODIFIER_DISCRETIZATION 8192
 #define IDS_LABEL_MODIFIER_NOISE        8193
@@ -177,16 +182,16 @@
 #define ID_BEZIER_HANDLE_ROOT           40161
 #define ID_ID_DELETE_ALL                40163
 #define ID_MORE_RELOAD                  40168
-#define ID_GRAPH_SHOW_X_SCALE           40172
-#define ID_GRAPH_SHOW_Y_SCALE           40173
+#define ID_GRAPH_SHOW_X_LABEL           40176
+#define ID_GRAPH_SHOW_Y_LABEL           40177
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        155
-#define _APS_NEXT_COMMAND_VALUE         40176
-#define _APS_NEXT_CONTROL_VALUE         1068
+#define _APS_NEXT_RESOURCE_VALUE        158
+#define _APS_NEXT_COMMAND_VALUE         40178
+#define _APS_NEXT_CONTROL_VALUE         1069
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

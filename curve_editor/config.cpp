@@ -21,8 +21,8 @@ namespace cved {
 			curve_code_bezier_ = 145674282;
 			curve_code_elastic_ = 2554290;
 			curve_code_bounce_ = 10612242;
-			show_x_scale_ = false;
-			show_y_scale_ = true;
+			show_x_label_ = false;
+			show_y_label_ = true;
 			show_handle_ = true;
 			show_library_ = true;
 			show_velocity_graph_ = false;
@@ -61,19 +61,6 @@ namespace cved {
 			case ThemeId::Dark:
 			case ThemeId::Light:
 				pref_.theme_id = theme_id;
-				return true;
-
-			default:
-				return false;
-			}
-		}
-
-		bool Config::set_graphic_method(mkaul::graphics::Factory::GraphicEngine graphic_engine) noexcept {
-			using GraphicEngine = mkaul::graphics::Factory::GraphicEngine;
-			switch (graphic_engine) {
-			case GraphicEngine::Gdiplus:
-			case GraphicEngine::Directx:
-				pref_.graphic_method = graphic_engine;
 				return true;
 
 			default:
@@ -124,10 +111,6 @@ namespace cved {
 
 		void Config::set_curve_thickness(float curve_thickness) noexcept {
 			pref_.curve_thickness = mkaul::clamp(roundf(curve_thickness * 10.f) * 0.1f, 0.1f, 10.f);
-		}
-
-		void Config::set_curve_drawing_interval(float curve_drawing_interval) noexcept {
-			pref_.curve_drawing_interval = mkaul::clamp(roundf(curve_drawing_interval * 10.f) * 0.1f, 0.1f, 10.f);
 		}
 
 		void Config::set_curve_resolution(uint32_t curve_resolution) noexcept {
@@ -186,8 +169,8 @@ namespace cved {
 				JsonLoader::get_value(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
 				if (data.contains(GET_KEY(show_library_))) set_show_library(data[GET_KEY(show_library_)]);
 				if (data.contains(GET_KEY(show_velocity_graph_))) set_show_velocity_graph(data[GET_KEY(show_velocity_graph_)]);
-				if (data.contains(GET_KEY(show_x_scale_))) set_show_x_scale(data[GET_KEY(show_x_scale_)]);
-				if (data.contains(GET_KEY(show_y_scale_))) set_show_y_scale(data[GET_KEY(show_y_scale_)]);
+				if (data.contains(GET_KEY(show_x_label_))) set_show_x_label(data[GET_KEY(show_x_label_)]);
+				if (data.contains(GET_KEY(show_y_label_))) set_show_y_label(data[GET_KEY(show_y_label_)]);
 				if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
 				if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
 				if (data.contains(GET_KEY(separator_))) set_separator(data[GET_KEY(separator_)]);
@@ -213,8 +196,8 @@ namespace cved {
 				{"curve_code_elastic", editor.editor_graph().curve_elastic()->encode()},
 				{"curve_code_bounce", editor.editor_graph().curve_bounce()->encode()},
 				{GET_KEY(show_library_), show_library_},
-				{GET_KEY(show_x_scale_), show_x_scale_},
-				{GET_KEY(show_y_scale_), show_y_scale_},
+				{GET_KEY(show_x_label_), show_x_label_},
+				{GET_KEY(show_y_label_), show_y_label_},
 				{GET_KEY(show_velocity_graph_), show_velocity_graph_},
 				{GET_KEY(align_handle_), align_handle_},
 				{GET_KEY(ignore_autosaver_warning_), ignore_autosaver_warning_},

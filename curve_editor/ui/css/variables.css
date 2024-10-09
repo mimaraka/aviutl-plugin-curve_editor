@@ -12,6 +12,7 @@
     --color-button: rgb(26, 115, 170);
     --color-button-hover: rgb(23, 91, 133);
     --color-button-active: rgb(17, 76, 113);
+    --color-focus-outline: rgb(109, 109, 109);
     
     --menu-row-height: 36px;
     --separator-height: 12px;
@@ -34,18 +35,16 @@
 
 @media (prefers-color-scheme: dark) {
     :root {
-        /* --color-bg: rgb(27, 27, 27); */
         --color-bg: rgb(33, 33, 33);
-        /* --color-bg-graph: rgb(27, 27, 27); */
         --color-bg-graph: rgb(27, 27, 28);
         --color-bg-editbox: rgb(19, 19, 19);
         --color-handle: rgb(243, 243, 243);
-        /* --color-control: rgb(27, 27, 27); */
         --color-control: rgb(33, 33, 33);
         --color-control-hover: rgb(49, 49, 49);
         --color-control-active: rgb(17, 17, 17);
         --color-content: rgb(228, 228, 228);
         --color-dropdown-arrow: rgb(175, 175, 175);
         --color-content-disabled: rgb(128, 128, 128);
+        --color-focus-outline: rgb(33, 33, 33);
     }
 }

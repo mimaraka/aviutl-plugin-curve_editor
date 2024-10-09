@@ -4,7 +4,6 @@
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "string_table.hpp"
-#include "my_webview2.hpp"
 #include "resource.h"
 
 

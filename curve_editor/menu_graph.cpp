@@ -43,10 +43,10 @@ namespace cved {
 		}
 		minfo_tmp.fState = global::config.get_align_handle() ? MFS_CHECKED : MFS_UNCHECKED;
 		::SetMenuItemInfoA(menu_, ID_GRAPH_ALIGN, FALSE, &minfo_tmp);
-		minfo_tmp.fState = global::config.get_show_x_scale() ? MFS_CHECKED : MFS_UNCHECKED;
-		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOW_X_SCALE, FALSE, &minfo_tmp);
-		minfo_tmp.fState = global::config.get_show_y_scale() ? MFS_CHECKED : MFS_UNCHECKED;
-		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOW_Y_SCALE, FALSE, &minfo_tmp);
+		minfo_tmp.fState = global::config.get_show_x_label() ? MFS_CHECKED : MFS_UNCHECKED;
+		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOW_X_LABEL, FALSE, &minfo_tmp);
+		minfo_tmp.fState = global::config.get_show_y_label() ? MFS_CHECKED : MFS_UNCHECKED;
+		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOW_Y_LABEL, FALSE, &minfo_tmp);
 		minfo_tmp.fState = global::config.get_show_handle() ? MFS_CHECKED : MFS_UNCHECKED;
 		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOWHANDLE, FALSE, &minfo_tmp);
 		minfo_tmp.fState = global::config.get_show_velocity_graph() ? MFS_CHECKED : MFS_UNCHECKED;
