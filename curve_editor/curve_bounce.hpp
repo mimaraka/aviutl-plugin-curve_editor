@@ -39,6 +39,9 @@ namespace cved {
 		void reverse(bool fix_pt = false) noexcept override;
 		bool is_reversed() const noexcept { return reversed_; }
 
+		auto get_cor() const noexcept { return cor_; }
+		auto get_period() const noexcept { return period_; }
+
 		double get_handle_x() const noexcept;
 		double get_handle_y() const noexcept;
 		void set_handle(double x, double y) noexcept;

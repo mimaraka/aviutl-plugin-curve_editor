@@ -3,6 +3,7 @@
 #include <mkaul/window.hpp>
 #include "config.hpp"
 #include "curve_editor.hpp"
+#include "dialog_curve_param.hpp"
 #include "dialog_curve_code.hpp"
 #include "dialog_id_jumpto.hpp"
 #include "enum.hpp"
@@ -159,6 +160,8 @@ namespace cved {
 				return true;
 			}
 			else if (command == "button-param") {
+				CurveParamDialog dialog;
+				dialog.show(hwnd);
 				return true;
 			}
 			else if (command == "drag-and-drop") {

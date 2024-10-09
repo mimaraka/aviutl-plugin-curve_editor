@@ -19,15 +19,23 @@ const createCurvePathData = (startGraphX, endGraphX) => {
 }
 
 // 描画するカーブの内容を更新
-const updateCurvePath = () => {
+const updateCurvePath = (t = null) => {
     const startGraphX = Math.max(0, currentScaleX.invert(0));
     const endGraphX = Math.min(1, currentScaleX.invert(width));
 
     path.datum(createCurvePathData(startGraphX, endGraphX));
-    path.attr('d', d3.line()
+    (t ? path.transition(t) : path).attr('d', d3.line()
         .x(d => originalScaleX(d.x))
         .y(d => originalScaleY(d.y))
         .curve(curve));
+
+    const editMode = config.editMode;
+    if (editMode == 2 || editMode == 3 || editMode == 4) {
+        window.top.postMessage({
+           to: 'panel-editor',
+           command: 'updateParam'
+        });
+}
 }
 
 const updateHandles = () => {

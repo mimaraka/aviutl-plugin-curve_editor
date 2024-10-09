@@ -33,4 +33,14 @@ namespace cved {
 			return;
 		}
 	}
+
+	std::wstring BounceCurveHostObject::get_param(uint32_t curve_ptr) {
+		try {
+			auto curve = try_get<BounceCurve>(curve_ptr);
+			return std::format(L"{:.2f}, {:.2f}", curve->get_cor(), curve->get_period());
+		}
+		catch (const std::runtime_error&) {
+			return L"";
+		}
+	}
 } // namespace cved

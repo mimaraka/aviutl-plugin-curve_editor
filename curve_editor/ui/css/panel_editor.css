@@ -24,7 +24,7 @@ iframe {
     height: calc(100% - var(--menu-row-height));
 }
 
-.menu-buttons-id {
+#buttons-param-id {
     display: flex;
     width: 50%;
     margin: 0;

@@ -16,6 +16,7 @@ namespace cved {
 		static double get_handle_freq_decay_y(uintptr_t curve_ptr);
 		static double get_handle_freq_decay_root_y(uintptr_t curve_ptr);
 		static void set_handle_freq_decay(uintptr_t curve_ptr, double x, double y);
+		static std::wstring get_param(uintptr_t curve_ptr);
 
 	public:
 		ElasticCurveHostObject() {
@@ -29,6 +30,7 @@ namespace cved {
 			register_member(L"getHandleFreqDecayY", DispatchType::Method, get_handle_freq_decay_y);
 			register_member(L"getHandleFreqDecayRootY", DispatchType::Method, get_handle_freq_decay_root_y);
 			register_member(L"setHandleFreqDecay", DispatchType::Method, set_handle_freq_decay);
+			register_member(L"getParam", DispatchType::Method, get_param);
 		}
 	};
 } // namespace cved

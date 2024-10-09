@@ -63,4 +63,14 @@ namespace cved {
 			return;
 		}
 	}
+
+	std::string BezierCurveHostObject::get_param(uintptr_t curve_ptr) {
+		try {
+			auto curve = try_get<BezierCurve>(curve_ptr);
+			return curve->make_param();
+		}
+		catch (const std::runtime_error&) {
+			return 0;
+		}
+	}
 } // namespace cved

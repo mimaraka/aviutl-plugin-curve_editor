@@ -222,7 +222,7 @@
     <ClInclude Include="dialog_about.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="dialog_bezier_param.hpp">
+    <ClInclude Include="dialog_curve_param.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_curve_code.hpp">
@@ -288,7 +288,7 @@
     <ClInclude Include="host_object_editor.hpp">
       <Filter>Header Files\WebView2\Host Object</Filter>
     </ClInclude>
-    <ClInclude Include="host_object_grapheditor.hpp">
+    <ClInclude Include="host_object_editor_graph.hpp">
       <Filter>Header Files\WebView2\Host Object</Filter>
     </ClInclude>
     <ClInclude Include="host_object_curve_bezier.hpp">
@@ -428,7 +428,7 @@
     <ClCompile Include="dialog_about.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
-    <ClCompile Include="dialog_bezier_param.cpp">
+    <ClCompile Include="dialog_curve_param.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_curve_code.cpp">
@@ -485,7 +485,7 @@
     <ClCompile Include="my_webview2.cpp">
       <Filter>Source Files\WebView2</Filter>
     </ClCompile>
-    <ClCompile Include="host_object_grapheditor.cpp">
+    <ClCompile Include="host_object_editor_graph.cpp">
       <Filter>Source Files\WebView2\Host Object</Filter>
     </ClCompile>
     <ClCompile Include="host_object_curve_bezier.cpp">

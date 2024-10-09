@@ -103,4 +103,14 @@ namespace cved {
 			return;
 		}
 	}
+
+	std::wstring ElasticCurveHostObject::get_param(uintptr_t curve_ptr) {
+		try {
+			auto curve = try_get<ElasticCurve>(curve_ptr);
+			return std::format(L"{:.2f}, {:.2f}, {:.2f}", curve->get_amp(), curve->get_freq(), curve->get_decay());
+		}
+		catch (const std::runtime_error&) {
+			return L"";
+		}
+	}
 } // namespace cved

@@ -41,6 +41,10 @@ namespace cved {
 		void reverse(bool fix_pt = false) noexcept override;
 		bool is_reversed() const noexcept { return reversed_; }
 
+		auto get_amp() const noexcept { return amp_; }
+		auto get_freq() const noexcept { return freq_; }
+		auto get_decay() const noexcept { return decay_; }
+
 		double get_handle_amp_left_x() const noexcept { return anchor_start().x; }
 		double get_handle_amp_left_y() const noexcept;
 		double get_handle_amp_right_x() const noexcept { return anchor_end().x; }
