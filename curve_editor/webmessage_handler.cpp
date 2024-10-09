@@ -62,11 +62,10 @@ namespace cved {
 				}
 
 				if (response == IDOK) {
-					// TODO: スクリプトカーブに対応させる
-					auto curve = global::editor.editor_graph().current_curve();
+					auto curve = global::editor.current_curve();
 					if (curve) {
 						curve->clear();
-						webview->ExecuteScript(L"update();", nullptr);
+						// TODO: アップデート処理
 					}
 				}
 				return true;

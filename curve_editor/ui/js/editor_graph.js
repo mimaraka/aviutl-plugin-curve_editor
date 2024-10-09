@@ -77,7 +77,7 @@ const updateCurvePath = (t = null) => {
            to: 'panel-editor',
            command: 'updateParam'
         });
-}
+    }
 }
 
 const updateHandles = () => {
@@ -92,9 +92,9 @@ const updateHandleVisibility = () => {
 window.addEventListener('message', function(event) {
     switch (event.data.command) {
         case 'changeId':
-        updateCurvePath();
-        fit(0);
-        updateHandles();
+            updateCurvePath();
+            fit(0);
+            updateHandles();
             break;
 
         case 'updateCurvePath':
@@ -109,13 +109,13 @@ window.addEventListener('message', function(event) {
             if (handles instanceof NormalHandles && handles.segmentHandlesArray.length > 1) {
                 updateHandles();
                 updateCurvePath();
-    }
+            }
             else {
                 const duration = config.enableAnimation ? 180 : 0;
                 const t = d3.transition().duration(duration).ease(d3.easeCubicOut);
                 handles.updateHandles(t);
                 updateCurvePath(t);
-    }
+            }
             break;
 
         case 'updateAxisLabelVisibility':
@@ -255,18 +255,48 @@ const rightRect = g.append('rect')
     .attr('height', height)
     .attr('class', 'rect');
 
+// ハンドル
 let handles = createHandles(getCurrentCurve(), g, currentScaleX, currentScaleY);
+updateHandleVisibility();
+
+// 軸ラベル(X軸)
+const axisLabelX = scale => d3.axisBottom(scale).tickPadding(-15).tickFormat(d3.format(''));
+const gLabelX = g.append('g')
+    .attr('class', 'axis-label')
+    .attr('transform', 'translate(0,' + String(height - 5) + ')')
+    .style('visibility', config.showXLabel ? 'visible' : 'hidden')
+    .call(axisLabelX(originalScaleX));
 
 // 軸ラベル(Y軸)
 const axisLabelY = scale => d3.axisLeft(scale).tickPadding(-15).tickFormat(d3.format(''));
 const gLabelY = g.append('g')
-    .attr('class', 'axis-label-y')
+    .attr('class', 'axis-label axis-label-y')
+    .style('visibility', config.showYLabel ? 'visible' : 'hidden')
     .call(axisLabelY(originalScaleY));
 
 // Zoom function
 const zoom = d3.zoom()
     .scaleExtent([0.0001, 10000])
     .translateExtent([[-width, -Infinity], [2 * width, Infinity]])
+    .wheelDelta(event => {
+        let ret = -event.deltaY;
+        if (config.invertWheel) {
+            ret *= -1;
+        }
+        if (event.ctrlKey) {
+            ret *= 5;
+        }
+        if (event.shiftKey) {
+            ret *= 0.2;
+        }
+        if (event.deltaMode === 1) {
+            ret *= 0.05;
+        }
+        else if (!event.deltaMode) {
+            ret *= 0.002;
+        }
+        return ret;
+    })
     .on('zoom', event => {
         if (event.transform.k == 1 && event.transform.x == 0 && event.transform.y == 0) {
             if ($('#fit').hasClass('visible')) {
@@ -301,6 +331,7 @@ const zoom = d3.zoom()
             gridY.transition(t).call(axisY.scale(currentScaleY));
             subGridX.transition(t).call(subAxisX.scale(currentScaleX));
             subGridY.transition(t).call(subAxisY.scale(currentScaleY));
+            gLabelX.transition(t).call(axisLabelX(currentScaleX));
             gLabelY.transition(t).call(axisLabelY(currentScaleY));
             zoomContainer.transition(t)
                 .attr('transform', event.transform);
@@ -318,6 +349,7 @@ const zoom = d3.zoom()
             gridY.call(axisY.scale(currentScaleY));
             subGridX.call(subAxisX.scale(currentScaleX));
             subGridY.call(subAxisY.scale(currentScaleY));
+            gLabelX.call(axisLabelX(currentScaleX));
             gLabelY.call(axisLabelY(currentScaleY));
             zoomContainer.attr('transform', event.transform);
             leftRect.attr('width', Math.max(0, currentScaleX(0)));
@@ -355,7 +387,7 @@ const fit = (customDuration = 700) => {
 }
 
 // フィットボタン
-$('#fit').on('click', () => { fit();});
+$('#fit').on('click', () => fit());
 
 $(window).on('keydown', event => {
     switch (event.key) {
@@ -364,9 +396,10 @@ $(window).on('keydown', event => {
         break;
 
     case 'R':
-        // window.top.postMessage({
-        //     command: 'grapheditor-reverse'
-        // }, '*');
+        window.top.postMessage({
+            to: 'native',
+            command: 'grapheditor-reverse'
+        }, '*');
         break;
     }    
 });
@@ -399,6 +432,7 @@ $(window).on('resize', () => {
     gridY.call(axisY.tickSize(-width).scale(currentScaleY));
     subGridX.call(subAxisX.tickSize(-height).scale(currentScaleX)).attr('transform', 'translate(0,' + height + ')');
     subGridY.call(subAxisY.tickSize(-width).scale(currentScaleY));
+    gLabelX.call(axisLabelX(currentScaleX));
     gLabelY.call(axisLabelY(currentScaleY));
     leftRect.attr('width', currentScaleX(0))
         .attr('height', height);

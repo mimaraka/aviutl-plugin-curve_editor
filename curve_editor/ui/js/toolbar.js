@@ -1,19 +1,34 @@
-function setLockedIcon() {
+window.addEventListener('message', function(event) {
+    if (event.data.to == 'toolbar') {
+        switch (event.data.command) {
+            case 'changeEditMode':
+                updateReadButton();
+                break;
+        }
+    }
+});
+
+const setLockedIcon = () => {
     $('#button-lock i').addClass('fa-lock').removeClass('fa-lock-open');
     $('#button-lock').prop('title', 'カーブの編集はロックされています');
     isLocked = true;
 }
 
-function setUnlockedIcon() {
+const setUnlockedIcon = () => {
     $('#button-lock i').addClass('fa-lock-open').removeClass('fa-lock');
     $('#button-lock').prop('title', 'カーブは編集可能です');
     isLocked = false;
+}
+
+const updateReadButton = () => {
+    $('#button-read').prop('disabled', !(config.editMode == 2 || config.editMode == 3 || config.editMode == 4));
 }
 
 isLocked = false;
 
 $(document).ready(() => {
     setUnlockedIcon();
+    updateReadButton();
     if (config.notifyUpdate) {
         fetch('https://api.github.com/repos/mimaraka/aviutl-plugin-curve_editor/releases/latest').then(response => {
             return response.json();

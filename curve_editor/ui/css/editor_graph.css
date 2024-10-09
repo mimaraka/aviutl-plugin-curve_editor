@@ -52,11 +52,11 @@ body {
     opacity: 0.1;
 }
 
-.axis-label-y path,
-.axis-label-y line {
+.axis-label path,
+.axis-label line {
     stroke-width: 0;
 }
-.axis-label-y text {
+.axis-label text {
     fill: var(--color-content);
     font: 500 11px
         system-ui,
@@ -71,6 +71,9 @@ body {
         'Helvetica Neue',
         sans-serif;
     user-select: none;
+}
+
+.axis-label-y text {
     text-anchor: start;
 }
 
