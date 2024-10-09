@@ -1,8 +1,8 @@
 #pragma once
 
+#include "curve_graph.hpp"
 #include "menu.hpp"
 #include <optional>
-#include "curve_graph.hpp"
 
 
 

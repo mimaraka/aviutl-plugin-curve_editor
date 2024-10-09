@@ -1,8 +1,8 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
-#include <mkaul/color.hpp>
 #include "enum.hpp"
+#include <mkaul/color.hpp>
+#include <nlohmann/json.hpp>
 
 
 

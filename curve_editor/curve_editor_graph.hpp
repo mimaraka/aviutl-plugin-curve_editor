@@ -1,18 +1,18 @@
 #pragma once
 
 #define NOMINMAX
-#include <vector>
-#include <cereal/types/vector.hpp>
 #include "curve.hpp"
+#include "curve_bezier.hpp"
+#include "curve_bounce.hpp"
+#include "curve_elastic.hpp"
 #include "curve_graph.hpp"
 #include "curve_graph_numeric.hpp"
+#include "curve_linear.hpp"
 #include "curve_normal.hpp"
 #include "curve_value.hpp"
-#include "curve_bezier.hpp"
-#include "curve_elastic.hpp"
-#include "curve_bounce.hpp"
-#include "curve_linear.hpp"
 #include "enum.hpp"
+#include <cereal/types/vector.hpp>
+#include <vector>
 
 
 

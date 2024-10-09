@@ -1,7 +1,7 @@
-#include "modifier_sine_wave.hpp"
-#include <numbers>
 #include "curve_graph.hpp"
+#include "modifier_sine_wave.hpp"
 #include "string_table.hpp"
+#include <numbers>
 
 
 

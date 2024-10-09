@@ -1,9 +1,9 @@
-#include "dialog_about.hpp"
-#include <format>
-#include <CommCtrl.h>
 #include "constants.hpp"
-#include "string_table.hpp"
+#include "dialog_about.hpp"
 #include "resource.h"
+#include "string_table.hpp"
+#include <CommCtrl.h>
+#include <format>
 
 
 

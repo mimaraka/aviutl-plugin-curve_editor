@@ -1,7 +1,7 @@
+#include "constants.hpp"
 #include "host_object_config.hpp"
 #include <mkaul/version.hpp>
 #include <strconv2.h>
-#include "constants.hpp"
 
 
 

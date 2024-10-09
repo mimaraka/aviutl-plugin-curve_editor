@@ -1,11 +1,11 @@
-#include "menu_curve_segment.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_modifier.hpp"
 #include "enum.hpp"
 #include "global.hpp"
-#include "string_table.hpp"
+#include "menu_curve_segment.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 

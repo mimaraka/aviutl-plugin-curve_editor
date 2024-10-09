@@ -1,5 +1,5 @@
-#include "host_object_curve_normal.hpp"
 #include "curve_normal.hpp"
+#include "host_object_curve_normal.hpp"
 
 
 

@@ -1,7 +1,7 @@
 #include "constants.hpp"
+#include "curve_bezier.hpp"
 #include "curve_editor.hpp"
 #include "curve_editor_graph.hpp"
-#include "curve_bezier.hpp"
 #include <lua.hpp>
 
 

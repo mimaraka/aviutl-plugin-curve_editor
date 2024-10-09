@@ -1,5 +1,5 @@
-#include "host_object_curve_elastic.hpp"
 #include "curve_elastic.hpp"
+#include "host_object_curve_elastic.hpp"
 
 
 

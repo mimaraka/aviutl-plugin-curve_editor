@@ -1,5 +1,5 @@
-#include "dialog_warning_autosaver.hpp"
 #include "config.hpp"
+#include "dialog_warning_autosaver.hpp"
 #include "resource.h"
 
 

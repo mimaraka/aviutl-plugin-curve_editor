@@ -1,7 +1,7 @@
 #pragma once
 
-#include <mkaul/host_object.hpp>
 #include "curve_editor.hpp"
+#include <mkaul/host_object.hpp>
 
 
 

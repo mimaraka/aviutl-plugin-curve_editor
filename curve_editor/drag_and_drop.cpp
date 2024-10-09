@@ -1,6 +1,6 @@
-#include "drag_and_drop.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
+#include "drag_and_drop.hpp"
 #include "global.hpp"
 #include "util.hpp"
 #include <mkaul/util_hook.hpp>

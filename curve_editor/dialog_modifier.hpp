@@ -1,8 +1,8 @@
 #pragma once
 
+#include "curve_graph.hpp"
 #include "dialog.hpp"
 #include <type_traits>
-#include "curve_graph.hpp"
 
 
 

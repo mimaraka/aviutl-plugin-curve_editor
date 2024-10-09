@@ -1,5 +1,5 @@
-#include "curve_editor_graph.hpp"
 #include "config.hpp"
+#include "curve_editor_graph.hpp"
 #include "enum.hpp"
 
 

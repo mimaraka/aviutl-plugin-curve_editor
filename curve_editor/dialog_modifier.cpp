@@ -1,15 +1,15 @@
+#include "constants.hpp"
 #include "dialog_modifier.hpp"
 #include "dialog_modifier_discretization.hpp"
 #include "dialog_modifier_noise.hpp"
 #include "dialog_modifier_sine_wave.hpp"
 #include "dialog_modifier_square_wave.hpp"
-#include "modifier.hpp"
-#include "constants.hpp"
 #include "enum.hpp"
 #include "global.hpp"
+#include "modifier.hpp"
 #include "my_messagebox.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 

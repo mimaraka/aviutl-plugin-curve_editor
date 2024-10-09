@@ -1,16 +1,16 @@
-#include "filter_init.hpp"
-#include <CommCtrl.h>
-#include <mkaul/aviutl.hpp>
-#include <strconv2.h>
 #include "actctx_helper.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_warning_autosaver.hpp"
 #include "exedit_hook.hpp"
+#include "filter_init.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "resource.h"
 #include "string_table.hpp"
+#include <CommCtrl.h>
+#include <mkaul/aviutl.hpp>
+#include <strconv2.h>
 
 
 

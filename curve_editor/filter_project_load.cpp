@@ -1,12 +1,12 @@
-#include "filter_project_load.hpp"
-#include <sstream>
-#include <cereal/archives/binary.hpp>
 #include "actctx_helper.hpp"
 #include "constants.hpp"
 #include "curve_editor.hpp"
+#include "filter_project_load.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "string_table.hpp"
+#include <cereal/archives/binary.hpp>
+#include <sstream>
 
 
 

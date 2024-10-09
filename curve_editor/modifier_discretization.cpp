@@ -1,6 +1,6 @@
+#include "curve_graph.hpp"
 #include "modifier_discretization.hpp"
 #include "string_table.hpp"
-#include "curve_graph.hpp"
 
 
 

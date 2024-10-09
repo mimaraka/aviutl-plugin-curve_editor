@@ -1,7 +1,7 @@
 #include "dialog_modifier_discretization.hpp"
-#include <Commctrl.h>
 #include "global.hpp"
 #include "resource.h"
+#include <Commctrl.h>
 
 
 

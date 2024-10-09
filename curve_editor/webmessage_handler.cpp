@@ -1,19 +1,19 @@
+#include "config.hpp"
+#include "curve_editor.hpp"
+#include "dialog_curve_code.hpp"
+#include "dialog_curve_param.hpp"
+#include "dialog_id_jumpto.hpp"
+#include "enum.hpp"
+#include "menu_curve_segment.hpp"
+#include "menu_graph.hpp"
+#include "menu_others.hpp"
+#include "my_messagebox.hpp"
+#include "my_webview2.hpp"
+#include "string_table.hpp"
+#include "util.hpp"
 #include "webmessage_handler.hpp"
 #include <mkaul/util.hpp>
 #include <mkaul/window.hpp>
-#include "config.hpp"
-#include "curve_editor.hpp"
-#include "dialog_curve_param.hpp"
-#include "dialog_curve_code.hpp"
-#include "dialog_id_jumpto.hpp"
-#include "enum.hpp"
-#include "menu_graph.hpp"
-#include "menu_curve_segment.hpp"
-#include "menu_others.hpp"
-#include "my_messagebox.hpp"
-#include "string_table.hpp"
-#include "util.hpp"
-#include "my_webview2.hpp"
 
 
 

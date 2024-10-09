@@ -1,13 +1,13 @@
-#include "menu_others.hpp"
-#include <format>
 #include "config.hpp"
 #include "constants.hpp"
-#include "global.hpp"
 #include "dialog_about.hpp"
 #include "dialog_pref.hpp"
+#include "global.hpp"
+#include "menu_others.hpp"
+#include "resource.h"
 #include "string_table.hpp"
 #include "util.hpp"
-#include "resource.h"
+#include <format>
 
 
 

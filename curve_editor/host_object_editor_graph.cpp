@@ -1,6 +1,6 @@
+#include "config.hpp"
 #include "host_object_editor_graph.hpp"
 #include <strconv2.h>
-#include "config.hpp"
 
 
 

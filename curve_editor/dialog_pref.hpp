@@ -1,11 +1,11 @@
 #pragma once
 
 #include "dialog.hpp"
-#include <vector>
-#include "dialog_pref_general.hpp"
 #include "dialog_pref_appearance.hpp"
 #include "dialog_pref_behavior.hpp"
 #include "dialog_pref_editing.hpp"
+#include "dialog_pref_general.hpp"
+#include <vector>
 
 
 

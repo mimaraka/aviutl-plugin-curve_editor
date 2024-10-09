@@ -1,10 +1,10 @@
-#include "menu_graph.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_modifier.hpp"
 #include "global.hpp"
-#include "string_table.hpp"
+#include "menu_graph.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 

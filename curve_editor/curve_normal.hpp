@@ -1,8 +1,8 @@
 #pragma once
 
 #include "curve_graph.hpp"
-#include <cereal/types/vector.hpp>
 #include "enum.hpp"
+#include <cereal/types/vector.hpp>
 
 
 

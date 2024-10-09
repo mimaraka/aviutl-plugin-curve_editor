@@ -1,6 +1,6 @@
-#include "curve_editor.hpp"
 #include "config.hpp"
 #include "constants.hpp"
+#include "curve_editor.hpp"
 
 
 

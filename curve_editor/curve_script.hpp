@@ -2,8 +2,8 @@
 
 #include "curve.hpp"
 #include <cereal/archives/binary.hpp>
-#include <cereal/types/string.hpp>
 #include <cereal/types/polymorphic.hpp>
+#include <cereal/types/string.hpp>
 
 
 

@@ -1,5 +1,5 @@
-#include "host_object_curve_graph.hpp"
 #include "curve_graph.hpp"
+#include "host_object_curve_graph.hpp"
 
 
 

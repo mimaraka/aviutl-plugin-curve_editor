@@ -1,11 +1,11 @@
 #pragma once
 
 #include "curve.hpp"
-#include <cereal/types/base_class.hpp>
-#include <cereal/types/vector.hpp>
-#include <cereal/archives/binary.hpp>
-#include <cereal/types/polymorphic.hpp>
 #include "modifier.hpp"
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/base_class.hpp>
+#include <cereal/types/polymorphic.hpp>
+#include <cereal/types/vector.hpp>
 
 
 

@@ -1,12 +1,12 @@
+#include "config.hpp"
 #include "dialog_pref_appearance.hpp"
+#include "enum.hpp"
+#include "global.hpp"
+#include "resource.h"
+#include "string_table.hpp"
 #include <Commctrl.h>
 #include <format>
 #include <string_view>
-#include "config.hpp"
-#include "enum.hpp"
-#include "global.hpp"
-#include "string_table.hpp"
-#include "resource.h"
 
 
 

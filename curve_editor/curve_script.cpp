@@ -1,6 +1,6 @@
 #include "curve_script.hpp"
-#include <sol/sol.hpp>
 #include <FastNoiseLite.h>
+#include <sol/sol.hpp>
 
 
 

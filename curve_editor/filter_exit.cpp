@@ -1,6 +1,6 @@
+#include "config.hpp"
 #include "filter_exit.hpp"
 #include <mkaul/graphics.hpp>
-#include "config.hpp"
 
 
 

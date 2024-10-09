@@ -1,11 +1,11 @@
 #pragma once
 
-#include <wil/com.h>
-#include <WebView2.h>
-#include <aviutl.hpp>
-#include <mkaul/window.hpp>
-#include <mkaul/exedit.hpp>
 #include "curve.hpp"
+#include <aviutl.hpp>
+#include <mkaul/exedit.hpp>
+#include <mkaul/window.hpp>
+#include <WebView2.h>
+#include <wil/com.h>
 
 
 

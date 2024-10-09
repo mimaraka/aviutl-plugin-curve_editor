@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-#include <functional>
+#include <cereal/cereal.hpp>
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/string.hpp>
-#include <cereal/cereal.hpp>
+#include <functional>
+#include <string>
 
 
 

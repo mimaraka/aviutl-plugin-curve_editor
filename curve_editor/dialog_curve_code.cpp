@@ -1,11 +1,11 @@
-#include "dialog_curve_code.hpp"
-#include <regex>
 #include "config.hpp"
 #include "curve_editor.hpp"
+#include "dialog_curve_code.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
+#include <regex>
 
 
 

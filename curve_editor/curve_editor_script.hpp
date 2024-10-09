@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include "curve_script.hpp"
+#include <vector>
 
 
 

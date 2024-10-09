@@ -1,7 +1,7 @@
 #include "dialog_modifier_square_wave.hpp"
-#include <format>
-#include <Commctrl.h>
 #include "resource.h"
+#include <Commctrl.h>
+#include <format>
 
 
 

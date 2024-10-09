@@ -1,9 +1,9 @@
-#include "dialog_pref_editing.hpp"
 #include "config.hpp"
+#include "dialog_pref_editing.hpp"
 #include "enum.hpp"
 #include "my_messagebox.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 

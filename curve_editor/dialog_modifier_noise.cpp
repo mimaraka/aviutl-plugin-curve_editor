@@ -1,7 +1,7 @@
 #include "dialog_modifier_noise.hpp"
-#include <Commctrl.h>
 #include "global.hpp"
 #include "resource.h"
+#include <Commctrl.h>
 
 
 

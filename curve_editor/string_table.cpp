@@ -1,5 +1,5 @@
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 

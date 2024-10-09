@@ -1,10 +1,10 @@
 #include "config.hpp"
-#include <fstream>
 #include "constants.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
 #include "json_loader.hpp"
 #include "string_table.hpp"
+#include <fstream>
 
 
 

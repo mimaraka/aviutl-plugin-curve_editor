@@ -1,10 +1,10 @@
-#include "menu_id.hpp"
 #include "curve_editor.hpp"
 #include "dialog_id_jumpto.hpp"
 #include "global.hpp"
+#include "menu_id.hpp"
 #include "my_messagebox.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 

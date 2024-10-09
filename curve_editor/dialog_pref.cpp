@@ -1,10 +1,10 @@
-#include "dialog_pref.hpp"
 #include "config.hpp"
+#include "dialog_pref.hpp"
 #include "enum.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 

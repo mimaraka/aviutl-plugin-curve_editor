@@ -1,8 +1,8 @@
-#include "dialog_pref_general.hpp"
 #include "config.hpp"
+#include "dialog_pref_general.hpp"
 #include "enum.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 
