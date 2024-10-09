@@ -96,6 +96,7 @@ namespace cved {
 								);
 
 								is_ready_ = true;
+								update_color_scheme();
 								add_host_object<GraphEditorHostObject>(L"graphEditor");
 								add_host_object<ScriptEditorHostObject>(L"scriptEditor");
 								add_host_object<ConfigHostObject>(L"config");
@@ -157,6 +158,29 @@ namespace cved {
 	void MyWebView2::on_move() noexcept {
 		if (is_ready_) {
 			controller_->NotifyParentWindowPositionChanged();
+		}
+	}
+
+	void MyWebView2::update_color_scheme() noexcept {
+		wil::com_ptr<ICoreWebView2_22> webview2_22 = webview_.try_query<ICoreWebView2_22>();
+		if (webview2_22) {
+			wil::com_ptr<ICoreWebView2Profile> profile;
+			webview2_22->get_Profile(&profile);
+
+			COREWEBVIEW2_PREFERRED_COLOR_SCHEME color_scheme;
+			switch (global::config.get_theme_id()) {
+			case ThemeId::Light:
+				color_scheme = COREWEBVIEW2_PREFERRED_COLOR_SCHEME_LIGHT;
+				break;
+
+			case ThemeId::Dark:
+				color_scheme = COREWEBVIEW2_PREFERRED_COLOR_SCHEME_DARK;
+				break;
+
+			default:
+				color_scheme = COREWEBVIEW2_PREFERRED_COLOR_SCHEME_AUTO;
+			}
+			profile->put_PreferredColorScheme(color_scheme);
 		}
 	}
 } // namespace cved

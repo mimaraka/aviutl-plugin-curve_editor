@@ -149,6 +149,10 @@ namespace cved {
 				::SetCursor(::LoadCursorA(fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
 				dnd.drag();
 				break;
+
+			case WindowCommand::UpdateColorScheme:
+				my_webview.update_color_scheme();
+				break;
 			}
 			break;
 		}

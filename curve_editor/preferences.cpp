@@ -8,7 +8,7 @@
 namespace cved {
 	void Preferences::reset() noexcept {
 		language = Language::Automatic;
-		theme_id = ThemeId::Dark;
+		theme_id = ThemeId::System;
 		curve_color = mkaul::ColorF{ 136, 176, 196 };
 		curve_thickness = 1.2f;
 		curve_drawing_interval = 1.f;

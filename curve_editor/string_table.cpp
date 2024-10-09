@@ -173,6 +173,10 @@ namespace cved {
 					id = IDS_LABEL_TOOLTIP_CURRENT_ID;
 					break;
 
+				case StringId::LabelThemeNameSystem:
+					id = IDS_LABEL_THEME_NAME_SYSTEM;
+					break;
+
 				case StringId::LabelThemeNameDark:
 					id = IDS_LABEL_THEME_NAME_DARK;
 					break;

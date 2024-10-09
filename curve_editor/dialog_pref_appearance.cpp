@@ -36,7 +36,7 @@ namespace cved {
 				hwnd_combo_theme_,
 				CB_ADDSTRING,
 				NULL,
-				(LPARAM)global::string_table[(StringId)((uint32_t)StringId::LabelThemeNameDark + i)]
+				(LPARAM)global::string_table[(StringId)((uint32_t)StringId::LabelThemeNameSystem + i)]
 			);
 		}
 
@@ -164,7 +164,7 @@ namespace cved {
 					global::config.set_bg_image_path(std::filesystem::path(buffer));
 				}
 				if (global::config.get_set_bg_image()) {
-					//global::window_grapheditor.send_command((WPARAM)WindowCommand::SetBackgroundImage);
+				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateColorScheme, NULL);
 				}
 				return TRUE;
 

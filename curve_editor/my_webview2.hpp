@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <format>
 #include <functional>
 #include <wrl.h>
 #include <wil/com.h>
@@ -32,6 +33,30 @@ namespace cved {
 			object.query_to<IDispatch>(&var_object.pdispVal);
 			return webview_->AddHostObjectToScript(name.c_str(), &var_object);
 		}
+
+		template <typename... Args>
+		void post_message(const std::wstring& to, const std::wstring& command, Args... args) {
+			static_assert(sizeof...(Args) % 2 == 0, "The number of arguments must be even.");
+			if constexpr (0 < sizeof...(Args)) {
+				static_assert(std::is_same_v<const std::wstring&, Args...>
+					or std::is_same_v<std::wstring, Args...>
+					or std::is_same_v <const wchar_t*, Args... >,
+					"The type of arguments must be std::wstring or std::wstring& or const wchar_t*."
+				);
+			}
+			
+			std::vector<std::wstring> arg_list = { args... };
+			std::wstring options = L"";
+			for (size_t i = 0; i < arg_list.size(); i += 2) {
+				std::wstring key = arg_list[i];
+				std::wstring value = arg_list[i + 1];
+				options += std::format(L",\"{}\":\"{}\"", key, value);
+			}
+
+			webview_->PostWebMessageAsJson(
+				std::format(L"{{\"to\":\"{}\",\"command\":\"{}\"{}}}", to, command, options).c_str()
+			);
+		}
 		
 		bool init(HWND hwnd, std::function<void(MyWebView2*)> after_callback);
 		void destroy() noexcept;
@@ -42,5 +67,6 @@ namespace cved {
 		void execute_script(const std::wstring& script);
 		void put_bounds(const mkaul::WindowRectangle& bounds);
 		void on_move() noexcept;
+		void update_color_scheme() noexcept;
 	};
 } // namespace cved

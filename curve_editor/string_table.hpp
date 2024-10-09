@@ -50,6 +50,7 @@ namespace cved {
 				LabelTooltipIdBack,
 				LabelTooltipIdNext,
 				LabelTooltipCurrentId,
+				LabelThemeNameSystem,
 				LabelThemeNameDark,
 				LabelThemeNameLight,
 				LabelPreferenceGeneral,

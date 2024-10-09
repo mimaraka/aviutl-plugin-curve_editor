@@ -57,12 +57,10 @@ namespace cved {
 
 		bool Config::set_theme_id(ThemeId theme_id) noexcept {
 			switch (theme_id) {
+			case ThemeId::System:
 			case ThemeId::Dark:
-				pref_.theme_id = ThemeId::Dark;
-				return true;
-
 			case ThemeId::Light:
-				pref_.theme_id = ThemeId::Light;
+				pref_.theme_id = theme_id;
 				return true;
 
 			default:
