@@ -184,7 +184,7 @@ namespace cved {
 				auto curve = global::editor.editor_graph().current_curve();
 				if (curve) {
 					curve->reverse();
-					//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+					::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
 				}
 				return true;
 			}

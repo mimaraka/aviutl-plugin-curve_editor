@@ -52,13 +52,13 @@ namespace cved {
 		ChangeColor					= 0x0b16,
 		LoadConfig					= 0x0b18,
 		SaveConfig					= 0x0b19,
-		SetBackgroundImage			= 0x0b1d,
 		Reload						= 0x0b1e,
 		StartDnd					= 0x0b1f,
 		UpdateColorScheme			= 0x0b20,
 		UpdateHandlePos				= 0x0b21,
 		UpdateAxisLabelVisibility	= 0x0b22,
 		UpdateHandleVisibility		= 0x0b23,
+		ApplyPreferences			= 0x0b24
 	};
 
 	enum class ThemeId {

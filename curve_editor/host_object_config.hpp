@@ -27,6 +27,7 @@ namespace cved {
 			register_member(L"backgroundImageOpacity", DispatchType::PropertyGet, +[]() { return global::config.get_bg_image_opacity(); });
 			register_member(L"curveResolution", DispatchType::PropertyGet, +[] { return global::config.get_curve_resolution(); });
 			register_member(L"curveColor", DispatchType::PropertyGet, get_curve_color);
+			register_member(L"curveThickness", DispatchType::PropertyGet, +[] { return global::config.get_curve_thickness(); });
 			register_member(L"notifyUpdate", DispatchType::PropertyGet, +[] { return global::config.get_notify_update(); });
 			// TODO: configに載せるべきか？
 			register_member(L"isLatestVersion", DispatchType::Method, is_latest_version);

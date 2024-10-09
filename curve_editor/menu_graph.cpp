@@ -76,29 +76,28 @@ namespace cved {
 			auto curve = global::editor.editor_graph().current_curve();
 			if (curve) {
 				curve->reverse();
-				//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
 			}
 			break;
 		}
 
 		case ID_GRAPH_ALIGN:
 			global::config.set_align_handle(!global::config.get_align_handle());
-			//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
 			break;
 
-		case ID_GRAPH_SHOW_X_SCALE:
-			global::config.set_show_x_scale(!global::config.get_show_x_scale());
-			//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+		case ID_GRAPH_SHOW_X_LABEL:
+			global::config.set_show_x_label(!global::config.get_show_x_label());
+			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateAxisLabelVisibility, NULL);
 			break;
 
-		case ID_GRAPH_SHOW_Y_SCALE:
-			global::config.set_show_y_scale(!global::config.get_show_y_scale());
-			//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+		case ID_GRAPH_SHOW_Y_LABEL:
+			global::config.set_show_y_label(!global::config.get_show_y_label());
+			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateAxisLabelVisibility, NULL);
 			break;
 
 		case ID_GRAPH_SHOWHANDLE:
 			global::config.set_show_handle(!global::config.get_show_handle());
-			//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandleVisibility, NULL);
 			break;
 
 		case ID_GRAPH_VELOCITY:

@@ -2,12 +2,54 @@ const curve = d3.curveCatmullRom.alpha(0.5);
 let width = document.documentElement.clientWidth;
 let height = document.documentElement.clientHeight;
 
+
+class ImageObject {
+    #image;
+    #d3Image;
+    constructor() {
+        this.#image = new Image();
+        this.#d3Image = this.#d3Image = g.append('svg:image')
+                .attr('opacity', config.backgroundImageOpacity);
+        this.#image.onload = () => {
+            this.resize(width, height);
+        };
+    }
+
+    load(src) {
+        this.#d3Image.attr('xlink:href', src);
+        this.#image.src = src;
+    }
+
+    resize(w, h) {
+        if (this.#d3Image) {
+            const imageWidth = this.#image.width;
+            const imageHeight = this.#image.height;
+            const imageAspectRatio = imageWidth / imageHeight;
+            const aspectRatio = w / h;
+            if (aspectRatio < imageAspectRatio) {
+                const scale = h / imageHeight;
+                this.#d3Image
+                    .attr('width', null)
+                    .attr('height', h)
+                    .attr('x', (w - imageWidth * scale) / 2)
+                    .attr('y', 0);
+            } else {
+                const scale = w / imageWidth;
+                this.#d3Image
+                    .attr('width', w)
+                    .attr('height', null)
+                    .attr('x', 0)
+                    .attr('y', (h - imageHeight * scale) / 2);
+            }
+        }
+    }
+}
+
 // D3.js用のデータを生成
 const createCurvePathData = (startGraphX, endGraphX) => {
     const n = config.curveResolution;
     let data = []
-    const mode = config.editMode;
-    const yArray = graphEditor.getCurveValueArray(mode, startGraphX, 0, endGraphX, 1, n);
+    const yArray = graphEditor.getCurveValueArray(config.editMode, startGraphX, 0, endGraphX, 1, n);
     for (let i = 0; i < n; i++) {
         const x = startGraphX + (endGraphX - startGraphX) / (n - 1) * i;
         data.push({
@@ -43,17 +85,54 @@ const updateHandles = () => {
     handles = createHandles(getCurrentCurve(), g, currentScaleX, currentScaleY);
 }
 
+const updateHandleVisibility = () => {
+    $('.anchor, .handle, .handle-line').css('visibility', config.showHandle ? 'visible' : 'hidden');
+}
+
 window.addEventListener('message', function(event) {
-    if (event.data.command === 'changeId') {
+    switch (event.data.command) {
+        case 'changeId':
         updateCurvePath();
         fit(0);
         updateHandles();
+            break;
+
+        case 'updateCurvePath':
+            updateCurvePath();
+            break;
+
+        case 'updateHandles':
+            updateHandles();
+            break;
+
+        case 'updateHandlePos':
+            if (handles instanceof NormalHandles && handles.segmentHandlesArray.length > 1) {
+                updateHandles();
+                updateCurvePath();
     }
-    else if (event.data.command === 'updateCurvePath') {
-        updateCurvePath();
+            else {
+                const duration = config.enableAnimation ? 180 : 0;
+                const t = d3.transition().duration(duration).ease(d3.easeCubicOut);
+                handles.updateHandles(t);
+                updateCurvePath(t);
     }
-    else if (event.data.command === 'updateHandles') {
-        updateHandles();
+            break;
+
+        case 'updateAxisLabelVisibility':
+            gLabelX.style('visibility', config.showXLabel ? 'visible' : 'hidden');
+            gLabelY.style('visibility', config.showYLabel ? 'visible' : 'hidden');
+            break;
+
+        case 'updateHandleVisibility':
+            updateHandleVisibility();
+            break;
+
+        case 'applyPreferences':
+            image.load(config.setBackgroundImage ? config.backgroundImagePath : '');
+            path.attr('stroke', config.curveColor)
+                .attr('stroke-width', config.curveThickness);
+            updateCurvePath();
+            break;
     }
 });
 
@@ -89,12 +168,9 @@ const svg = d3.select('#canvas')
 
 const g = svg.append('g');
 
-let image;
+let image = new ImageObject();
 if (config.setBackgroundImage) {
-    image = g.append('svg:image')
-        .attr('xlink:href', config.backgroundImagePath)
-        .attr('opacity', config.backgroundImageOpacity)
-        .attr('width', width);
+    image.load(config.backgroundImagePath);
 }
 
 let graphMarginX = Math.min(50, width * 0.1, height * 0.1);
@@ -160,7 +236,7 @@ const path = zoomContainer.append('path')
     .datum(createCurvePathData(0, 1))
     .attr('fill', 'none')
     .attr('stroke', config.curveColor)
-    .attr('stroke-width', 1.2)
+    .attr('stroke-width', config.curveThickness)
     .attr('d', line);
 
 // 範囲外領域描画用の矩形(左)
@@ -229,7 +305,7 @@ const zoom = d3.zoom()
             zoomContainer.transition(t)
                 .attr('transform', event.transform);
             path.transition(t)
-                .attr('stroke-width', 1.2 / event.transform.k);
+                .attr('stroke-width', config.curveThickness / event.transform.k);
             leftRect.transition(t)
                 .attr('width', Math.max(0, currentScaleX(0)));
             rightRect.transition(t)
@@ -275,7 +351,7 @@ const fit = (customDuration = 700) => {
     svg.transition(t)
         .call(zoom.transform, d3.zoomIdentity);
     path.transition(t)
-        .attr('stroke-width', 1.2);
+        .attr('stroke-width', config.curveThickness);
 }
 
 // フィットボタン
@@ -335,5 +411,5 @@ $(window).on('resize', () => {
         .x(d => originalScaleX(d.x))
         .y(d => originalScaleY(d.y))
         .curve(curve));
-    image?.attr('width', width);
+    image.resize(width, height);
 });

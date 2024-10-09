@@ -100,6 +100,7 @@ namespace cved {
 			::SendMessageA(category.hwnd, WM_COMMAND, (WPARAM)WindowCommand::SaveConfig, NULL);
 		}
 		global::config.save_json();
+		::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::ApplyPreferences, NULL);
 	}
 
 
@@ -117,7 +118,6 @@ namespace cved {
 			switch (LOWORD(wparam)) {
 			case IDOK:
 				save_config();
-				//global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				::EndDialog(hwnd, IDOK);
 				return TRUE;
 
@@ -127,7 +127,6 @@ namespace cved {
 
 			case IDC_BUTTON_APPLY:
 				save_config();
-				//global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				return TRUE;
 
 			case IDC_BUTTON_RESET:
@@ -140,7 +139,6 @@ namespace cved {
 				if (resp == IDOK) {
 					global::config.reset_pref();
 					load_config();
-					//global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				}
 				return TRUE;
 			}

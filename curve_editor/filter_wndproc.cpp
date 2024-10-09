@@ -137,9 +137,6 @@ namespace cved {
 			case WindowCommand::RedrawAviutl:
 				return TRUE;
 
-			case WindowCommand::Update:
-				break;
-
 			case WindowCommand::Reload:
 				my_webview.reload();
 				break;
@@ -150,8 +147,21 @@ namespace cved {
 				dnd.drag();
 				break;
 
-			case WindowCommand::UpdateColorScheme:
+			case WindowCommand::UpdateHandlePos:
+				my_webview.post_message(L"editor-graph", L"updateHandlePos");
+				break;
+
+			case WindowCommand::UpdateAxisLabelVisibility:
+				my_webview.post_message(L"editor-graph", L"updateAxisLabelVisibility");
+				break;
+
+			case WindowCommand::UpdateHandleVisibility:
+				my_webview.post_message(L"editor-graph", L"updateHandleVisibility");
+				break;
+
+			case WindowCommand::ApplyPreferences:
 				my_webview.update_color_scheme();
+				my_webview.post_message(L"editor-graph", L"applyPreferences");
 				break;
 			}
 			break;
