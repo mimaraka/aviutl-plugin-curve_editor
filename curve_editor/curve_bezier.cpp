@@ -274,14 +274,14 @@ namespace cved {
 		x2 = (double)ix2 * 0.01;
 		y2 = (double)iy2 * 0.01;
 
-		handle_left_ = {
-			anchor_start().x + width * x1,
-			anchor_start().y + height * y1
+		handle_left_ = mkaul::Point{
+			width * x1,
+			height * y1
 		};
 
-		handle_right_ = {
-			anchor_start().x + width * x2,
-			anchor_start().y + height * y2
+		handle_right_ = mkaul::Point{
+			width * (x2 - 1.),
+			height * (y2 - 1.)
 		};
 
 		return true;
