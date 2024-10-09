@@ -1,29 +1,29 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
-#include <mkaul/graphics.hpp>
 #include "enum.hpp"
+#include <mkaul/color.hpp>
+#include <nlohmann/json.hpp>
 
 
 
 namespace cved {
 	struct Preferences {
-		Language language = Language::Automatic;
-		ThemeId theme_id = ThemeId::Dark;
-		mkaul::ColorF curve_color = mkaul::ColorF{};
-		float curve_thickness = 0.f;
-		float curve_drawing_interval = 0.f;
-		mkaul::graphics::Factory::GraphicEngine graphic_method = mkaul::graphics::Factory::GraphicEngine::Directx;
-		std::filesystem::path bg_image_path = "";
-		float bg_image_opacity = 0.f;
-		bool show_popup = false;
-		bool show_trace = false;
-		bool auto_copy = false;
-		bool auto_apply = false;
-		bool reverse_wheel = false;
-		bool notify_update = false;
-		bool set_bg_image = false;
-		bool enable_hotkeys = false;
+		Language language;
+		ThemeId theme_id;
+		mkaul::ColorF curve_color;
+		float curve_thickness;
+		uint32_t curve_resolution;
+		std::filesystem::path bg_image_path;
+		float bg_image_opacity;
+		bool show_popup;
+		bool show_trace;
+		bool auto_copy;
+		bool auto_apply;
+		bool invert_wheel;
+		bool notify_update;
+		bool set_bg_image;
+		bool enable_hotkeys;
+		bool enable_animation;
 
 		void reset() noexcept;
 		void from_json(const nlohmann::json& data) noexcept;

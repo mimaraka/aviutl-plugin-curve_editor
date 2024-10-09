@@ -2,9 +2,8 @@
 
 #include "enum.hpp"
 #include "preferences.hpp"
-#include "theme.hpp"
 #include <mkaul/color.hpp>
-#include <mkaul/graphics.hpp>
+#include <mkaul/util.hpp>
 
 
 
@@ -12,53 +11,20 @@ namespace cved {
 	namespace global {
 		inline class Config {
 		private:
-			static constexpr Theme THEME_DARK = {
-				.bg						= mkaul::ColorF{27, 27, 27},
-				.bg_graph				= mkaul::ColorF{27, 27, 27},
-				.bg_editbox				= mkaul::ColorF{19, 19, 19},
-				.separator				= mkaul::ColorF{240, 240, 240},
-				.curve_trace			= mkaul::ColorF{57, 57, 57},
-				.curve_velocity			= mkaul::ColorF{95, 95, 95},
-				.curve_preset			= mkaul::ColorF{240, 240, 240},
-				.handle					= mkaul::ColorF{243, 243, 243},
-				.handle_preset			= mkaul::ColorF{180, 180, 180},
-				.button_selected		= mkaul::ColorF{230, 230, 230},
-				.button_unselected		= mkaul::ColorF{68, 68, 68},
-				.button_label			= mkaul::ColorF{240, 240, 240},
-				.button_label_selected	= mkaul::ColorF{35, 35, 35},
-				.preset_label			= mkaul::ColorF{180, 180, 180},
-				.editbox_text			= mkaul::ColorF{200, 200, 200}
-			};
-
-			static constexpr Theme THEME_LIGHT = {
-				.bg						= mkaul::ColorF{244, 244, 244},
-				.bg_graph				= mkaul::ColorF{230, 230, 230},
-				.bg_editbox				= mkaul::ColorF{252, 252, 252},
-				.separator				= mkaul::ColorF{70, 70, 70},
-				.curve_trace			= mkaul::ColorF{205, 205, 205},
-				.curve_velocity			= mkaul::ColorF{160, 160, 160},
-				.curve_preset			= mkaul::ColorF{100, 100, 100},
-				.handle					= mkaul::ColorF{70, 70, 70},
-				.handle_preset			= mkaul::ColorF{160, 160, 160},
-				.button_selected		= mkaul::ColorF{230, 230, 230},
-				.button_unselected		= mkaul::ColorF{188, 188, 188},
-				.button_label			= mkaul::ColorF{70, 70, 70},
-				.button_label_selected	= mkaul::ColorF{70, 70, 70},
-				.preset_label			= mkaul::ColorF{70, 70, 70},
-				.editbox_text			= mkaul::ColorF{100, 100, 100}
-			};
+			static constexpr char CONFIG_FILE_NAME[] = "config.json";
 
 			Preferences pref_;
 
 			EditMode edit_mode_ = EditMode::Normal;
 			LayoutMode layout_mode_ = LayoutMode::Vertical;
 			std::array<ApplyMode, (size_t)EditMode::NumEditMode> apply_mode_ = {};
-			Theme current_theme_;
 
 			int curve_code_bezier_ = 0;
 			int curve_code_elastic_ = 0;
 			int curve_code_bounce_ = 0;
 
+			bool show_x_label_ = false;
+			bool show_y_label_ = false;
 			bool show_handle_ = false;
 			bool show_library_ = false;
 			bool show_velocity_graph_ = false;
@@ -67,7 +33,8 @@ namespace cved {
 			int separator_ = 0;
 			int preset_size_ = 0;
 
-			std::filesystem::path aviutl_directory_;
+			std::filesystem::path dir_aviutl_;
+			std::filesystem::path dir_plugin_;
 
 		public:
 			void init(HINSTANCE hinst) noexcept;
@@ -77,8 +44,6 @@ namespace cved {
 
 			auto get_theme_id() const noexcept { return pref_.theme_id; }
 			bool set_theme_id(ThemeId theme_id) noexcept;
-
-			const auto& get_theme() const noexcept { return current_theme_; }
 
 			auto get_edit_mode() const noexcept { return edit_mode_; }
 			bool set_edit_mode(EditMode edit_mode) noexcept;
@@ -100,11 +65,8 @@ namespace cved {
 			auto get_curve_thickness() const noexcept { return pref_.curve_thickness; }
 			void set_curve_thickness(float curve_thickness) noexcept;
 
-			auto get_curve_drawing_interval() const noexcept { return pref_.curve_drawing_interval; }
-			void set_curve_drawing_interval(float curve_drawing_interval) noexcept;
-
-			auto get_graphic_method() const noexcept { return pref_.graphic_method; }
-			bool set_graphic_method(mkaul::graphics::Factory::GraphicEngine graphic_method) noexcept;
+			auto get_curve_resolution() const noexcept { return pref_.curve_resolution; }
+			void set_curve_resolution(uint32_t curve_resolution) noexcept;
 
 			auto get_curve_code_bezier() const noexcept { return curve_code_bezier_; }
 			auto get_curve_code_elastic() const noexcept { return curve_code_elastic_; }
@@ -122,6 +84,12 @@ namespace cved {
 			auto get_auto_apply() const noexcept { return pref_.auto_apply; }
 			void set_auto_apply(bool auto_apply) noexcept { pref_.auto_apply = auto_apply; }
 
+			auto get_show_x_label() const noexcept { return show_x_label_; }
+			void set_show_x_label(bool show_x_label) noexcept { show_x_label_ = show_x_label; }
+
+			auto get_show_y_label() const noexcept { return show_y_label_; }
+			void set_show_y_label(bool show_y_label) noexcept { show_y_label_ = show_y_label; }
+
 			auto get_show_handle() const noexcept { return show_handle_; }
 			void set_show_handle(bool show_handle) noexcept { show_handle_ = show_handle; }
 
@@ -134,8 +102,8 @@ namespace cved {
 			auto get_align_handle() const noexcept { return align_handle_; }
 			void set_align_handle(bool align_handle) noexcept { align_handle_ = align_handle; }
 
-			auto get_reverse_wheel() const noexcept { return pref_.reverse_wheel; }
-			void set_reverse_wheel(bool reverse_wheel) noexcept { pref_.reverse_wheel = reverse_wheel; }
+			auto get_invert_wheel() const noexcept { return pref_.invert_wheel; }
+			void set_invert_wheel(bool invert_wheel) noexcept { pref_.invert_wheel = invert_wheel; }
 
 			auto get_notify_update() const noexcept { return pref_.notify_update; }
 			void set_notify_update(bool notify_update) noexcept { pref_.notify_update = notify_update; }
@@ -152,6 +120,9 @@ namespace cved {
 			auto get_enable_hotkeys() const noexcept { return pref_.enable_hotkeys; }
 			void set_enable_hotkeys(bool enable_hotkeys) noexcept { pref_.enable_hotkeys = enable_hotkeys; }
 
+			auto get_enable_animation() const noexcept { return pref_.enable_animation; }
+			void set_enable_animation(bool enable_animation) noexcept { pref_.enable_animation = enable_animation; }
+
 			auto get_ignore_autosaver_warning() const noexcept { return ignore_autosaver_warning_; }
 			void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 
@@ -161,7 +132,8 @@ namespace cved {
 			auto get_preset_size() const noexcept { return preset_size_; }
 			void set_preset_size(int preset_size) noexcept;
 
-			const auto& get_aviutl_directory() const noexcept { return aviutl_directory_; }
+			const auto& get_dir_aviutl() const noexcept { return dir_aviutl_; }
+			const auto& get_dir_plugin() const noexcept { return dir_plugin_; }
 
 			void reset_pref() noexcept { pref_.reset(); }
 

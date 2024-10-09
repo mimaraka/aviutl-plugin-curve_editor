@@ -1,9 +1,9 @@
 #pragma once
 
 #include "curve.hpp"
-#include "enum.hpp"
 #include "curve_editor_graph.hpp"
 #include "curve_editor_script.hpp"
+#include "enum.hpp"
 #include <vector>
 
 

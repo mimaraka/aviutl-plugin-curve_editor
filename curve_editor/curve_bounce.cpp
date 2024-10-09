@@ -6,23 +6,32 @@
 namespace cved {
 	// コンストラクタ
 	BounceCurve::BounceCurve(
-		const mkaul::Point<double>& pt_start,
-		const mkaul::Point<double>& pt_end,
+		const mkaul::Point<double>& anchor_start,
+		const mkaul::Point<double>& anchor_end,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		double cor,
-		double period
-	) : NumericGraphCurve{ pt_start, pt_end, pt_fixed, prev, next}, handle_{}, cor_{ cor }, period_{ period } {
-		handle_.from_param(cor, period, pt_start, pt_end);
-	}
-
+		double period,
+		bool reversed
+	) :
+		NumericGraphCurve{ anchor_start, anchor_end, pt_fixed, prev, next },
+		cor_{ cor },
+		period_{ period },
+		reversed_{ reversed }
+	{}
+	
 	// コピーコンストラクタ
-	BounceCurve::BounceCurve(const BounceCurve& curve) noexcept : NumericGraphCurve{ curve }, handle_{ curve.handle_ }, cor_{ curve.cor_ }, period_{ curve.period_ } {}
+	BounceCurve::BounceCurve(const BounceCurve& curve) noexcept :
+		NumericGraphCurve{ curve },
+		cor_{ curve.cor_ },
+		period_{ curve.period_ },
+		reversed_{ curve.reversed_ }
+	{}
 
 	// カーブの関数
 	double BounceCurve::curve_function(double progress, double start, double end) const noexcept {
-		progress = mkaul::clamp((progress - pt_start().x()) / (pt_end().x() - pt_start().x()), 0., 1.);
+		progress = mkaul::clamp((progress - anchor_start().x) / (anchor_end().x - anchor_start().x), 0., 1.);
 
 		double ret;
 		const double limit_value = period_ * (1. / (1. - cor_) - .5);
@@ -34,7 +43,7 @@ namespace cved {
 			return prog + 0.5 + 1. / (cor - 1.) - (cor + 1.) * std::pow(cor, func_1(prog + .5, cor)) / (2. * cor - 2.);
 		};
 
-		if (handle_.is_reverse()) {
+		if (is_reversed()) {
 			progress = 1. - progress;
 		}
 		double tmp = 4. * func_2(progress / period_, cor_) * func_2(progress / period_, cor_) - std::pow(cor_, 2. * func_1(progress / period_ + .5, cor_));
@@ -54,29 +63,62 @@ namespace cved {
 			else
 				ret = 0;
 		}
-		if (handle_.is_reverse()) {
+		if (is_reversed()) {
 			ret = -1. - ret;
 		}
-		return start + (end - start) * (pt_end().y() + (pt_end().y() - pt_start().y()) * ret);
+		return start + (end - start) * (anchor_end().y + (anchor_end().y - anchor_start().y) * ret);
 	}
 
 	void BounceCurve::clear() noexcept {
-		handle_.from_param(DEFAULT_COR, DEFAULT_PERIOD, pt_start(), pt_end());
 		cor_ = DEFAULT_COR;
 		period_ = DEFAULT_PERIOD;
 	}
 
+	bool BounceCurve::is_default() const noexcept {
+		return cor_ == DEFAULT_COR and period_ == DEFAULT_PERIOD;
+	}
+
 	void BounceCurve::reverse(bool fix_pt) noexcept {
-		handle_.reverse(pt_start(), pt_end());
 		GraphCurve::reverse(fix_pt);
-		handle_.from_param(cor_, period_, pt_start(), pt_end());
+		reversed_ = !reversed_;
+	}
+
+	double BounceCurve::get_handle_x() const noexcept {
+		const auto width = anchor_end().x - anchor_start().x;
+		auto x_rel = mkaul::clamp(period_ * (cor_ + 1.) * 0.5, 0., 1.);
+		if (is_reversed()) {
+			x_rel = 1. - x_rel;
+		}
+		return anchor_start().x + width * x_rel;
+	}
+
+	double BounceCurve::get_handle_y() const noexcept {
+		const auto height = anchor_end().y - anchor_start().y;
+		double y_rel = mkaul::clamp(1. - cor_ * cor_, 0., 1.);
+		if (is_reversed()) {
+			y_rel = 1. - y_rel;
+		}
+		return anchor_start().y + height * y_rel;
+	}
+
+	void BounceCurve::set_handle(double x, double y) noexcept {
+		const auto width = anchor_end().x - anchor_start().x;
+		const auto height = anchor_end().y - anchor_start().y;
+		auto x_rel = mkaul::clamp((x - anchor_start().x) / width, 0., 1.);
+		auto y_rel = mkaul::clamp((y - anchor_start().y) / height, 0., 1.);
+		if (is_reversed()) {
+			x_rel = 1. - x_rel;
+			y_rel = 1. - y_rel;
+		}
+		cor_ = std::sqrt(1. - mkaul::clamp(y_rel, 0.001, 1.));
+		period_ = 2. * std::clamp(x_rel, 0.001, 1.) / (cor_ + 1.);
 	}
 
 	int32_t BounceCurve::encode() const noexcept {
 		int x = (int)((period_ * (cor_ + 1) * 0.5) * 1000);
 		int y = (int)((1. - cor_ * cor_) * 1000);
 		int ret = y + 1001 * x + 10211202;
-		if (handle_.is_reverse()) {
+		if (is_reversed()) {
 			ret *= -1;
 		}
 		return ret;
@@ -96,11 +138,11 @@ namespace cved {
 		int number;
 
 		if (mkaul::in_range(code, -MAX, -MIN, true)) {
-			handle_.set_is_reverse(true, pt_start(), pt_end());
+			reversed_ = true;
 			number = -code - MIN;
 		}
 		else if (mkaul::in_range(code, MIN, MAX, true)) {
-			handle_.set_is_reverse(false, pt_start(), pt_end());
+			reversed_ = false;
 			number = code - MIN;
 		}
 		else return false;
@@ -111,96 +153,6 @@ namespace cved {
 		y = number - x * 1001;
 		cor_ = std::sqrt(1. - y * 0.001);
 		period_ = 2. * 0.001 * x / (cor_ + 1.);
-
-		handle_.from_param(cor_, period_, pt_start(), pt_end());
-
 		return true;
-	}
-
-	// ハンドルを描画
-	void BounceCurve::draw_handle(
-		mkaul::graphics::Graphics* p_graphics,
-		const View& view,
-		float, float,
-		float tip_radius,
-		float tip_thickness,
-		bool,
-		const mkaul::ColorF& color
-	) const noexcept {
-		if (p_graphics) {
-			mkaul::WindowRectangle rect_wnd;
-			p_graphics->get_rect(&rect_wnd);
-
-			auto handle_client = view.view_to_client(handle_.pt(), rect_wnd);
-			p_graphics->draw_ellipse(handle_client, tip_radius, tip_radius, color, mkaul::graphics::Stroke{ tip_thickness });
-		}
-	}
-
-	bool BounceCurve::is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept {
-		return handle_.is_hovered(pt, view);
-	}
-
-	bool BounceCurve::handle_check_hover(
-		const mkaul::Point<double>& pt,
-		const GraphView& view
-	) noexcept {
-		return handle_.check_hover(pt, view);
-	}
-
-	bool BounceCurve::handle_update(
-		const mkaul::Point<double>& pt,
-		const GraphView& view
-	) noexcept {
-		if (handle_.update(pt, pt_start(), pt_end())) {
-			cor_ = handle_.get_cor(pt_start(), pt_end());
-			period_ = handle_.get_period(pt_start(), pt_end());
-			return true;
-		}
-		else return false;
-	}
-
-	void BounceCurve::handle_end_control() noexcept {
-		handle_.end_control();
-	}
-
-	BounceCurve::ActivePoint BounceCurve::pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept {
-		bool start = pt_start_.check_hover(pt, view);
-		bool end = pt_end_.check_hover(pt, view);
-		
-		if (start or end) {
-			cor_ = handle_.get_cor(pt_start(), pt_end());
-			period_ = handle_.get_period(pt_start(), pt_end());
-
-			if (start) return ActivePoint::Start;
-			else return ActivePoint::End;
-		}
-		else return ActivePoint::Null;
-	}
-
-	bool BounceCurve::pt_begin_move(ActivePoint active_pt) noexcept {
-		cor_ = handle_.get_cor(pt_start(), pt_end());
-		period_ = handle_.get_period(pt_start(), pt_end());
-		return true;
-	}
-
-	BounceCurve::ActivePoint BounceCurve::pt_update(const mkaul::Point<double>& pt, const GraphView&) noexcept {
-		bool moved_start = pt_start_.update(mkaul::Point{ std::min(pt.x, pt_end().x()), pt.y });
-		bool moved_end = pt_end_.update(mkaul::Point{ std::max(pt.x, pt_start().x()), pt.y });
-		
-		if (moved_start or moved_end) {
-			handle_.from_param(cor_, period_, pt_start(), pt_end());
-
-			if (moved_start) return ActivePoint::Start;
-			else return ActivePoint::End;
-		}
-		else return ActivePoint::Null;
-	}
-
-	bool BounceCurve::pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept {
-		if (GraphCurve::pt_move(active_pt, pt)) {
-			handle_.from_param(cor_, period_, pt_start(), pt_end());
-			return true;
-		}
-		else return false;
 	}
 }

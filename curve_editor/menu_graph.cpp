@@ -1,10 +1,10 @@
-#include "menu_graph.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_modifier.hpp"
 #include "global.hpp"
-#include "string_table.hpp"
+#include "menu_graph.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 
@@ -43,6 +43,10 @@ namespace cved {
 		}
 		minfo_tmp.fState = global::config.get_align_handle() ? MFS_CHECKED : MFS_UNCHECKED;
 		::SetMenuItemInfoA(menu_, ID_GRAPH_ALIGN, FALSE, &minfo_tmp);
+		minfo_tmp.fState = global::config.get_show_x_label() ? MFS_CHECKED : MFS_UNCHECKED;
+		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOW_X_LABEL, FALSE, &minfo_tmp);
+		minfo_tmp.fState = global::config.get_show_y_label() ? MFS_CHECKED : MFS_UNCHECKED;
+		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOW_Y_LABEL, FALSE, &minfo_tmp);
 		minfo_tmp.fState = global::config.get_show_handle() ? MFS_CHECKED : MFS_UNCHECKED;
 		::SetMenuItemInfoA(menu_, ID_GRAPH_SHOWHANDLE, FALSE, &minfo_tmp);
 		minfo_tmp.fState = global::config.get_show_velocity_graph() ? MFS_CHECKED : MFS_UNCHECKED;
@@ -68,22 +72,37 @@ namespace cved {
 		}
 		switch (id) {
 		case ID_GRAPH_REVERSE:
-			global::window_grapheditor.send_command((WPARAM)WindowCommand::Reverse);
+		{
+			auto curve = global::editor.editor_graph().current_curve();
+			if (curve) {
+				curve->reverse();
+				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
+			}
 			break;
+		}
 
 		case ID_GRAPH_ALIGN:
 			global::config.set_align_handle(!global::config.get_align_handle());
-			global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+			break;
+
+		case ID_GRAPH_SHOW_X_LABEL:
+			global::config.set_show_x_label(!global::config.get_show_x_label());
+			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateAxisLabelVisibility, NULL);
+			break;
+
+		case ID_GRAPH_SHOW_Y_LABEL:
+			global::config.set_show_y_label(!global::config.get_show_y_label());
+			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateAxisLabelVisibility, NULL);
 			break;
 
 		case ID_GRAPH_SHOWHANDLE:
 			global::config.set_show_handle(!global::config.get_show_handle());
-			global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandleVisibility, NULL);
 			break;
 
 		case ID_GRAPH_VELOCITY:
 			global::config.set_show_velocity_graph(!global::config.get_show_velocity_graph());
-			global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+			//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
 			break;
 
 		case ID_GRAPH_MODIFIER:

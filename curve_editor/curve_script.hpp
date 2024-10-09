@@ -2,21 +2,28 @@
 
 #include "curve.hpp"
 #include <cereal/archives/binary.hpp>
-#include <cereal/types/string.hpp>
 #include <cereal/types/polymorphic.hpp>
+#include <cereal/types/string.hpp>
 
 
 
 namespace cved {
 	// カーブ(スクリプト)
 	class ScriptCurve : public Curve {
+		static constexpr auto DEFAULT_SCRIPT = "return (ed - st) * t + st";
 		std::string script_;
 
 	public:
-		double curve_function(double progress, double start, double end) const noexcept override { return start; }
-		void clear() noexcept override {}
+		ScriptCurve() : script_{DEFAULT_SCRIPT}
+		{}
+
+		std::string get_type() const noexcept override { return "script"; }
+		double curve_function(double, double start, double) const noexcept override;
+		void clear() noexcept override { script_ = DEFAULT_SCRIPT; }
+		bool is_default() const noexcept override { return true; }
 
 		const auto& script() const noexcept { return script_; }
+		void set_script(const std::string& script) noexcept { script_ = script; }
 
 		template <class Archive>
 		void serialize(Archive& archive, const std::uint32_t) {

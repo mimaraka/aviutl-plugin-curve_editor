@@ -1,12 +1,12 @@
-#include "filter_project_load.hpp"
-#include <sstream>
-#include <cereal/archives/binary.hpp>
-#include "actctx_manager.hpp"
+#include "actctx_helper.hpp"
 #include "constants.hpp"
 #include "curve_editor.hpp"
+#include "filter_project_load.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "string_table.hpp"
+#include <cereal/archives/binary.hpp>
+#include <sstream>
 
 
 
@@ -33,20 +33,20 @@ namespace cved {
 					archive(global::editor);
 					ret = TRUE;
 				}
-				catch (const std::exception& e) {
+				catch (const std::exception&) {
 					global::editor.reset_id_curves();
-					ActCtxManager actctx_manager;
-					actctx_manager.init(fp->dll_hinst);
+					ActCtxHelper actctx_helper;
+					actctx_helper.init(fp->dll_hinst);
 					my_messagebox(
 						global::string_table[StringId::ErrorDataLoadFailed],
 						fp->hwnd,
 						MessageBoxIcon::Error
 					);
-					actctx_manager.exit();
+					actctx_helper.exit();
 				}
 			}
 			// ウィンドウの更新
-			global::window_main.send_command((WPARAM)WindowCommand::Update);
+			//global::window_main.send_command((WPARAM)WindowCommand::Update);
 		}
 		return ret;
 	}

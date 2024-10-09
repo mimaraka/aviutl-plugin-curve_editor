@@ -1,11 +1,11 @@
-#include "dialog_warning_autosaver.hpp"
 #include "config.hpp"
+#include "dialog_warning_autosaver.hpp"
 #include "resource.h"
 
 
 
 namespace cved {
-	int AutosaverWarningDialog::i_resource() const noexcept { return IDD_WARNING_AUTOSAVER; }
+	int AutosaverWarningDialog::resource_id() const noexcept { return IDD_WARNING_AUTOSAVER; }
 
 	void AutosaverWarningDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_check_dontshowagain_ = ::GetDlgItem(hwnd, IDC_CHECK_DONTSHOWAGAIN);
@@ -13,7 +13,7 @@ namespace cved {
 	}
 
 
-	INT_PTR AutosaverWarningDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR AutosaverWarningDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		constexpr char URL_GITHUB_AUTOSAVER[] = "https://github.com/ePi5131/autosaver/releases/latest";
 
 		switch (message) {

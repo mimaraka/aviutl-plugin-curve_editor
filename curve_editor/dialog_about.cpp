@@ -1,14 +1,14 @@
-#include "dialog_about.hpp"
-#include <format>
-#include <CommCtrl.h>
 #include "constants.hpp"
-#include "string_table.hpp"
+#include "dialog_about.hpp"
 #include "resource.h"
+#include "string_table.hpp"
+#include <CommCtrl.h>
+#include <format>
 
 
 
 namespace cved {
-	int AboutDialog::i_resource() const noexcept { return IDD_ABOUT; }
+	int AboutDialog::resource_id() const noexcept { return IDD_ABOUT; }
 
 
 	void AboutDialog::init_controls(HWND hwnd) noexcept {
@@ -54,6 +54,7 @@ namespace cved {
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case IDOK:
+			case IDCANCEL:
 				::EndDialog(hwnd, 1);
 				return TRUE;
 			}

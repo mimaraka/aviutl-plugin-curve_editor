@@ -1,5 +1,5 @@
-#include "curve_editor_graph.hpp"
 #include "config.hpp"
+#include "curve_editor_graph.hpp"
 #include "enum.hpp"
 
 
@@ -101,9 +101,8 @@ namespace cved {
 			else return nullptr;
 		}
 
-		GraphCurve* GraphCurveEditor::current_curve() noexcept {
-
-			switch (global::config.get_edit_mode()) {
+		GraphCurve* GraphCurveEditor::get_curve(EditMode mode) noexcept {
+			switch (mode) {
 			case EditMode::Bezier:
 				return &curve_bezier_;
 
@@ -122,6 +121,10 @@ namespace cved {
 			default:
 				return nullptr;
 			}
+		}
+
+		GraphCurve* GraphCurveEditor::current_curve() noexcept {
+			return get_curve(global::config.get_edit_mode());
 		}
 
 		NumericGraphCurve* GraphCurveEditor::numeric_curve() noexcept {
@@ -156,17 +159,26 @@ namespace cved {
 
 			auto curve_data = reinterpret_cast<const CurveDataV1*>(data);
 			std::vector<NormalCurve> vec_tmp;
+			bool flag_default = true;
 
-			for (size_t i = 0u; i < CURVE_N; i++) {
+			for (int i = CURVE_N - 1; 0 <= i; i--) {
 				// sizeの値が不正でないことをチェック
-				if (POINT_N < curve_data[i].size) return false;
+				if (POINT_N < curve_data[i].size) {
+					return false;
+				}
 				NormalCurve curve;
 				if (!curve.load_v1_data(reinterpret_cast<const byte*>(&curve_data[i]), curve_data[i].size)) {
 					return false;
 				}
-				// 読み込みに成功したらカーブをアペンド
-				vec_tmp.emplace_back(std::move(curve));
+				// 末尾までデフォルトのカーブが連続している部分をスキップ
+				if (flag_default and !curve.is_default()) {
+					flag_default = false;
+				}
+				if (!flag_default) {
+					vec_tmp.emplace_back(std::move(curve));
+				}
 			}
+			vec_tmp.reserve(vec_tmp.capacity());
 			curves_normal_ = std::move(vec_tmp);
 			// インデックスをリセット
 			idx_normal_ = 0;

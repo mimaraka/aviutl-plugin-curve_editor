@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-#include <functional>
+#include <cereal/cereal.hpp>
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/string.hpp>
-#include <cereal/cereal.hpp>
+#include <functional>
+#include <string>
 
 
 
@@ -26,6 +26,7 @@ namespace cved {
 			enabled_{ modifier.enabled_ },
 			p_curve_{ modifier.p_curve_ }
 		{}
+		virtual ~Modifier() = default;
 
 		auto name() const noexcept { return name_; }
 		void set_name(const std::string& name) noexcept { name_ = name; }
@@ -36,8 +37,7 @@ namespace cved {
 		auto curve() const noexcept { return p_curve_; }
 		void set_curve(GraphCurve* p_curve) noexcept { p_curve_ = p_curve; }
 
-		virtual CurveFunction convert(const CurveFunction& function) const noexcept = 0;
-		virtual CurveFunction apply(const CurveFunction& function) const noexcept;
+		virtual CurveFunction apply(const CurveFunction& function) const noexcept = 0;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

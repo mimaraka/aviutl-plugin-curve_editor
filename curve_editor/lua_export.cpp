@@ -1,8 +1,8 @@
 #include "constants.hpp"
+#include "curve_bezier.hpp"
 #include "curve_editor.hpp"
 #include "curve_editor_graph.hpp"
-#include "curve_bezier.hpp"
-#include <lua5_1_4_Win32_dll8_lib/include/lua.hpp>
+#include <lua.hpp>
 
 
 
@@ -39,7 +39,12 @@ namespace cved {
 			// 標準
 		case 1:
 		{
-			auto p_curve_normal = global::editor.editor_graph().curve_normal(parameter - 1);
+			int idx = parameter - 1;
+			if (idx < 0) {
+				::lua_pushnil(L);
+				return 1;
+			}
+			auto p_curve_normal = global::editor.editor_graph().curve_normal(static_cast<size_t>(idx));
 			if (p_curve_normal) {
 				ret = p_curve_normal->get_value(progress, start, end);
 			}
@@ -76,9 +81,22 @@ namespace cved {
 
 			// スクリプト
 		case 5:
-			::lua_pushnil(L);
-			return 1;
+		{
+			int idx = parameter - global::IDCURVE_MAX_N - 1;
+			if (idx < 0) {
+				::lua_pushnil(L);
+				return 1;
+			}
+			auto p_curve_script = global::editor.editor_script().curve_script(static_cast<size_t>(idx));
+			if (p_curve_script) {
+				ret = p_curve_script->get_value(progress, start, end);
+			}
+			else {
+				::lua_pushnil(L);
+				return 1;
+			}
 			break;
+		}
 
 		default:
 			::lua_pushnil(L);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Windows.h>
 #include <string>
+#include <Windows.h>
 
 
 
@@ -19,6 +19,9 @@ namespace cved {
 				ErrorInvalidInput,
 				ErrorCodeCopyFailed,
 				ErrorDataLoadFailed,
+				ErrorWebView2InitFailed,
+				ErrorCommCtrlInitFailed,
+				ErrorPageLoadFailed,
 				WarningDeleteCurve,
 				WarningDeleteAllCurves,
 				WarningResetPreferences,
@@ -47,6 +50,7 @@ namespace cved {
 				LabelTooltipIdBack,
 				LabelTooltipIdNext,
 				LabelTooltipCurrentId,
+				LabelThemeNameSystem,
 				LabelThemeNameDark,
 				LabelThemeNameLight,
 				LabelPreferenceGeneral,
@@ -54,8 +58,10 @@ namespace cved {
 				LabelPreferenceBehavior,
 				LabelPreferenceEditing,
 				LabelSelectBackgroundImage,
-				LabelModifierDiscretizer,
-				LabelModifierNoiser,
+				LabelModifierDiscretization,
+				LabelModifierNoise,
+				LabelModifierSineWave,
+				LabelModifierSquareWave,
 				WordVersion,
 				WordEditMode,
 				WordLanguageAutomatic,

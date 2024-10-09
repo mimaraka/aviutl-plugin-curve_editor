@@ -1,18 +1,18 @@
 #pragma once
 
 #define NOMINMAX
-#include <vector>
-#include <cereal/types/vector.hpp>
 #include "curve.hpp"
+#include "curve_bezier.hpp"
+#include "curve_bounce.hpp"
+#include "curve_elastic.hpp"
 #include "curve_graph.hpp"
 #include "curve_graph_numeric.hpp"
+#include "curve_linear.hpp"
 #include "curve_normal.hpp"
 #include "curve_value.hpp"
-#include "curve_bezier.hpp"
-#include "curve_elastic.hpp"
-#include "curve_bounce.hpp"
-#include "curve_linear.hpp"
 #include "enum.hpp"
+#include <cereal/types/vector.hpp>
+#include <vector>
 
 
 
@@ -48,6 +48,7 @@ namespace cved {
 			bool is_idx_normal_last() const noexcept { return idx_normal_ == curves_normal_.size() - 1; }
 			bool is_idx_value_last() const noexcept { return idx_value_ == curves_value_.size() - 1; }
 
+			GraphCurve* get_curve(EditMode mode) noexcept;
 			GraphCurve* current_curve() noexcept;
 			NumericGraphCurve* numeric_curve() noexcept;
 			NormalCurve* curve_normal(size_t idx) noexcept;
@@ -66,13 +67,20 @@ namespace cved {
 
 			// TODO: Valueを追加
 			template <class Archive>
-			void serialize(Archive& archive, const std::uint32_t) {
+			void save(Archive& archive, const std::uint32_t) const {
 				archive(
-					curves_normal_,
-					curve_bezier_,
-					curve_elastic_,
-					curve_bounce_
+					curves_normal_
 				);
+			}
+
+			template <class Archive>
+			void load(Archive& archive, const std::uint32_t) {
+				archive(
+					curves_normal_
+				);
+				if (curves_normal_.empty()) {
+					curves_normal_.emplace_back(NormalCurve{});
+				}
 			}
 		};
 	}

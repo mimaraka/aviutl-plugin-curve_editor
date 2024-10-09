@@ -1,13 +1,13 @@
-#include "dialog_pref_general.hpp"
 #include "config.hpp"
+#include "dialog_pref_general.hpp"
 #include "enum.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 
 namespace cved {
-	int GeneralPrefDialog::i_resource() const noexcept { return IDD_PREF_GENERAL; }
+	int GeneralPrefDialog::resource_id() const noexcept { return IDD_PREF_GENERAL; }
 
 	void GeneralPrefDialog::init_controls(HWND hwnd) noexcept {
 		using StringId = global::StringTable::StringId;
@@ -21,7 +21,7 @@ namespace cved {
 		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"한국어 (Korean)");
 	}
 
-	INT_PTR GeneralPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR GeneralPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		using StringId = global::StringTable::StringId;
 
 		switch (message) {
