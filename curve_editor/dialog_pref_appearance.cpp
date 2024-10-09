@@ -30,6 +30,7 @@ namespace cved {
 		hwnd_slider_bg_image_opacity_ = ::GetDlgItem(hwnd, IDC_SLIDER_IMAGE_OPACITY);
 		hwnd_static_bg_image_opacity_ = ::GetDlgItem(hwnd, IDC_STATIC_IMAGE_OPACITY);
 		hwnd_check_show_trace_ = ::GetDlgItem(hwnd, IDC_CHECK_SHOW_TRACE);
+		hwnd_check_enable_animation_ = ::GetDlgItem(hwnd, IDC_CHECK_ENABLE_ANIMATION);
 
 		for (uint32_t i = 0u; i < (uint32_t)ThemeId::NumThemeId; i++) {
 			::SendMessageA(
@@ -114,6 +115,12 @@ namespace cved {
 					(WPARAM)global::config.get_set_bg_image(),
 					NULL
 				);
+				::SendMessageA(
+					hwnd_check_enable_animation_,
+					BM_SETCHECK,
+					(WPARAM)global::config.get_enable_animation(),
+					NULL
+				);
 				if (global::config.get_set_bg_image()) {
 					::EnableWindow(hwnd_static_bg_image_1_, TRUE);
 					::EnableWindow(hwnd_edit_bg_image_path_, TRUE);
@@ -147,6 +154,7 @@ namespace cved {
 				global::config.set_theme_id((ThemeId)::SendMessageA(hwnd_combo_theme_, CB_GETCURSEL, NULL, NULL));
 				global::config.set_show_trace((bool)::SendMessageA(hwnd_check_show_trace_, BM_GETCHECK, NULL, NULL));
 				global::config.set_set_bg_image((bool)::SendMessageA(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL));
+				global::config.set_enable_animation((bool)::SendMessageA(hwnd_check_enable_animation_, BM_GETCHECK, NULL, NULL));
 				global::config.set_curve_color(cc.rgbResult);
 				global::config.set_curve_thickness(
 					(float)::SendMessageA(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL) * 0.1f
@@ -162,9 +170,6 @@ namespace cved {
 					char buffer[MAX_PATH];
 					::GetWindowTextA(hwnd_edit_bg_image_path_, buffer, MAX_PATH);
 					global::config.set_bg_image_path(std::filesystem::path(buffer));
-				}
-				if (global::config.get_set_bg_image()) {
-				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateColorScheme, NULL);
 				}
 				return TRUE;
 

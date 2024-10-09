@@ -20,6 +20,7 @@ namespace cved {
 		HWND hwnd_static_bg_image_opacity_ = NULL;
 		HWND hwnd_slider_bg_image_opacity_ = NULL;
 		HWND hwnd_check_show_trace_ = NULL;
+		HWND hwnd_check_enable_animation_ = NULL;
 
         int resource_id() const noexcept override;
         INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
