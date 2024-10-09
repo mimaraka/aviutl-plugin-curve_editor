@@ -8,15 +8,16 @@ class ImageObject {
     #d3Image;
     constructor() {
         this.#image = new Image();
-        this.#d3Image = this.#d3Image = g.append('svg:image')
-                .attr('opacity', config.backgroundImageOpacity);
+        this.#d3Image = g.append('svg:image');
         this.#image.onload = () => {
             this.resize(width, height);
         };
     }
 
     load(src) {
-        this.#d3Image.attr('xlink:href', src);
+        this.#d3Image
+            .attr('xlink:href', src)
+            .attr('opacity', config.backgroundImageOpacity);
         this.#image.src = src;
     }
 
@@ -103,6 +104,7 @@ window.addEventListener('message', function(event) {
 
         case 'updateHandles':
             updateHandles();
+            updateCurvePath();
             break;
 
         case 'updateHandlePos':

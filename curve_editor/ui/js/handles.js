@@ -574,10 +574,12 @@ class ElasticHandles extends Handles {
     }
 
     onAnchorStartDrag(event) {
+        super.onAnchorStartDrag(event);
         this.update();
     }
 
     onAnchorEndDrag(event) {
+        super.onAnchorEndDrag(event);
         this.update();
     }
 
@@ -666,10 +668,12 @@ class BounceHandles extends Handles {
     }
 
     onAnchorStartDrag(event) {
+        super.onAnchorStartDrag(event);
         this.update();
     }
 
     onAnchorEndDrag(event) {
+        super.onAnchorEndDrag(event);
         this.update();
     }
 
@@ -689,6 +693,18 @@ class BounceHandles extends Handles {
     remove() {
         super.remove();
         this.handle.remove();
+    }
+}
+
+class LinearHandles extends Handles {
+    onAnchorStartDrag(event) {
+        super.onAnchorStartDrag(event);
+        this.update();
+    }
+
+    onAnchorEndDrag(event) {
+        super.onAnchorEndDrag(event);
+        this.update();
     }
 }
 
@@ -773,7 +789,7 @@ function createHandles(curve, g, scaleX, scaleY) {
         return new BounceHandles(curve, g, scaleX, scaleY);
     }
     else if (curve instanceof LinearCurve) {
-        return new Handles(curve, g, scaleX, scaleY);
+        return new LinearHandles(curve, g, scaleX, scaleY);
     }
     else if (curve instanceof NormalCurve) {
         return new NormalHandles(curve, g, scaleX, scaleY);

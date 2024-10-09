@@ -126,6 +126,7 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

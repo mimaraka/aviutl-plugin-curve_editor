@@ -58,7 +58,8 @@ namespace cved {
 		UpdateHandlePos				= 0x0b21,
 		UpdateAxisLabelVisibility	= 0x0b22,
 		UpdateHandleVisibility		= 0x0b23,
-		ApplyPreferences			= 0x0b24
+		ApplyPreferences			= 0x0b24,
+		UpdateHandles				= 0x0b25
 	};
 
 	enum class ThemeId {

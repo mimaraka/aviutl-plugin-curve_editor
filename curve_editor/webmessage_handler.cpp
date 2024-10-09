@@ -65,7 +65,7 @@ namespace cved {
 					auto curve = global::editor.current_curve();
 					if (curve) {
 						curve->clear();
-						// TODO: アップデート処理
+						::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandles, NULL);
 					}
 				}
 				return true;

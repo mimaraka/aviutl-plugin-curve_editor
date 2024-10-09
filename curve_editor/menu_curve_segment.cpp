@@ -128,7 +128,7 @@ namespace cved {
 				idx,
 				(CurveSegmentType)(id - (uint16_t)WindowCommand::CurveSegmentTypeLinear)
 			);
-			//global::window_grapheditor.redraw();
+			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandles, NULL);
 			return true;
 		}
 
@@ -144,7 +144,7 @@ namespace cved {
 			auto p_curve_normal = global::editor.editor_graph().curve_normal();
 			if (p_curve_normal) {
 				p_curve_normal->reverse_segment(idx);
-				//global::window_grapheditor.redraw();
+				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
 			}
 			break;
 		}

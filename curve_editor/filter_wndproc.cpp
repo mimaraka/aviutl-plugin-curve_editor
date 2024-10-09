@@ -107,7 +107,6 @@ namespace cved {
 			break;
 		}
 
-		// ドロップダウンリストの位置が更新されない不具合を修正するためにwebviewを再描画(ゴリ押し)
 		case WM_MOVE:
 			my_webview.on_move();
 			break;
@@ -145,6 +144,10 @@ namespace cved {
 				::SetCapture(hwnd);
 				::SetCursor(::LoadCursorA(fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
 				dnd.drag();
+				break;
+
+			case WindowCommand::UpdateHandles:
+				my_webview.post_message(L"editor-graph", L"updateHandles");
 				break;
 
 			case WindowCommand::UpdateHandlePos:
