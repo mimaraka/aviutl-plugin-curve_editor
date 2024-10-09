@@ -13,9 +13,7 @@ namespace cved {
 			size_t idx_ = 0u;
 
 		public:
-			ScriptCurveEditor() :
-				curves_script_{}
-			{}
+			ScriptCurveEditor();
 
 			void reset() noexcept;
 			ScriptCurve* curve_script(size_t idx) noexcept;
@@ -27,8 +25,16 @@ namespace cved {
 			bool is_idx_last() const noexcept { return idx_ == curves_script_.size() - 1; }
 
 			template <class Archive>
-			void serialize(Archive& archive, const std::uint32_t) {
+			void save(Archive& archive, const std::uint32_t) const {
 				archive(curves_script_);
+			}
+
+			template <class Archive>
+			void load(Archive& archive, const std::uint32_t) {
+				archive(curves_script_);
+				if (curves_script_.empty()) {
+					curves_script_.emplace_back(ScriptCurve{});
+				}
 			}
 		};
 	}

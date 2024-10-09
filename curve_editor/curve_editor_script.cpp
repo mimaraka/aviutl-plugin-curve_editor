@@ -4,7 +4,14 @@
 
 namespace cved {
 	namespace global {
+		ScriptCurveEditor::ScriptCurveEditor() :
+			curves_script_{ ScriptCurve{} },
+			idx_{ 0u }
+		{}
+
 		void ScriptCurveEditor::reset() noexcept {
+			curves_script_.clear();
+			curves_script_.emplace_back(ScriptCurve{});
 			idx_ = 0u;
 		}
 

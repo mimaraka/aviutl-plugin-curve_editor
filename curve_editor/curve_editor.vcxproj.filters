@@ -321,6 +321,9 @@
     <ClInclude Include="host_object_curve_normal.hpp">
       <Filter>Header Files\WebView2\Host Object</Filter>
     </ClInclude>
+    <ClInclude Include="host_object_editor_script.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve.cpp">

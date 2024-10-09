@@ -4,6 +4,7 @@
 #include "config.hpp"
 #include "global.hpp"
 #include "host_object_grapheditor.hpp"
+#include "host_object_editor_script.hpp"
 #include "host_object_config.hpp"
 #include "host_object_editor.hpp"
 #include "my_messagebox.hpp"
@@ -96,6 +97,7 @@ namespace cved {
 
 								is_ready_ = true;
 								add_host_object<GraphEditorHostObject>(L"graphEditor");
+								add_host_object<ScriptEditorHostObject>(L"scriptEditor");
 								add_host_object<ConfigHostObject>(L"config");
 								add_host_object<EditorHostObject>(L"editor");
 								after_callback(this);

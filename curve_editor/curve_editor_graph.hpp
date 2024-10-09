@@ -67,13 +67,20 @@ namespace cved {
 
 			// TODO: Valueを追加
 			template <class Archive>
-			void serialize(Archive& archive, const std::uint32_t) {
+			void save(Archive& archive, const std::uint32_t) const {
 				archive(
-					curves_normal_,
-					curve_bezier_,
-					curve_elastic_,
-					curve_bounce_
+					curves_normal_
 				);
+			}
+
+			template <class Archive>
+			void load(Archive& archive, const std::uint32_t) {
+				archive(
+					curves_normal_
+				);
+				if (curves_normal_.empty()) {
+					curves_normal_.emplace_back(NormalCurve{});
+				}
 			}
 		};
 	}

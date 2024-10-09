@@ -6,7 +6,7 @@ local idx,t=math.modf(gp"index")
 local st=gp(idx)
 local ed=gp(idx+1)
 local par=gp"param"
-return ce.getcurve(0,par,t,st,ed) or ce.getcurve(1,par,t,st,ed) or ce.getcurve(2,par,t,st,ed) or gp"default"
+return ce.getcurve(0,par,t,st,ed) or ce.getcurve(1,par,t,st,ed) or ce.getcurve(2,par,t,st,ed) or ce.getcurve(5,par,t,st,ed) or gp"default"
 
 
 @Type1(中間点無視)
@@ -15,7 +15,7 @@ return ce.getcurve(0,par,t,st,ed) or ce.getcurve(1,par,t,st,ed) or ce.getcurve(2
 local ce=require"curve_editor"
 local gp=obj.getpoint
 local par=gp"param"
-return ce.getcurve(0,par,gp"totalindex",gp(0),gp(1)) or ce.getcurve(1,par,gp"totalindex",gp(0),gp(1)) or ce.getcurve(2,par,gp"totalindex",gp(0),gp(1)) or gp"default"
+return ce.getcurve(0,par,gp"totalindex",gp(0),gp(1)) or ce.getcurve(1,par,gp"totalindex",gp(0),gp(1)) or ce.getcurve(2,par,gp"totalindex",gp(0),gp(1)) or ce.getcurve(5,par,gp"totalindex",gp(0),gp(1)) or gp"default"
 
 
 @Type1(補間)
@@ -24,7 +24,7 @@ local ce=require"curve_editor"
 local gp=obj.getpoint
 local par=gp"param"
 local prog=gp"totalindex"
-prog=ce.getcurve(0,par,prog,0,1) or ce.getcurve(1,par,prog,0,1) or ce.getcurve(2,par,prog,0,1) or prog
+prog=ce.getcurve(0,par,prog,0,1) or ce.getcurve(1,par,prog,0,1) or ce.getcurve(2,par,prog,0,1) or ce.getcurve(5,par,t,st,ed) or prog
 local num=gp"num"
 
 local function interpolate(idx,t)
