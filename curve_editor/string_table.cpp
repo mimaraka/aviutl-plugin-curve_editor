@@ -1,5 +1,5 @@
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 
@@ -49,6 +49,18 @@ namespace cved {
 					id = IDS_ERROR_DATA_LOAD_FAILED;
 					break;
 
+				case StringId::ErrorWebView2InitFailed:
+					id = IDS_ERROR_WEBVIEW2_INIT_FAILED;
+					break;
+
+				case StringId::ErrorCommCtrlInitFailed:
+					id = IDS_ERROR_COMMCTRL_INIT_FAILED;
+					break;
+
+				case StringId::ErrorPageLoadFailed:
+					id = IDS_ERROR_PAGE_LOAD_FAILED;
+					break;
+
 				case StringId::WarningDeleteCurve:
 					id = IDS_WARNING_DELETE_CURVE;
 					break;
@@ -58,7 +70,7 @@ namespace cved {
 					break;
 
 				case StringId::WarningResetPreferences:
-					id = IDS_WARNING_PREF_RESET;
+					id = IDS_WARNING_RESET_PREFERENCES;
 					break;
 
 				case StringId::WarningDeleteId:
@@ -67,6 +79,10 @@ namespace cved {
 
 				case StringId::WarningDeleteAllIds:
 					id = IDS_WARNING_DELETE_ALL_IDS;
+					break;
+
+				case StringId::WarningRemoveModifier:
+					id = IDS_WARNING_REMOVE_MODIFIER;
 					break;
 
 				case StringId::InfoLatestVersion:
@@ -109,6 +125,18 @@ namespace cved {
 					id = IDS_LABEL_CURVE_SEGMENT_TYPE_LINEAR;
 					break;
 
+				case StringId::LabelApplyModeNormal:
+					id = IDS_LABEL_APPLY_MODE_NORMAL;
+					break;
+
+				case StringId::LabelApplyModeIgnoreMidPoint:
+					id = IDS_LABEL_APPLY_MODE_IGNORE_MIDPOINT;
+					break;
+
+				case StringId::LabelApplyModeInterpolate:
+					id = IDS_LABEL_APPLY_MODE_INTERPOLATE;
+					break;
+
 				case StringId::LabelTooltipCopy:
 					id = IDS_LABEL_TOOLTIP_COPY;
 					break;
@@ -145,6 +173,10 @@ namespace cved {
 					id = IDS_LABEL_TOOLTIP_CURRENT_ID;
 					break;
 
+				case StringId::LabelThemeNameSystem:
+					id = IDS_LABEL_THEME_NAME_SYSTEM;
+					break;
+
 				case StringId::LabelThemeNameDark:
 					id = IDS_LABEL_THEME_NAME_DARK;
 					break;
@@ -171,6 +203,22 @@ namespace cved {
 
 				case StringId::LabelSelectBackgroundImage:
 					id = IDS_LABEL_SELECT_BG_IMAGE;
+					break;
+
+				case StringId::LabelModifierDiscretization:
+					id = IDS_LABEL_MODIFIER_DISCRETIZATION;
+					break;
+
+				case StringId::LabelModifierNoise:
+					id = IDS_LABEL_MODIFIER_NOISE;
+					break;
+
+				case StringId::LabelModifierSineWave:
+					id = IDS_LABEL_MODIFIER_SINE_WAVE;
+					break;
+
+				case StringId::LabelModifierSquareWave:
+					id = IDS_LABEL_MODIFIER_SQUARE_WAVE;
 					break;
 
 				case StringId::WordVersion:

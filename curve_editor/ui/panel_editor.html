@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="fontawesome/css/all.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/panel_editor.css" type="text/css" />
+    <script src="js/libs/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="menu-bottom">
+        <div class="menu-row">
+            <div class="menu-button dropdown-container" id="edit-mode-container">
+                <select class="dropdown" name="edit-mode" id="edit-mode" title="編集モード"></select>
+            </div>
+            <div id="buttons-param-id">
+            </div>
+        </div>
+    </div>
+    <iframe class="editor" id="editor" name="editor" src="editor_graph.html"></iframe>
+    <script src="js/host_object.js"></script>
+    <script src="js/panel_editor.js"></script>
+</body>
+</html>

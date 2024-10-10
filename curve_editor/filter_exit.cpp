@@ -1,14 +1,14 @@
-#include "filter_exit.hpp"
-#include <mkaul/include/graphics.hpp>
 #include "config.hpp"
+#include "filter_exit.hpp"
+#include <mkaul/graphics.hpp>
 
 
 
 namespace cved {
-	BOOL filter_exit(AviUtl::FilterPlugin* fp) {
+	BOOL filter_exit(AviUtl::FilterPlugin*) {
 		// 設定をJSONに保存
 		global::config.save_json();
-		mkaul::graphics::Factory::shutdown();
+		//mkaul::graphics::Factory::shutdown();
 
 		return TRUE;
 	}

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <aviutl.hpp>
-#include <mkaul/include/exedit.hpp>
+#include <mkaul/exedit.hpp>
 
 
 

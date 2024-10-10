@@ -1,17 +1,38 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve.hpp"
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/polymorphic.hpp>
+#include <cereal/types/string.hpp>
 
 
 
 namespace cved {
 	// カーブ(スクリプト)
 	class ScriptCurve : public Curve {
-	public:
-		double curve_function(double progress, double start, double end) const noexcept override { return start; }
-		void clear() noexcept override {}
+		static constexpr auto DEFAULT_SCRIPT = "return (ed - st) * t + st";
+		std::string script_;
 
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
+	public:
+		ScriptCurve() : script_{DEFAULT_SCRIPT}
+		{}
+
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_SCRIPT; }
+		double curve_function(double, double start, double) const noexcept override;
+		void clear() noexcept override { script_ = DEFAULT_SCRIPT; }
+		bool is_default() const noexcept override { return true; }
+
+		const auto& script() const noexcept { return script_; }
+		void set_script(const std::string& script) noexcept { script_ = script; }
+
+		template <class Archive>
+		void serialize(Archive& archive, const std::uint32_t) {
+			archive(script_);
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::ScriptCurve, 0);
+CEREAL_REGISTER_TYPE(cved::ScriptCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Curve, cved::ScriptCurve)

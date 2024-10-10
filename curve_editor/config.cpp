@@ -1,10 +1,10 @@
 #include "config.hpp"
-#include <fstream>
 #include "constants.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
 #include "json_loader.hpp"
 #include "string_table.hpp"
+#include <fstream>
 
 
 
@@ -17,10 +17,12 @@ namespace cved {
 			edit_mode_ = EditMode::Normal;
 			layout_mode_ = LayoutMode::Vertical;
 			apply_mode_.fill(ApplyMode::Normal);
-			current_theme_ = THEME_DARK;
+			set_apply_mode(EditMode::Value, ApplyMode::IgnoreMidPoint);
 			curve_code_bezier_ = 145674282;
 			curve_code_elastic_ = 2554290;
 			curve_code_bounce_ = 10612242;
+			show_x_label_ = false;
+			show_y_label_ = true;
 			show_handle_ = true;
 			show_library_ = true;
 			show_velocity_graph_ = false;
@@ -32,8 +34,11 @@ namespace cved {
 			// AviUtlのディレクトリの取得
 			char path_str[MAX_PATH];
 			::GetModuleFileNameA(NULL, path_str, MAX_PATH);
-			std::filesystem::path aviutl_path{ path_str };
-			aviutl_directory_ = aviutl_path.parent_path();
+			std::filesystem::path path_aviutl{ path_str };
+			dir_aviutl_ = path_aviutl.parent_path();
+			::GetModuleFileNameA(hinst, path_str, MAX_PATH);
+			std::filesystem::path path_plugin{ path_str };
+			dir_plugin_ = path_plugin.parent_path() / "curve_editor";
 		}
 
 		bool Config::set_language(Language language) noexcept {
@@ -52,27 +57,10 @@ namespace cved {
 
 		bool Config::set_theme_id(ThemeId theme_id) noexcept {
 			switch (theme_id) {
+			case ThemeId::System:
 			case ThemeId::Dark:
-				pref_.theme_id = ThemeId::Dark;
-				current_theme_ = THEME_DARK;
-				return true;
-
 			case ThemeId::Light:
-				pref_.theme_id = ThemeId::Light;
-				current_theme_ = THEME_LIGHT;
-				return true;
-
-			default:
-				return false;
-			}
-		}
-
-		bool Config::set_graphic_method(mkaul::graphics::Factory::GraphicEngine graphic_engine) noexcept {
-			using GraphicEngine = mkaul::graphics::Factory::GraphicEngine;
-			switch (graphic_engine) {
-			case GraphicEngine::Gdiplus:
-			case GraphicEngine::Directx:
-				pref_.graphic_method = graphic_engine;
+				pref_.theme_id = theme_id;
 				return true;
 
 			default:
@@ -114,23 +102,19 @@ namespace cved {
 		}
 
 		bool Config::set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept {
-			switch (apply_mode) {
-			case ApplyMode::Normal:
-			case ApplyMode::IgnoreMidPoint:
+			if (mkaul::in_range((size_t)apply_mode, 0u, (size_t)ApplyMode::NumApplyMode - 1u, true)) {
 				apply_mode_[(size_t)edit_mode] = apply_mode;
 				return true;
-
-			default:
-				return false;
 			}
+			else return false;
 		}
 
 		void Config::set_curve_thickness(float curve_thickness) noexcept {
 			pref_.curve_thickness = mkaul::clamp(roundf(curve_thickness * 10.f) * 0.1f, 0.1f, 10.f);
 		}
 
-		void Config::set_curve_drawing_interval(float curve_drawing_interval) noexcept {
-			pref_.curve_drawing_interval = mkaul::clamp(roundf(curve_drawing_interval * 10.f) * 0.1f, 0.1f, 10.f);
+		void Config::set_curve_resolution(uint32_t curve_resolution) noexcept {
+			pref_.curve_resolution = mkaul::clamp(curve_resolution, 100u, 1000u);
 		}
 
 		bool Config::set_layout_mode(LayoutMode layout_mode) noexcept {
@@ -157,7 +141,7 @@ namespace cved {
 			separator_ = std::max(separator, global::SEPARATOR_WIDTH);
 		}
 
-		void Config::set_preset_size(int preset_size) noexcept {
+		void Config::set_preset_size(int) noexcept {
 
 		}
 
@@ -165,34 +149,37 @@ namespace cved {
 
 		// jsonファイルを読み込み
 		bool Config::load_json() {
+			std::ifstream ifs{ dir_plugin_ / CONFIG_FILE_NAME };
+			if (!ifs) return false;
 			json data;
-			if (JsonLoader::get_data(global::fp->dll_hinst, "config", &data)) {
-				try {
-					if (data.contains("preferences")) pref_.from_json(data["preferences"]);
-					if (data.contains(GET_KEY(edit_mode_))) set_edit_mode(data[GET_KEY(edit_mode_)]);
-					if (data.contains(GET_KEY(layout_mode_))) set_layout_mode(data[GET_KEY(layout_mode_)]);
-					if (data[GET_KEY(apply_mode_)].is_array()) {
-						size_t count = 0u;
-						for (const auto& el : data[GET_KEY(apply_mode_)]) {
-							if (count >= apply_mode_.size()) break;
-							set_apply_mode((EditMode)count++, (ApplyMode)el);
-						}
+			try {
+				data = json::parse(ifs);
+				if (data.contains("preferences")) pref_.from_json(data["preferences"]);
+				if (data.contains(GET_KEY(edit_mode_))) set_edit_mode(data[GET_KEY(edit_mode_)]);
+				if (data.contains(GET_KEY(layout_mode_))) set_layout_mode(data[GET_KEY(layout_mode_)]);
+				if (data[GET_KEY(apply_mode_)].is_array()) {
+					size_t count = 0u;
+					for (const auto& el : data[GET_KEY(apply_mode_)]) {
+						if (count >= apply_mode_.size()) break;
+						set_apply_mode((EditMode)count++, (ApplyMode)el);
 					}
-					JsonLoader::get_value(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
-					JsonLoader::get_value(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
-					JsonLoader::get_value(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
-					if (data.contains(GET_KEY(show_library_))) set_show_library(data[GET_KEY(show_library_)]);
-					if (data.contains(GET_KEY(show_velocity_graph_))) set_show_velocity_graph(data[GET_KEY(show_velocity_graph_)]);
-					if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
-					if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
-					if (data.contains(GET_KEY(separator_))) set_separator(data[GET_KEY(separator_)]);
-					if (data.contains(GET_KEY(preset_size_))) set_preset_size(data[GET_KEY(preset_size_)]);
-
-					return true;
 				}
-				catch (const json::exception&) {}
+				JsonLoader::get_value(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
+				JsonLoader::get_value(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
+				JsonLoader::get_value(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
+				if (data.contains(GET_KEY(show_library_))) set_show_library(data[GET_KEY(show_library_)]);
+				if (data.contains(GET_KEY(show_velocity_graph_))) set_show_velocity_graph(data[GET_KEY(show_velocity_graph_)]);
+				if (data.contains(GET_KEY(show_x_label_))) set_show_x_label(data[GET_KEY(show_x_label_)]);
+				if (data.contains(GET_KEY(show_y_label_))) set_show_y_label(data[GET_KEY(show_y_label_)]);
+				if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
+				if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
+				if (data.contains(GET_KEY(separator_))) set_separator(data[GET_KEY(separator_)]);
+				if (data.contains(GET_KEY(preset_size_))) set_preset_size(data[GET_KEY(preset_size_)]);
 			}
-			return false;
+			catch (const json::exception&) {
+				return false;
+			}
+			return true;
 		}
 
 		// jsonファイルを保存
@@ -209,6 +196,8 @@ namespace cved {
 				{"curve_code_elastic", editor.editor_graph().curve_elastic()->encode()},
 				{"curve_code_bounce", editor.editor_graph().curve_bounce()->encode()},
 				{GET_KEY(show_library_), show_library_},
+				{GET_KEY(show_x_label_), show_x_label_},
+				{GET_KEY(show_y_label_), show_y_label_},
 				{GET_KEY(show_velocity_graph_), show_velocity_graph_},
 				{GET_KEY(align_handle_), align_handle_},
 				{GET_KEY(ignore_autosaver_warning_), ignore_autosaver_warning_},
@@ -216,7 +205,10 @@ namespace cved {
 				{GET_KEY(preset_size_), preset_size_}
 			};
 
-			return JsonLoader::set_data(global::fp->dll_hinst, "config", data);
+			std::ofstream ofs{ dir_plugin_ / CONFIG_FILE_NAME };
+			if (!ofs) return false;
+			ofs << data.dump(4);
+			return true;
 		}
 
 #undef GET_KEY

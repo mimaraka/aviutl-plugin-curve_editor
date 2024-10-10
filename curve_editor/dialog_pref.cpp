@@ -1,10 +1,10 @@
-#include "dialog_pref.hpp"
 #include "config.hpp"
+#include "dialog_pref.hpp"
 #include "enum.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 
@@ -35,7 +35,7 @@ namespace cved {
 	}
 
 
-	int PrefDialog::i_resource() const noexcept { return IDD_PREF; }
+	int PrefDialog::resource_id() const noexcept { return IDD_PREF; }
 
 
 	void PrefDialog::init_controls(HWND hwnd) noexcept {
@@ -43,6 +43,7 @@ namespace cved {
 		RECT rect_child = { 100, 7, 400, 207 };
 		::MapDialogRect(hwnd, &rect_child);
 
+		::SendMessageA(hwnd_list_categories_, WM_SETREDRAW, FALSE, NULL);
 		for (auto& category : categories_) {
 			// リストに項目を追加
 			::SendMessageA(hwnd_list_categories_, LB_ADDSTRING, NULL, (LPARAM)category.name);
@@ -64,6 +65,7 @@ namespace cved {
 				TRUE
 			);
 		}
+		::SendMessageA(hwnd_list_categories_, WM_SETREDRAW, TRUE, NULL);
 		::SendMessageA(hwnd_list_categories_, LB_SETCURSEL, 0, NULL);
 	}
 
@@ -98,10 +100,11 @@ namespace cved {
 			::SendMessageA(category.hwnd, WM_COMMAND, (WPARAM)WindowCommand::SaveConfig, NULL);
 		}
 		global::config.save_json();
+		global::webview_main.post_message(L"editor-graph", L"applyPreferences");
 	}
 
 
-	INT_PTR PrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+	INT_PTR PrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
 		using StringId = global::StringTable::StringId;
 
 		switch (message) {
@@ -115,7 +118,6 @@ namespace cved {
 			switch (LOWORD(wparam)) {
 			case IDOK:
 				save_config();
-				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				::EndDialog(hwnd, IDOK);
 				return TRUE;
 
@@ -125,7 +127,6 @@ namespace cved {
 
 			case IDC_BUTTON_APPLY:
 				save_config();
-				global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				return TRUE;
 
 			case IDC_BUTTON_RESET:
@@ -138,7 +139,6 @@ namespace cved {
 				if (resp == IDOK) {
 					global::config.reset_pref();
 					load_config();
-					global::window_main.send_command((WPARAM)WindowCommand::Update, NULL);
 				}
 				return TRUE;
 			}

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <mkaul/include/window.hpp>
 #include "curve.hpp"
+#include <mkaul/window.hpp>
 
 
 namespace cved {

@@ -24,6 +24,7 @@
     <ProjectGuid>{3707b818-7019-4032-9e23-7f86515907cf}</ProjectGuid>
     <RootNamespace>curveeditor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WebView2LoaderPreference>Static</WebView2LoaderPreference>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -90,19 +91,23 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\boost_1_69_0\include\boost-1_83\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl110\plugins"
-copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</Command>
+      <Command>xcopy /y "$(ProjectDir)curve_editor.lua" "$(OutDir)"
+xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"
+rd /s /q "$(OutDir)ui"
+xcopy /s /y /i "$(ProjectDir)ui" "$(OutDir)ui"
+node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>
@@ -119,7 +124,9 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\cpplibs;C:\aviutl_libs;C:\aviutl_libs\aviutl_exedit_sdk\;C:\cpplibs\boost_1_69_0\include\boost-1_83\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,11 +135,15 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
-      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl110\plugins"</Command>
+      <Command>xcopy /y "$(ProjectDir)curve_editor.lua" "$(OutDir)"
+xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"
+rd /s /q "$(OutDir)ui"
+xcopy /s /y /i "$(ProjectDir)ui" "$(OutDir)ui"
+node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>
@@ -180,8 +191,7 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="actctx_manager.hpp" />
-    <ClInclude Include="control_point.hpp" />
+    <ClInclude Include="actctx_helper.hpp" />
     <ClInclude Include="curve_bezier.hpp" />
     <ClInclude Include="curve_bounce.hpp" />
     <ClInclude Include="curve_editor_script.hpp" />
@@ -194,22 +204,28 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
     <ClInclude Include="curve_value.hpp" />
     <ClInclude Include="dialog.hpp" />
     <ClInclude Include="dialog_about.hpp" />
-    <ClInclude Include="dialog_bezier_param.hpp" />
+    <ClInclude Include="dialog_curve_param.hpp" />
     <ClInclude Include="dialog_curve_code.hpp" />
-    <ClInclude Include="dialog_curve_discretization.hpp" />
+    <ClInclude Include="dialog_modifier_discretization.hpp" />
     <ClInclude Include="dialog_id_jumpto.hpp" />
+    <ClInclude Include="dialog_modifier.hpp" />
+    <ClInclude Include="dialog_modifier_noise.hpp" />
+    <ClInclude Include="dialog_modifier_sine_wave.hpp" />
+    <ClInclude Include="dialog_modifier_square_wave.hpp" />
     <ClInclude Include="dialog_pref.hpp" />
     <ClInclude Include="dialog_pref_appearance.hpp" />
     <ClInclude Include="dialog_pref_behavior.hpp" />
     <ClInclude Include="dialog_pref_editing.hpp" />
     <ClInclude Include="dialog_pref_general.hpp" />
     <ClInclude Include="dialog_warning_autosaver.hpp" />
+    <ClInclude Include="host_object_curve_normal.hpp" />
+    <ClInclude Include="host_object_editor_script.hpp" />
+    <ClInclude Include="modifier_discretization.hpp" />
     <ClInclude Include="drag_and_drop.hpp" />
     <ClInclude Include="enum.hpp" />
     <ClInclude Include="config.hpp" />
     <ClInclude Include="constants.hpp" />
     <ClInclude Include="curve.hpp" />
-    <ClInclude Include="curve_data.hpp" />
     <ClInclude Include="curve_editor.hpp" />
     <ClInclude Include="exedit_hook.hpp" />
     <ClInclude Include="filter_exit.hpp" />
@@ -219,42 +235,37 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
     <ClInclude Include="filter_wndproc.hpp" />
     <ClInclude Include="global.hpp" />
     <ClInclude Include="curve_graph.hpp" />
-    <ClInclude Include="handle_bezier.hpp" />
-    <ClInclude Include="handle_elastic_freq_decay.hpp" />
-    <ClInclude Include="handle_elastic_amp.hpp" />
+    <ClInclude Include="host_object_curve_bezier.hpp" />
+    <ClInclude Include="host_object_curve_bounce.hpp" />
+    <ClInclude Include="host_object_curve_graph.hpp" />
+    <ClInclude Include="host_object_curve_linear.hpp" />
+    <ClInclude Include="host_object_editor.hpp" />
+    <ClInclude Include="host_object_editor_graph.hpp" />
+    <ClInclude Include="host_object_config.hpp" />
     <ClInclude Include="json_loader.hpp" />
     <ClInclude Include="menu.hpp" />
     <ClInclude Include="menu_bezier_handle.hpp" />
-    <ClInclude Include="menu_curve.hpp" />
-    <ClInclude Include="menu_edit_mode.hpp" />
+    <ClInclude Include="menu_curve_segment.hpp" />
     <ClInclude Include="menu_graph.hpp" />
     <ClInclude Include="menu_id.hpp" />
-    <ClInclude Include="menu_more.hpp" />
-    <ClInclude Include="my_button.hpp" />
+    <ClInclude Include="menu_others.hpp" />
+    <ClInclude Include="modifier.hpp" />
+    <ClInclude Include="modifier_sine_wave.hpp" />
+    <ClInclude Include="modifier_square_wave.hpp" />
     <ClInclude Include="my_messagebox.hpp" />
-    <ClInclude Include="notification.hpp" />
+    <ClInclude Include="modifier_noise.hpp" />
     <ClInclude Include="preferences.hpp" />
     <ClInclude Include="trackbar_button.hpp" />
     <ClInclude Include="preset.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="string_table.hpp" />
-    <ClInclude Include="theme.hpp" />
     <ClInclude Include="util.hpp" />
-    <ClInclude Include="version.hpp" />
-    <ClInclude Include="view.hpp" />
-    <ClInclude Include="view_graph.hpp" />
-    <ClInclude Include="view_preset.hpp" />
-    <ClInclude Include="wndproc_editor.hpp" />
-    <ClInclude Include="wndproc_grapheditor.hpp" />
-    <ClInclude Include="wndproc_library.hpp" />
-    <ClInclude Include="wndproc_main.hpp" />
-    <ClInclude Include="wndproc_toolbar.hpp" />
-    <ClInclude Include="wndproc_texteditor.hpp" />
+    <ClInclude Include="webmessage_handler.hpp" />
+    <ClInclude Include="my_webview2.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="actctx_manager.cpp" />
+    <ClCompile Include="actctx_helper.cpp" />
     <ClCompile Include="config.cpp" />
-    <ClCompile Include="control_point.cpp" />
     <ClCompile Include="curve.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -272,30 +283,69 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
     <ClCompile Include="curve_graph.cpp" />
     <ClCompile Include="dialog.cpp" />
     <ClCompile Include="dialog_about.cpp" />
-    <ClCompile Include="dialog_bezier_param.cpp" />
+    <ClCompile Include="dialog_curve_param.cpp" />
     <ClCompile Include="dialog_curve_code.cpp" />
-    <ClCompile Include="dialog_curve_discretization.cpp" />
+    <ClCompile Include="dialog_modifier_discretization.cpp" />
     <ClCompile Include="dialog_id_jumpto.cpp" />
+    <ClCompile Include="dialog_modifier.cpp" />
+    <ClCompile Include="dialog_modifier_noise.cpp" />
+    <ClCompile Include="dialog_modifier_sine_wave.cpp" />
+    <ClCompile Include="dialog_modifier_square_wave.cpp" />
     <ClCompile Include="dialog_pref.cpp" />
     <ClCompile Include="dialog_pref_appearance.cpp" />
     <ClCompile Include="dialog_pref_behavior.cpp" />
     <ClCompile Include="dialog_pref_editing.cpp" />
     <ClCompile Include="dialog_pref_general.cpp" />
     <ClCompile Include="dialog_warning_autosaver.cpp" />
+    <ClCompile Include="host_object_config.cpp" />
+    <ClCompile Include="host_object_curve_normal.cpp" />
+    <ClCompile Include="modifier_discretization.cpp" />
     <ClCompile Include="drag_and_drop.cpp" />
     <ClCompile Include="filter_exit.cpp" />
     <ClCompile Include="filter_init.cpp" />
     <ClCompile Include="filter_project_load.cpp" />
     <ClCompile Include="filter_project_save.cpp" />
     <ClCompile Include="filter_wndproc.cpp" />
+    <ClInclude Include="host_object_curve_elastic.hpp" />
+    <ClCompile Include="host_object_curve_bezier.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="host_object_curve_bounce.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="host_object_curve_elastic.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="host_object_curve_linear.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="host_object_editor_graph.cpp" />
+    <ClCompile Include="host_object_curve_graph.cpp" />
     <ClCompile Include="json_loader.cpp" />
     <ClCompile Include="menu.cpp" />
-    <ClCompile Include="menu_bezier_handle.cpp" />
-    <ClCompile Include="menu_curve.cpp" />
-    <ClCompile Include="menu_edit_mode.cpp" />
+    <ClCompile Include="menu_bezier_handle.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="menu_curve_segment.cpp" />
     <ClCompile Include="menu_graph.cpp" />
     <ClCompile Include="menu_id.cpp" />
-    <ClCompile Include="menu_more.cpp" />
+    <ClCompile Include="menu_others.cpp" />
+    <ClCompile Include="modifier_noise.cpp" />
+    <ClCompile Include="modifier_sine_wave.cpp" />
+    <ClCompile Include="modifier_square_wave.cpp" />
     <ClCompile Include="preferences.cpp" />
     <ClCompile Include="trackbar_button.cpp" />
     <ClCompile Include="util.cpp" />
@@ -333,47 +383,61 @@ copy "$(TargetPath)" "C:\Program_Files_Portable\AviUtl\aviutl-110-092\plugins"</
     </ClCompile>
     <ClCompile Include="dll_export.cpp" />
     <ClCompile Include="exedit_hook.cpp" />
-    <ClCompile Include="func_lua.cpp" />
-    <ClCompile Include="handle_bezier.cpp" />
-    <ClCompile Include="handle_bounce.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClInclude Include="handle_bounce.hpp" />
-    <ClCompile Include="handle_elastic_amp.cpp" />
-    <ClCompile Include="handle_elastic_freq_decay.cpp" />
+    <ClCompile Include="lua_export.cpp" />
+    <ClCompile Include="my_webview2.cpp" />
     <ClCompile Include="preset.cpp" />
     <ClCompile Include="string_table.cpp" />
-    <ClCompile Include="version.cpp" />
-    <ClCompile Include="view_graph.cpp" />
-    <ClCompile Include="view_preset.cpp" />
-    <ClCompile Include="wndproc_editor.cpp" />
-    <ClCompile Include="wndproc_grapheditor.cpp" />
-    <ClCompile Include="wndproc_library.cpp" />
-    <ClCompile Include="wndproc_main.cpp" />
-    <ClCompile Include="wndproc_toolbar.cpp" />
-    <ClCompile Include="wndproc_texteditor.cpp" />
+    <ClCompile Include="webmessage_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="%40Curve Editor.tra" />
     <None Include="curve_editor.def" />
+    <ClInclude Include="modifier_base.hpp" />
+    <None Include="curve_editor.lua" />
+    <None Include="minify.js" />
+    <None Include="packages.config" />
     <None Include="resources\cursor\drag.cur" />
+    <None Include="ui\css\editor_graph.css" />
+    <None Include="ui\css\editor_text.css" />
+    <None Include="ui\css\panel_editor.css" />
+    <None Include="ui\css\panel_main.css" />
+    <None Include="ui\css\preset.css" />
+    <None Include="ui\css\select_dialog.css" />
+    <None Include="ui\css\toolbar.css" />
+    <None Include="ui\css\variables.css" />
+    <None Include="ui\editor_graph.html" />
+    <None Include="ui\editor_text.html" />
+    <None Include="ui\js\curve.js" />
+    <None Include="ui\js\editor_graph.js" />
+    <None Include="ui\js\editor_text.js" />
+    <None Include="ui\js\handles.js" />
+    <None Include="ui\js\panel_editor.js" />
+    <None Include="ui\js\panel_main.js" />
+    <None Include="ui\js\preset.js" />
+    <None Include="ui\js\select_dialog.js" />
+    <None Include="ui\js\toolbar.js" />
+    <None Include="ui\panel_editor.html" />
+    <None Include="ui\panel_main.html" />
+    <None Include="ui\preset.html" />
+    <None Include="ui\select_dialog.html" />
+    <None Include="ui\toolbar.html" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\icon\dark\back.png" />
-    <Image Include="resources\icon\dark\clear.png" />
-    <Image Include="resources\icon\dark\copy.png" />
-    <Image Include="resources\icon\dark\fit.png" />
-    <Image Include="resources\icon\dark\more.png" />
-    <Image Include="resources\icon\dark\next.png" />
-    <Image Include="resources\icon\dark\read.png" />
-    <Image Include="resources\icon\dark\save.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="manifest.xml" />
+    <Xml Include="resources\manifest.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\native\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\native\Microsoft.Web.WebView2.targets')" />
+    <Import Project="..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\native\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.2592.51\build\native\Microsoft.Web.WebView2.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.ImplementationLibrary.1.0.240122.1\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+  </Target>
 </Project>

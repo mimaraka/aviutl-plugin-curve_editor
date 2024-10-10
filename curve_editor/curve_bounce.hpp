@@ -1,7 +1,7 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph_numeric.hpp"
-#include "handle_bounce.hpp"
 
 
 
@@ -10,68 +10,68 @@ namespace cved {
 	class BounceCurve : public NumericGraphCurve {
 		static constexpr double DEFAULT_COR = 0.6;
 		static constexpr double DEFAULT_PERIOD = 0.5;
-		BounceHandle handle_;
 		double cor_;
 		double period_;
+		bool reversed_;
 
 	public:
 		// コンストラクタ
 		BounceCurve(
-			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u,
+			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. },
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			double cor = DEFAULT_COR,
-			double period = DEFAULT_PERIOD
+			double period = DEFAULT_PERIOD,
+			bool reversed = false
 		);
 		~BounceCurve() {}
 
 		// コピーコンストラクタ
 		BounceCurve(const BounceCurve& curve) noexcept;
 
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_BOUNCE; }
+
 		// カーブの値を生成
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
+		bool is_default() const noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
+		bool is_reversed() const noexcept { return reversed_; }
 
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
+		auto get_cor() const noexcept { return cor_; }
+		auto get_period() const noexcept { return period_; }
+
+		double get_handle_x() const noexcept;
+		double get_handle_y() const noexcept;
+		void set_handle(double x, double y) noexcept;
 
 		// カーブから一意な整数値を生成
 		int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
-		void draw_handle(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float thickness,
-			float root_radius,
-			float tip_radius,
-			float tip_thickness,
-			bool cutoff_line,
-			const mkaul::ColorF& color = mkaul::ColorF{}
-		) const noexcept override;
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				cor_,
+				period_
+			);
+		}
 
-		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
-
-		bool handle_check_hover(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-
-		bool handle_update(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-		void handle_end_control() noexcept override;
-
-		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_begin_move(ActivePoint active_pt) noexcept override;
-		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept override;
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				cor_,
+				period_
+			);
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::BounceCurve, 0)
+CEREAL_REGISTER_TYPE(cved::BounceCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::BounceCurve)

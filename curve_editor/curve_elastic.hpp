@@ -1,8 +1,7 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph_numeric.hpp"
-#include "handle_elastic_amp.hpp"
-#include "handle_elastic_freq_decay.hpp"
 
 
 
@@ -12,70 +11,80 @@ namespace cved {
 		static constexpr double DEFAULT_AMP = 1.;
 		static constexpr double DEFAULT_FREQ = 8.;
 		static constexpr double DEFAULT_DECAY = 6.;
-		ElasticAmpHandle handle_amp_;
-		ElasticFreqDecayHandle handle_freq_decay_;
 		double amp_;
 		double freq_;
 		double decay_;
+		bool reversed_;
 
 	public:
 		// コンストラクタ
 		ElasticCurve(
-			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u,
+			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. },
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			double amp = DEFAULT_AMP,
 			double freq = DEFAULT_FREQ,
-			double decay = DEFAULT_DECAY
+			double decay = DEFAULT_DECAY,
+			bool reversed = false
 		) noexcept;
 
 		// コピーコンストラクタ
 		ElasticCurve(const ElasticCurve& curve) noexcept;
 
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_ELASTIC; }
+
 		// カーブの値を取得
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
+		bool is_default() const noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
+		bool is_reversed() const noexcept { return reversed_; }
 
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
+		auto get_amp() const noexcept { return amp_; }
+		auto get_freq() const noexcept { return freq_; }
+		auto get_decay() const noexcept { return decay_; }
+
+		double get_handle_amp_left_x() const noexcept { return anchor_start().x; }
+		double get_handle_amp_left_y() const noexcept;
+		double get_handle_amp_right_x() const noexcept { return anchor_end().x; }
+		double get_handle_amp_right_y() const noexcept { return get_handle_amp_left_y(); }
+		double get_handle_freq_decay_x() const noexcept;
+		double get_handle_freq_decay_y() const noexcept;
+		double get_handle_freq_decay_root_y() const noexcept;
+
+		void set_handle_amp_left(double y) noexcept;
+		void set_handle_amp_right(double y) noexcept { set_handle_amp_left(y); }
+		void set_handle_freq_decay(double x, double y) noexcept;
 
 		// カーブから一意な整数値を生成
 		int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
-		void draw_handle(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float thickness,
-			float root_radius,
-			float tip_radius,
-			float tip_thickness,
-			bool cutoff_line,
-			const mkaul::ColorF& color = mkaul::ColorF{}
-		) const noexcept override;
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				amp_,
+				freq_,
+				decay_
+			);
+		}
 
-		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
-
-		bool handle_check_hover(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-
-		bool handle_update(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-		void handle_end_control() noexcept override;
-
-		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_begin_move(ActivePoint active_pt) noexcept override;
-		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept override;
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				amp_,
+				freq_,
+				decay_
+			);
+		}
 	};
 }
+
+CEREAL_CLASS_VERSION(cved::ElasticCurve, 0)
+CEREAL_REGISTER_TYPE(cved::ElasticCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::NumericGraphCurve, cved::ElasticCurve)

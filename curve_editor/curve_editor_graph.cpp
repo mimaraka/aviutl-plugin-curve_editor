@@ -1,5 +1,5 @@
-#include "curve_editor_graph.hpp"
 #include "config.hpp"
+#include "curve_editor_graph.hpp"
 #include "enum.hpp"
 
 
@@ -9,9 +9,9 @@ namespace cved {
 		GraphCurveEditor::GraphCurveEditor() :
 			curves_normal_{},
 			curves_value_{},
-			curve_bezier_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, 0u, 0u, true},
-			curve_elastic_{ mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}, 0u, 0u, true },
-			curve_bounce_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, 0u, 0u, true }
+			curve_bezier_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true},
+			curve_elastic_{ mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}, true },
+			curve_bounce_{ mkaul::Point{0., 0.}, mkaul::Point{1., 1.}, true }
 		{
 			reset_id_curves();
 			curve_bezier_.clear();
@@ -53,6 +53,24 @@ namespace cved {
 			idx_value_ = curves_value_.size() - 1;
 		}
 
+		void GraphCurveEditor::delete_last_idx_normal() noexcept {
+			if (1u < curves_normal_.size()) {
+				curves_normal_.pop_back();
+				if (idx_normal_ == curves_normal_.size()) {
+					idx_normal_ = curves_normal_.size() - 1;
+				}
+			}
+		}
+
+		void GraphCurveEditor::delete_last_idx_value() noexcept {
+			if (1u < curves_value_.size()) {
+				curves_value_.pop_back();
+				if (idx_value_ == curves_value_.size()) {
+					idx_value_ = curves_value_.size() - 1;
+				}
+			}
+		}
+
 		void GraphCurveEditor::reset_id_curves() noexcept {
 			curves_normal_.clear();
 			curves_normal_.emplace_back(NormalCurve{});
@@ -83,9 +101,8 @@ namespace cved {
 			else return nullptr;
 		}
 
-		GraphCurve* GraphCurveEditor::current_curve() noexcept {
-
-			switch (global::config.get_edit_mode()) {
+		GraphCurve* GraphCurveEditor::get_curve(EditMode mode) noexcept {
+			switch (mode) {
 			case EditMode::Bezier:
 				return &curve_bezier_;
 
@@ -106,6 +123,10 @@ namespace cved {
 			}
 		}
 
+		GraphCurve* GraphCurveEditor::current_curve() noexcept {
+			return get_curve(global::config.get_edit_mode());
+		}
+
 		NumericGraphCurve* GraphCurveEditor::numeric_curve() noexcept {
 			switch (global::config.get_edit_mode()) {
 			case EditMode::Bezier:
@@ -122,51 +143,8 @@ namespace cved {
 			}
 		}
 
-		// NormalCurveのvectorのデータを作成
-		void GraphCurveEditor::create_data_normal(std::vector<byte>& data) const noexcept {
-			data.clear();
-			for (const auto& curve : curves_normal_) {
-				std::vector<byte> tmp;
-				curve.create_data(tmp);
-				// データのサイズ
-				uint32_t size = tmp.size();
-				auto bytes_size = reinterpret_cast<byte*>(&size);
-				// サイズの情報(4バイト)をねじ込む
-				tmp.insert(tmp.begin(), bytes_size, bytes_size + sizeof(uint32_t) / sizeof(byte));
-				// データの連結
-				std::copy(tmp.begin(), tmp.end(), std::back_inserter(data));
-			}
-		}
-
-		// NormalCurveのデータを読み込み
-		bool GraphCurveEditor::load_data_normal(const byte* data, size_t size) noexcept {
-			constexpr size_t SIZE_N = sizeof(uint32_t) / sizeof(byte);
-
-			std::vector<NormalCurve> vec_tmp;
-			for (size_t idx = 0u; idx < size;) {
-				// idxからsizeまでのバイト数が4バイト未満(サイズ情報が取得できない)の場合
-				if (size < idx + SIZE_N) return false;
-				// サイズ情報の取得
-				auto p_size = reinterpret_cast<const uint32_t*>(data + idx);
-				// データが記述されている部分までインデックスを進める
-				idx += SIZE_N;
-				// idxからsizeまでのバイト数がサイズ情報のサイズより小さい(データが無効)場合
-				if (size < idx + *p_size) return false;
-				// NormalCurveのデータの読み込み
-				NormalCurve curve;
-				if (!curve.load_data(data + idx, *p_size)) return false;
-				// 読み込みに成功したらインデックスを進め、カーブをアペンド
-				idx += *p_size;
-				vec_tmp.emplace_back(std::move(curve));
-			}
-			curves_normal_ = std::move(vec_tmp);
-			// インデックスをリセット
-			idx_normal_ = 0;
-			return true;
-		}
-
 		// v1.xのカーブのデータを読み取り
-		bool GraphCurveEditor::load_data_v1(const byte* data) noexcept {
+		bool GraphCurveEditor::load_v1_data(const byte* data) noexcept {
 			constexpr size_t CURVE_N = 1024u;
 			constexpr size_t POINT_N = 64u;
 			constexpr size_t SIZE_CURVE_POINT = 28u;
@@ -181,17 +159,26 @@ namespace cved {
 
 			auto curve_data = reinterpret_cast<const CurveDataV1*>(data);
 			std::vector<NormalCurve> vec_tmp;
+			bool flag_default = true;
 
-			for (size_t i = 0u; i < CURVE_N; i++) {
+			for (int i = CURVE_N - 1; 0 <= i; i--) {
 				// sizeの値が不正でないことをチェック
-				if (POINT_N < curve_data[i].size) return false;
-				NormalCurve curve;
-				if (!curve.load_data_v1(reinterpret_cast<const byte*>(&curve_data[i]), curve_data[i].size)) {
+				if (POINT_N < curve_data[i].size) {
 					return false;
 				}
-				// 読み込みに成功したらカーブをアペンド
-				vec_tmp.emplace_back(std::move(curve));
+				NormalCurve curve;
+				if (!curve.load_v1_data(reinterpret_cast<const byte*>(&curve_data[i]), curve_data[i].size)) {
+					return false;
+				}
+				// 末尾までデフォルトのカーブが連続している部分をスキップ
+				if (flag_default and !curve.is_default()) {
+					flag_default = false;
+				}
+				if (!flag_default) {
+					vec_tmp.emplace_back(std::move(curve));
+				}
 			}
+			vec_tmp.reserve(vec_tmp.capacity());
 			curves_normal_ = std::move(vec_tmp);
 			// インデックスをリセット
 			idx_normal_ = 0;

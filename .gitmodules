@@ -1,0 +1,23 @@
+[submodule "curve_editor/external/json"]
+	path = curve_editor/external/json
+	url = https://github.com/nlohmann/json
+	branch = master
+[submodule "curve_editor/external/strconv"]
+	path = curve_editor/external/strconv
+	url = https://github.com/javacommons/strconv
+[submodule "curve_editor/external/aviutl_exedit_sdk"]
+	path = curve_editor/external/aviutl_exedit_sdk
+	url = https://github.com/ePi5131/aviutl_exedit_sdk
+[submodule "curve_editor/external/aviutl-mkaul"]
+	path = curve_editor/external/aviutl-mkaul
+	url = https://github.com/mimaraka/aviutl-mkaul
+	branch = develop
+[submodule "curve_editor/external/cereal"]
+	path = curve_editor/external/cereal
+	url = https://github.com/USCiLab/cereal.git
+[submodule "curve_editor/external/FastNoiseLite"]
+	path = curve_editor/external/FastNoiseLite
+	url = https://github.com/Auburn/FastNoiseLite.git
+[submodule "curve_editor/external/sol2"]
+	path = curve_editor/external/sol2
+	url = https://github.com/ThePhD/sol2.git

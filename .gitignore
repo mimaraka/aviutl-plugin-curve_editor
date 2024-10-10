@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# JavaScript library files
+curve_editor/ui/js/libs/
+
+# Font Awesome
+curve_editor/ui/fontawesome/

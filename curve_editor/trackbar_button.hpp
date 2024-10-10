@@ -1,8 +1,9 @@
 #pragma once
 
 #include "exedit_hook.hpp"
-#include <mkaul/include/rectangle.hpp>
-#include <mkaul/include/graphics.hpp>
+#include <d2d1.h>
+#include <mkaul/graphics.hpp>
+#include <mkaul/rectangle.hpp>
 
 
 
@@ -18,6 +19,7 @@ namespace cved {
 		auto track_idx() const noexcept { return track_idx_; }
 		bool is_hovered() const noexcept;
 		bool is_visible() const noexcept { return ::IsWindowVisible(hwnd_); }
-		void highlight(mkaul::graphics::Graphics* p_graphics) const noexcept;
+		void highlight(ID2D1DCRenderTarget* p_render_target) const noexcept;
+		void unhighlight() const noexcept;
 	};
 }

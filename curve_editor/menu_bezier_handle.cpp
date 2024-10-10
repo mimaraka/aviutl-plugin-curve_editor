@@ -1,9 +1,9 @@
-#include "menu_bezier_handle.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
+#include "menu_bezier_handle.hpp"
 #include "my_messagebox.hpp"
-#include "string_table.hpp"
 #include "resource.h"
+#include "string_table.hpp"
 
 
 
@@ -64,16 +64,16 @@ namespace cved {
 			tmp.y,
 			0, hwnd, NULL
 		);
-		return callback(idx, handle_type, view, ret);
+		return callback(idx, handle_type, view, (int16_t)ret);
 	}
 
 	bool BezierHandleMenu::callback(size_t idx, BezierHandle::Type handle_type, const GraphView& view, uint16_t id) noexcept {
 		using StringId = global::StringTable::StringId;
 		switch (id) {
 		case ID_BEZIER_HANDLE_ROTATE:
-			if (global::editor.editor_graph().curve_normal()->adjust_segment_handle_angle(idx, handle_type, view)) {
-				global::window_grapheditor.redraw();
-			}
+			//if (global::editor.editor_graph().curve_normal()->adjust_segment_handle_angle(idx, handle_type, view)) {
+			//	//global::window_grapheditor.redraw();
+			//}
 			break;
 
 		case ID_BEZIER_HANDLE_ROOT:
