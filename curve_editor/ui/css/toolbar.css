@@ -48,7 +48,7 @@ body {
     text-overflow: ellipsis;
     user-select: none;
     transition: all .2s ease-out;
-    /* box-shadow: 0 1px 5px 1px rgba(0, 0, 0, 0.3); */
+    font: var(--font);
 }
 
 .menu-button:hover {

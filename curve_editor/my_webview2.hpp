@@ -45,6 +45,9 @@ namespace cved {
 				);
 			}
 			
+			if (!is_ready_) {
+				return;
+			}
 			std::vector<std::wstring> arg_list = { args... };
 			std::wstring options = L"";
 			for (size_t i = 0; i < arg_list.size(); i += 2) {
@@ -59,6 +62,7 @@ namespace cved {
 		}
 		
 		bool init(HWND hwnd, std::function<void(MyWebView2*)> after_callback);
+		bool ready() const noexcept { return is_ready_; }
 		void destroy() noexcept;
 		auto get_webview() const noexcept { return webview_.get(); }
 		auto get_hwnd() const noexcept { return hwnd_; }

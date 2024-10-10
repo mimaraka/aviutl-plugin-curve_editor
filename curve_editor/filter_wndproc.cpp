@@ -15,48 +15,6 @@
 
 
 namespace cved {
-	// キー押下時の処理
-	void on_keydown(WPARAM wparam) {
-		switch (wparam) {
-		case VK_LEFT:
-			if (!global::editor.editor_graph().numeric_curve()) {
-				//global::window_toolbar.send_command((WPARAM)WindowCommand::IdBack);
-			}
-			break;
-
-		case VK_RIGHT:
-			if (!global::editor.editor_graph().numeric_curve()) {
-				//global::window_toolbar.send_command((WPARAM)WindowCommand::IdNext);
-			}
-			break;
-
-		case VK_DELETE:
-			//global::window_toolbar.send_command((WPARAM)WindowCommand::Clear);
-			break;
-
-		case 'A':
-			global::config.set_align_handle(!global::config.get_align_handle());
-			break;
-
-		case 'C':
-			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000 and global::editor.editor_graph().numeric_curve()) {
-				//global::window_toolbar.send_command((WPARAM)WindowCommand::Copy);
-			}
-			break;
-
-		case 'R':
-			//global::window_grapheditor.send_command((WPARAM)WindowCommand::Reverse);
-			break;
-
-		case 'S':
-			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000) {
-				//global::window_toolbar.send_command((WPARAM)WindowCommand::Save);
-			}
-			break;
-		}
-	}
-
-
 	// ウィンドウプロシージャ
 	BOOL filter_wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM, AviUtl::EditHandle*, AviUtl::FilterPlugin* fp) {
 		using WindowMessage = AviUtl::FilterPlugin::WindowMessage;
@@ -109,12 +67,6 @@ namespace cved {
 
 		case WM_MOVE:
 			my_webview.on_move();
-			break;
-
-		case WM_KEYDOWN:
-			if (global::config.get_enable_hotkeys()) {
-				on_keydown(wparam);
-			}
 			break;
 
 		case WM_MOUSEMOVE:

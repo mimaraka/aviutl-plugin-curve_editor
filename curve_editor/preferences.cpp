@@ -11,7 +11,7 @@ namespace cved {
 		theme_id = ThemeId::System;
 		curve_color = mkaul::ColorF{ 136, 176, 196 };
 		curve_thickness = 1.5f;
-		curve_resolution = 500u;
+		curve_resolution = 400u;
 		bg_image_path = "";
 		bg_image_opacity = 0.3f;
 		show_popup = true;

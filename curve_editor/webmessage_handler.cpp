@@ -179,7 +179,7 @@ namespace cved {
 					menu.show(reinterpret_cast<GraphCurve*>(curve_ptr), hwnd);
 				}
 			}
-			else if (command == "grapheditor-reverse") {
+			else if (command == "reverse") {
 				auto curve = global::editor.editor_graph().current_curve();
 				if (curve) {
 					curve->reverse();

@@ -28,10 +28,10 @@ namespace cved {
 		};
 		lua.set_function("noise", sol::overload(
 			noise,
-			[noise](double amp, double freq, double phase, int octaves) mutable { return noise(amp, freq, phase, octaves); },
-			[noise](double amp, double freq, double phase) mutable { return noise(amp, freq, phase); },
-			[noise](double amp, double freq) mutable { return noise(amp, freq); },
-			[noise](double amp) mutable { return noise(amp); },
+			[noise](double amp, float freq, double phase, int octaves) { return noise(amp, freq, phase, octaves); },
+			[noise](double amp, float freq, double phase) { return noise(amp, freq, phase); },
+			[noise](double amp, float freq) { return noise(amp, freq); },
+			[noise](double amp) { return noise(amp); },
 			[noise]() mutable { return noise(); }
 		));
 		try {

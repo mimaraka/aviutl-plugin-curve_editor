@@ -392,15 +392,43 @@ const fit = (customDuration = 700) => {
 $('#fit').on('click', () => fit());
 
 $(window).on('keydown', event => {
+    if (!config.enableHotkeys) {
+        return;
+    }
     switch (event.key) {
     case 'Home':
         fit();
         break;
 
-    case 'R':
+    case 'Delete':
         window.top.postMessage({
             to: 'native',
-            command: 'grapheditor-reverse'
+            command: 'clear'
+        }, '*');
+        break;
+
+    case 'r':
+        window.top.postMessage({
+            to: 'native',
+            command: 'reverse'
+        }, '*');
+        break;
+
+    case 'a':
+        config.alignHandle = !config.alignHandle;
+        break;
+
+    case 'ArrowLeft':
+        window.top.postMessage({
+            to: 'panel-editor',
+            command: 'goBackId'
+        }, '*');
+        break
+
+    case 'ArrowRight':
+        window.top.postMessage({
+            to: 'panel-editor',
+            command: 'goForwardId'
         }, '*');
         break;
     }    

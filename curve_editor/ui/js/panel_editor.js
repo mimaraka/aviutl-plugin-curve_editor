@@ -5,8 +5,16 @@ window.addEventListener('message', event => {
                 updateIdButtons();
                 break;
 
-            case 'updateParamButton':
+            case 'updateParam':
                 updateParamButton();
+                break;
+
+            case 'goBackId':
+                goBackId();
+                break;
+
+            case 'goForwardId':
+                goForwardId();
                 break;
         }
     }
@@ -17,6 +25,23 @@ window.addEventListener('message', event => {
         window.top.chrome.webview.postMessage(event.data);
     }
 });
+
+const goBackId = () => {
+    editor.advanceIdx(-1);
+    updateIdButtons();
+    $('#editor')[0].contentWindow.postMessage({
+        command: 'changeId'
+    }, '*');
+}
+
+const goForwardId = () => {
+    editor.advanceIdx(1);
+    updateIdButtons();
+    $('#editor')[0].contentWindow.postMessage({
+        command: 'changeId'
+    }, '*');
+}
+
 
 // IDボタン群を作成
 const createIdButtons = () => {
@@ -32,19 +57,11 @@ const createIdButtons = () => {
     });
 
     $('#button-id-back').on('mousedown', () => {
-        editor.advanceIdx(-1);
-        updateIdButtons();
-        $('#editor')[0].contentWindow.postMessage({
-            command: 'changeId'
-        }, '*');
+        goBackId();
     });
 
     $('#button-id-forward').on('mousedown', () => {
-        editor.advanceIdx(1);
-        updateIdButtons();
-        $('#editor')[0].contentWindow.postMessage({
-            command: 'changeId'
-        }, '*');
+        goForwardId();
     });
 }
 
@@ -63,7 +80,7 @@ const updateIdButtons = () => {
 }
 
 const createParamButton = () => {
-    $('#buttons-param-id').append('<button class="menu-button" id="button-param" title="カーブのパラメータ"><p class="content"></p></button>');
+    $('#buttons-param-id').append('<button class="menu-button" id="button-param" title="カーブのパラメータ"></button>');
     $('#button-param').on('click', () => {
         window.top.postMessage({
             to: 'native',
@@ -85,7 +102,7 @@ const updateParamButton = () => {
         param = graphEditor.bounce.getParam(graphEditor.getCurrentCurvePtr());
     }
     if (param != undefined) {
-        $('#button-param p').html(param);
+        $('#button-param').html(param);
     }
 }
 

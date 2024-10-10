@@ -20,6 +20,8 @@ namespace cved {
 			register_member(L"showYLabel", DispatchType::PropertyGet, +[] { return global::config.get_show_y_label(); });
 			register_member(L"showHandle", DispatchType::PropertyGet, +[] { return global::config.get_show_handle(); });
 			register_member(L"alignHandle", DispatchType::PropertyGet, +[] { return global::config.get_align_handle(); });
+			register_member(L"alignHandle", DispatchType::PropertyPut, +[](bool align_handle) { return global::config.set_align_handle(align_handle); });
+			register_member(L"enableHotkeys", DispatchType::PropertyGet, +[] { return global::config.get_enable_hotkeys(); });
 			register_member(L"showVelocityGraph", DispatchType::PropertyGet, +[] { return global::config.get_show_velocity_graph(); });
 			register_member(L"enableAnimation", DispatchType::PropertyGet, +[] { return global::config.get_enable_animation(); });
 			register_member(L"autoCopy", DispatchType::PropertyGet, +[] { return global::config.get_auto_copy(); });
