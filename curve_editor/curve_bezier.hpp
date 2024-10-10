@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph_numeric.hpp"
 
 
@@ -25,7 +26,7 @@ namespace cved {
 		// コピーコンストラクタ
 		BezierCurve(const BezierCurve& curve) noexcept;
 
-		std::string get_type() const noexcept override { return "bezier"; }
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_BEZIER; }
 
 		double get_handle_left_x() const noexcept { return anchor_start().x + handle_left_.x; }
 		double get_handle_left_y() const noexcept { return anchor_start().y + handle_left_.y; }

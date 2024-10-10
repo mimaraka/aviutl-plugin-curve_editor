@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph.hpp"
 #include "enum.hpp"
 
@@ -18,7 +19,7 @@ namespace cved {
 
 		ValueCurve(const ValueCurve& curve) noexcept;
 
-		std::string get_type() const noexcept override { return "value"; }
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_VALUE; }
 
 		double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;

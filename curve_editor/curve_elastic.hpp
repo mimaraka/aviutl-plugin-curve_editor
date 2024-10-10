@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph_numeric.hpp"
 
 
@@ -32,7 +33,7 @@ namespace cved {
 		// コピーコンストラクタ
 		ElasticCurve(const ElasticCurve& curve) noexcept;
 
-		std::string get_type() const noexcept override { return "elastic"; }
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_ELASTIC; }
 
 		// カーブの値を取得
 		double curve_function(double progress, double start, double end) const noexcept override;

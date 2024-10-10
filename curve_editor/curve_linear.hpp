@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph.hpp"
 
 
@@ -18,7 +19,7 @@ namespace cved {
 			GraphCurve{ anchor_start, anchor_end, pt_fixed, prev, next }
 		{}
 
-		std::string get_type() const noexcept override { return "linear"; }
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_LINEAR; }
 
 		// カーブの値を取得
 		double curve_function(double progress, double start, double end) const noexcept override;

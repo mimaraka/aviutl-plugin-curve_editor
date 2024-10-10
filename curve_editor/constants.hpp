@@ -6,20 +6,16 @@
 
 namespace cved {
 	namespace global {
-		inline constexpr int MARGIN = 6;
-		inline constexpr int MARGIN_PRESET = 8;
-		inline constexpr int MIN_WIDTH = 100;
-		inline constexpr int MIN_HEIGHT = 200;
 		inline constexpr int SEPARATOR_WIDTH = 8;
-		inline constexpr int MENU_HEIGHT = 75;
 		inline constexpr size_t IDCURVE_MAX_N = 524288u;
-		inline constexpr float ROUND_RADIUS = 4.f;
-		inline constexpr float SEPARATOR_LINE_WIDTH = 3.6f;
-		inline constexpr float SEPARATOR_LINE_LENGTH = 32.f;
-		inline constexpr float HANDLE_THICKNESS_PRESET = 0.8f;
-		inline constexpr float HANDLE_SIZE_PRESET = 0.7f;
-		inline constexpr float HANDLE_BORDER_THICKNESS_PRESET = 0.5f;
-		inline constexpr float POINT_SIZE_PREEST = 2.f;
+
+		inline constexpr auto CURVE_NAME_NORMAL = "normal";
+		inline constexpr auto CURVE_NAME_VALUE = "value";
+		inline constexpr auto CURVE_NAME_BEZIER = "bezier";
+		inline constexpr auto CURVE_NAME_ELASTIC = "elastic";
+		inline constexpr auto CURVE_NAME_BOUNCE = "bounce";
+		inline constexpr auto CURVE_NAME_LINEAR = "linear";
+		inline constexpr auto CURVE_NAME_SCRIPT = "script";
 
 		inline constexpr auto PLUGIN_NAME = "Curve Editor";
 		inline constexpr auto PLUGIN_VERSION = mkaul::Version{

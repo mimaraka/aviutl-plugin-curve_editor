@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve.hpp"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
@@ -17,7 +18,7 @@ namespace cved {
 		ScriptCurve() : script_{DEFAULT_SCRIPT}
 		{}
 
-		std::string get_type() const noexcept override { return "script"; }
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_SCRIPT; }
 		double curve_function(double, double start, double) const noexcept override;
 		void clear() noexcept override { script_ = DEFAULT_SCRIPT; }
 		bool is_default() const noexcept override { return true; }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph.hpp"
 #include "enum.hpp"
 #include <cereal/types/vector.hpp>
@@ -21,7 +22,7 @@ namespace cved {
 		// コピーコンストラクタ
 		NormalCurve(const NormalCurve& curve) noexcept;
 
-		std::string get_type() const noexcept override { return "normal"; }
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_NORMAL; }
 
 		// セグメント数を取得
 		auto segment_n() const noexcept { return curve_segments_.size(); }

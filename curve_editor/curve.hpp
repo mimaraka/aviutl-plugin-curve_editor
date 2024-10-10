@@ -21,6 +21,6 @@ namespace cved {
 		virtual void unlock() noexcept { locked_ = false; }
 		auto is_locked() const noexcept { return locked_; }
 		virtual bool is_default() const noexcept = 0;
-		virtual std::string get_type() const noexcept = 0;
+		constexpr virtual std::string get_type() const noexcept = 0;
 	};
 } // namespace cved

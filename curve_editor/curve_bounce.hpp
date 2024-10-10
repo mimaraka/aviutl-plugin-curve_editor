@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph_numeric.hpp"
 
 
@@ -30,7 +31,7 @@ namespace cved {
 		// コピーコンストラクタ
 		BounceCurve(const BounceCurve& curve) noexcept;
 
-		std::string get_type() const noexcept override { return "bounce"; }
+		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_BOUNCE; }
 
 		// カーブの値を生成
 		double curve_function(double progress, double start, double end) const noexcept override;
