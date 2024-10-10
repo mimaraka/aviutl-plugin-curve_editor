@@ -100,7 +100,7 @@ namespace cved {
 			::SendMessageA(category.hwnd, WM_COMMAND, (WPARAM)WindowCommand::SaveConfig, NULL);
 		}
 		global::config.save_json();
-		::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::ApplyPreferences, NULL);
+		global::webview_main.post_message(L"editor-graph", L"applyPreferences");
 	}
 
 

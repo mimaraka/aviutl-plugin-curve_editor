@@ -4,6 +4,7 @@
 #include "dialog_curve_param.hpp"
 #include "dialog_id_jumpto.hpp"
 #include "enum.hpp"
+#include "global.hpp"
 #include "menu_curve_segment.hpp"
 #include "menu_graph.hpp"
 #include "menu_others.hpp"
@@ -65,7 +66,7 @@ namespace cved {
 					auto curve = global::editor.current_curve();
 					if (curve) {
 						curve->clear();
-						::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandles, NULL);
+						global::webview_main.post_message(L"editor-graph", L"updateHandles");
 					}
 				}
 				return true;
@@ -183,7 +184,7 @@ namespace cved {
 				auto curve = global::editor.editor_graph().current_curve();
 				if (curve) {
 					curve->reverse();
-					::SendMessageA(hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
+					global::webview_main.post_message(L"editor-graph", L"updateHandlePos");
 				}
 				return true;
 			}

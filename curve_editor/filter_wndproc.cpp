@@ -21,7 +21,6 @@ namespace cved {
 		using StringId = global::StringTable::StringId;
 
 		static ActCtxHelper actctx_helper;
-		static MyWebView2 my_webview;
 		static DragAndDrop dnd;
 		static bool init = false;
 
@@ -48,12 +47,12 @@ namespace cved {
 			if (fp->exfunc->is_filter_window_disp(fp) and !init) {
 				actctx_helper.init(fp->dll_hinst);
 				init = true;
-				my_webview.init(hwnd, [](MyWebView2* this_) {
+				global::webview_main.init(hwnd, [](MyWebView2* this_) {
 					mkaul::WindowRectangle bounds;
 					bounds.from_client_rect(this_->get_hwnd());
 					this_->put_bounds(bounds);
 					this_->navigate(L"panel_main");
-					});
+				});
 			}
 			break;
 
@@ -61,12 +60,12 @@ namespace cved {
 		{
 			mkaul::WindowRectangle bounds;
 			bounds.from_client_rect(hwnd);
-			my_webview.put_bounds(bounds);
+			global::webview_main.put_bounds(bounds);
 			break;
 		}
 
 		case WM_MOVE:
-			my_webview.on_move();
+			global::webview_main.on_move();
 			break;
 
 		case WM_MOUSEMOVE:
@@ -79,7 +78,7 @@ namespace cved {
 			if (dnd.is_dragging()) {
 				::ReleaseCapture();
 				dnd.drop();
-				my_webview.execute_script(L"onDrop();");
+				global::webview_main.execute_script(L"onDrop();");
 			}
 			break;
 
@@ -88,35 +87,10 @@ namespace cved {
 			case WindowCommand::RedrawAviutl:
 				return TRUE;
 
-			case WindowCommand::Reload:
-				my_webview.reload();
-				break;
-
 			case WindowCommand::StartDnd:
 				::SetCapture(hwnd);
 				::SetCursor(::LoadCursorA(fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
 				dnd.drag();
-				break;
-
-			case WindowCommand::UpdateHandles:
-				my_webview.post_message(L"editor-graph", L"updateHandles");
-				break;
-
-			case WindowCommand::UpdateHandlePos:
-				my_webview.post_message(L"editor-graph", L"updateHandlePos");
-				break;
-
-			case WindowCommand::UpdateAxisLabelVisibility:
-				my_webview.post_message(L"editor-graph", L"updateAxisLabelVisibility");
-				break;
-
-			case WindowCommand::UpdateHandleVisibility:
-				my_webview.post_message(L"editor-graph", L"updateHandleVisibility");
-				break;
-
-			case WindowCommand::ApplyPreferences:
-				my_webview.update_color_scheme();
-				my_webview.post_message(L"editor-graph", L"applyPreferences");
 				break;
 			}
 			break;

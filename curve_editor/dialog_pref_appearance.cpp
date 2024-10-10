@@ -171,6 +171,7 @@ namespace cved {
 					::GetWindowTextA(hwnd_edit_bg_image_path_, buffer, MAX_PATH);
 					global::config.set_bg_image_path(std::filesystem::path(buffer));
 				}
+				global::webview_main.update_color_scheme();
 				return TRUE;
 
 			case IDC_BUTTON_CURVE_COLOR:

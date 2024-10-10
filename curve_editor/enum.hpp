@@ -48,14 +48,7 @@ namespace cved {
 		MovePreset					= 0x0b15,
 		LoadConfig					= 0x0b18,
 		SaveConfig					= 0x0b19,
-		Reload						= 0x0b1e,
-		StartDnd					= 0x0b1f,
-		UpdateColorScheme			= 0x0b20,
-		UpdateHandlePos				= 0x0b21,
-		UpdateAxisLabelVisibility	= 0x0b22,
-		UpdateHandleVisibility		= 0x0b23,
-		ApplyPreferences			= 0x0b24,
-		UpdateHandles				= 0x0b25
+		StartDnd					= 0x0b1f
 	};
 
 	enum class ThemeId {

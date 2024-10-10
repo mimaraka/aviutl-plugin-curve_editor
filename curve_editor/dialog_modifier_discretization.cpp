@@ -46,7 +46,7 @@ namespace cved {
 					p_mod_discretization->set_sampling_resolution((uint32_t)value);
 				}
 				::SetWindowTextA(hwnd_static_sampling_, std::to_string(value).c_str());
-				//global::window_grapheditor.redraw();
+				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
 			}
 			else if (lparam == (LPARAM)hwnd_slider_quantization_) {
 				int value = (int)::SendMessageA(hwnd_slider_quantization_, TBM_GETPOS, NULL, NULL);
@@ -54,7 +54,7 @@ namespace cved {
 					p_mod_discretization->set_quantization_resolution((uint32_t)value);
 				}
 				::SetWindowTextA(hwnd_static_quantization_, std::to_string(value).c_str());
-				//global::window_grapheditor.redraw();
+				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
 			}
 			return TRUE;
 
@@ -67,7 +67,7 @@ namespace cved {
 			case IDCANCEL:
 				if (p_mod_discretization) {
 					*p_mod_discretization = mod_discretization_prev;
-					//global::window_grapheditor.redraw();
+					global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
 				}
 				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;

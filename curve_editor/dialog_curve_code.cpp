@@ -48,7 +48,7 @@ namespace cved {
 					if (std::regex_match(buffer, regex_code)) {
 						try {
 							if (p_curve->decode(std::stoi(buffer))) {
-								::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
+								global::webview_main.post_message(L"editor-graph", L"updateHandlePos");
 								::EndDialog(hwnd, 1);
 								break;
 							}

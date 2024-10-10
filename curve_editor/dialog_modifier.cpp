@@ -122,7 +122,7 @@ namespace cved {
 			case IDCANCEL:
 				// モディファイアの状態を編集前に戻す
 				p_curve->set_modifiers(modifiers_prev);
-				//global::window_grapheditor.redraw();
+				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
 				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;
 
@@ -155,7 +155,7 @@ namespace cved {
 					update_list(p_curve);
 					::SendMessageA(hwnd_list_modifier_, LB_SETCURSEL, ::SendMessageA(hwnd_list_modifier_, LB_GETCOUNT, NULL, NULL) - 1, NULL);
 					update_buttons(p_curve);
-					//global::window_grapheditor.redraw();
+					global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
 				}
 				return TRUE;
 			}
@@ -202,7 +202,7 @@ namespace cved {
 						p_curve->remove_modifier(idx);
 						update_list(p_curve);
 						update_buttons(p_curve);
-						//global::window_grapheditor.redraw();
+						global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
 					}
 				}
 				return TRUE;
@@ -215,7 +215,7 @@ namespace cved {
 					auto p_modifier = p_curve->get_modifier(idx);
 					if (p_modifier) {
 						p_modifier->set_enabled(::SendMessageA(hwnd_check_bypass_, BM_GETCHECK, NULL, NULL) == BST_UNCHECKED);
-						//global::window_grapheditor.redraw();
+						global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
 					}
 				}
 				return TRUE;

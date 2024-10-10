@@ -76,7 +76,7 @@ namespace cved {
 			auto curve = global::editor.editor_graph().current_curve();
 			if (curve) {
 				curve->reverse();
-				::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandlePos, NULL);
+				global::webview_main.post_message(L"editor-graph", L"updateHandlePos");
 			}
 			break;
 		}
@@ -87,22 +87,22 @@ namespace cved {
 
 		case ID_GRAPH_SHOW_X_LABEL:
 			global::config.set_show_x_label(!global::config.get_show_x_label());
-			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateAxisLabelVisibility, NULL);
+			global::webview_main.post_message(L"editor-graph", L"updateAxisLabelVisibility");
 			break;
 
 		case ID_GRAPH_SHOW_Y_LABEL:
 			global::config.set_show_y_label(!global::config.get_show_y_label());
-			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateAxisLabelVisibility, NULL);
+			global::webview_main.post_message(L"editor-graph", L"updateAxisLabelVisibility");
 			break;
 
 		case ID_GRAPH_SHOWHANDLE:
 			global::config.set_show_handle(!global::config.get_show_handle());
-			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::UpdateHandleVisibility, NULL);
+			global::webview_main.post_message(L"editor-graph", L"updateHandleVisibility");
 			break;
 
 		case ID_GRAPH_VELOCITY:
 			global::config.set_show_velocity_graph(!global::config.get_show_velocity_graph());
-			//global::window_grapheditor.send_command((WPARAM)WindowCommand::Update);
+			global::webview_main.post_message(L"editor-graph", L"updateVelocityGraphVisibility");
 			break;
 
 		case ID_GRAPH_MODIFIER:

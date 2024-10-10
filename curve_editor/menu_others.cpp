@@ -65,7 +65,7 @@ namespace cved {
 			break;
 
 		case ID_MORE_RELOAD:
-			::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::Reload, NULL);
+			global::webview_main.reload();
 			break;
 
 		case ID_MORE_PREFERENCES:
