@@ -47,10 +47,15 @@ class ImageObject {
 }
 
 // D3.js用のデータを生成
-const createCurvePathData = (startGraphX, endGraphX) => {
+const createCurvePathData = (startGraphX, endGraphX, velocity = false) => {
     const n = config.curveResolution;
-    let data = []
-    const yArray = graphEditor.getCurveValueArray(config.editMode, startGraphX, 0, endGraphX, 1, n);
+    let data = [];
+    let yArray;
+    if (velocity) {
+        yArray = graphEditor.getCurveVelocityArray(config.editMode, startGraphX, 0, endGraphX, 1, n);
+    } else {
+        yArray = graphEditor.getCurveValueArray(config.editMode, startGraphX, 0, endGraphX, 1, n);
+    } 
     for (let i = 0; i < n; i++) {
         const x = startGraphX + (endGraphX - startGraphX) / (n - 1) * i;
         data.push({
@@ -62,23 +67,40 @@ const createCurvePathData = (startGraphX, endGraphX) => {
 }
 
 // 描画するカーブの内容を更新
-const updateCurvePath = (t = null) => {
-    const startGraphX = Math.max(0, currentScaleX.invert(0));
-    const endGraphX = Math.min(1, currentScaleX.invert(width));
+const updateCurvePath = (t = null, zoom = false) => {
+    const startGraphX = Math.max(0, currentScaleX.invert(zoom ? -200 : 0));
+    const endGraphX = Math.min(1, currentScaleX.invert(width + (zoom ? 200 : 0)));
 
-    path.datum(createCurvePathData(startGraphX, endGraphX));
-    (t ? path.transition(t) : path).attr('d', d3.line()
+    curvePath.datum(createCurvePathData(startGraphX, endGraphX));
+    (t ? curvePath.transition(t) : curvePath).attr('d', d3.line()
         .x(d => originalScaleX(d.x))
         .y(d => originalScaleY(d.y))
         .curve(curve));
 
-    const editMode = config.editMode;
-    if (editMode == 2 || editMode == 3 || editMode == 4) {
-        window.top.postMessage({
-           to: 'panel-editor',
-           command: 'updateParam'
-        });
+    if (!zoom) {
+        const editMode = config.editMode;
+        if (editMode == 2 || editMode == 3 || editMode == 4) {
+            window.top.postMessage({
+            to: 'panel-editor',
+            command: 'updateParam'
+            });
+        }
     }
+}
+
+// 描画するカーブの内容を更新
+const updateVelocityPath = (t = null) => {
+    if (!config.showVelocityGraph) {
+        return;
+    }
+    const startGraphX = Math.max(0, currentScaleX.invert(0));
+    const endGraphX = Math.min(1, currentScaleX.invert(width));
+
+    velocityPath.datum(createCurvePathData(startGraphX, endGraphX, true));
+    (t ? velocityPath.transition(t) : velocityPath).attr('d', d3.line()
+        .x(d => originalScaleX(d.x))
+        .y(d => originalScaleY(d.y))
+        .curve(curve));
 }
 
 const updateHandles = () => {
@@ -90,33 +112,43 @@ const updateHandleVisibility = () => {
     $('.anchor, .handle, .handle-line').css('visibility', config.showHandle ? 'visible' : 'hidden');
 }
 
+const updateVelocityGraphVisibility = () => {
+    velocityPath.style('visibility', config.showVelocityGraph ? 'visible' : 'hidden');
+    updateVelocityPath();
+}
+
 window.addEventListener('message', function(event) {
     switch (event.data.command) {
         case 'changeId':
             updateCurvePath();
+            updateVelocityPath();
             fit(0);
             updateHandles();
             break;
 
         case 'updateCurvePath':
             updateCurvePath();
+            updateVelocityPath();
             break;
 
         case 'updateHandles':
             updateHandles();
             updateCurvePath();
+            updateVelocityPath();
             break;
 
         case 'updateHandlePos':
             if (handles instanceof NormalHandles && handles.segmentHandlesArray.length > 1) {
                 updateHandles();
                 updateCurvePath();
+                updateVelocityPath();
             }
             else {
                 const duration = config.enableAnimation ? 180 : 0;
                 const t = d3.transition().duration(duration).ease(d3.easeCubicOut);
                 handles.updateHandles(t);
                 updateCurvePath(t);
+                updateVelocityPath(t);
             }
             break;
 
@@ -129,11 +161,16 @@ window.addEventListener('message', function(event) {
             updateHandleVisibility();
             break;
 
+        case 'updateVelocityGraphVisibility':
+            updateVelocityGraphVisibility();
+            break;
+
         case 'applyPreferences':
             image.load(config.setBackgroundImage ? config.backgroundImagePath : '');
-            path.attr('stroke', config.curveColor)
+            curvePath.attr('stroke', config.curveColor)
                 .attr('stroke-width', config.curveThickness);
             updateCurvePath();
+            updateVelocityPath();
             break;
     }
 });
@@ -158,6 +195,7 @@ const svg = d3.select('#canvas')
         if (handles instanceof NormalHandles && x >= 0 && x <= 1) {
             handles.curve.addCurve(x, y, currentScaleX(1) - currentScaleX(0));
             updateCurvePath();
+            updateVelocityPath();
             updateHandles();
         }
     })
@@ -233,8 +271,17 @@ const line = d3.line()
     .y(d => originalScaleY(d.y))
     .curve(curve);
 
+const velocityPath = zoomContainer.append('path')
+    .datum(createCurvePathData(0, 1, true))
+    .attr('fill', 'none')
+    .attr('class', 'velocity-path')
+    .attr('stroke-width', config.curveThickness)
+    .attr('d', line);
+
+updateVelocityGraphVisibility();
+
 // カーブ
-const path = zoomContainer.append('path')
+const curvePath = zoomContainer.append('path')
     .datum(createCurvePathData(0, 1))
     .attr('fill', 'none')
     .attr('stroke', config.curveColor)
@@ -319,14 +366,8 @@ const zoom = d3.zoom()
         const duration = config.enableAnimation ? 180 : 0;
         const t = d3.transition().duration(duration).ease(d3.easeCubicOut);
 
-        const startGraphX = Math.max(0, currentScaleX.invert(-200));
-        const endGraphX = Math.min(1, currentScaleX.invert(width + 200));
-
-        path.datum(createCurvePathData(startGraphX, endGraphX));
-        path.attr('d', d3.line()
-            .x(d => originalScaleX(d.x))
-            .y(d => originalScaleY(d.y))
-            .curve(curve));
+        updateCurvePath(null, true);
+        updateVelocityPath();
 
         if (event.sourceEvent && event.sourceEvent.type === 'wheel') {
             gridX.transition(t).call(axisX.scale(currentScaleX));
@@ -337,7 +378,9 @@ const zoom = d3.zoom()
             gLabelY.transition(t).call(axisLabelY(currentScaleY));
             zoomContainer.transition(t)
                 .attr('transform', event.transform);
-            path.transition(t)
+            curvePath.transition(t)
+                .attr('stroke-width', config.curveThickness / event.transform.k);
+            velocityPath.transition(t)
                 .attr('stroke-width', config.curveThickness / event.transform.k);
             leftRect.transition(t)
                 .attr('width', Math.max(0, currentScaleX(0)));
@@ -384,7 +427,9 @@ const fit = (customDuration = 700) => {
     const t = d3.transition().duration(duration);
     svg.transition(t)
         .call(zoom.transform, d3.zoomIdentity);
-    path.transition(t)
+    curvePath.transition(t)
+        .attr('stroke-width', config.curveThickness);
+    velocityPath.transition(t)
         .attr('stroke-width', config.curveThickness);
 }
 
@@ -431,7 +476,7 @@ $(window).on('keydown', event => {
             command: 'goForwardId'
         }, '*');
         break;
-    }    
+    }
 });
 
 $(window).on('resize', () => {
@@ -471,7 +516,11 @@ $(window).on('resize', () => {
         .attr('height', height);
     handles.rescaleX(currentScaleX);
     handles.rescaleY(currentScaleY);
-    path.attr('d', d3.line()
+    curvePath.attr('d', d3.line()
+        .x(d => originalScaleX(d.x))
+        .y(d => originalScaleY(d.y))
+        .curve(curve));
+    velocityPath.attr('d', d3.line()
         .x(d => originalScaleX(d.x))
         .y(d => originalScaleY(d.y))
         .curve(curve));

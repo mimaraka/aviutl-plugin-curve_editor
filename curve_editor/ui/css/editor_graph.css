@@ -4,6 +4,7 @@
     --color-fit-button: rgb(240, 240, 240);
     --color-fit-button-hover: rgb(224, 224, 224);
     --color-axis: rgb(0, 0, 0);
+    --color-velocity-path: rgb(0, 0, 0);
     --color-rect: rgb(200, 200, 200);
     --anchor-radius: 4px;
 }
@@ -13,6 +14,7 @@
         --color-fit-button: rgb(35, 35, 35);
         --color-fit-button-hover: rgb(52, 52, 52);
         --color-axis: rgb(255, 255, 255);
+        --color-velocity-path: rgb(255, 255, 255);
         --color-rect: rgb(17, 17, 17);
     }
 }
@@ -77,6 +79,11 @@ body {
     text-anchor: start;
 }
 
+.velocity-path {
+    stroke: var(--color-velocity-path);
+    opacity: 0.3;
+}
+
 #fit {
     position: absolute;
     top: 15px;
@@ -90,19 +97,27 @@ body {
     color: var(--color-content);
     transition: all 0.2s ease-out;
 }
+
 #fit:hover {
     background-color: var(--color-fit-button-hover);
     opacity: 0.8;
 }
+
 #fit:active {
     background-color: var(--color-control-active);
     opacity: 0.8;
 }
+
+#fit:focus {
+    outline: none;
+}
+
 .visible {
     visibility: visible;
     opacity: 0.5;
     transition: 0.3s;
 }
+
 .hidden {
     visibility: hidden;
     opacity: 0;
