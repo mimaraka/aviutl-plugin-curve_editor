@@ -15,7 +15,10 @@ window.editor.getModel().onDidChangeContent(event => {
 });
 
 window.addEventListener('message', event => {
-    if (event.data.command == 'changeId') {
+    switch (event.data.command) {
+        case 'updateEditor':
+        case 'changeId':
         window.editor.setValue(scriptEditor.script);
+            break;
     }
 });

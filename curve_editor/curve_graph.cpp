@@ -21,24 +21,24 @@ namespace cved {
 		}
 	}
 
-	void GraphCurve::set_anchor_start(double x, double y) noexcept {
-		if (anchor_fixed_ or !prev_) {
+	void GraphCurve::set_anchor_start(double x, double y, bool forced) noexcept {
+		if ((anchor_fixed_ or !prev_) and !forced) {
 			return;
 		}
 		auto ret = mkaul::Point{
-			mkaul::clamp(x, prev_->anchor_start_.x, anchor_end_.x),
+			mkaul::clamp(x, prev_ ? prev_->anchor_start_.x : 0., anchor_end_.x),
 			y
 		};
 		anchor_start_ = ret;
 		//prev_->anchor_end_ = ret;
 	}
 
-	void GraphCurve::set_anchor_end(double x, double y) noexcept {
-		if (anchor_fixed_ or !next_) {
+	void GraphCurve::set_anchor_end(double x, double y, bool forced) noexcept {
+		if ((anchor_fixed_ or !next_) and !forced) {
 			return;
 		}
 		auto ret = mkaul::Point{
-			mkaul::clamp(x, anchor_start_.x, next_->anchor_end_.x),
+			mkaul::clamp(x, anchor_start_.x, next_ ? next_->anchor_end_.x : 1.),
 			y
 		};
 		anchor_end_ = ret;

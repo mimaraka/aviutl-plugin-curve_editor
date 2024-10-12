@@ -9,6 +9,12 @@ window.addEventListener('message', event => {
                 updateParamButton();
                 break;
 
+            case 'updateEditor':
+                $('#editor')[0].contentWindow.postMessage(event.data, '*');
+                updateIdButtons();
+                updateParamButton();
+                break;
+
             case 'goBackId':
                 goBackId();
                 break;

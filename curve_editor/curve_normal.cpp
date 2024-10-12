@@ -173,28 +173,29 @@ namespace cved {
 					return false;
 				}
 
-				std::unique_ptr<GraphCurve> new_curve = std::make_unique<BezierCurve>();
+				auto new_curve = std::make_unique<BezierCurve>();
 				// ポイントの移動
 				new_curve->set_anchor_start(
 					pts[i].pt_center.x / (double)GRAPH_RESOLUTION,
-					pts[i].pt_center.y / (double)GRAPH_RESOLUTION
+					pts[i].pt_center.y / (double)GRAPH_RESOLUTION,
+					true
 				);
 				new_curve->set_anchor_end(
 					pts[i + 1u].pt_center.x / (double)GRAPH_RESOLUTION,
-					pts[i + 1u].pt_center.y / (double)GRAPH_RESOLUTION
+					pts[i + 1u].pt_center.y / (double)GRAPH_RESOLUTION,
+					true
 				);
 
 				// ハンドルの移動
-				auto p_curve_bezier = dynamic_cast<BezierCurve*>(new_curve.get());
-				p_curve_bezier->set_handle_left(
-					(pts[i].pt_right.x - pts[i].pt_center.x) / (double)GRAPH_RESOLUTION,
-					(pts[i].pt_right.y - pts[i].pt_center.y) / (double)GRAPH_RESOLUTION
+				new_curve->set_handle_left(
+					new_curve->anchor_start().x + (pts[i].pt_right.x - pts[i].pt_center.x) / (double)GRAPH_RESOLUTION,
+					new_curve->anchor_start().y + (pts[i].pt_right.y - pts[i].pt_center.y) / (double)GRAPH_RESOLUTION
 				);
-				p_curve_bezier->set_handle_right(
-					(pts[i + 1u].pt_left.x - pts[i + 1u].pt_center.x) / (double)GRAPH_RESOLUTION,
-					(pts[i + 1u].pt_left.y - pts[i + 1u].pt_center.y) / (double)GRAPH_RESOLUTION
+				new_curve->set_handle_right(
+					new_curve->anchor_end().x + (pts[i + 1u].pt_left.x - pts[i + 1u].pt_center.x) / (double)GRAPH_RESOLUTION,
+					new_curve->anchor_end().y + (pts[i + 1u].pt_left.y - pts[i + 1u].pt_center.y) / (double)GRAPH_RESOLUTION
 				);
-
+				// prev, nextの設定
 				if (!vec_tmp.empty()) {
 					new_curve->set_prev(vec_tmp.back().get());
 					vec_tmp.back()->set_next(new_curve.get());
