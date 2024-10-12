@@ -131,6 +131,7 @@ window.addEventListener('message', function(event) {
             updateVelocityPath();
             break;
 
+        case 'updateEditor':
         case 'updateHandles':
             updateHandles();
             updateCurvePath();

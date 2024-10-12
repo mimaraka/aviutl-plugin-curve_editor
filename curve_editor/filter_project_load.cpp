@@ -46,7 +46,7 @@ namespace cved {
 				}
 			}
 			// ウィンドウの更新
-			//global::window_main.send_command((WPARAM)WindowCommand::Update);
+			global::webview_main.post_message(L"panel-editor", L"updateEditor");
 		}
 		return ret;
 	}

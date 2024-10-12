@@ -178,8 +178,11 @@ namespace cved {
 					vec_tmp.emplace_back(std::move(curve));
 				}
 			}
-			vec_tmp.reserve(vec_tmp.capacity());
-			curves_normal_ = std::move(vec_tmp);
+			curves_normal_.clear();
+			for (auto it = vec_tmp.rbegin(); it != vec_tmp.rend(); it++) {
+				curves_normal_.emplace_back(std::move(*it));
+			}
+			
 			// インデックスをリセット
 			idx_normal_ = 0;
 			return true;

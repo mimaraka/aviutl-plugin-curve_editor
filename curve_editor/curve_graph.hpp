@@ -92,10 +92,10 @@ namespace cved {
 		double get_anchor_start_y() const noexcept { return anchor_start_.y; }
 		double get_anchor_end_x() const noexcept { return anchor_end_.x; }
 		double get_anchor_end_y() const noexcept { return anchor_end_.y; }
-		void set_anchor_start(double x, double y) noexcept;
-		void set_anchor_start(const mkaul::Point<double>& pt) noexcept { set_anchor_start(pt.x, pt.y); }
-		void set_anchor_end(double x, double y) noexcept;
-		void set_anchor_end(const mkaul::Point<double>& pt) noexcept { set_anchor_end(pt.x, pt.y); }
+		void set_anchor_start(double x, double y, bool forced = false) noexcept;
+		void set_anchor_start(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_start(pt.x, pt.y, forced); }
+		void set_anchor_end(double x, double y, bool forced = false) noexcept;
+		void set_anchor_end(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_end(pt.x, pt.y, forced); }
 
 		virtual void reverse(bool fix_pt = false) noexcept;
 
