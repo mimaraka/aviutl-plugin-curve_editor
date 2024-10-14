@@ -28,10 +28,10 @@
 
 ![installation](https://github.com/user-attachments/assets/8edff440-b22f-45fc-a930-cac3285cd805)
 
-また、以下のプログラムをインストールしていない場合は、こちらも併せてインストールしてください。
-
-- [Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)
-- [Microsoft Edge WebView2 ランタイム (x86)](https://developer.microsoft.com/ja-jp/microsoft-edge/webview2/?form=MA13LH)
+> [!NOTE]
+> 正常に動作しない場合は、以下のプログラムがコンピュータにインストールされているか確認してください。
+> - [Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)
+> - [Microsoft Edge WebView2 ランタイム (x86)](https://developer.microsoft.com/ja-jp/microsoft-edge/webview2/?form=MA13LH)
 
 ## 使用方法
 
@@ -86,7 +86,8 @@ AviUtl を起動後、メインウィンドウの「表示」メニューから�
 
 ![curve_editor_dandd](https://user-images.githubusercontent.com/106879397/208283022-ed88a2d9-66e0-41bb-8244-92a8adebc1db.gif)
 
-※Shift キーを押しながらドラッグ&ドロップすることで、XYZ 座標などイージングが一度に設定されるトラックバーについても、X、Y、Z ごとに個別にイージングを設定することができます。
+> [!TIP]
+> Shift キーを押しながらドラッグ&ドロップすることで、XYZ 座標など、イージングが一度に設定されるトラックバーについても、各座標ごとに個別にイージングを設定することができます。
 
 #### ドラッグ&ドロップができない場合は…
 
@@ -95,7 +96,7 @@ AviUtl を起動後、メインウィンドウの「表示」メニューから�
 
 ### その他
 
-詳細な使用方法については、[このリポジトリの Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki)をご覧ください。
+詳細な使用方法については [Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki) を参照してください。。
 
 ## プロジェクトファイルへのカーブの保存機能について
 
@@ -115,7 +116,10 @@ AviUtl を起動後、メインウィンドウの「表示」メニューから�
 | :----------: | :----: | :------: |
 | Windows 7~11 |  1.10  |   0.92   |
 
-※[Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)および[Microsoft Edge WebView2 ランタイム (x86)](https://developer.microsoft.com/ja-jp/microsoft-edge/webview2/?form=MA13LH)が必要です。
+> [!IMPORTANT]
+> 以下のプログラムのインストールが必要です。
+> - [Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)
+> - [Microsoft Edge WebView2 ランタイム (x86)](https://developer.microsoft.com/ja-jp/microsoft-edge/webview2/?form=MA13LH)
 
 ## Q&A
 
@@ -123,7 +127,7 @@ Wiki の[トラブルシューティング](https://github.com/mimaraka/aviutl-p
 
 ## バグ報告
 
-バグ報告は[このリポジトリの Issues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues)または[Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8)(匿名回答可)からお願いします。
+バグ報告は [Issues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues) または [Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8) (匿名回答可)からお願いします。
 
 ## 免責事項
 
