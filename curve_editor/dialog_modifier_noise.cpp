@@ -50,7 +50,7 @@ namespace cved {
 
 		switch (message) {
 		case WM_INITDIALOG:
-			p_mod_noise = reinterpret_cast<NoiseModifier*>(lparam);
+			p_mod_noise = std::bit_cast<NoiseModifier*>(lparam);
 			if (!p_mod_noise) {
 				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;

@@ -36,7 +36,7 @@ namespace cved {
 
 		switch (message) {
 		case WM_INITDIALOG:
-			p_mod_square_wave = reinterpret_cast<SquareWaveModifier*>(lparam);
+			p_mod_square_wave = std::bit_cast<SquareWaveModifier*>(lparam);
 			if (!p_mod_square_wave) {
 				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;

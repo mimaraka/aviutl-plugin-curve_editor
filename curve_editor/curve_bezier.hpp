@@ -19,8 +19,8 @@ namespace cved {
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
-			mkaul::Point<double> handle_left = mkaul::Point{ 0., 0. },
-			mkaul::Point<double> handle_right = mkaul::Point{ 0., 0. }
+			mkaul::Point<double> handle_left = mkaul::Point{ DEFAULT_HANDLE_XY, DEFAULT_HANDLE_XY },
+			mkaul::Point<double> handle_right = mkaul::Point{ -DEFAULT_HANDLE_XY, -DEFAULT_HANDLE_XY }
 		) noexcept;
 
 		// コピーコンストラクタ
@@ -48,6 +48,9 @@ namespace cved {
 		bool decode(int32_t code) noexcept override;
 
 		std::string make_param() const noexcept;
+
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

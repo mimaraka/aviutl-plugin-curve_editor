@@ -1,7 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
-#include "curve.hpp"
+#include "curve_base.hpp"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include <cereal/types/string.hpp>
@@ -26,8 +26,16 @@ namespace cved {
 		const auto& script() const noexcept { return script_; }
 		void set_script(const std::string& script) noexcept { script_ = script; }
 
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
+
 		template <class Archive>
-		void serialize(Archive& archive, const std::uint32_t) {
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(script_);
+		}
+
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
 			archive(script_);
 		}
 	};

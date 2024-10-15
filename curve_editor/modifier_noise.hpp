@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "modifier_base.hpp"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
@@ -39,6 +40,8 @@ namespace cved {
 			noise_{ noiser.noise_ }
 		{}
 
+		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_NOISE; }
+
 		auto seed() const noexcept { return seed_; }
 		void set_seed(int32_t seed) noexcept { seed_ = seed; }
 
@@ -60,6 +63,9 @@ namespace cved {
 		void update() noexcept;
 
 		CurveFunction apply(const CurveFunction& function) const noexcept override;
+
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

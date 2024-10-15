@@ -1,10 +1,8 @@
 #pragma once
 
-#include "curve.hpp"
 #include "my_webview2.hpp"
 #include <aviutl.hpp>
 #include <mkaul/exedit.hpp>
-#include <mkaul/window.hpp>
 
 
 

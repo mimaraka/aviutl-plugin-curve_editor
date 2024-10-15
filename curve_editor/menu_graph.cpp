@@ -1,7 +1,6 @@
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_modifier.hpp"
-#include "global.hpp"
 #include "menu_graph.hpp"
 #include "resource.h"
 #include "string_table.hpp"
@@ -33,12 +32,12 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_GRAPH_APPLYMODE, FALSE, &minfo_tmp);
 	}
 
-	void GraphMenu::update_state() noexcept {
+	void GraphMenu::update_state(EditMode mode) noexcept {
 		MENUITEMINFOA minfo_tmp;
 		minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
 		minfo_tmp.fMask = MIIM_STATE;
 		for (size_t i = 0; i < (size_t)ApplyMode::NumApplyMode; i++) {
-			minfo_tmp.fState = (ApplyMode)i == global::config.get_apply_mode() ? MFS_CHECKED : MFS_UNCHECKED;
+			minfo_tmp.fState = (ApplyMode)i == global::config.get_apply_mode(mode) ? MFS_CHECKED : MFS_UNCHECKED;
 			::SetMenuItemInfoA(submenu_apply_mode_, i, TRUE, &minfo_tmp);
 		}
 		minfo_tmp.fState = global::config.get_align_handle() ? MFS_CHECKED : MFS_UNCHECKED;
@@ -53,31 +52,66 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_GRAPH_VELOCITY, FALSE, &minfo_tmp);
 		// 標準モード以外は離散化のメニューを無効にする
 		// TODO: 値指定モードへの対応
-		minfo_tmp.fState = global::config.get_edit_mode() == EditMode::Normal ? MFS_ENABLED : MFS_DISABLED;
+		minfo_tmp.fState = mode == EditMode::Normal ? MFS_ENABLED : MFS_DISABLED;
 		::SetMenuItemInfoA(menu_, ID_GRAPH_MODIFIER, FALSE, &minfo_tmp);
 	}
 
-	bool GraphMenu::callback(uint16_t id) noexcept {
+	HMENU GraphMenu::get_handle(EditMode mode) noexcept {
+		update_state(mode);
+		return menu_;
+	}
+
+	int GraphMenu::show(
+		EditMode mode,
+		uint32_t curve_id,
+		const MyWebView2& webview,
+		HWND hwnd,
+		UINT flags,
+		const mkaul::Point<LONG>* p_custom_pt_screen
+	) noexcept {
+		POINT tmp;
+		::GetCursorPos(&tmp);
+		if (p_custom_pt_screen) {
+			tmp = p_custom_pt_screen->to<POINT>();
+		}
+		update_state(mode);
+		auto ret = ::TrackPopupMenu(
+			menu_,
+			flags | TPM_RETURNCMD | TPM_NONOTIFY,
+			tmp.x,
+			tmp.y,
+			0, hwnd, NULL
+		);
+		return callback(mode, curve_id, webview, hwnd, static_cast<uint16_t>(ret));
+	}
+
+	bool GraphMenu::callback(EditMode mode, uint32_t curve_id, const MyWebView2& webview, HWND hwnd, uint16_t id) noexcept {
 		if (mkaul::in_range(
 			id,
 			(uint16_t)WindowCommand::ChangeApplyMode,
-			(uint16_t)WindowCommand::ChangeApplyMode + (uint16_t)ApplyMode::NumApplyMode - 1u,
-			true
+			(uint16_t)WindowCommand::ChangeApplyMode + (uint16_t)ApplyMode::NumApplyMode - 1u
 		)) {
 			ApplyMode new_mode = (ApplyMode)(id - (uint16_t)WindowCommand::ChangeApplyMode);
-			if (new_mode != global::config.get_apply_mode()) {
-				global::config.set_apply_mode(new_mode);
+			if (new_mode != global::config.get_apply_mode(mode)) {
+				global::config.set_apply_mode(mode, new_mode);
 			}
 			return true;
 		}
 		switch (id) {
 		case ID_GRAPH_REVERSE:
 		{
-			auto curve = global::editor.editor_graph().current_curve();
+			auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
 			if (curve) {
 				curve->reverse();
-				global::webview_main.post_message(L"editor-graph", L"updateHandlePos");
+				webview.post_message(L"editor-graph", L"updateHandlePos");
 			}
+			break;
+		}
+
+		case ID_GRAPH_MODIFIER:
+		{
+			ModifierDialog dialog;
+			dialog.show(hwnd, static_cast<LPARAM>(curve_id));
 			break;
 		}
 
@@ -87,33 +121,23 @@ namespace cved {
 
 		case ID_GRAPH_SHOW_X_LABEL:
 			global::config.set_show_x_label(!global::config.get_show_x_label());
-			global::webview_main.post_message(L"editor-graph", L"updateAxisLabelVisibility");
+			webview.post_message(L"editor-graph", L"updateAxisLabelVisibility");
 			break;
 
 		case ID_GRAPH_SHOW_Y_LABEL:
 			global::config.set_show_y_label(!global::config.get_show_y_label());
-			global::webview_main.post_message(L"editor-graph", L"updateAxisLabelVisibility");
+			webview.post_message(L"editor-graph", L"updateAxisLabelVisibility");
 			break;
 
 		case ID_GRAPH_SHOWHANDLE:
 			global::config.set_show_handle(!global::config.get_show_handle());
-			global::webview_main.post_message(L"editor-graph", L"updateHandleVisibility");
+			webview.post_message(L"editor-graph", L"updateHandleVisibility");
 			break;
 
 		case ID_GRAPH_VELOCITY:
 			global::config.set_show_velocity_graph(!global::config.get_show_velocity_graph());
-			global::webview_main.post_message(L"editor-graph", L"updateVelocityGraphVisibility");
+			webview.post_message(L"editor-graph", L"updateVelocityGraphVisibility");
 			break;
-
-		case ID_GRAPH_MODIFIER:
-		{
-			ModifierDialog dialog;
-			auto p_curve_graph = global::editor.editor_graph().current_curve();
-			if (p_curve_graph) {
-				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve_graph));
-			}
-			break;
-		}
 
 		default:
 			return false;

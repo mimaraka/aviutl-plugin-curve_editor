@@ -47,13 +47,16 @@ namespace cved {
 		void clear() noexcept override;
 		bool is_default() const noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
-		void reverse_segment(size_t idx) noexcept;
+		void reverse_segment(uint32_t segment_id) noexcept;
 
 		bool load_v1_data(const byte* data, size_t pt_n) noexcept;
 
 		bool add_curve(const mkaul::Point<double>& pt, double scale_x) noexcept;
-		bool delete_curve(GraphCurve* p_segment) noexcept;
-		bool replace_curve(size_t idx, CurveSegmentType segment_type) noexcept;
+		bool delete_curve(uint32_t segment_id) noexcept;
+		bool replace_curve(uint32_t segment_id, CurveSegmentType segment_type) noexcept;
+
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

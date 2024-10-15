@@ -1,6 +1,6 @@
 #pragma once
 
-#include "curve.hpp"
+#include "curve_base.hpp"
 #include "modifier.hpp"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/base_class.hpp>
@@ -98,6 +98,9 @@ namespace cved {
 		void set_anchor_end(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_end(pt.x, pt.y, forced); }
 
 		virtual void reverse(bool fix_pt = false) noexcept;
+
+		virtual nlohmann::json create_json() const noexcept override;
+		virtual bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

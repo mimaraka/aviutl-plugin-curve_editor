@@ -48,7 +48,8 @@ namespace cved {
 		MovePreset					= 0x0b15,
 		LoadConfig					= 0x0b18,
 		SaveConfig					= 0x0b19,
-		StartDnd					= 0x0b1f
+		StartDnd					= 0x0b1f,
+		SetCurveInfo				= 0x0b20
 	};
 
 	enum class ThemeId {

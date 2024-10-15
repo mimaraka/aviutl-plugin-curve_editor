@@ -9,10 +9,10 @@ namespace cved {
 	// カーブ(振動)
 	class ElasticCurve : public NumericGraphCurve {
 		static constexpr double DEFAULT_AMP = 1.;
-		static constexpr double DEFAULT_FREQ = 8.;
+		static constexpr double DEFAULT_FREQ = 5.;
 		static constexpr double DEFAULT_DECAY = 6.;
-		double amp_;
-		double freq_;
+		double amplitude_;
+		double frequency_;
 		double decay_;
 		bool reversed_;
 
@@ -42,8 +42,8 @@ namespace cved {
 		void reverse(bool fix_pt = false) noexcept override;
 		bool is_reversed() const noexcept { return reversed_; }
 
-		auto get_amp() const noexcept { return amp_; }
-		auto get_freq() const noexcept { return freq_; }
+		auto get_amplitude() const noexcept { return amplitude_; }
+		auto get_frequency() const noexcept { return frequency_; }
 		auto get_decay() const noexcept { return decay_; }
 
 		double get_handle_amp_left_x() const noexcept { return anchor_start().x; }
@@ -63,12 +63,15 @@ namespace cved {
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
+
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
 			archive(
 				cereal::base_class<NumericGraphCurve>(this),
-				amp_,
-				freq_,
+				amplitude_,
+				frequency_,
 				decay_
 			);
 		}
@@ -77,8 +80,8 @@ namespace cved {
 		void load(Archive& archive, const std::uint32_t) {
 			archive(
 				cereal::base_class<NumericGraphCurve>(this),
-				amp_,
-				freq_,
+				amplitude_,
+				frequency_,
 				decay_
 			);
 		}

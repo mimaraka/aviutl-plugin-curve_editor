@@ -4,34 +4,31 @@
 
 
 namespace cved {
-	std::vector<uintptr_t> NormalCurveHostObject::get_ptr_array(uintptr_t curve_ptr) {
-		try{
-			auto curve = try_get<NormalCurve>(curve_ptr);
-			std::vector<uintptr_t> ptr_array;
-			for (size_t i = 0; i < curve->segment_n(); i++) {
-				ptr_array.emplace_back(reinterpret_cast<uintptr_t>(curve->get_segment(i)));
-			}
-			return ptr_array;
+	std::vector<uint32_t> NormalCurveHostObject::get_id_array(uint32_t id) {
+		auto curve = global::id_manager.get_curve<NormalCurve>(id);
+		if (!curve) {
+			return std::vector<uint32_t>();
 		}
-		catch (const std::runtime_error&) {
-			return std::vector<uintptr_t>();
+		std::vector<uint32_t> id_array;
+		for (size_t i = 0; i < curve->segment_n(); i++) {
+			id_array.emplace_back(curve->get_segment(i)->get_id());
 		}
+		return id_array;
 	}
 
-	void NormalCurveHostObject::add_curve(uintptr_t curve_ptr, double x, double y, double scale_x) {
-		try {
-			auto curve = try_get<NormalCurve>(curve_ptr);
-			curve->add_curve(mkaul::Point{ x, y }, scale_x);
+	void NormalCurveHostObject::add_curve(uint32_t id, double x, double y, double scale_x) {
+		auto curve = global::id_manager.get_curve<NormalCurve>(id);
+		if (!curve) {
+			return;
 		}
-		catch (const std::runtime_error&) {}
+		curve->add_curve(mkaul::Point{ x, y }, scale_x);
 	}
 
-	void NormalCurveHostObject::delete_curve(uintptr_t curve_ptr, uintptr_t segment_ptr) {
-		try {
-			auto curve = try_get<NormalCurve>(curve_ptr);
-			auto segment = reinterpret_cast<GraphCurve*>(segment_ptr);
-			curve->delete_curve(segment);
+	void NormalCurveHostObject::delete_curve(uint32_t id, uint32_t segment_id) {
+		auto curve = global::id_manager.get_curve<NormalCurve>(id);
+		if (!curve) {
+			return;
 		}
-		catch (const std::runtime_error&) {}
+		curve->delete_curve(segment_id);
 	}
 } // namespace cved

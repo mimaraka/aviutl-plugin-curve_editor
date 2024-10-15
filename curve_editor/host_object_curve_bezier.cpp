@@ -1,76 +1,75 @@
 #include "curve_bezier.hpp"
+#include "curve_editor.hpp"
 #include "host_object_curve_bezier.hpp"
 
 
 
 namespace cved {
-	double BezierCurveHostObject::get_handle_left_x(uintptr_t curve_ptr) {
-		try {
-			auto curve = try_get<BezierCurve>(curve_ptr);
-			return curve->get_handle_left_x();
+	uint32_t BezierCurveHostObject::get_id(bool is_select_dialog) {
+		static BezierCurve curve_tmp;
+		uint32_t id;
+		if (is_select_dialog) {
+			id = curve_tmp.get_id();
 		}
-		catch (const std::runtime_error&) {
-			return 0.;
+		else {
+			id = global::editor.editor_graph().curve_bezier()->get_id();
 		}
+		return id;
 	}
 
-	double BezierCurveHostObject::get_handle_left_y(uintptr_t curve_ptr) {
-		try {
-			auto curve = try_get<BezierCurve>(curve_ptr);
-			return curve->get_handle_left_y();
-		}
-		catch (const std::runtime_error&) {
+	double BezierCurveHostObject::get_handle_left_x(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
 			return 0.;
 		}
+		return curve->get_handle_left_x();
 	}
 
-	void BezierCurveHostObject::set_handle_left(uintptr_t curve_ptr, double x, double y, bool keep_angle) {
-		try {
-			auto curve = try_get<BezierCurve>(curve_ptr);
-			curve->set_handle_left(x, y, keep_angle);
+	double BezierCurveHostObject::get_handle_left_y(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
+			return 0.;
 		}
-		catch (const std::runtime_error&) {
+		return curve->get_handle_left_y();
+	}
+
+	void BezierCurveHostObject::set_handle_left(uint32_t id, double x, double y, bool keep_angle) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
 			return;
 		}
+		curve->set_handle_left(x, y, keep_angle);
 	}
 
-	double BezierCurveHostObject::get_handle_right_x(uintptr_t curve_ptr) {
-		try {
-			auto curve = try_get<BezierCurve>(curve_ptr);
-			return curve->get_handle_right_x();
-		}
-		catch (const std::runtime_error&) {
+	double BezierCurveHostObject::get_handle_right_x(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
 			return 0.;
 		}
+		return curve->get_handle_right_x();
 	}
 
-	double BezierCurveHostObject::get_handle_right_y(uintptr_t curve_ptr) {
-		try {
-			auto curve = try_get<BezierCurve>(curve_ptr);
-			return curve->get_handle_right_y();
-		}
-		catch (const std::runtime_error&) {
+	double BezierCurveHostObject::get_handle_right_y(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
 			return 0.;
 		}
+		return curve->get_handle_right_y();
 	}
 
-	void BezierCurveHostObject::set_handle_right(uintptr_t curve_ptr, double x, double y, bool keep_angle) {
-		try {
-			auto curve = try_get<BezierCurve>(curve_ptr);
-			curve->set_handle_right(x, y, keep_angle);
-		}
-		catch (const std::runtime_error&) {
+	void BezierCurveHostObject::set_handle_right(uint32_t id, double x, double y, bool keep_angle) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
 			return;
 		}
+		curve->set_handle_right(x, y, keep_angle);
 	}
 
-	std::string BezierCurveHostObject::get_param(uintptr_t curve_ptr) {
-		try {
-			auto curve = try_get<BezierCurve>(curve_ptr);
-			return curve->make_param();
+	std::string BezierCurveHostObject::get_param(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
+			return std::string("");
 		}
-		catch (const std::runtime_error&) {
-			return 0;
-		}
+		return curve->make_param();
 	}
 } // namespace cved

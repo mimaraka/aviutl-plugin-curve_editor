@@ -8,7 +8,7 @@
 namespace cved {
 	void Preferences::reset() noexcept {
 		language = Language::Automatic;
-		theme_id = ThemeId::System;
+		theme = ThemeId::System;
 		curve_color = mkaul::ColorF{ 136, 176, 196 };
 		curve_thickness = 1.5f;
 		curve_resolution = 400u;
@@ -23,12 +23,13 @@ namespace cved {
 		set_bg_image = false;
 		enable_hotkeys = true;
 		enable_animation = true;
+		word_wrap = false;
 	}
 
 	void Preferences::from_json(const nlohmann::json& data) noexcept {
-#define GET_VALUE(name) JsonLoader::get_value(data, #name, name)
+#define GET_VALUE(v) JsonLoader::get_value(data, #v, v)
 		GET_VALUE(language);
-		JsonLoader::get_value(data, "theme", theme_id);
+		JsonLoader::get_value(data, "theme", theme);
 		COLORREF tmp;
 		if (JsonLoader::get_value(data, "curve_color", tmp)) curve_color = tmp;
 		GET_VALUE(curve_thickness);
@@ -45,15 +46,16 @@ namespace cved {
 		GET_VALUE(bg_image_opacity);
 		GET_VALUE(enable_hotkeys);
 		GET_VALUE(enable_animation);
+		GET_VALUE(word_wrap);
 #undef GET_VALUE
 	}
 
 	void Preferences::to_json(nlohmann::json* p_json) const noexcept {
 		using json = nlohmann::json;
-#define MAKE_PAIR(name) {#name, name}
+#define MAKE_PAIR(v) {#v, v}
 		*p_json = {
 			MAKE_PAIR(language),
-			{"theme", theme_id},
+			MAKE_PAIR(theme),
 			{"curve_color", curve_color.colorref()},
 			MAKE_PAIR(curve_thickness),
 			MAKE_PAIR(curve_resolution),
@@ -67,7 +69,8 @@ namespace cved {
 			{"bg_image_path", sjis_to_utf8(bg_image_path.string())},
 			MAKE_PAIR(bg_image_opacity),
 			MAKE_PAIR(enable_hotkeys),
-			MAKE_PAIR(enable_animation)
+			MAKE_PAIR(enable_animation),
+			MAKE_PAIR(word_wrap)
 		};
 #undef MAKE_PAIR
 	}

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "curve.hpp"
 #include "curve_editor_graph.hpp"
 #include "curve_editor_script.hpp"
 #include "enum.hpp"
@@ -26,11 +25,15 @@ namespace cved {
 			void jump_to_last_idx() noexcept;
 			bool is_idx_first() noexcept { return current_idx() == 0u; }
 			bool is_idx_last() noexcept;
-			void delete_last_idx() noexcept;
+			void pop_idx() noexcept;
 			void reset_id_curves() noexcept;
+
+			static EditMode get_mode(const std::string& type_name) noexcept;
 
 			auto& editor_graph() noexcept { return editor_graph_; }
 			auto& editor_script() noexcept { return editor_script_; }
+
+			Curve* get_curve(EditMode mode) noexcept;
 
 			template <class Archive>
 			void serialize(Archive& archive, const std::uint32_t) {

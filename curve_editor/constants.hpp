@@ -6,8 +6,7 @@
 
 namespace cved {
 	namespace global {
-		inline constexpr int SEPARATOR_WIDTH = 8;
-		inline constexpr size_t IDCURVE_MAX_N = 524288u;
+		inline constexpr size_t CURVE_ID_MAX = 524288u;
 
 		inline constexpr auto CURVE_NAME_NORMAL = "normal";
 		inline constexpr auto CURVE_NAME_VALUE = "value";
@@ -17,11 +16,16 @@ namespace cved {
 		inline constexpr auto CURVE_NAME_LINEAR = "linear";
 		inline constexpr auto CURVE_NAME_SCRIPT = "script";
 
+		inline constexpr auto MODIFIER_NAME_DISCRETIZATION = "discretization";
+		inline constexpr auto MODIFIER_NAME_NOISE = "noise";
+		inline constexpr auto MODIFIER_NAME_SINE_WAVE = "sine_wave";
+		inline constexpr auto MODIFIER_NAME_SQUARE_WAVE = "square_wave";
+
 		inline constexpr auto PLUGIN_NAME = "Curve Editor";
 		inline constexpr auto PLUGIN_VERSION = mkaul::Version{
 			mkaul::VersionNumber{2},
 			mkaul::PreviewType{mkaul::PreviewType::Type::Alpha},
-			mkaul::VersionNumber{2, 0, 1}
+			mkaul::VersionNumber{2, 1}
 		};
 		inline constexpr auto PLUGIN_DEVELOPER = "mimaraka";
 		inline constexpr auto PLUGIN_TRANSLATOR = "Deepdive";

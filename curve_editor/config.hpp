@@ -30,7 +30,7 @@ namespace cved {
 			bool show_velocity_graph_ = false;
 			bool align_handle_ = false;
 			bool ignore_autosaver_warning_ = false;
-			int separator_ = 0;
+			double separator_pos_ = 0.;
 			int preset_size_ = 0;
 
 			std::filesystem::path dir_aviutl_;
@@ -42,14 +42,14 @@ namespace cved {
 			auto get_language() const noexcept { return pref_.language; }
 			bool set_language(Language language) noexcept;
 
-			auto get_theme_id() const noexcept { return pref_.theme_id; }
-			bool set_theme_id(ThemeId theme_id) noexcept;
+			auto get_theme() const noexcept { return pref_.theme; }
+			bool set_theme(ThemeId theme) noexcept;
 
 			auto get_edit_mode() const noexcept { return edit_mode_; }
 			bool set_edit_mode(EditMode edit_mode) noexcept;
 
-			const char* get_edit_mode_str(EditMode edit_mode) const noexcept;
-			const char* get_edit_mode_str() const noexcept;
+			const char* get_edit_mode_dispname(EditMode edit_mode) const noexcept;
+			const char* get_edit_mode_dispname() const noexcept;
 
 			auto get_layout_mode() const noexcept { return layout_mode_; }
 			bool set_layout_mode(LayoutMode layout_mode) noexcept;
@@ -123,11 +123,14 @@ namespace cved {
 			auto get_enable_animation() const noexcept { return pref_.enable_animation; }
 			void set_enable_animation(bool enable_animation) noexcept { pref_.enable_animation = enable_animation; }
 
+			auto get_word_wrap() const noexcept { return pref_.word_wrap; }
+			void set_word_wrap(bool word_wrap) noexcept { pref_.word_wrap = word_wrap; }
+
 			auto get_ignore_autosaver_warning() const noexcept { return ignore_autosaver_warning_; }
 			void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 
-			auto get_separator() const noexcept { return separator_; }
-			void set_separator(int separator) noexcept;
+			auto get_separator_pos() const noexcept { return separator_pos_; }
+			void set_separator_pos(double separator_pos) noexcept;
 
 			auto get_preset_size() const noexcept { return preset_size_; }
 			void set_preset_size(int preset_size) noexcept;

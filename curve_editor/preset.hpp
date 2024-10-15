@@ -1,31 +1,31 @@
 #pragma once
 
-#include "curve.hpp"
-#include <mkaul/window.hpp>
+#include "curve_base.hpp"
+#include <memory>
+#include <nlohmann/json.hpp>
+
 
 
 namespace cved {
 	class Preset {
     private:
         inline static size_t n_presets = 0u;
-        Curve* p_curve_;
-        mkaul::ui::Window window_;
-        HWND hwnd_parent_;
-        std::unique_ptr<mkaul::graphics::Graphics> p_graphics_;
-        size_t id;
+		std::unique_ptr<Curve> p_curve_;
+		std::string name_;
+        size_t id_;
 
         static size_t register_preset();
-        static LRESULT CALLBACK wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
-        void draw();
 
     public:
-        Preset(HWND hwnd, Curve* p_curve) :
-            p_curve_(p_curve),
-            window_(),
-            hwnd_parent_(hwnd),
-            p_graphics_(nullptr)
-        {}
+		Preset();
 
-        bool create(const mkaul::WindowRectangle& rect) noexcept;
+		template<class CurveType>
+		void create(const CurveType& p_curve, const std::string& name) noexcept {
+			name_ = name;
+			p_curve_ = std::make_unique<CurveType>(p_curve);
+		}
+
+		nlohmann::json create_json() const noexcept;
+		bool load_json(const nlohmann::json& data) noexcept;
 	};
 }

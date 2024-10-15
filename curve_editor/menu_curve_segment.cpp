@@ -2,7 +2,6 @@
 #include "curve_editor.hpp"
 #include "dialog_modifier.hpp"
 #include "enum.hpp"
-#include "global.hpp"
 #include "menu_curve_segment.hpp"
 #include "resource.h"
 #include "string_table.hpp"
@@ -40,20 +39,8 @@ namespace cved {
 		minfo_tmp.hSubMenu = submenu_segment_type_;
 		::SetMenuItemInfoA(menu_, ID_CURVE_TYPE, FALSE, &minfo_tmp);
 	}
-	
-	std::optional<uint32_t> CurveSegmentMenu::get_idx(GraphCurve* p_segment) noexcept {
-		auto p_curve_normal = global::editor.editor_graph().curve_normal();
-		if (p_curve_normal) {
-			for (size_t i = 0; i < p_curve_normal->segment_n(); i++) {
-				if (p_curve_normal->get_segment(i) == p_segment) {
-					return i;
-				}
-			}
-		}
-		return std::nullopt;
-	}
 
-	void CurveSegmentMenu::update_state(uint32_t idx) noexcept {
+	void CurveSegmentMenu::update_state(uint32_t curve_id) noexcept {
 		constexpr size_t n_segment_types = (size_t)CurveSegmentType::NumCurveSegmentType;
 		// カーブセグメントの型情報(のポインタ)の配列
 		const std::type_info* p_segment_types[n_segment_types] = {
@@ -63,20 +50,18 @@ namespace cved {
 			&typeid(BounceCurve)
 		};
 
-		// TODO: 値指定モードに対応させる
-		if (global::config.get_edit_mode() == EditMode::Normal) {
-			auto p_curve_normal = global::editor.editor_graph().curve_normal();
-			if (p_curve_normal and idx < p_curve_normal->segment_n()) {
-				// カーブタイプのサブメニューのチェック状態を更新
-				for (uint32_t i = 0u; i < n_segment_types; i++) {
-					MENUITEMINFOA minfo_tmp;
-					minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
-					minfo_tmp.fMask = MIIM_STATE;
-					minfo_tmp.fState = typeid(*(p_curve_normal->get_segment(idx))) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
-					::SetMenuItemInfoA(submenu_segment_type_, i, TRUE, &minfo_tmp);
-				}
-			}
+		auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
+		if (!curve) {
+			return;
 		}
+		for (size_t i = 0; i < n_segment_types; i++) {
+			MENUITEMINFOA minfo_tmp;
+			minfo_tmp.cbSize = sizeof(MENUITEMINFOA);
+			minfo_tmp.fMask = MIIM_STATE;
+			minfo_tmp.fState = typeid(*curve) == *p_segment_types[i] ? MFS_CHECKED : MFS_UNCHECKED;
+			::SetMenuItemInfoA(submenu_segment_type_, i, TRUE, &minfo_tmp);
+		}
+
 
 		// 貼り付けるカーブのデータがないときは"貼り付け"のメニューを無効にする
 		MENUITEMINFOA minfo_tmp;
@@ -86,27 +71,24 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_CURVE_PASTE, FALSE, &minfo_tmp);
 	}
 
-	HMENU CurveSegmentMenu::get_handle(uint32_t idx) noexcept {
-		update_state(idx);
+	HMENU CurveSegmentMenu::get_handle(uint32_t curve_id) noexcept {
+		update_state(curve_id);
 		return Menu::get_handle();
 	}
 
 	int CurveSegmentMenu::show(
-		GraphCurve* p_segment,
+		uint32_t curve_id,
+		const MyWebView2& webview,
 		HWND hwnd,
 		UINT flags,
 		const mkaul::Point<LONG>* p_custom_pt_screen
 	) noexcept {
-		auto idx = get_idx(p_segment);
-		if (!idx.has_value()) {
-			return 0;
-		}
 		POINT tmp;
 		::GetCursorPos(&tmp);
 		if (p_custom_pt_screen) {
 			tmp = p_custom_pt_screen->to<POINT>();
 		}
-		update_state(idx.value());
+		update_state(curve_id);
 		auto ret = ::TrackPopupMenu(
 			menu_,
 			flags | TPM_RETURNCMD | TPM_NONOTIFY,
@@ -114,21 +96,20 @@ namespace cved {
 			tmp.y,
 			0, hwnd, NULL
 		);
-		return callback(idx.value(), static_cast<uint16_t>(ret));
+		return callback(curve_id, webview, static_cast<uint16_t>(ret));
 	}
 
-	bool CurveSegmentMenu::callback(uint32_t idx, uint16_t id) noexcept {
+	bool CurveSegmentMenu::callback(uint32_t curve_id, const MyWebView2& webview, uint16_t id) noexcept {
 		if (mkaul::in_range(
 			id,
 			(uint16_t)WindowCommand::CurveSegmentTypeLinear,
-			(uint16_t)WindowCommand::CurveSegmentTypeLinear + (uint16_t)CurveSegmentType::NumCurveSegmentType - 1u,
-			true
+			(uint16_t)WindowCommand::CurveSegmentTypeLinear + (uint16_t)CurveSegmentType::NumCurveSegmentType - 1u
 		)) {
 			global::editor.editor_graph().curve_normal()->replace_curve(
-				idx,
+				curve_id,
 				(CurveSegmentType)(id - (uint16_t)WindowCommand::CurveSegmentTypeLinear)
 			);
-			global::webview_main.post_message(L"editor-graph", L"updateHandles");
+			webview.post_message(L"editor-graph", L"updateHandles");
 			return true;
 		}
 
@@ -143,8 +124,8 @@ namespace cved {
 		{
 			auto p_curve_normal = global::editor.editor_graph().curve_normal();
 			if (p_curve_normal) {
-				p_curve_normal->reverse_segment(idx);
-				global::webview_main.post_message(L"editor-graph", L"updateHandlePos");
+				p_curve_normal->reverse_segment(curve_id);
+				webview.post_message(L"editor-graph", L"updateHandlePos");
 			}
 			break;
 		}
@@ -154,7 +135,7 @@ namespace cved {
 			auto p_curve_normal = global::editor.editor_graph().curve_normal();
 			if (p_curve_normal) {
 				ModifierDialog dialog;
-				dialog.show(global::fp->hwnd, reinterpret_cast<LPARAM>(p_curve_normal->get_segment(idx)));
+				dialog.show(webview.get_hwnd(), static_cast<LPARAM>(curve_id));
 			}
 			break;
 		}

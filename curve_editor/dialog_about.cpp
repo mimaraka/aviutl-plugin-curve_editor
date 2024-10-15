@@ -25,7 +25,7 @@ namespace cved {
 		// TODO: ロゴ画像が容易でき次第削除する
 		HWND hwnd_static_logo = ::GetDlgItem(hwnd, IDC_STATIC_LOGO);
 		HFONT font = ::CreateFontA(48, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Yu Gothic UI");
-		::SendMessage(hwnd_static_logo, WM_SETFONT, (WPARAM)font, TRUE);
+		::SendMessageA(hwnd_static_logo, WM_SETFONT, (WPARAM)font, TRUE);
 	}
 
 

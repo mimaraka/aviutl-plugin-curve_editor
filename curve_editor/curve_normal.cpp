@@ -66,12 +66,12 @@ namespace cved {
 				return end;
 			}
 			else {
-				if (*it != curve_segments_.back() and mkaul::in_range(progress, (*it)->anchor_end().x, (*std::next(it))->anchor_start().x)) {
+				if (*it != curve_segments_.back() and mkaul::in_range(progress, (*it)->anchor_end().x, (*std::next(it))->anchor_start().x, false)) {
 					// 線形補間
 					double tmp = (progress - (*it)->anchor_end().x) / ((*std::next(it))->anchor_start().x - (*it)->anchor_end().x);
 					return ((*std::next(it))->anchor_start().y - (*it)->anchor_end().y) * tmp + (*it)->anchor_end().y;
 				}
-				else if (mkaul::in_range(progress, (*it)->anchor_start().x, (*it)->anchor_end().x, true)) {
+				else if (mkaul::in_range(progress, (*it)->anchor_start().x, (*it)->anchor_end().x)) {
 					return (*it)->get_value(progress, start, end);
 				}
 			}
@@ -107,9 +107,12 @@ namespace cved {
 		}
 	}
 
-	void NormalCurve::reverse_segment(size_t idx) noexcept {
-		if (idx < curve_segments_.size()) {
-			curve_segments_[idx]->reverse(true);
+	void NormalCurve::reverse_segment(uint32_t id) noexcept {
+		for (auto& segment : curve_segments_) {
+			if (id == segment->get_id()) {
+				segment->reverse(true);
+				return;
+			}
 		}
 	}
 
@@ -127,7 +130,7 @@ namespace cved {
 			} type;
 		};
 
-		auto pts = reinterpret_cast<const CurvePoint*>(data);
+		auto pts = std::bit_cast<const CurvePoint*>(data);
 		std::vector<std::unique_ptr<GraphCurve>> vec_tmp;
 
 		for (size_t i = 0u; i < pt_n; i++) {
@@ -156,7 +159,7 @@ namespace cved {
 			else {
 				if (
 					pts[i].type != CurvePoint::Type::Extended
-					or !mkaul::in_range(pts[i].pt_center.x, 0, GRAPH_RESOLUTION)
+					or !mkaul::in_range(pts[i].pt_center.x, 0, GRAPH_RESOLUTION, false)
 					) {
 					return false;
 				}
@@ -167,8 +170,8 @@ namespace cved {
 				// カーブの整合性チェック
 				if (
 					pts[i + 1u].pt_center.x < pts[i].pt_center.x
-					or !mkaul::in_range(pts[i].pt_right.x, pts[i].pt_center.x, pts[i + 1u].pt_center.x, true)
-					or !mkaul::in_range(pts[i + 1u].pt_left.x, pts[i].pt_center.x, pts[i + 1u].pt_center.x, true)
+					or !mkaul::in_range(pts[i].pt_right.x, pts[i].pt_center.x, pts[i + 1u].pt_center.x)
+					or !mkaul::in_range(pts[i + 1u].pt_left.x, pts[i].pt_center.x, pts[i + 1u].pt_center.x)
 					) {
 					return false;
 				}
@@ -213,7 +216,7 @@ namespace cved {
 
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			// X座標がカーブの始点と終点の範囲内であった場合
-			if (mkaul::in_range(pt.x, (*it)->anchor_start().x, (*it)->anchor_end().x)) {
+			if (mkaul::in_range(pt.x, (*it)->anchor_start().x, (*it)->anchor_end().x, false)) {
 				std::unique_ptr<GraphCurve> new_curve{
 					new BezierCurve{
 						pt,
@@ -232,13 +235,8 @@ namespace cved {
 					}
 				};
 
-				// 元々あった要素のthis->prevやthis->nextを更新
-				if ((*it)->next()) {
-					(*it)->next()->set_prev(new_curve.get());
-				}
-				(*it)->set_next(new_curve.get());
 				// 既存のカーブを移動させる
-				(*it)->set_anchor_end(pt);
+				(*it)->set_anchor_end(pt, true);
 
 				// 左のカーブがベジェの場合、右のハンドルをnew_curveの右ハンドルにコピーする
 				// TODO: このあたりの処理がゴリ押しだから何とかしたい
@@ -267,6 +265,12 @@ namespace cved {
 					);
 				}
 
+				// 元々あった要素のthis->prevやthis->nextを更新
+				if ((*it)->next()) {
+					(*it)->next()->set_prev(new_curve.get());
+				}
+				(*it)->set_next(new_curve.get());
+
 				curve_segments_.insert(std::next(it), std::move(new_curve));
 				return true;
 			}
@@ -275,10 +279,10 @@ namespace cved {
 	}
 
 	// ポイントを削除
-	bool NormalCurve::delete_curve(GraphCurve* p_segment) noexcept {
+	bool NormalCurve::delete_curve(uint32_t segment_id) noexcept {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			// 先頭のカーブでない場合
-			if ((*it).get() == p_segment and *it != curve_segments_.front()) {
+			if ((*it).get()->get_id() == segment_id and *it != curve_segments_.front()) {
 				// 前のカーブの終点を削除するカーブの終点に移動させる
 				(*std::prev(it))->set_anchor_end((*it)->anchor_end());
 				// prev, nextの更新
@@ -318,64 +322,125 @@ namespace cved {
 		return false;
 	}
 
-	bool NormalCurve::replace_curve(size_t idx, CurveSegmentType segment_type) noexcept {
-		if (idx >= curve_segments_.size()) return false;
-		auto current_curve = curve_segments_[idx].get();
-		std::unique_ptr<GraphCurve> new_curve;
-		switch (segment_type) {
-		case CurveSegmentType::Linear:
-			new_curve = std::make_unique<LinearCurve>(
-				current_curve->anchor_start(),
-				current_curve->anchor_end(),
-				false,
-				current_curve->prev(),
-				current_curve->next()
-			);
-			break;
+	bool NormalCurve::replace_curve(uint32_t id, CurveSegmentType segment_type) noexcept {
+		for (auto& segment : curve_segments_) {
+			if (id == segment->get_id()) {
+				std::unique_ptr<GraphCurve> new_curve;
+				switch (segment_type) {
+				case CurveSegmentType::Linear:
+					new_curve = std::make_unique<LinearCurve>(
+						segment->anchor_start(),
+						segment->anchor_end(),
+						false,
+						segment->prev(),
+						segment->next()
+					);
+					break;
 
-		case CurveSegmentType::Bezier:
-			new_curve = std::make_unique<BezierCurve>(
-				current_curve->anchor_start(),
-				current_curve->anchor_end(),
-				false,
-				current_curve->prev(),
-				current_curve->next()
-			);
-			new_curve->clear();
-			break;
+				case CurveSegmentType::Bezier:
+					new_curve = std::make_unique<BezierCurve>(
+						segment->anchor_start(),
+						segment->anchor_end(),
+						false,
+						segment->prev(),
+						segment->next()
+					);
+					new_curve->clear();
+					break;
 
-		case CurveSegmentType::Elastic:
-			new_curve = std::make_unique<ElasticCurve>(
-				current_curve->anchor_start(),
-				current_curve->anchor_end(),
-				false,
-				current_curve->prev(),
-				current_curve->next()
-			);
-			break;
+				case CurveSegmentType::Elastic:
+					new_curve = std::make_unique<ElasticCurve>(
+						segment->anchor_start(),
+						segment->anchor_end(),
+						false,
+						segment->prev(),
+						segment->next()
+					);
+					break;
 
-		case CurveSegmentType::Bounce:
-			new_curve = std::make_unique<BounceCurve>(
-				current_curve->anchor_start(),
-				current_curve->anchor_end(),
-				false,
-				current_curve->prev(),
-				current_curve->next()
-			);
-			break;
+				case CurveSegmentType::Bounce:
+					new_curve = std::make_unique<BounceCurve>(
+						segment->anchor_start(),
+						segment->anchor_end(),
+						false,
+						segment->prev(),
+						segment->next()
+					);
+					break;
 
-		default:
+				default:
+					return false;
+				}
+				// 両端のカーブのprev,nextの更新
+				if (segment->prev()) {
+					segment->prev()->set_next(new_curve.get());
+				}
+				if (segment->next()) {
+					segment->next()->set_prev(new_curve.get());
+				}
+				segment = std::move(new_curve);
+
+				return true;
+			}
+		}
+		return false;
+	}
+
+	nlohmann::json NormalCurve::create_json() const noexcept {
+		nlohmann::json data = GraphCurve::create_json();
+		data["segments"] = nlohmann::json::array();
+		for (const auto& p_curve : curve_segments_) {
+			data["segments"].emplace_back(p_curve->create_json());
+		}
+		return data;
+	}
+
+	bool NormalCurve::load_json(const nlohmann::json& data) noexcept {
+		if (!GraphCurve::load_json(data)) {
 			return false;
 		}
-		// 両端のカーブのprev,nextの更新
-		if (current_curve->prev()) {
-			current_curve->prev()->set_next(new_curve.get());
+		try {
+			std::vector<std::unique_ptr<GraphCurve>> vec_tmp;
+			for (const auto& segment : data.at("segments")) {
+				std::unique_ptr<GraphCurve> new_curve;
+				if (segment.at("type") == global::CURVE_NAME_BEZIER) {
+					new_curve = std::make_unique<BezierCurve>();
+				}
+				else if (segment.at("type") == global::CURVE_NAME_LINEAR) {
+					new_curve = std::make_unique<LinearCurve>();
+				}
+				else if (segment.at("type") == global::CURVE_NAME_ELASTIC) {
+					new_curve = std::make_unique<ElasticCurve>();
+				}
+				else if (segment.at("type") == global::CURVE_NAME_BOUNCE) {
+					new_curve = std::make_unique<BounceCurve>();
+				}
+				if (!new_curve or !new_curve->load_json(segment)) {
+					return false;
+				}
+				if (!vec_tmp.empty()) {
+					if (
+						!mkaul::real_equal(new_curve->anchor_start().x, vec_tmp.back()->anchor_end().x)
+						or !mkaul::real_equal(new_curve->anchor_start().y, vec_tmp.back()->anchor_end().y)
+					) {
+						return false;
+					}
+					new_curve->set_prev(vec_tmp.back().get());
+					vec_tmp.back()->set_next(new_curve.get());
+				}
+				else if (!mkaul::real_equal(new_curve->anchor_start().x, 0.) or !mkaul::real_equal(new_curve->anchor_start().y, 0.)) {
+					return false;
+				}
+				vec_tmp.emplace_back(std::move(new_curve));
+			}
+			if (!mkaul::real_equal(vec_tmp.back()->anchor_end().x, 1.) or !mkaul::real_equal(vec_tmp.back()->anchor_end().y, 1.)) {
+				return false;
+			}
+			curve_segments_ = std::move(vec_tmp);
 		}
-		if (current_curve->next()) {
-			current_curve->next()->set_prev(new_curve.get());
+		catch (const std::exception&) {
+			return false;
 		}
-		curve_segments_[idx] = std::move(new_curve);
-
 		return true;
 	}
 }

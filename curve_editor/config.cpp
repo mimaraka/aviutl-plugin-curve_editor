@@ -28,7 +28,7 @@ namespace cved {
 			show_velocity_graph_ = false;
 			align_handle_ = true;
 			ignore_autosaver_warning_ = false;
-			separator_ = global::SEPARATOR_WIDTH;
+			separator_pos_ = 1.;
 			preset_size_ = 50;
 
 			// AviUtlのディレクトリの取得
@@ -55,12 +55,12 @@ namespace cved {
 			}
 		}
 
-		bool Config::set_theme_id(ThemeId theme_id) noexcept {
-			switch (theme_id) {
+		bool Config::set_theme(ThemeId theme) noexcept {
+			switch (theme) {
 			case ThemeId::System:
 			case ThemeId::Dark:
 			case ThemeId::Light:
-				pref_.theme_id = theme_id;
+				pref_.theme = theme;
 				return true;
 
 			default:
@@ -68,7 +68,7 @@ namespace cved {
 			}
 		}
 
-		const char* Config::get_edit_mode_str(EditMode edit_mode) const noexcept {
+		const char* Config::get_edit_mode_dispname(EditMode edit_mode) const noexcept {
 			using StringId = StringTable::StringId;
 
 			if (!string_table.loaded()) return nullptr;
@@ -97,12 +97,12 @@ namespace cved {
 			}
 		}
 
-		const char* Config::get_edit_mode_str() const noexcept {
-			return get_edit_mode_str(edit_mode_);
+		const char* Config::get_edit_mode_dispname() const noexcept {
+			return get_edit_mode_dispname(edit_mode_);
 		}
 
 		bool Config::set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept {
-			if (mkaul::in_range((size_t)apply_mode, 0u, (size_t)ApplyMode::NumApplyMode - 1u, true)) {
+			if (mkaul::in_range((size_t)apply_mode, 0u, (size_t)ApplyMode::NumApplyMode - 1u)) {
 				apply_mode_[(size_t)edit_mode] = apply_mode;
 				return true;
 			}
@@ -130,15 +130,15 @@ namespace cved {
 		}
 
 		bool Config::set_edit_mode(EditMode edit_mode) noexcept {
-			if (mkaul::in_range((uint32_t)edit_mode, 0u, (uint32_t)EditMode::NumEditMode - 1u, true)) {
+			if (mkaul::in_range((uint32_t)edit_mode, 0u, (uint32_t)EditMode::NumEditMode - 1u)) {
 				edit_mode_ = edit_mode;
 				return true;
 			}
 			else return false;
 		}
 
-		void Config::set_separator(int separator) noexcept {
-			separator_ = std::max(separator, global::SEPARATOR_WIDTH);
+		void Config::set_separator_pos(double separator_pos) noexcept {
+			separator_pos_ = mkaul::clamp(separator_pos, 0., 1.);
 		}
 
 		void Config::set_preset_size(int) noexcept {
@@ -173,7 +173,7 @@ namespace cved {
 				if (data.contains(GET_KEY(show_y_label_))) set_show_y_label(data[GET_KEY(show_y_label_)]);
 				if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
 				if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
-				if (data.contains(GET_KEY(separator_))) set_separator(data[GET_KEY(separator_)]);
+				if (data.contains(GET_KEY(separator_pos_))) set_separator_pos(data[GET_KEY(separator_pos_)]);
 				if (data.contains(GET_KEY(preset_size_))) set_preset_size(data[GET_KEY(preset_size_)]);
 			}
 			catch (const json::exception&) {
@@ -201,7 +201,7 @@ namespace cved {
 				{GET_KEY(show_velocity_graph_), show_velocity_graph_},
 				{GET_KEY(align_handle_), align_handle_},
 				{GET_KEY(ignore_autosaver_warning_), ignore_autosaver_warning_},
-				{GET_KEY(separator_), separator_},
+				{GET_KEY(separator_pos_), separator_pos_},
 				{GET_KEY(preset_size_), preset_size_}
 			};
 

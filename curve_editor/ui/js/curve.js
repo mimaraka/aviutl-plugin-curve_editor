@@ -1,126 +1,145 @@
 class Curve {
-    constructor(curvePtr) {
-        this._curvePtr = curvePtr;
+    #id;
+    constructor(id) {
+        this.#id = id;
+    }
+
+    get id() {
+        return this.#id;
     }
 
     getAnchorStartX() {
-        return graphEditor.graph.getAnchorStartX(this._curvePtr);
+        return graphEditor.graph.getAnchorStartX(this.id);
     }
 
     getAnchorStartY() {
-        return graphEditor.graph.getAnchorStartY(this._curvePtr);
+        return graphEditor.graph.getAnchorStartY(this.id);
     }
 
     setAnchorStart(x, y) {
-        graphEditor.graph.setAnchorStart(this._curvePtr, x, y);
+        graphEditor.graph.setAnchorStart(this.id, x, y);
     }
 
     getAnchorEndX() {
-        return graphEditor.graph.getAnchorEndX(this._curvePtr);
+        return graphEditor.graph.getAnchorEndX(this.id);
     }
 
     getAnchorEndY() {
-        return graphEditor.graph.getAnchorEndY(this._curvePtr);
+        return graphEditor.graph.getAnchorEndY(this.id);
     }
 
     setAnchorEnd(x, y) {
-        graphEditor.graph.setAnchorEnd(this._curvePtr, x, y);
+        graphEditor.graph.setAnchorEnd(this.id, x, y);
     }
 
-    getCurvePtr() {
-        return this._curvePtr;
+    getId() {
+        return this.id;
     }
 
     getPrevCurve() {
-        const curvePtr = graphEditor.graph.getPrevCurvePtr(this._curvePtr);
-        return createCurve(curvePtr);
+        const id = graphEditor.graph.getPrevCurveId(this.id);
+        return createCurve(id);
     }
 
     getNextCurve() {
-        const curvePtr = graphEditor.graph.getNextCurvePtr(this._curvePtr);
-        return createCurve(curvePtr);
+        const id = graphEditor.graph.getNextCurveId(this.id);
+        return createCurve(id);
+    }
+
+    reverse() {
+        graphEditor.graph.reverse(this.id);
     }
 }
 
-class BezierCurve extends Curve {
+class NumericCurve extends Curve {
+    encode() {
+        return graphEditor.numeric.encode(this.id);
+    }
+
+    decode(code) {
+        return graphEditor.numeric.decode(this.id, code);
+    }
+}
+
+class BezierCurve extends NumericCurve {
     getHandleLeftX() {
-        return graphEditor.bezier.getHandleLeftX(this._curvePtr);
+        return graphEditor.bezier.getHandleLeftX(this.id);
     }
 
     getHandleLeftY() {
-        return graphEditor.bezier.getHandleLeftY(this._curvePtr);
+        return graphEditor.bezier.getHandleLeftY(this.id);
     }
 
     setHandleLeft(x, y, keepAngle = false) {
-        graphEditor.bezier.setHandleLeft(this._curvePtr, x, y, keepAngle);
+        graphEditor.bezier.setHandleLeft(this.id, x, y, keepAngle);
     }
 
     getHandleRightX() {
-        return graphEditor.bezier.getHandleRightX(this._curvePtr);
+        return graphEditor.bezier.getHandleRightX(this.id);
     }
 
     getHandleRightY() {
-        return graphEditor.bezier.getHandleRightY(this._curvePtr);
+        return graphEditor.bezier.getHandleRightY(this.id);
     }
 
     setHandleRight(x, y, keepAngle = false) {
-        graphEditor.bezier.setHandleRight(this._curvePtr, x, y, keepAngle);
+        graphEditor.bezier.setHandleRight(this.id, x, y, keepAngle);
     }
 }
 
-class ElasticCurve extends Curve {
+class ElasticCurve extends NumericCurve {
     getHandleAmpLeftX() {
-        return graphEditor.elastic.getHandleAmpLeftX(this._curvePtr);
+        return graphEditor.elastic.getHandleAmpLeftX(this.id);
     }
 
     getHandleAmpLeftY() {
-        return graphEditor.elastic.getHandleAmpLeftY(this._curvePtr);
+        return graphEditor.elastic.getHandleAmpLeftY(this.id);
     }
 
     setHandleAmpLeft(y) {
-        graphEditor.elastic.setHandleAmpLeft(this._curvePtr, y);
+        graphEditor.elastic.setHandleAmpLeft(this.id, y);
     }
 
     getHandleAmpRightX() {
-        return graphEditor.elastic.getHandleAmpRightX(this._curvePtr);
+        return graphEditor.elastic.getHandleAmpRightX(this.id);
     }
 
     getHandleAmpRightY() {
-        return graphEditor.elastic.getHandleAmpRightY(this._curvePtr);
+        return graphEditor.elastic.getHandleAmpRightY(this.id);
     }
 
     setHandleAmpRight(y) {
-        graphEditor.elastic.setHandleAmpRight(this._curvePtr, y);
+        graphEditor.elastic.setHandleAmpRight(this.id, y);
     }
 
     getHandleFreqDecayX() {
-        return graphEditor.elastic.getHandleFreqDecayX(this._curvePtr);
+        return graphEditor.elastic.getHandleFreqDecayX(this.id);
     }
 
     getHandleFreqDecayY() {
-        return graphEditor.elastic.getHandleFreqDecayY(this._curvePtr);
+        return graphEditor.elastic.getHandleFreqDecayY(this.id);
     }
 
     getHandleFreqDecayRootY() {
-        return graphEditor.elastic.getHandleFreqDecayRootY(this._curvePtr);
+        return graphEditor.elastic.getHandleFreqDecayRootY(this.id);
     }
 
     setHandleFreqDecay(x, y) {
-        graphEditor.elastic.setHandleFreqDecay(this._curvePtr, x, y);
+        graphEditor.elastic.setHandleFreqDecay(this.id, x, y);
     }
 }
 
-class BounceCurve extends Curve {
+class BounceCurve extends NumericCurve {
     getHandleX() {
-        return graphEditor.bounce.getHandleX(this._curvePtr);
+        return graphEditor.bounce.getHandleX(this.id);
     }
 
     getHandleY() {
-        return graphEditor.bounce.getHandleY(this._curvePtr);
+        return graphEditor.bounce.getHandleY(this.id);
     }
 
     setHandle(x, y) {
-        graphEditor.bounce.setHandle(this._curvePtr, x, y);
+        graphEditor.bounce.setHandle(this.id, x, y);
     }
 }
 
@@ -129,42 +148,37 @@ class LinearCurve extends Curve {
 
 class NormalCurve extends Curve {
     getSegments() {
-        const ptrArray = graphEditor.normal.getPtrArray(this._curvePtr);
-        let segments = Array(ptrArray.length).fill(null);
-        for (let i = 0; i < ptrArray.length; i++) {
-            segments[i] = createCurve(ptrArray[i]);
+        const idArray = graphEditor.normal.getIdArray(this.id);
+        let segments = Array(idArray.length).fill(null);
+        for (let i = 0; i < idArray.length; i++) {
+            segments[i] = createCurve(idArray[i]);
         }
         return segments;
     }
 
     addCurve(x, y, scaleX) {
-        graphEditor.normal.addCurve(this._curvePtr, x, y, scaleX);
+        graphEditor.normal.addCurve(this.id, x, y, scaleX);
     }
 }
 
-function createCurve(curvePtr) {
-    switch (graphEditor.getCurveType(curvePtr)) {
+function createCurve(id) {
+    switch (graphEditor.getCurveType(id)) {
         case 'bezier':
-            return new BezierCurve(curvePtr);
+            return new BezierCurve(id);
 
         case 'elastic':
-            return new ElasticCurve(curvePtr);
+            return new ElasticCurve(id);
 
         case 'bounce':
-            return new BounceCurve(curvePtr);
+            return new BounceCurve(id);
 
         case 'linear':
-            return new LinearCurve(curvePtr);
+            return new LinearCurve(id);
 
         case 'normal':
-            return new NormalCurve(curvePtr);
+            return new NormalCurve(id);
         
         default:
             return null;
     }
-}
-
-function getCurrentCurve() {
-    const currentCurvePtr = graphEditor.getCurrentCurvePtr();
-    return createCurve(currentCurvePtr);
 }

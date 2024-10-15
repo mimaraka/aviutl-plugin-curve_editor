@@ -19,10 +19,15 @@ namespace cved {
 			ScriptCurve* curve_script(size_t idx) noexcept;
 			ScriptCurve* curve_script() noexcept { return curve_script(idx_); }
 			auto idx() const noexcept { return idx_; }
-			bool set_idx(size_t idx) noexcept;
+			auto size() const noexcept { return curves_script_.size(); }
+			bool set_idx(int idx) noexcept;
+			bool advance_idx(int n) noexcept { return set_idx((int)idx_ + n); }
 			void jump_to_last_idx() noexcept;
-			void delete_last_idx() noexcept;
+			void append_idx() noexcept { curves_script_.emplace_back(ScriptCurve{}); }
+			void pop_idx() noexcept;
+			bool is_idx_first() const noexcept { return idx_ == 0u; }
 			bool is_idx_last() const noexcept { return idx_ == curves_script_.size() - 1; }
+			bool is_idx_max() const noexcept { return idx_ == global::CURVE_ID_MAX; }
 
 			template <class Archive>
 			void save(Archive& archive, const std::uint32_t) const {

@@ -22,13 +22,13 @@ namespace cved {
 
 			// v1.xのデータの読み込みを試みる
 			if (size == DATA_SIZE_V1) {
-				auto bytes_data = reinterpret_cast<byte*>(data);
+				auto bytes_data = static_cast<byte*>(data);
 				ret = (BOOL)global::editor.editor_graph().load_v1_data(bytes_data);
 			}
 
 			if (!ret) {
 				try {
-					std::istringstream stream{ std::string{ reinterpret_cast<char*>(data), static_cast<size_t>(size)} };
+					std::istringstream stream{ std::string{ static_cast<char*>(data), static_cast<size_t>(size)} };
 					cereal::BinaryInputArchive archive{ stream };
 					archive(global::editor);
 					ret = TRUE;

@@ -1,4 +1,4 @@
-#include "curve.hpp"
+#include "curve_base.hpp"
 
 
 
@@ -20,5 +20,11 @@ namespace cved {
 			prog_after = progress;
 		}
 		return (get_value(prog_after, start, end) - get_value(prog_before, start, end)) * TMP;
+	}
+
+	nlohmann::json Curve::create_json() const noexcept {
+		nlohmann::json data;
+		data["type"] = get_type();
+		return data;
 	}
 }

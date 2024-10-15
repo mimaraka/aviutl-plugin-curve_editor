@@ -25,14 +25,6 @@ iframe {
     height: var(--menu-row-height);
 }
 
-#panel-editor{
-    height: calc(100% - var(--menu-row-height) - var(--apply-button-height) - var(--separator-height));
-}
-
-#preset {
-    flex-grow: 1;
-}
-
 .button-apply {
     width: calc(100% - var(--margin) * 4);
     height: calc(var(--apply-button-height) - var(--margin) * 4);
@@ -69,7 +61,7 @@ iframe {
     margin: 0;
     padding: 0;
     border: none;
-    cursor: ns-resize;
+    cursor: row-resize;
     display: flex;
     justify-content: center;
     align-items: center;

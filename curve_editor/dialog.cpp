@@ -11,7 +11,7 @@ namespace cved {
 			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,
-			reinterpret_cast<LPARAM>(this)
+			std::bit_cast<LPARAM>(this)
 		);
 	}
 
@@ -22,7 +22,7 @@ namespace cved {
 			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,
-			reinterpret_cast<LPARAM>(this)
+			std::bit_cast<LPARAM>(this)
 		);
 	}
 
@@ -30,11 +30,11 @@ namespace cved {
 		if (message == WM_INITDIALOG) {
 			if (!lparam) return FALSE;
 			::SetWindowLongA(hwnd, GWL_USERDATA, (LONG)lparam);
-			auto p_inst = reinterpret_cast<Dialog*>(lparam);
+			auto p_inst = std::bit_cast<Dialog*>(lparam);
 			return p_inst->dialog_proc(hwnd, message, wparam, p_inst->init_param_);
 		}
 		else {
-			auto p_inst = reinterpret_cast<Dialog*>(::GetWindowLongA(hwnd, GWL_USERDATA));
+			auto p_inst = std::bit_cast<Dialog*>(::GetWindowLongA(hwnd, GWL_USERDATA));
 			if (!p_inst) return FALSE;
 			return p_inst->dialog_proc(hwnd, message, wparam, lparam);
 		}

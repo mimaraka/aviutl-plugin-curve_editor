@@ -9,7 +9,7 @@
 namespace cved {
 	struct Preferences {
 		Language language;
-		ThemeId theme_id;
+		ThemeId theme;
 		mkaul::ColorF curve_color;
 		float curve_thickness;
 		uint32_t curve_resolution;
@@ -24,6 +24,7 @@ namespace cved {
 		bool set_bg_image;
 		bool enable_hotkeys;
 		bool enable_animation;
+		bool word_wrap;
 
 		void reset() noexcept;
 		void from_json(const nlohmann::json& data) noexcept;

@@ -102,7 +102,7 @@ namespace cved {
 			case (UINT)WindowCommand::LoadConfig:
 				cc.rgbResult = global::config.get_curve_color().colorref();
 				::InvalidateRect(hwnd, NULL, FALSE);
-				::SendMessageA(hwnd_combo_theme_, CB_SETCURSEL, (WPARAM)global::config.get_theme_id(), NULL);
+				::SendMessageA(hwnd_combo_theme_, CB_SETCURSEL, (WPARAM)global::config.get_theme(), NULL);
 				::SendMessageA(
 					hwnd_check_show_trace_,
 					BM_SETCHECK,
@@ -151,7 +151,7 @@ namespace cved {
 				return TRUE;
 
 			case (UINT)WindowCommand::SaveConfig:
-				global::config.set_theme_id((ThemeId)::SendMessageA(hwnd_combo_theme_, CB_GETCURSEL, NULL, NULL));
+				global::config.set_theme((ThemeId)::SendMessageA(hwnd_combo_theme_, CB_GETCURSEL, NULL, NULL));
 				global::config.set_show_trace((bool)::SendMessageA(hwnd_check_show_trace_, BM_GETCHECK, NULL, NULL));
 				global::config.set_set_bg_image((bool)::SendMessageA(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL));
 				global::config.set_enable_animation((bool)::SendMessageA(hwnd_check_enable_animation_, BM_GETCHECK, NULL, NULL));
@@ -203,7 +203,7 @@ namespace cved {
 			{
 				using namespace std::literals::string_view_literals;
 
-				constexpr const char* TEMPLATE_IMAGE = "*.bmp;*.jpg;*.jpeg;*.png;*.gif";
+				constexpr const char* TEMPLATE_IMAGE = "*.bmp;*.jpg;*.jpeg;*.png;*.webp;*.jfif;*.gif";
 				std::string str_filter = std::format(
 					"{0} ({1})\0{1}\0"sv,
 					global::string_table[StringId::WordImageFiles],

@@ -40,6 +40,8 @@
 #define IDC_CHECK_AUTO_APPLY            1026
 #define IDC_CHECK_DONTSHOWAGAIN         1027
 #define IDC_CHECK_NOTIFY_UPDATE         1028
+#define IDC_CHECK_AUTO_APPLY2           1028
+#define IDC_CHECK_WORD_WRAP             1028
 #define IDC_CHECK_SHOW_POPUP            1029
 #define IDC_CHECK_ENABLE_HOTKEYS        1030
 #define IDC_CHECK_SHOW_TRACE            1031
@@ -66,6 +68,7 @@
 #define IDC_STATIC_RANGE                1067
 #define IDC_EDIT_X                      1068
 #define IDC_EDIT_Y                      1069
+#define IDC_SYSLINK1                    1069
 #define IDC_COMBO_LANGUAGE              1280
 #define IDC_COMBO_THEME                 1281
 #define IDC_EDIT_CURVE_CODE             1408
@@ -140,6 +143,7 @@
 #define IDS_LABEL_THEME_NAME_LIGHT      7937
 #define IDS_LABEL_THEME_NAME_SYSTEM     7938
 #define IDS_LABEL_SELECT_BG_IMAGE       8064
+#define IDS_LABEL_SELECT_CURVE          8065
 #define IDS_LABEL_MODIFIER_DISCRETIZATION 8192
 #define IDS_LABEL_MODIFIER_NOISE        8193
 #define IDS_LABEL_MODIFIER_SINEWAVE     8194
@@ -149,6 +153,7 @@
 #define IDS_WORD_EDIT_MODE              9217
 #define IDS_WORD_LANGUAGE_AUTOMATIC     9218
 #define IDS_WORD_IMAGE_FILES            9219
+#define IDS_WORD_SELECT                 9220
 #define ID_EDIT_APPLYMODE               40060
 #define ID_GRAPH_ALIGN                  40092
 #define ID_GRAPH_REVERSE                40095
@@ -191,7 +196,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        158
 #define _APS_NEXT_COMMAND_VALUE         40178
-#define _APS_NEXT_CONTROL_VALUE         1069
+#define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

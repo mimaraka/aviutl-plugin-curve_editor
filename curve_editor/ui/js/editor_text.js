@@ -5,10 +5,20 @@ require(['vs/editor/editor.main'], function() {
         language: 'lua',
         automaticLayout: true,
         minimap: { enabled: false },
-        wordWrap: 'on',
+        wordWrap: config.wordWrap ? 'on' : 'off',
     });
     monaco.editor.setTheme('vs-dark');
 });
+
+// window.editor.addAction({
+//     id: 'show-graph',
+//     label: 'グラフエディタを表示',
+//     contextMenuGroupId: 'navigation',
+//     contextMenuOrder: 1,
+//     run: function(ed) {
+//         console.log(ed);
+//     }
+// });
 
 window.editor.getModel().onDidChangeContent(event => {
     scriptEditor.script = window.editor.getValue();
@@ -17,8 +27,8 @@ window.editor.getModel().onDidChangeContent(event => {
 window.addEventListener('message', event => {
     switch (event.data.command) {
         case 'updateEditor':
-        case 'changeId':
-        window.editor.setValue(scriptEditor.script);
+        case 'changeCurve':
+            window.editor.setValue(scriptEditor.script);
             break;
     }
 });

@@ -4,6 +4,7 @@
 #include <cereal/types/base_class.hpp>
 #include <cereal/types/string.hpp>
 #include <functional>
+#include <nlohmann/json.hpp>
 #include <string>
 
 
@@ -28,6 +29,8 @@ namespace cved {
 		{}
 		virtual ~Modifier() = default;
 
+		constexpr virtual std::string get_type() const noexcept = 0;
+
 		auto name() const noexcept { return name_; }
 		void set_name(const std::string& name) noexcept { name_ = name; }
 
@@ -38,6 +41,9 @@ namespace cved {
 		void set_curve(GraphCurve* p_curve) noexcept { p_curve_ = p_curve; }
 
 		virtual CurveFunction apply(const CurveFunction& function) const noexcept = 0;
+
+		virtual nlohmann::json create_json() const noexcept;
+		virtual bool load_json(const nlohmann::json& data) noexcept = 0;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

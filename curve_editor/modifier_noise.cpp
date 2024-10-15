@@ -41,4 +41,31 @@ namespace cved {
 			return function(progress, start, end) + noise * coef * (end - start);
 		};
 	}
+
+	nlohmann::json NoiseModifier::create_json() const noexcept {
+		auto data = Modifier::create_json();
+		data["seed"] = seed_;
+		data["amplitude"] = amplitude_;
+		data["frequency"] = frequency_;
+		data["phase"] = phase_;
+		data["octaves"] = octaves_;
+		data["decay_sharpness"] = decay_sharpness_;
+		return data;
+	}
+
+	bool NoiseModifier::load_json(const nlohmann::json& data) noexcept {
+		try {
+			seed_ = data.at("seed").get<int32_t>();
+			amplitude_ = data.at("amplitude").get<double>();
+			frequency_ = data.at("frequency").get<double>();
+			phase_ = data.at("phase").get<double>();
+			octaves_ = data.at("octaves").get<int32_t>();
+			decay_sharpness_ = data.at("decay_sharpness").get<double>();
+			update();
+		}
+		catch (const nlohmann::json::exception&) {
+			return false;
+		}
+		return true;
+	}
 }

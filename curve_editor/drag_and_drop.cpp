@@ -4,6 +4,7 @@
 #include "global.hpp"
 #include "util.hpp"
 #include <mkaul/util_hook.hpp>
+#include <mkaul/aviutl.hpp>
 
 
 
@@ -13,9 +14,7 @@ namespace cved {
 		ret.clear();
 		ret.emplace_back(track_idx);
 
-		auto offset_idcs = reinterpret_cast<int* (__cdecl*)(int, int)>(global::exedit_internal.base_address() + 0x2ca70u)(
-			obj_idx, track_idx
-			);
+		auto offset_idcs = global::exedit_internal.call_cdecl<int*>(0x2ca70u, obj_idx, track_idx);
 		for (size_t i = 0u; i < 2u; i++) {
 			if (offset_idcs[i] != 0) {
 				ret.emplace_back(track_idx + offset_idcs[i]);
@@ -65,7 +64,9 @@ namespace cved {
 		auto hwnd_objdialog = *global::exedit_internal.p_hwnd_objdialog();
 
 		for (int i = 0; i < ExEdit::Object::MAX_TRACK; i++) {
-			buttons_[i].init(hwnd_objdialog, i);
+			if (!buttons_[i].init(hwnd_objdialog, i)) {
+				return false;
+			}
 		}
 
 		auto hr = ::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, &p_factory_);
@@ -167,7 +168,7 @@ namespace cved {
 							}
 						}
 						// オブジェクト設定ダイアログの更新
-						reinterpret_cast<BOOL(__cdecl*)(int32_t)>(global::exedit_internal.base_address() + 0x305e0u)(current_obj_idx);
+						global::exedit_internal.call_cdecl<BOOL>(0x305e0u, current_obj_idx);
 					}
 					return true;
 				}

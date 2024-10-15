@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "modifier_base.hpp"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
@@ -24,6 +25,8 @@ namespace cved {
 			quantization_resolution_{ discretizer.quantization_resolution_ }
 		{}
 
+		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_DISCRETIZATION; }
+
 		auto sampling_resolution() const noexcept { return sampling_resolution_; }
 		void set_sampling_resolution(uint32_t sampling_resolution) noexcept { sampling_resolution_ = sampling_resolution; }
 
@@ -31,6 +34,9 @@ namespace cved {
 		void set_quantization_resolution(uint32_t quantization_resolution) noexcept { quantization_resolution_ = quantization_resolution; }
 
 		CurveFunction apply(const CurveFunction& function) const noexcept override;
+
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

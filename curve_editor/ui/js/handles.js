@@ -20,12 +20,13 @@ class Handles {
             .attr('height', this.anchorRadius * 2)
             .attr('class', 'anchor')
             .on('mousedown', event => {
-                if (event.button === 2) {
+                // TODO: 値指定モードに対応
+                if (event.button === 2 && getEditMode() == 0) {
                     event.stopPropagation();
                     window.top.postMessage({
                         to: 'native',
                         command: 'contextmenu-curve-segment',
-                        curvePtr: curve.getCurvePtr()
+                        curveId: curve.getId()
                     });
                 }
             });
@@ -38,15 +39,15 @@ class Handles {
 
         this.anchorStart.call(
             d3.drag()
-                .on('start', event => { this.onAnchorStartDragStart(event); })
-                .on('drag', event => { this.onAnchorStartDrag(event); })
-                .on('end', event => { this.onAnchorStartDragEnd(event); })
+                .on('start', this.onAnchorStartDragStart.bind(this))
+                .on('drag', this.onAnchorStartDrag.bind(this))
+                .on('end', this.onAnchorStartDragEnd.bind(this))
         );
         this.anchorEnd.call(
             d3.drag()
-                .on('start', event => { this.onAnchorEndDragStart(event); })
-                .on('drag', event => { this.onAnchorEndDrag(event); })
-                .on('end', event => { this.onAnchorEndDragEnd(event); })
+                .on('start', this.onAnchorEndDragStart.bind(this))
+                .on('drag', this.onAnchorEndDrag.bind(this))
+                .on('end', this.onAnchorEndDragEnd.bind(this))
         );
     }
 
@@ -163,13 +164,23 @@ class Handles {
         }
     }
 
-    onHandleDragEnd() {
+    onHandleDragEnd(event) {
         const editMode = config.editMode;
         if (editMode == 2 || editMode == 3 || editMode == 4) {
-            window.top.postMessage({
-                to: 'native',
-                command: 'copy'
-            }, '*');
+            if (config.autoCopy) {
+                window.top.postMessage({
+                    to: 'native',
+                    command: 'copy'
+                }, '*');
+            }
+        }
+        else {
+            if (config.autoApply) {
+                window.top.postMessage({
+                    to: 'native',
+                    command: 'apply'
+                }, '*');
+            }
         }
     }
 
@@ -216,15 +227,15 @@ class BezierHandles extends Handles {
             .attr('class', 'handle-line');
         this.handleLeft.call(
             d3.drag()
-                .on('start', event => { this.onHandleLeftDragStart(event); })
-                .on('drag', event => { this.onHandleLeftDrag(event); })
-                .on('end', event => { this.onHandleLeftDragEnd(event); })
+                .on('start', this.onHandleLeftDragStart.bind(this))
+                .on('drag', this.onHandleLeftDrag.bind(this))
+                .on('end', this.onHandleLeftDragEnd.bind(this))
         );
         this.handleRight.call(
             d3.drag()
-                .on('start', event => { this.onHandleRightDragStart(event); })
-                .on('drag', event => { this.onHandleRightDrag(event); })
-                .on('end', event => { this.onHandleRightDragEnd(event); })
+                .on('start', this.onHandleRightDragStart.bind(this))
+                .on('drag', this.onHandleRightDrag.bind(this))
+                .on('end', this.onHandleRightDragEnd.bind(this))
         );
     }
 
@@ -459,17 +470,17 @@ class ElasticHandles extends Handles {
             .attr('cy', scaleY(curve.getHandleAmpRightY()))
             .attr('r', this.handleRadius)
             .attr('class', 'handle');
-        this.handleFreqDecay = g.append('circle')
-            .attr('cx', scaleX(curve.getHandleFreqDecayX()))
-            .attr('cy', scaleY(curve.getHandleFreqDecayY()))
-            .attr('r', this.handleRadius)
-            .attr('class', 'handle');
         this.handleFreqDecayRoot = g.append('rect')
             .attr('x', scaleX(curve.getHandleFreqDecayX()) - this.anchorRadius)
             .attr('y', scaleY(curve.getHandleFreqDecayRootY()) - this.anchorRadius)
             .attr('width', this.anchorRadius * 2)
             .attr('height', this.anchorRadius * 2)
             .attr('class', 'anchor');
+        this.handleFreqDecay = g.append('circle')
+            .attr('cx', scaleX(curve.getHandleFreqDecayX()))
+            .attr('cy', scaleY(curve.getHandleFreqDecayY()))
+            .attr('r', this.handleRadius)
+            .attr('class', 'handle');
         this.handleLineAmp = g.append('line')
             .attr('x1', scaleX(curve.getHandleAmpLeftX()))
             .attr('y1', scaleY(curve.getHandleAmpLeftY()))
@@ -484,18 +495,18 @@ class ElasticHandles extends Handles {
             .attr('class', 'handle-line');
         this.handleAmpLeft.call(
             d3.drag()
-                .on('drag', event => { this.onHandleAmpLeftDrag(event); })
-                .on('end', event => { this.onHandleDragEnd(); })
+                .on('drag', this.onHandleAmpLeftDrag.bind(this))
+                .on('end', this.onHandleDragEnd.bind(this))
         );
         this.handleAmpRight.call(
             d3.drag()
-                .on('drag', event => { this.onHandleAmpRightDrag(event); })
-                .on('end', event => { this.onHandleDragEnd(); })
+                .on('drag', this.onHandleAmpRightDrag.bind(this))
+                .on('end', this.onHandleDragEnd.bind(this))
         );
         this.handleFreqDecay.call(
             d3.drag()
-                .on('drag', event => { this.onHandleFreqDecayDrag(event); })
-                .on('end', event => { this.onHandleDragEnd(); })
+                .on('drag', this.onHandleFreqDecayDrag.bind(this))
+                .on('end', this.onHandleDragEnd.bind(this))
         );
     }
 
@@ -573,13 +584,13 @@ class ElasticHandles extends Handles {
             .attr('y2', freqDecayY);
     }
 
-    onAnchorStartDrag(event) {
-        super.onAnchorStartDrag(event);
+    onAnchorStartDrag(event, bound = false) {
+        super.onAnchorStartDrag(event, bound);
         this.update();
     }
 
-    onAnchorEndDrag(event) {
-        super.onAnchorEndDrag(event);
+    onAnchorEndDrag(event, bound = false) {
+        super.onAnchorEndDrag(event, bound);
         this.update();
     }
 
@@ -641,8 +652,8 @@ class BounceHandles extends Handles {
             .attr('class', 'handle');
         this.handle.call(
             d3.drag()
-                .on('drag', event => { this.onHandleDrag(event); })
-                .on('end', event => { this.onHandleDragEnd(); })
+                .on('drag', this.onHandleDrag.bind(this))
+                .on('end', this.onHandleDragEnd.bind(this))
         );
     }
 
@@ -667,13 +678,13 @@ class BounceHandles extends Handles {
             .attr('cy', this.scaleY(this.curve.getHandleY()));
     }
 
-    onAnchorStartDrag(event) {
-        super.onAnchorStartDrag(event);
+    onAnchorStartDrag(event, bound = false) {
+        super.onAnchorStartDrag(event, bound);
         this.update();
     }
 
-    onAnchorEndDrag(event) {
-        super.onAnchorEndDrag(event);
+    onAnchorEndDrag(event, bound = false) {
+        super.onAnchorEndDrag(event, bound);
         this.update();
     }
 
@@ -697,13 +708,13 @@ class BounceHandles extends Handles {
 }
 
 class LinearHandles extends Handles {
-    onAnchorStartDrag(event) {
-        super.onAnchorStartDrag(event);
+    onAnchorStartDrag(event, bound = false) {
+        super.onAnchorStartDrag(event, bound);
         this.update();
     }
 
-    onAnchorEndDrag(event) {
-        super.onAnchorEndDrag(event);
+    onAnchorEndDrag(event, bound = false) {
+        super.onAnchorEndDrag(event, bound);
         this.update();
     }
 }
@@ -737,7 +748,7 @@ class NormalHandles extends Handles {
         for (let i = 0; i < segments.length; i++) {
             this.segmentHandlesArray[i].anchorStart.on('dblclick', event => {
                 event.stopPropagation();
-                graphEditor.normal.deleteCurve(curve.getCurvePtr(), this.segmentHandlesArray[i].curve.getCurvePtr());
+                graphEditor.normal.deleteCurve(curve.getId(), this.segmentHandlesArray[i].curve.getId());
                 this.segmentHandlesArray[i].remove();
                 this.segmentHandlesArray.splice(i, 1);
                 for (let handle of this.segmentHandlesArray) {

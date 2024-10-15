@@ -1,4 +1,3 @@
-#include "curve.hpp"
 #include "curve_value.hpp"
 
 
@@ -42,5 +41,15 @@ namespace cved {
 	bool ValueCurve::replace_curve(size_t idx, CurveSegmentType segment_type) noexcept
 	{
 		return false;
+	}
+
+	nlohmann::json ValueCurve::create_json() const noexcept
+	{
+		return GraphCurve::create_json();
+	}
+
+	bool ValueCurve::load_json(const nlohmann::json& data) noexcept
+	{
+		return GraphCurve::load_json(data);
 	}
 }

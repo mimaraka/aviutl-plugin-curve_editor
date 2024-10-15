@@ -205,6 +205,10 @@ namespace cved {
 					id = IDS_LABEL_SELECT_BG_IMAGE;
 					break;
 
+				case StringId::LabelSelectCurve:
+					id = IDS_LABEL_SELECT_CURVE;
+					break;
+
 				case StringId::LabelModifierDiscretization:
 					id = IDS_LABEL_MODIFIER_DISCRETIZATION;
 					break;
@@ -237,6 +241,10 @@ namespace cved {
 					id = IDS_WORD_IMAGE_FILES;
 					break;
 
+				case StringId::WordSelect:
+					id = IDS_WORD_SELECT;
+					break;
+
 				default:
 					continue;
 				}
@@ -253,7 +261,7 @@ namespace cved {
 
 		const char* StringTable::operator[] (StringTable::StringId str_id)
 		{
-			if (str_id == StringId::NumStringId) {
+			if ((uint32_t)StringId::NumStringId <= (uint32_t)str_id) {
 				return nullptr;
 			}
 			return string_data[(size_t)str_id].c_str();

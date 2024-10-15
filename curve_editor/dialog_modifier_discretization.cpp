@@ -30,7 +30,7 @@ namespace cved {
 
 		switch (message) {
 		case WM_INITDIALOG:
-			p_mod_discretization = reinterpret_cast<DiscretizationModifier*>(lparam);
+			p_mod_discretization = std::bit_cast<DiscretizationModifier*>(lparam);
 			if (!p_mod_discretization) {
 				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;
