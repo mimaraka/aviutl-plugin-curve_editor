@@ -42,4 +42,20 @@ namespace cved {
 			return (ed - st) * t + st;
 		}
 	}
+
+	nlohmann::json ScriptCurve::create_json() const noexcept {
+		auto data = Curve::create_json();
+		data["script"] = script_;
+		return data;
+	}
+
+	bool ScriptCurve::load_json(const nlohmann::json& data) noexcept {
+		try {
+			script_ = data.at("script").get<std::string>();
+		}
+		catch (const nlohmann::json::exception&) {
+			return false;
+		}
+		return true;
+	}
 } // namespace cved

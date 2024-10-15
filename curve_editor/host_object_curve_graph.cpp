@@ -4,67 +4,65 @@
 
 
 namespace cved {
-	double GraphCurveHostObject::get_anchor_start_x(uintptr_t curve_ptr) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
-		if (!curve) {
-			return 0.;
-		}
+	double GraphCurveHostObject::get_anchor_start_x(uint32_t id) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
+		if (!curve) return 0.;
 		return curve->get_anchor_start_x();
 	}
 
-	double GraphCurveHostObject::get_anchor_start_y(uintptr_t curve_ptr) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
+	double GraphCurveHostObject::get_anchor_start_y(uint32_t id) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) {
 			return 0.;
 		}
 		return curve->get_anchor_start_y();
 	}
 
-	void GraphCurveHostObject::set_anchor_start(uintptr_t curve_ptr, double x, double y) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
+	void GraphCurveHostObject::set_anchor_start(uint32_t id, double x, double y) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) {
 			return;
 		}
 		curve->set_anchor_start(x, y);
 	}
 
-	double GraphCurveHostObject::get_anchor_end_x(uintptr_t curve_ptr) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
+	double GraphCurveHostObject::get_anchor_end_x(uint32_t id) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) {
 			return 0.;
 		}
 		return curve->get_anchor_end_x();
 	}
 
-	double GraphCurveHostObject::get_anchor_end_y(uintptr_t curve_ptr) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
+	double GraphCurveHostObject::get_anchor_end_y(uint32_t id) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) {
 			return 0.;
 		}
 		return curve->get_anchor_end_y();
 	}
 
-	void GraphCurveHostObject::set_anchor_end(uintptr_t curve_ptr, double x, double y) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
+	void GraphCurveHostObject::set_anchor_end(uint32_t id, double x, double y) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) {
 			return;
 		}
 		curve->set_anchor_end(x, y);
 	}
 
-	uintptr_t GraphCurveHostObject::get_prev_curve_ptr(uintptr_t curve_ptr) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
-		if (!curve) {
+	uint32_t GraphCurveHostObject::get_prev_curve_id(uint32_t id) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
+		if (!curve or !curve->prev()) {
 			return 0;
 		}
-		return reinterpret_cast<uintptr_t>(curve->prev());
+		return curve->prev()->get_id();
 	}
 
-	uintptr_t GraphCurveHostObject::get_next_curve_ptr(uintptr_t curve_ptr) {
-		auto curve = reinterpret_cast<GraphCurve*>(curve_ptr);
-		if (!curve) {
+	uint32_t GraphCurveHostObject::get_next_curve_id(uint32_t id) {
+		auto curve = global::id_manager.get_curve<GraphCurve>(id);
+		if (!curve or !curve->next()) {
 			return 0;
 		}
-		return reinterpret_cast<uintptr_t>(curve->next());
+		return curve->next()->get_id();
 	}
 } // namespace cved

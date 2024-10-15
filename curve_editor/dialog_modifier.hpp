@@ -20,9 +20,9 @@ namespace cved {
 
 		int resource_id() const noexcept override;
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
-		void init_controls(HWND hwnd, const GraphCurve* p_curve) noexcept;
-		void update_list(const GraphCurve* p_curve) noexcept;
-		void update_buttons(const GraphCurve* p_curve) noexcept;
+		void init_controls(HWND hwnd, const GraphCurve* curve) noexcept;
+		void update_list(const GraphCurve* curve) noexcept;
+		void update_buttons(const GraphCurve* curve) noexcept;
 
 		template<uint32_t N>
 		std::unique_ptr<Modifier> create_modifier(uint32_t) { return nullptr; }
@@ -44,7 +44,7 @@ namespace cved {
 			if (typeid(*p_mod_base) == typeid(ModifierType)) {
 				auto p_mod_derived = dynamic_cast<const ModifierType*>(p_mod_base);
 				DialogType dialog;
-				dialog.show(hwnd, reinterpret_cast<LPARAM>(p_mod_derived));
+				dialog.show(hwnd, std::bit_cast<LPARAM>(p_mod_derived));
 			}
 			else {
 				show_editor_dialog<Tail...>(hwnd, p_mod_base);

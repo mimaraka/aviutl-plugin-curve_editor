@@ -26,7 +26,7 @@ iframe {
     width: 100%;
 }
 
-.editor {
+#panel-editor {
     height: calc(100% - var(--okcancel-height));
 }
 

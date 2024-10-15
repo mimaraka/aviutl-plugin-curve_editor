@@ -58,6 +58,7 @@ namespace cved {
 				LabelPreferenceBehavior,
 				LabelPreferenceEditing,
 				LabelSelectBackgroundImage,
+				LabelSelectCurve,
 				LabelModifierDiscretization,
 				LabelModifierNoise,
 				LabelModifierSineWave,
@@ -66,6 +67,7 @@ namespace cved {
 				WordEditMode,
 				WordLanguageAutomatic,
 				WordImageFiles,
+				WordSelect,
 				NumStringId
 			};
 

@@ -35,4 +35,22 @@ namespace cved {
 			return ret;
 		};
 	}
-}
+
+	nlohmann::json DiscretizationModifier::create_json() const noexcept {
+		auto data = Modifier::create_json();
+		data["sampling_resolution"] = sampling_resolution_;
+		data["quantization_resolution"] = quantization_resolution_;
+		return data;
+	}
+
+	bool DiscretizationModifier::load_json(const nlohmann::json& data) noexcept {
+		try {
+			sampling_resolution_ = data.at("sampling_resolution").get<uint32_t>();
+			quantization_resolution_ = data.at("quantization_resolution").get<uint32_t>();
+		}
+		catch (const nlohmann::json::exception&) {
+			return false;
+		}
+		return true;
+	}
+} // namespace cved

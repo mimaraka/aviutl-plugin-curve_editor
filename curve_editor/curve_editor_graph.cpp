@@ -19,30 +19,26 @@ namespace cved {
 			curve_bounce_.clear();
 		}
 
-		bool GraphCurveEditor::set_idx_normal(size_t idx) noexcept {
-			if (idx < curves_normal_.size()) {
+		bool GraphCurveEditor::set_idx_normal(int idx) noexcept {
+			if (mkaul::in_range(idx, 0, (int)curves_normal_.size())) {
+				if ((size_t)idx == curves_normal_.size()) {
+					append_idx_normal();
+				}
 				idx_normal_ = idx;
 				return true;
 			}
-			else if (idx == curves_normal_.size()) {
-				curves_normal_.emplace_back(NormalCurve{});
-				idx_normal_ = idx;
-				return true;
-			}
-			else return false;
+			return false;
 		}
 
-		bool GraphCurveEditor::set_idx_value(size_t idx) noexcept {
-			if (idx < curves_value_.size()) {
+		bool GraphCurveEditor::set_idx_value(int idx) noexcept {
+			if (mkaul::in_range(idx, 0, (int)curves_value_.size())) {
+				if ((size_t)idx == curves_value_.size()) {
+					append_idx_value();
+				}
 				idx_value_ = idx;
 				return true;
 			}
-			else if (idx == curves_value_.size()) {
-				curves_value_.emplace_back(ValueCurve{});
-				idx_value_ = idx;
-				return true;
-			}
-			else return false;
+			return false;
 		}
 
 		void GraphCurveEditor::jump_to_last_idx_normal() noexcept {
@@ -53,19 +49,19 @@ namespace cved {
 			idx_value_ = curves_value_.size() - 1;
 		}
 
-		void GraphCurveEditor::delete_last_idx_normal() noexcept {
+		void GraphCurveEditor::pop_idx_normal() noexcept {
 			if (1u < curves_normal_.size()) {
 				curves_normal_.pop_back();
-				if (idx_normal_ == curves_normal_.size()) {
+				if (curves_normal_.size() <= idx_normal_) {
 					idx_normal_ = curves_normal_.size() - 1;
 				}
 			}
 		}
 
-		void GraphCurveEditor::delete_last_idx_value() noexcept {
+		void GraphCurveEditor::pop_idx_value() noexcept {
 			if (1u < curves_value_.size()) {
 				curves_value_.pop_back();
-				if (idx_value_ == curves_value_.size()) {
+				if (curves_value_.size() <= idx_value_) {
 					idx_value_ = curves_value_.size() - 1;
 				}
 			}
@@ -157,7 +153,7 @@ namespace cved {
 				uint32_t size;
 			};
 
-			auto curve_data = reinterpret_cast<const CurveDataV1*>(data);
+			auto curve_data = std::bit_cast<const CurveDataV1*>(data);
 			std::vector<NormalCurve> vec_tmp;
 			bool flag_default = true;
 
@@ -167,7 +163,7 @@ namespace cved {
 					return false;
 				}
 				NormalCurve curve;
-				if (!curve.load_v1_data(reinterpret_cast<const byte*>(&curve_data[i]), curve_data[i].size)) {
+				if (!curve.load_v1_data(std::bit_cast<const byte*>(&curve_data[i]), curve_data[i].size)) {
 					return false;
 				}
 				// 末尾までデフォルトのカーブが連続している部分をスキップ

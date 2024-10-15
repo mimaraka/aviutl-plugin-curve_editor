@@ -16,17 +16,15 @@ namespace cved {
 		}
 
 		// インデックスを設定する
-		bool ScriptCurveEditor::set_idx(size_t idx) noexcept {
-			if (idx < curves_script_.size()) {
+		bool ScriptCurveEditor::set_idx(int idx) noexcept {
+			if (mkaul::in_range(idx, 0, (int)curves_script_.size())) {
+				if ((size_t)idx == curves_script_.size()) {
+					curves_script_.emplace_back(ScriptCurve{});
+				}
 				idx_ = idx;
 				return true;
 			}
-			else if (idx == curves_script_.size()) {
-				curves_script_.emplace_back(ScriptCurve{});
-				idx_ = idx;
-				return true;
-			}
-			else return false;
+			return false;
 		}
 
 		// スクリプトカーブを取得する
@@ -43,7 +41,7 @@ namespace cved {
 		}
 
 		// 最後のインデックスを削除する
-		void ScriptCurveEditor::delete_last_idx() noexcept {
+		void ScriptCurveEditor::pop_idx() noexcept {
 			if (1u < curves_script_.size()) {
 				curves_script_.pop_back();
 				if (idx_ == curves_script_.size()) {

@@ -46,7 +46,7 @@ namespace cved {
 				MessageBoxButton::OkCancel
 			);
 			if (resp == IDOK) {
-				global::editor.delete_last_idx();
+				global::editor.pop_idx();
 				//global::window_main.send_command((WPARAM)WindowCommand::Update);
 			}
 			break;

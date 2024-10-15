@@ -103,9 +103,15 @@
     <Filter Include="Header Files\WebView2\Host Object">
       <UniqueIdentifier>{7415b5ff-47db-4f85-a897-56f92f3eaab1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Window">
+      <UniqueIdentifier>{15f5bbd6-dcdb-43a6-b407-3be01ce5265b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Window">
+      <UniqueIdentifier>{d57a18c0-7f46-4755-bb42-4c85ba952e0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="curve.hpp">
+    <ClInclude Include="curve_base.hpp">
       <Filter>Header Files\Curve</Filter>
     </ClInclude>
     <ClInclude Include="global.hpp">
@@ -276,9 +282,6 @@
     <ClInclude Include="modifier_base.hpp">
       <Filter>Header Files\Curve\Modifier</Filter>
     </ClInclude>
-    <ClInclude Include="webmessage_handler.hpp">
-      <Filter>Header Files\WebView2</Filter>
-    </ClInclude>
     <ClInclude Include="my_webview2.hpp">
       <Filter>Header Files\WebView2</Filter>
     </ClInclude>
@@ -324,9 +327,21 @@
     <ClInclude Include="host_object_editor_script.hpp">
       <Filter>Header Files\WebView2\Host Object</Filter>
     </ClInclude>
+    <ClInclude Include="host_object_curve_graph_numeric.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
+    <ClInclude Include="window_select_curve.hpp">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="curve_id_manager.hpp">
+      <Filter>Header Files\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="curve.hpp">
+      <Filter>Header Files\Curve</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="curve.cpp">
+    <ClCompile Include="curve_base.cpp">
       <Filter>Source Files\Curve</Filter>
     </ClCompile>
     <ClCompile Include="curve_bezier.cpp">
@@ -479,9 +494,6 @@
     <ClCompile Include="dialog_modifier_discretization.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
-    <ClCompile Include="webmessage_handler.cpp">
-      <Filter>Source Files\WebView2</Filter>
-    </ClCompile>
     <ClCompile Include="my_webview2.cpp">
       <Filter>Source Files\WebView2</Filter>
     </ClCompile>
@@ -520,6 +532,15 @@
     </ClCompile>
     <ClCompile Include="host_object_config.cpp">
       <Filter>Source Files\WebView2\Host Object</Filter>
+    </ClCompile>
+    <ClCompile Include="modifier_base.cpp">
+      <Filter>Source Files\Curve\Modifier</Filter>
+    </ClCompile>
+    <ClCompile Include="host_object_curve_graph_numeric.cpp">
+      <Filter>Source Files\WebView2\Host Object</Filter>
+    </ClCompile>
+    <ClCompile Include="window_select_curve.cpp">
+      <Filter>Source Files\Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

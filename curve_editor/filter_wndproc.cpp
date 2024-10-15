@@ -3,13 +3,13 @@
 #include "constants.hpp"
 #include "curve_editor.hpp"
 #include "drag_and_drop.hpp"
+#include "exedit_hook.hpp"
 #include "filter_wndproc.hpp"
 #include "global.hpp"
 #include "my_messagebox.hpp"
 #include "my_webview2.hpp"
 #include "resource.h"
 #include "string_table.hpp"
-#include "webmessage_handler.hpp"
 #include <nlohmann/json.hpp>
 
 
@@ -34,7 +34,6 @@ namespace cved {
 					std::format("{} ({})", global::PLUGIN_NAME, global::PLUGIN_VERSION.preview_type().str(true)).c_str()
 				);
 			}
-			dnd.init();
 			break;
 
 			// AviUtl終了時
@@ -46,6 +45,7 @@ namespace cved {
 		case WindowMessage::ChangeWindow:
 			if (fp->exfunc->is_filter_window_disp(fp) and !init) {
 				actctx_helper.init(fp->dll_hinst);
+				dnd.init();
 				init = true;
 				global::webview_main.init(hwnd, [](MyWebView2* this_) {
 					mkaul::WindowRectangle bounds;

@@ -80,10 +80,10 @@ namespace cved {
 		bool CurveEditor::is_idx_last() noexcept {
 			switch (global::config.get_edit_mode()) {
 			case EditMode::Normal:
-				return editor_graph_.is_idx_normal_last();
+				return editor_graph_.is_idx_last_normal();
 
 			case EditMode::Value:
-				return editor_graph_.is_idx_value_last();
+				return editor_graph_.is_idx_last_value();
 
 			case EditMode::Script:
 				return editor_script_.is_idx_last();
@@ -93,18 +93,18 @@ namespace cved {
 			}
 		}
 
-		void CurveEditor::delete_last_idx() noexcept {
+		void CurveEditor::pop_idx() noexcept {
 			switch (global::config.get_edit_mode()) {
 			case EditMode::Normal:
-				editor_graph_.delete_last_idx_normal();
+				editor_graph_.pop_idx_normal();
 				break;
 
 			case EditMode::Value:
-				editor_graph_.delete_last_idx_value();
+				editor_graph_.pop_idx_value();
 				break;
 
 			case EditMode::Script:
-				editor_script_.delete_last_idx();
+				editor_script_.pop_idx();
 				break;
 
 			default:
@@ -117,6 +117,31 @@ namespace cved {
 			editor_script_.reset();
 		}
 
+		Curve* CurveEditor::get_curve(EditMode mode) noexcept {
+			switch (mode) {
+			case EditMode::Normal:
+			case EditMode::Value:
+			case EditMode::Bezier:
+			case EditMode::Elastic:
+			case EditMode::Bounce:
+				return editor_graph_.get_curve(mode);
+
+			case EditMode::Script:
+			default:
+				return editor_script_.curve_script();
+			}
+		}
+
+		EditMode CurveEditor::get_mode(const std::string& type_name) noexcept {
+			if (type_name == global::CURVE_NAME_BEZIER) return EditMode::Bezier;
+			if (type_name == global::CURVE_NAME_NORMAL) return EditMode::Normal;
+			if (type_name == global::CURVE_NAME_VALUE) return EditMode::Value;
+			if (type_name == global::CURVE_NAME_ELASTIC) return EditMode::Elastic;
+			if (type_name == global::CURVE_NAME_BOUNCE) return EditMode::Bounce;
+			if (type_name == global::CURVE_NAME_SCRIPT) return EditMode::Script;
+			return EditMode::NumEditMode;
+		}
+
 		int32_t CurveEditor::track_param() noexcept {
 			switch (global::config.get_edit_mode()) {
 			case EditMode::Normal:
@@ -126,7 +151,7 @@ namespace cved {
 				return -(int32_t)editor_graph_.idx_value() - 1;
 
 			case EditMode::Script:
-				return (int32_t)(IDCURVE_MAX_N + editor_script_.idx()) + 1;
+				return (int32_t)(CURVE_ID_MAX + editor_script_.idx()) + 1;
 
 			case EditMode::Bezier:
 			case EditMode::Elastic:

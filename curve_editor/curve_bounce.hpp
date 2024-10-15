@@ -52,6 +52,9 @@ namespace cved {
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
+
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
 			archive(

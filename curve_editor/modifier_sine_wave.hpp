@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants.hpp"
 #include "modifier_base.hpp"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
@@ -26,6 +27,8 @@ namespace cved {
 			phase_{ sinewave.phase_ }
 		{}
 
+		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_SINE_WAVE; }
+
 		auto amplitude() const noexcept { return amplitude_; }
 		void set_amplitude(double amplitude) noexcept { amplitude_ = amplitude; }
 
@@ -36,6 +39,9 @@ namespace cved {
 		void set_phase(double phase) noexcept { phase_ = phase; }
 
 		CurveFunction apply(const CurveFunction& function) const noexcept override;
+
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

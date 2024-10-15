@@ -41,7 +41,7 @@ namespace cved {
 
 		int16_t get_track_script_idx() noexcept {
 			const std::regex regex_script_name{ std::format(R"(^Type1@{}(\x01.+)?$)", global::PLUGIN_NAME) };
-			auto tra_script_names = reinterpret_cast<const char**>(global::exedit_internal.base_address() + 0x231488u);
+			auto tra_script_names = global::exedit_internal.get<const char*>(0x231488u);
 			int16_t script_idx = 0;
 
 			while (true) {

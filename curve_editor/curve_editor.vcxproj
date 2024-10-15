@@ -104,10 +104,7 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y "$(ProjectDir)curve_editor.lua" "$(OutDir)"
-xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"
-rd /s /q "$(OutDir)ui"
-xcopy /s /y /i "$(ProjectDir)ui" "$(OutDir)ui"
-node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
+xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>
@@ -192,12 +189,14 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="actctx_helper.hpp" />
+    <ClInclude Include="curve.hpp" />
     <ClInclude Include="curve_bezier.hpp" />
     <ClInclude Include="curve_bounce.hpp" />
     <ClInclude Include="curve_editor_script.hpp" />
     <ClInclude Include="curve_editor_graph.hpp" />
     <ClInclude Include="curve_elastic.hpp" />
     <ClInclude Include="curve_graph_numeric.hpp" />
+    <ClInclude Include="curve_id_manager.hpp" />
     <ClInclude Include="curve_script.hpp" />
     <ClInclude Include="curve_linear.hpp" />
     <ClInclude Include="curve_normal.hpp" />
@@ -219,13 +218,14 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClInclude Include="dialog_pref_general.hpp" />
     <ClInclude Include="dialog_warning_autosaver.hpp" />
     <ClInclude Include="host_object_curve_normal.hpp" />
+    <ClInclude Include="host_object_curve_graph_numeric.hpp" />
     <ClInclude Include="host_object_editor_script.hpp" />
     <ClInclude Include="modifier_discretization.hpp" />
     <ClInclude Include="drag_and_drop.hpp" />
     <ClInclude Include="enum.hpp" />
     <ClInclude Include="config.hpp" />
     <ClInclude Include="constants.hpp" />
-    <ClInclude Include="curve.hpp" />
+    <ClInclude Include="curve_base.hpp" />
     <ClInclude Include="curve_editor.hpp" />
     <ClInclude Include="exedit_hook.hpp" />
     <ClInclude Include="filter_exit.hpp" />
@@ -260,13 +260,13 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClInclude Include="resource.h" />
     <ClInclude Include="string_table.hpp" />
     <ClInclude Include="util.hpp" />
-    <ClInclude Include="webmessage_handler.hpp" />
     <ClInclude Include="my_webview2.hpp" />
+    <ClInclude Include="window_select_curve.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actctx_helper.cpp" />
     <ClCompile Include="config.cpp" />
-    <ClCompile Include="curve.cpp">
+    <ClCompile Include="curve_base.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -299,6 +299,8 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClCompile Include="dialog_warning_autosaver.cpp" />
     <ClCompile Include="host_object_config.cpp" />
     <ClCompile Include="host_object_curve_normal.cpp" />
+    <ClCompile Include="host_object_curve_graph_numeric.cpp" />
+    <ClCompile Include="modifier_base.cpp" />
     <ClCompile Include="modifier_discretization.cpp" />
     <ClCompile Include="drag_and_drop.cpp" />
     <ClCompile Include="filter_exit.cpp" />
@@ -306,6 +308,7 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClCompile Include="filter_project_load.cpp" />
     <ClCompile Include="filter_project_save.cpp" />
     <ClCompile Include="filter_wndproc.cpp" />
+    <ClCompile Include="window_select_curve.cpp" />
     <ClInclude Include="host_object_curve_elastic.hpp" />
     <ClCompile Include="host_object_curve_bezier.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -387,7 +390,6 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClCompile Include="my_webview2.cpp" />
     <ClCompile Include="preset.cpp" />
     <ClCompile Include="string_table.cpp" />
-    <ClCompile Include="webmessage_handler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="%40Curve Editor.tra" />

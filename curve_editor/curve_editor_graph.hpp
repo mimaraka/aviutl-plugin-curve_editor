@@ -2,14 +2,6 @@
 
 #define NOMINMAX
 #include "curve.hpp"
-#include "curve_bezier.hpp"
-#include "curve_bounce.hpp"
-#include "curve_elastic.hpp"
-#include "curve_graph.hpp"
-#include "curve_graph_numeric.hpp"
-#include "curve_linear.hpp"
-#include "curve_normal.hpp"
-#include "curve_value.hpp"
 #include "enum.hpp"
 #include <cereal/types/vector.hpp>
 #include <vector>
@@ -39,14 +31,24 @@ namespace cved {
 
 			auto idx_normal() const noexcept { return idx_normal_; }
 			auto idx_value() const noexcept { return idx_value_; }
-			bool set_idx_normal(size_t idx) noexcept;
-			bool set_idx_value(size_t idx) noexcept;
+			auto size_normal() const noexcept { return curves_normal_.size(); }
+			auto size_value() const noexcept { return curves_value_.size(); }
+			bool set_idx_normal(int idx) noexcept;
+			bool set_idx_value(int idx) noexcept;
+			bool advance_idx_normal(int n) noexcept { return set_idx_normal((int)idx_normal_ + n); }
+			bool advance_idx_value(int n) noexcept { return set_idx_value((int)idx_value_ + n); }
 			void jump_to_last_idx_normal() noexcept;
 			void jump_to_last_idx_value() noexcept;
-			void delete_last_idx_normal() noexcept;
-			void delete_last_idx_value() noexcept;
-			bool is_idx_normal_last() const noexcept { return idx_normal_ == curves_normal_.size() - 1; }
-			bool is_idx_value_last() const noexcept { return idx_value_ == curves_value_.size() - 1; }
+			void append_idx_normal() noexcept { curves_normal_.emplace_back(NormalCurve{}); }
+			void append_idx_value() noexcept { curves_value_.emplace_back(ValueCurve{}); }
+			void pop_idx_normal() noexcept;
+			void pop_idx_value() noexcept;
+			bool is_idx_first_normal() const noexcept { return idx_normal_ == 0u; }
+			bool is_idx_first_value() const noexcept { return idx_value_ == 0u; }
+			bool is_idx_last_normal() const noexcept { return idx_normal_ == curves_normal_.size() - 1; }
+			bool is_idx_last_value() const noexcept { return idx_value_ == curves_value_.size() - 1; }
+			bool is_idx_max_normal() const noexcept { return idx_normal_ == global::CURVE_ID_MAX; }
+			bool is_idx_max_value() const noexcept { return idx_value_ == global::CURVE_ID_MAX; }
 
 			GraphCurve* get_curve(EditMode mode) noexcept;
 			GraphCurve* current_curve() noexcept;

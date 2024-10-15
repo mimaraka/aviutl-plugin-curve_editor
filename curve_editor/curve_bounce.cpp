@@ -137,11 +137,11 @@ namespace cved {
 		constexpr int MAX = 11213202;
 		int number;
 
-		if (mkaul::in_range(code, -MAX, -MIN, true)) {
+		if (mkaul::in_range(code, -MAX, -MIN)) {
 			reversed_ = true;
 			number = -code - MIN;
 		}
-		else if (mkaul::in_range(code, MIN, MAX, true)) {
+		else if (mkaul::in_range(code, MIN, MAX)) {
 			reversed_ = false;
 			number = code - MIN;
 		}
@@ -153,6 +153,34 @@ namespace cved {
 		y = number - x * 1001;
 		cor_ = std::sqrt(1. - y * 0.001);
 		period_ = 2. * 0.001 * x / (cor_ + 1.);
+		return true;
+	}
+
+	nlohmann::json BounceCurve::create_json() const noexcept {
+		auto data = GraphCurve::create_json();
+		data["cor"] = cor_;
+		data["period"] = period_;
+		data["reversed"] = reversed_;
+		return data;
+	}
+
+	bool BounceCurve::load_json(const nlohmann::json& data) noexcept {
+		if (!GraphCurve::load_json(data)) {
+			return false;
+		}
+		try {
+			auto cor = data.at("cor").get<double>();
+			auto period = data.at("period").get<double>();
+			if (!mkaul::real_in_range(cor, 0., 1.) or !mkaul::real_in_range(period, 0., 2.)) {
+				return false;
+			}
+			cor_ = cor;
+			period_ = period;
+			reversed_ = data.at("reversed").get<bool>();
+		}
+		catch (const nlohmann::json::exception&) {
+			return false;
+		}
 		return true;
 	}
 }

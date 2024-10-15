@@ -28,5 +28,8 @@ namespace cved {
 		bool add_curve(const mkaul::Point<double>& pt, double scale_x) noexcept;
 		bool delete_curve(GraphCurve* p_segment) noexcept;
 		bool replace_curve(size_t idx, CurveSegmentType segment_type) noexcept;
+
+		nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 	};
 }

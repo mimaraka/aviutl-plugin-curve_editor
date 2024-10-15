@@ -36,7 +36,7 @@ namespace cved {
 
 		switch (message) {
 		case WM_INITDIALOG:
-			p_mod_sinewave = reinterpret_cast<SineWaveModifier*>(lparam);
+			p_mod_sinewave = std::bit_cast<SineWaveModifier*>(lparam);
 			if (!p_mod_sinewave) {
 				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;

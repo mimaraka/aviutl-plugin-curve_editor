@@ -15,7 +15,7 @@ namespace cved {
 			register_member(L"editMode", DispatchType::PropertyGet, +[] { return global::config.get_edit_mode(); });
 			register_member(L"editMode", DispatchType::PropertyPut, +[](int edit_mode) { global::config.set_edit_mode((EditMode)edit_mode); });
 			register_member(L"editModeNum", DispatchType::PropertyGet, +[] { return (uint32_t)EditMode::NumEditMode; });
-			register_member(L"getEditModeName", DispatchType::Method, +[](int edit_mode) { return global::config.get_edit_mode_str((EditMode)edit_mode); });
+			register_member(L"getEditModeName", DispatchType::Method, +[](int edit_mode) { return global::config.get_edit_mode_dispname((EditMode)edit_mode); });
 			register_member(L"showXLabel", DispatchType::PropertyGet, +[] {return global::config.get_show_x_label(); });
 			register_member(L"showYLabel", DispatchType::PropertyGet, +[] { return global::config.get_show_y_label(); });
 			register_member(L"showHandle", DispatchType::PropertyGet, +[] { return global::config.get_show_handle(); });
@@ -24,6 +24,7 @@ namespace cved {
 			register_member(L"enableHotkeys", DispatchType::PropertyGet, +[] { return global::config.get_enable_hotkeys(); });
 			register_member(L"showVelocityGraph", DispatchType::PropertyGet, +[] { return global::config.get_show_velocity_graph(); });
 			register_member(L"enableAnimation", DispatchType::PropertyGet, +[] { return global::config.get_enable_animation(); });
+			register_member(L"wordWrap", DispatchType::PropertyGet, +[] { return global::config.get_word_wrap(); });
 			register_member(L"autoCopy", DispatchType::PropertyGet, +[] { return global::config.get_auto_copy(); });
 			register_member(L"autoApply", DispatchType::PropertyGet, +[] { return global::config.get_auto_apply(); });
 			register_member(L"invertWheel", DispatchType::PropertyGet, +[] { return global::config.get_invert_wheel(); });
@@ -34,6 +35,8 @@ namespace cved {
 			register_member(L"curveColor", DispatchType::PropertyGet, get_curve_color);
 			register_member(L"curveThickness", DispatchType::PropertyGet, +[] { return global::config.get_curve_thickness(); });
 			register_member(L"notifyUpdate", DispatchType::PropertyGet, +[] { return global::config.get_notify_update(); });
+			register_member(L"separatorPos", DispatchType::PropertyGet, +[] { return global::config.get_separator_pos(); });
+			register_member(L"separatorPos", DispatchType::PropertyPut, +[](double separator_pos) { global::config.set_separator_pos(separator_pos); });
 			// TODO: configに載せるべきか？
 			register_member(L"isLatestVersion", DispatchType::Method, is_latest_version);
 		}

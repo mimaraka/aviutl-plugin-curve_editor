@@ -23,4 +23,24 @@ namespace cved {
 			return function(progress, start, end) + square * (end - start);
 		};
 	}
+
+	nlohmann::json SquareWaveModifier::create_json() const noexcept {
+		auto data = Modifier::create_json();
+		data["amplitude"] = amplitude_;
+		data["frequency"] = frequency_;
+		data["phase"] = phase_;
+		return data;
+	}
+
+	bool SquareWaveModifier::load_json(const nlohmann::json& data) noexcept {
+		try {
+			amplitude_ = data.at("amplitude").get<double>();
+			frequency_ = data.at("frequency").get<double>();
+			phase_ = data.at("phase").get<double>();
+		}
+		catch (const nlohmann::json::exception&) {
+			return false;
+		}
+		return true;
+	}
 } // namespace cved

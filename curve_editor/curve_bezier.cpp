@@ -60,10 +60,10 @@ namespace cved {
 				const double inside_sqrt = 9. * tmp3 * tmp3 - 12. * tmp4 * tmp2;
 				const double t_1 = (-3. * tmp3 + std::sqrt(inside_sqrt)) / (6. * tmp2);
 				const double t_2 = (-3. * tmp3 - std::sqrt(inside_sqrt)) / (6. * tmp2);
-				if (mkaul::real_in_range(t_1, 0., 1., true)) {
+				if (mkaul::real_in_range(t_1, 0., 1.)) {
 					t = t_1;
 				}
-				else if (mkaul::real_in_range(t_2, 0., 1., true)) {
+				else if (mkaul::real_in_range(t_2, 0., 1.)) {
 					t = t_2;
 				}
 			}
@@ -86,13 +86,13 @@ namespace cved {
 				double re_t1 = r_2 * std::cos(theta + std::numbers::pi * 2. / 3.) - tmp5;
 				double re_t2 = r_2 * std::cos(theta + std::numbers::pi * 4. / 3.) - tmp5;
 
-				if (mkaul::real_in_range(re_t0, 0., 1., true)) {
+				if (mkaul::real_in_range(re_t0, 0., 1.)) {
 					t = re_t0;
 				}
-				else if (mkaul::real_in_range(re_t1, 0., 1., true)) {
+				else if (mkaul::real_in_range(re_t1, 0., 1.)) {
 					t = re_t1;
 				}
-				else if (mkaul::real_in_range(re_t2, 0., 1., true)) {
+				else if (mkaul::real_in_range(re_t2, 0., 1.)) {
 					t = re_t2;
 				}
 			}
@@ -102,10 +102,10 @@ namespace cved {
 				double t0 = -tmp7 - tmp5;
 				double t1 = 2. * tmp7 - tmp5;
 
-				if (mkaul::real_in_range(t0, 0., 1., true)) {
+				if (mkaul::real_in_range(t0, 0., 1.)) {
 					t = t0;
 				}
-				else if (mkaul::real_in_range(t1, 0., 1., true)) {
+				else if (mkaul::real_in_range(t1, 0., 1.)) {
 					t = t1;
 				}
 			}
@@ -175,7 +175,7 @@ namespace cved {
 			DEFAULT_HANDLE_XY * width, DEFAULT_HANDLE_XY * height 
 		};
 		handle_right_ = {
-			 - DEFAULT_HANDLE_XY * width, - DEFAULT_HANDLE_XY * height
+			- DEFAULT_HANDLE_XY * width, - DEFAULT_HANDLE_XY * height
 		};
 	}
 
@@ -297,5 +297,38 @@ namespace cved {
 		float y2 = static_cast<float>(handle_right_.y / height + 1.f);
 
 		return std::format("{:.2f}, {:.2f}, {:.2f}, {:.2f}", x1, y1, x2, y2);
+	}
+
+	nlohmann::json BezierCurve::create_json() const noexcept {
+		auto data = GraphCurve::create_json();
+		data["handle_left"] = {
+			handle_left_.x, handle_left_.y
+		};
+		data["handle_right"] = {
+			handle_right_.x, handle_right_.y
+		};
+		return data;
+	}
+
+	bool BezierCurve::load_json(const nlohmann::json& data) noexcept {
+		if (!GraphCurve::load_json(data)) {
+			return false;
+		}
+		try {
+			auto left_x = data.at("handle_left")[0].get<double>();
+			auto left_y = data.at("handle_left")[1].get<double>();
+			auto right_x = data.at("handle_right")[0].get<double>();
+			auto right_y = data.at("handle_right")[1].get<double>();
+			auto width = anchor_end().x - anchor_start().x;
+			if (!mkaul::real_in_range(left_x, 0., width) or !mkaul::real_in_range(right_x, -width, 0.)) {
+				return false;
+			}
+			handle_left_ = mkaul::Point{ left_x, left_y };
+			handle_right_ = mkaul::Point{ right_x, right_y };
+		}
+		catch (const nlohmann::json::exception&) {
+			return false;
+		}
+		return true;
 	}
 }
