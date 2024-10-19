@@ -1,11 +1,8 @@
 #include "curve_editor.hpp"
 #include "global.hpp"
-#include "my_webview2.hpp"
 #include "my_webview2_reference.hpp"
 #include "string_table.hpp"
 #include "window_select_curve.hpp"
-#include <format>
-#include <sol/sol.hpp>
 
 
 
