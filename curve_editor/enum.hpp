@@ -38,18 +38,21 @@ namespace cved {
 
 	enum class WindowCommand: uint32_t {
 		Update						= 0x0800,
-		ChangeId					= 0x0809,
-		ChangeApplyMode				= 0x0900,
-		CurveSegmentTypeLinear		= 0x0a00,
-		CurveSegmentTypeBezier		= 0x0a01,
-		CurveSegmentTypeElastic		= 0x0a02,
-		CurveSegmentTypeBounce		= 0x0a03,
-		RedrawAviutl				= 0x0b02,
-		MovePreset					= 0x0b15,
-		LoadConfig					= 0x0b18,
-		SaveConfig					= 0x0b19,
-		StartDnd					= 0x0b1f,
-		SetCurveInfo				= 0x0b20
+		ChangeId					= 0x0801,
+		ChangeApplyMode				= 0x0802,
+		CurveSegmentTypeLinear		= 0x0803,
+		CurveSegmentTypeBezier		= 0x0804,
+		CurveSegmentTypeElastic		= 0x0805,
+		CurveSegmentTypeBounce		= 0x0806,
+		RedrawAviutl				= 0x0807,
+		MovePreset					= 0x0808,
+		LoadConfig					= 0x0809,
+		SaveConfig					= 0x080a,
+		StartDnd					= 0x080b,
+		SetCurveInfo				= 0x080c,
+		SelectCurveOk				= 0x080d,
+		SelectCurveCancel			= 0x080e,
+		SelectCurveClose			= 0x080f,
 	};
 
 	enum class ThemeId {

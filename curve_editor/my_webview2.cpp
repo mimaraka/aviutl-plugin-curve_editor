@@ -330,11 +330,12 @@ namespace cved {
 				}
 				}
 				ret = std::make_pair(global::editor.get_curve(mode)->get_type(), param);
-				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SetCurveInfo, std::bit_cast<LPARAM>(&ret));
-				::DestroyWindow(hwnd_);
+				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveOk, std::bit_cast<LPARAM>(&ret));
+				return true;
 			}
 			else if (command == "selectdlg-cancel") {
-				::DestroyWindow(hwnd_);
+				::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveCancel, 0);
+				return true;
 			}
 		}
 		catch (const nlohmann::json::exception&) {}

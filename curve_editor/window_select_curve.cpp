@@ -14,44 +14,24 @@ namespace cved {
 		using WebViewType = global::MyWebView2Reference::WebViewType;
 		
 		static MyWebView2 my_webview;
-		static int i = 0;
-		const HWND* p_hwnd_script_param = global::exedit_internal.get<HWND>(0xd4524);
 
 		switch (message) {
 		case WM_CREATE:
 		{
-			constexpr size_t BUFFER_SIZE = 128;
-			char buffer[BUFFER_SIZE];
+			auto [mode, param] = *static_cast<ModeParamPair*>(std::bit_cast<LPCREATESTRUCTA>(lparam)->lpCreateParams);
 
-			i = *static_cast<int*>(std::bit_cast<LPCREATESTRUCTA>(lparam)->lpCreateParams);
-			if (!p_hwnd_script_param) {
-				return -1;
-			}
-			::GetDlgItemTextA(*p_hwnd_script_param, 170 + i, buffer, BUFFER_SIZE);
-			::EnableWindow(*p_hwnd_script_param, FALSE);
-
-			my_webview.init(hwnd, [buffer](MyWebView2* this_) {
+			my_webview.init(hwnd, [mode, param](MyWebView2* this_) {
 				mkaul::WindowRectangle bounds;
 				bounds.from_client_rect(this_->get_hwnd());
 				this_->put_bounds(bounds);
-				this_->navigate(L"select_dialog", [buffer](MyWebView2* this_) {
-					sol::state lua;
-					try {
-						lua.script(std::format("t={}", buffer));
-						auto mode_str = lua["t"]["mode"].get_or<std::string>(global::CURVE_NAME_NORMAL);
-						auto param = lua["t"]["param"].get_or<int, int>(1);
-						auto mode = global::editor.get_mode(mode_str);
-						if (mode != EditMode::NumEditMode) {
-							this_->post_message(
-								L"panel-editor", L"setCurve",
-								{
-									{ "mode", mode},
-									{ "param", param }
-								}
-							);
+				this_->navigate(L"select_dialog", [mode, param](MyWebView2* this_) {
+					this_->post_message(
+						L"panel-editor", L"setCurve",
+						{
+							{ "mode", mode},
+							{ "param", param }
 						}
-					}
-					catch (const sol::error&) {}
+					);
 				});
 			});
 			global::webview.set(WebViewType::SelectCurve, my_webview);
@@ -75,39 +55,31 @@ namespace cved {
 		case WM_CLOSE:
 			my_webview.destroy();
 			global::webview.switch_to(WebViewType::Main);
-			if (p_hwnd_script_param) {
-				::EnableWindow(*p_hwnd_script_param, TRUE);
-				::SetActiveWindow(*p_hwnd_script_param);
-			}
-			::DestroyWindow(hwnd);
+			::PostMessageA(::GetParent(hwnd), WM_COMMAND, (WPARAM)WindowCommand::SelectCurveClose, 0);
 			return 0;
 
 		case WM_COMMAND:
 			switch (wparam) {
-			case (WPARAM)WindowCommand::SetCurveInfo:
-			{
-				auto info = std::bit_cast<std::pair<std::string, int>*>(lparam);
-				if (info and p_hwnd_script_param) {
-					::SetDlgItemTextA(
-						*p_hwnd_script_param,
-						170 + i,
-						std::format("{{mode=\"{}\",param={}}}", info->first, info->second).c_str()
-					);
-				}
-				global::webview.get(WebViewType::Main)->post_message(L"panel-editor", L"updateEditor");
+			case (WPARAM)WindowCommand::SelectCurveOk:
+				global::webview.get(global::MyWebView2Reference::WebViewType::Main)->post_message(L"panel-editor", L"updateEditor");
+				[[fallthrough]];
+
+			case (WPARAM)WindowCommand::SelectCurveCancel:
+				::SendMessageA(::GetParent(hwnd), message, wparam, lparam);
+				::DestroyWindow(hwnd);
 				break;
-			}
 			}
 			return 0;
 		}
 		return ::DefWindowProcA(hwnd, message, wparam, lparam);
 	}
 
-	HWND SelectCurveWindow::create(HWND hwnd, void* init_param) noexcept {
+	HWND SelectCurveWindow::create(HWND hwnd, const ModeParamPair* mode_param) noexcept {
 		using StringId = global::StringTable::StringId;
 		constexpr long WINDOW_WIDTH = 300;
 		constexpr long WINDOW_HEIGHT = 450;
 
+		hwnd_parent_ = hwnd;
 		auto rect = mkaul::WindowRectangle{ 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
 		rect.client_to_screen(hwnd);
 
@@ -117,12 +89,12 @@ namespace cved {
 			global::string_table[StringId::LabelSelectCurve],
 			"SelectCurveWindow",
 			&wndproc,
-			WS_OVERLAPPED | WS_SYSMENU | WS_THICKFRAME,
+			WS_POPUPWINDOW | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME,
 			NULL,
 			rect,
 			mkaul::WindowRectangle{},
 			::LoadCursorA(NULL, IDC_ARROW),
-			init_param
+			const_cast<ModeParamPair*>(mode_param)
 		);
 	}
 } // namespace cved
