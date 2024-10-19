@@ -292,18 +292,21 @@ namespace cved {
 						::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::RedrawAviutl, 0);
 					}
 				}
+				return true;
 			}
 			else if (command == "contextmenu-graph") {
 				auto mode = message.at("mode").get<EditMode>();
 				auto curve_id = message.at("curveId").get<uint32_t>();
 				GraphMenu menu{ global::fp->dll_hinst };
 				menu.show(mode, curve_id, *this, hwnd_);
+				return true;
 			}
 			else if (command == "contextmenu-curve-segment") {
 				auto id = message.at("curveId").get<uint32_t>();
 				auto segment_id = message.at("segmentId").get<uint32_t>();
 				CurveSegmentMenu menu{ global::fp->dll_hinst };
 				menu.show(id, segment_id, *this, hwnd_);
+				return true;
 			}
 			else if (command == "selectdlg-ok") {
 				auto mode = message.at("mode").get<EditMode>();

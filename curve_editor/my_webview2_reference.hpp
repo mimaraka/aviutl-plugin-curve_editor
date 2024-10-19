@@ -36,12 +36,14 @@ namespace cved {
 				}
 			}
 
-			auto get(WebViewType webview_type) {
+			MyWebView2* get(WebViewType webview_type) {
 				switch (webview_type) {
 				case WebViewType::Main:
 					return p_webview_main_;
 				case WebViewType::SelectCurve:
 					return p_webview_select_curve_;
+				default:
+					return nullptr;
 				}
 			}
 
