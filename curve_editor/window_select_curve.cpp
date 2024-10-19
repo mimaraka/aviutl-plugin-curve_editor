@@ -1,6 +1,7 @@
 #include "curve_editor.hpp"
 #include "global.hpp"
 #include "my_webview2.hpp"
+#include "my_webview2_reference.hpp"
 #include "string_table.hpp"
 #include "window_select_curve.hpp"
 #include <format>
@@ -10,6 +11,8 @@
 
 namespace cved {
 	LRESULT CALLBACK SelectCurveWindow::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+		using WebViewType = global::MyWebView2Reference::WebViewType;
+		
 		static MyWebView2 my_webview;
 		static int i = 0;
 		const HWND* p_hwnd_script_param = global::exedit_internal.get<HWND>(0xd4524);
@@ -49,8 +52,10 @@ namespace cved {
 						}
 					}
 					catch (const sol::error&) {}
-					});
 				});
+			});
+			global::webview.set(WebViewType::SelectCurve, my_webview);
+			global::webview.switch_to(WebViewType::SelectCurve);
 			return 0;
 		}
 
@@ -69,6 +74,7 @@ namespace cved {
 		case WM_DESTROY:
 		case WM_CLOSE:
 			my_webview.destroy();
+			global::webview.switch_to(WebViewType::Main);
 			if (p_hwnd_script_param) {
 				::EnableWindow(*p_hwnd_script_param, TRUE);
 				::SetActiveWindow(*p_hwnd_script_param);
@@ -88,7 +94,7 @@ namespace cved {
 						std::format("{{mode=\"{}\",param={}}}", info->first, info->second).c_str()
 					);
 				}
-				global::webview_main.post_message(L"panel-editor", L"updateEditor");
+				global::webview.get(WebViewType::Main)->post_message(L"panel-editor", L"updateEditor");
 				break;
 			}
 			}

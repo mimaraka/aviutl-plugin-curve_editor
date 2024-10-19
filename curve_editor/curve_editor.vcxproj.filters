@@ -336,6 +336,9 @@
     <ClInclude Include="util_json.hpp">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="my_webview2_reference.hpp">
+      <Filter>Header Files\WebView2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve_base.cpp">

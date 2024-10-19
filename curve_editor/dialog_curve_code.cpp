@@ -1,8 +1,8 @@
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_curve_code.hpp"
-#include "global.hpp"
 #include "my_messagebox.hpp"
+#include "my_webview2_reference.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 #include <regex>
@@ -48,7 +48,7 @@ namespace cved {
 					if (std::regex_match(buffer, regex_code)) {
 						try {
 							if (p_curve->decode(std::stoi(buffer))) {
-								global::webview_main.post_message(L"editor-graph", L"updateHandlePos");
+								if (global::webview) global::webview->post_message(L"editor-graph", L"updateHandlePos");
 								::EndDialog(hwnd, 1);
 								break;
 							}

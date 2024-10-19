@@ -252,7 +252,7 @@ namespace cved {
 					auto curve = global::editor.current_curve();
 					if (curve) {
 						curve->clear();
-						global::webview_main.post_message(L"editor-graph", L"updateHandles");
+						post_message(L"editor-graph", L"updateHandles");
 					}
 				}
 				return true;

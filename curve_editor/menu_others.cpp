@@ -4,6 +4,7 @@
 #include "dialog_pref.hpp"
 #include "global.hpp"
 #include "menu_others.hpp"
+#include "my_webview2_reference.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 #include "util.hpp"
@@ -65,7 +66,7 @@ namespace cved {
 			break;
 
 		case ID_MORE_RELOAD:
-			global::webview_main.reload();
+			if (global::webview) global::webview->reload();
 			break;
 
 		case ID_MORE_PREFERENCES:

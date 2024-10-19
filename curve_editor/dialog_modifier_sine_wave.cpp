@@ -1,5 +1,5 @@
 #include "dialog_modifier_sine_wave.hpp"
-#include "global.hpp"
+#include "my_webview2_reference.hpp"
 #include "resource.h"
 #include <Commctrl.h>
 #include <format>
@@ -52,7 +52,7 @@ namespace cved {
 					p_mod_sinewave->set_amplitude(value);
 				}
 				::SetWindowTextA(hwnd_static_amplitude_, std::format("{:.2f}", value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"editor-graph", L"updateCurvePath");
 			}
 			else if (lparam == (LPARAM)hwnd_slider_frequency_) {
 				double value = static_cast<double>(::SendMessageA(hwnd_slider_frequency_, TBM_GETPOS, NULL, NULL)) * 0.1;
@@ -60,7 +60,7 @@ namespace cved {
 					p_mod_sinewave->set_frequency(value);
 				}
 				::SetWindowTextA(hwnd_static_frequency_, std::format("{:.1f}", value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"editor-graph", L"updateCurvePath");
 			}
 			else if (lparam == (LPARAM)hwnd_slider_phase_) {
 				double value = static_cast<double>(::SendMessageA(hwnd_slider_phase_, TBM_GETPOS, NULL, NULL) - 1000) * 0.01;
@@ -68,7 +68,7 @@ namespace cved {
 					p_mod_sinewave->set_phase(value);
 				}
 				::SetWindowTextA(hwnd_static_phase_, std::format("{:.2f}", value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"editor-graph", L"updateCurvePath");
 			}
 			return TRUE;
 
@@ -77,7 +77,7 @@ namespace cved {
 			case IDCANCEL:
 				if (p_mod_sinewave) {
 					*p_mod_sinewave = mod_sinewave_prev;
-					global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+					if (global::webview) global::webview->post_message(L"editor-graph", L"updateCurvePath");
 				}
 				[[fallthrough]];
 			case IDOK:

@@ -260,6 +260,7 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClInclude Include="util.hpp" />
     <ClInclude Include="my_webview2.hpp" />
     <ClInclude Include="util_json.hpp" />
+    <ClInclude Include="my_webview2_reference.hpp" />
     <ClInclude Include="window_select_curve.hpp" />
   </ItemGroup>
   <ItemGroup>
