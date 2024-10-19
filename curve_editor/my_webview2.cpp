@@ -300,9 +300,10 @@ namespace cved {
 				menu.show(mode, curve_id, *this, hwnd_);
 			}
 			else if (command == "contextmenu-curve-segment") {
-				auto id = message["curveId"].get<uint32_t>();
+				auto id = message.at("curveId").get<uint32_t>();
+				auto segment_id = message.at("segmentId").get<uint32_t>();
 				CurveSegmentMenu menu{ global::fp->dll_hinst };
-				menu.show(id, *this, hwnd_);
+				menu.show(id, segment_id, *this, hwnd_);
 			}
 			else if (command == "selectdlg-ok") {
 				auto mode = message.at("mode").get<EditMode>();
