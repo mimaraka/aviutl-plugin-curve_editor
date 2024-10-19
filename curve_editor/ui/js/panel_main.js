@@ -1,3 +1,5 @@
+'use strict';
+
 window.isSelectDialog = false;
 
 const handleMessage = event => {

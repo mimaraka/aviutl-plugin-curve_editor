@@ -1,3 +1,7 @@
+'use strict';
+
+let isLocked = false;
+
 window.addEventListener('message', function(event) {
     if (event.data.to == 'toolbar') {
         switch (event.data.command) {
@@ -23,8 +27,6 @@ const setUnlockedIcon = () => {
 const updateReadButton = () => {
     $('#button-read').prop('disabled', !(config.editMode == 2 || config.editMode == 3 || config.editMode == 4));
 }
-
-isLocked = false;
 
 $(document).ready(() => {
     setUnlockedIcon();

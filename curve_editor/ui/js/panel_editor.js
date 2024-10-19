@@ -1,3 +1,5 @@
+'use strict';
+
 $(window).on('message', event => {
     const data = event.originalEvent.data;
     if (data.to == 'panel-editor') {

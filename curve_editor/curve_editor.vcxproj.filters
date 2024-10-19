@@ -258,9 +258,6 @@
     <ClInclude Include="dialog_id_jumpto.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="json_loader.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="modifier.hpp">
       <Filter>Header Files\Curve\Modifier</Filter>
     </ClInclude>
@@ -286,9 +283,6 @@
       <Filter>Header Files\WebView2</Filter>
     </ClInclude>
     <ClInclude Include="host_object_config.hpp">
-      <Filter>Header Files\WebView2\Host Object</Filter>
-    </ClInclude>
-    <ClInclude Include="host_object_editor.hpp">
       <Filter>Header Files\WebView2\Host Object</Filter>
     </ClInclude>
     <ClInclude Include="host_object_editor_graph.hpp">
@@ -338,6 +332,9 @@
     </ClInclude>
     <ClInclude Include="curve.hpp">
       <Filter>Header Files\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="util_json.hpp">
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -475,9 +472,6 @@
     </ClCompile>
     <ClCompile Include="dialog_id_jumpto.cpp">
       <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="json_loader.cpp">
-      <Filter>Source Files\Util</Filter>
     </ClCompile>
     <ClCompile Include="modifier_noise.cpp">
       <Filter>Source Files\Curve\Modifier</Filter>

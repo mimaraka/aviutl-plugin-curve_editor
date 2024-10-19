@@ -1,3 +1,5 @@
+'use strict';
+
 // ハンドル (アンカー)
 class Handles {
     // コンストラクタ
@@ -26,7 +28,8 @@ class Handles {
                     window.top.postMessage({
                         to: 'native',
                         command: 'contextmenu-curve-segment',
-                        curveId: curve.getId()
+                        curveId: curve.parentId,
+                        segmentId: curve.id,
                     });
                 }
             });
@@ -130,6 +133,8 @@ class Handles {
         this._bufferAnchorStartY = this.curve.getAnchorStartY();
         if (!bound) {
             this.prevHandleFunc?.onAnchorEndDragEnd(event, true);
+        } else {
+            this.onDragEnd();
         }
     }
 
@@ -161,27 +166,17 @@ class Handles {
         this._bufferAnchorEndY = this.curve.getAnchorEndY();
         if (!bound) {
             this.nextHandleFunc?.onAnchorStartDragEnd(event, true);
+        } else {
+            this.onDragEnd();
         }
     }
 
-    onHandleDragEnd(event) {
-        const editMode = config.editMode;
-        if (editMode == 2 || editMode == 3 || editMode == 4) {
-            if (config.autoCopy) {
-                window.top.postMessage({
-                    to: 'native',
-                    command: 'copy'
-                }, '*');
-            }
-        }
-        else {
-            if (config.autoApply) {
-                window.top.postMessage({
-                    to: 'native',
-                    command: 'apply'
-                }, '*');
-            }
-        }
+    onDragEnd(event) {
+        window.top.postMessage({
+            to: 'native',
+            command: 'drag-end',
+            curveId: (this.curve.parentId != 0) ? this.curve.parentId : this.curve.id,
+        });
     }
 
     // ハンドル・アンカーを削除
@@ -395,7 +390,7 @@ class BezierHandles extends Handles {
     // 左ハンドルのドラッグ終了
     onHandleLeftDragEnd(event) {
         this.#alignHandleFlag = false;
-        this.onHandleDragEnd();
+        this.onDragEnd();
     }
 
     // 右ハンドルのドラッグ開始
@@ -443,7 +438,7 @@ class BezierHandles extends Handles {
     // 右ハンドルのドラッグ終了
     onHandleRightDragEnd(event) {
         this.#alignHandleFlag = false;
-        this.onHandleDragEnd();
+        this.onDragEnd();
     }
 
     // ハンドル・アンカーを削除
@@ -496,17 +491,17 @@ class ElasticHandles extends Handles {
         this.handleAmpLeft.call(
             d3.drag()
                 .on('drag', this.onHandleAmpLeftDrag.bind(this))
-                .on('end', this.onHandleDragEnd.bind(this))
+                .on('end', this.onDragEnd.bind(this))
         );
         this.handleAmpRight.call(
             d3.drag()
                 .on('drag', this.onHandleAmpRightDrag.bind(this))
-                .on('end', this.onHandleDragEnd.bind(this))
+                .on('end', this.onDragEnd.bind(this))
         );
         this.handleFreqDecay.call(
             d3.drag()
                 .on('drag', this.onHandleFreqDecayDrag.bind(this))
-                .on('end', this.onHandleDragEnd.bind(this))
+                .on('end', this.onDragEnd.bind(this))
         );
     }
 
@@ -653,7 +648,7 @@ class BounceHandles extends Handles {
         this.handle.call(
             d3.drag()
                 .on('drag', this.onHandleDrag.bind(this))
-                .on('end', this.onHandleDragEnd.bind(this))
+                .on('end', this.onDragEnd.bind(this))
         );
     }
 
@@ -748,7 +743,7 @@ class NormalHandles extends Handles {
         for (let i = 0; i < segments.length; i++) {
             this.segmentHandlesArray[i].anchorStart.on('dblclick', event => {
                 event.stopPropagation();
-                graphEditor.normal.deleteCurve(curve.getId(), this.segmentHandlesArray[i].curve.getId());
+                graphEditor.normal.deleteCurve(curve.id, this.segmentHandlesArray[i].curve.id);
                 this.segmentHandlesArray[i].remove();
                 this.segmentHandlesArray.splice(i, 1);
                 for (let handle of this.segmentHandlesArray) {

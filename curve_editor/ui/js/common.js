@@ -1,3 +1,5 @@
+'use strict';
+
 const getEditMode = () => {
     if (window.top.isSelectDialog) {
         return window.top.editMode;

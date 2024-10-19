@@ -1,3 +1,5 @@
+'use strict';
+
 window.isSelectDialog = true;
 window.editMode = 0;
 window.idxNormal = 0;

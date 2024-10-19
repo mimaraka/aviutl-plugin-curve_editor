@@ -7,8 +7,16 @@
     <link rel="stylesheet" href="css/preset.css" type="text/css"/>
 </head>
 <body>
-    <div class="searchbar-container">
-        <input type="text" id="searchbar" name="searchbar" autocomplete="off" placeholder="プリセットを検索..."></input>
+    <div class="menu-row">
+        <div class="searchbar-container">
+            <input type="text" id="searchbar" name="searchbar" autocomplete="off" placeholder="プリセットを検索..."></input>
+        </div>
+        <button class="menu-button" id="button-filter" title="フィルター">
+            <i class="fa-solid fa-filter fa-sm"></i>
+        </button>
+        <button class="menu-button" id="button-sort" title="並び替え">
+            <i class="fa-solid fa-arrow-down-wide-short fa-sm"></i>
+        </button>
     </div>
     <div class="menu-row">
         <div class="menu-button dropdown-container" id="collection-container">
@@ -18,13 +26,13 @@
                 <option value="2">ユーザー</option>
             </select>
         </div>
-        <button class="menu-button" id="button-copy" title="新規コレクションを作成">
+        <button class="menu-button" id="button-collection-new" title="新規コレクションを作成">
             <i class="fa-solid fa-plus fa-sm"></i>
         </button>
-        <button class="menu-button" id="button-read" title="コレクションをインポート">
+        <button class="menu-button" id="button-collection-import" title="コレクションをインポート">
             <i class="fa-solid fa-file-import fa-sm"></i>
         </button>
-        <button class="menu-button" id="button-save" title="コレクションをエクスポート">
+        <button class="menu-button" id="button-collection-export" title="コレクションをエクスポート">
             <i class="fa-solid fa-file-export fa-sm"></i>
         </button>
     </div>

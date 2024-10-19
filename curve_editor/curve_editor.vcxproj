@@ -239,10 +239,8 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClInclude Include="host_object_curve_bounce.hpp" />
     <ClInclude Include="host_object_curve_graph.hpp" />
     <ClInclude Include="host_object_curve_linear.hpp" />
-    <ClInclude Include="host_object_editor.hpp" />
     <ClInclude Include="host_object_editor_graph.hpp" />
     <ClInclude Include="host_object_config.hpp" />
-    <ClInclude Include="json_loader.hpp" />
     <ClInclude Include="menu.hpp" />
     <ClInclude Include="menu_bezier_handle.hpp" />
     <ClInclude Include="menu_curve_segment.hpp" />
@@ -261,6 +259,7 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClInclude Include="string_table.hpp" />
     <ClInclude Include="util.hpp" />
     <ClInclude Include="my_webview2.hpp" />
+    <ClInclude Include="util_json.hpp" />
     <ClInclude Include="window_select_curve.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -336,7 +335,6 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     </ClCompile>
     <ClCompile Include="host_object_editor_graph.cpp" />
     <ClCompile Include="host_object_curve_graph.cpp" />
-    <ClCompile Include="json_loader.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="menu_bezier_handle.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

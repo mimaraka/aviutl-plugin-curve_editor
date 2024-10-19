@@ -1,5 +1,7 @@
 #include "dialog_curve_param.hpp"
 #include "resource.h"
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 
 
@@ -22,9 +24,14 @@ namespace cved {
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case IDOK:
-				// Get the text from the edit control
-				::EndDialog(hwnd, IDOK);
-				return TRUE;
+			{
+					char buf[256];
+					::GetWindowTextA(hwnd_edit_, buf, sizeof(buf));
+					std::string str{ buf };
+					std::vector<std::string> vec_param;
+					boost::algorithm::split(vec_param, str, boost::is_any_of(","));
+			}
+				[[fallthrough]];
 
 			case IDCANCEL:
 				::EndDialog(hwnd, IDCANCEL);

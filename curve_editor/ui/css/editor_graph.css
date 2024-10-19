@@ -54,10 +54,6 @@ body {
     opacity: 0.1;
 }
 
-.axis-label path,
-.axis-label line {
-    stroke-width: 0;
-}
 .axis-label text {
     fill: var(--color-content);
     font: 500 11px

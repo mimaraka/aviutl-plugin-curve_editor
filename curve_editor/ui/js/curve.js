@@ -1,11 +1,19 @@
+'use strict';
+
 class Curve {
     #id;
-    constructor(id) {
+    #parentId;
+    constructor(id, parentId = 0) {
         this.#id = id;
+        this.#parentId = parentId;
     }
 
     get id() {
         return this.#id;
+    }
+
+    get parentId() {
+        return this.#parentId;
     }
 
     getAnchorStartX() {
@@ -30,10 +38,6 @@ class Curve {
 
     setAnchorEnd(x, y) {
         graphEditor.graph.setAnchorEnd(this.id, x, y);
-    }
-
-    getId() {
-        return this.id;
     }
 
     getPrevCurve() {
@@ -151,7 +155,7 @@ class NormalCurve extends Curve {
         const idArray = graphEditor.normal.getIdArray(this.id);
         let segments = Array(idArray.length).fill(null);
         for (let i = 0; i < idArray.length; i++) {
-            segments[i] = createCurve(idArray[i]);
+            segments[i] = createCurve(idArray[i], this.id);
         }
         return segments;
     }
@@ -161,22 +165,22 @@ class NormalCurve extends Curve {
     }
 }
 
-function createCurve(id) {
+function createCurve(id, parentId = 0) {
     switch (graphEditor.getCurveType(id)) {
         case 'bezier':
-            return new BezierCurve(id);
+            return new BezierCurve(id, parentId);
 
         case 'elastic':
-            return new ElasticCurve(id);
+            return new ElasticCurve(id, parentId);
 
         case 'bounce':
-            return new BounceCurve(id);
+            return new BounceCurve(id, parentId);
 
         case 'linear':
-            return new LinearCurve(id);
+            return new LinearCurve(id, parentId);
 
         case 'normal':
-            return new NormalCurve(id);
+            return new NormalCurve(id, parentId);
         
         default:
             return null;

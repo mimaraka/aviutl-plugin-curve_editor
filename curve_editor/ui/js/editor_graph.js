@@ -1,3 +1,5 @@
+'use strict';
+
 class ImageObject {
     #image;
     #d3Image;
@@ -85,7 +87,7 @@ class GraphEditor {
     #labelGridX;
     #labelGridY;
     #d3Curve;
-    #zoom;
+    #zoomBehavior;
 
     constructor(normalCurveId, valueCurveId, bezierCurveId, elasticCurveId, bounceCurveId) {
         this.#width = document.documentElement.clientWidth;
@@ -109,7 +111,7 @@ class GraphEditor {
                         to: 'native',
                         command: 'contextmenu-graph',
                         mode: getEditMode(),
-                        curveId: this.getCurrentCurve().getId()
+                        curveId: this.getCurrentCurve().id
                     }, '*');
                 }
             })
@@ -230,23 +232,23 @@ class GraphEditor {
         this.#handles = createHandles(this.getCurrentCurve(), this.#group, this.#currentScaleX, this.#currentScaleY);
         this.updateHandleVisibility();
 
-        this.#labelAxisX = scale => d3.axisBottom(scale).tickPadding(-15).tickFormat(d3.format(''));
-        this.#labelAxisY = scale => d3.axisLeft(scale).tickPadding(-15).tickFormat(d3.format(''));
+        this.#labelAxisX = scale => d3.axisBottom(scale).tickPadding(-15).tickFormat(d3.format('.6'));
+        this.#labelAxisY = scale => d3.axisLeft(scale).tickPadding(-15).tickFormat(d3.format('.6'));
 
         // 軸ラベル(X軸)
         this.#labelGridX = this.#group.append('g')
             .attr('class', 'axis-label')
             .attr('transform', `translate(0,${this.#height - 5})`)
             .style('visibility', config.showXLabel ? 'visible' : 'hidden')
-            .call(this.#labelAxisX(this.#originalScaleX));
+            .call(this.#labelAxisX(this.#originalScaleX).tickSize(0));
 
         // 軸ラベル(Y軸)
         this.#labelGridY = this.#group.append('g')
             .attr('class', 'axis-label axis-label-y')
             .style('visibility', config.showYLabel ? 'visible' : 'hidden')
-            .call(this.#labelAxisY(this.#originalScaleY));
+            .call(this.#labelAxisY(this.#originalScaleY).tickSize(0));
 
-        this.#zoom = d3.zoom()
+        this.#zoomBehavior = d3.zoom()
             .scaleExtent([0.0001, 10000])
             .translateExtent([[-this.#width, -Infinity], [2 * this.#width, Infinity]])
             .wheelDelta(event => {
@@ -278,7 +280,7 @@ class GraphEditor {
                 || (event.button === 0 && event.altKey);
             });
 
-        this.#svg.call(this.#zoom);
+        this.#svg.call(this.#zoomBehavior);
     }
 
     get backgroundImage() { return this.#backgroundImage; }
@@ -338,9 +340,9 @@ class GraphEditor {
             return data;
         }
         if (velocity) {
-            yArray = graphEditor.getCurveVelocityArray(currentCurve.getId(), startGraphX, 0, endGraphX, 1, n);
+            yArray = graphEditor.getCurveVelocityArray(currentCurve.id, startGraphX, 0, endGraphX, 1, n);
         } else {
-            yArray = graphEditor.getCurveValueArray(currentCurve.getId(), startGraphX, 0, endGraphX, 1, n);
+            yArray = graphEditor.getCurveValueArray(currentCurve.id, startGraphX, 0, endGraphX, 1, n);
         } 
         for (let i = 0; i < n; i++) {
             const x = startGraphX + (endGraphX - startGraphX) / (n - 1) * i;
@@ -481,7 +483,7 @@ class GraphEditor {
         const duration = config.enableAnimation ? customDuration : 0;
         const t = d3.transition().duration(duration);
         this.#svg.transition(t)
-            .call(this.#zoom.transform, d3.zoomIdentity);
+            .call(this.#zoomBehavior.transform, d3.zoomIdentity);
         this.#curvePath.transition(t)
             .attr('stroke-width', config.curveThickness);
         this.#velocityPath.transition(t)
@@ -646,10 +648,12 @@ $(window).on('keydown', event => {
         break
 
     case 'ArrowRight':
-        window.top.postMessage({
-            to: 'panel-editor',
-            command: 'goForwardIdx'
-        }, '*');
+        if (!isIdxLast()) {
+            window.top.postMessage({
+                to: 'panel-editor',
+                command: 'goForwardIdx'
+            }, '*');
+        }
         break;
     }
 });

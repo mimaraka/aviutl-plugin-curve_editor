@@ -34,9 +34,9 @@ namespace cved {
 				this_->navigate(L"select_dialog", [buffer](MyWebView2* this_) {
 					sol::state lua;
 					try {
-						lua.script(std::format("t={}", buffer).c_str());
-						auto mode_str = lua["t"]["mode"].get<std::string>();
-						auto param = lua["t"]["param"].get<int>();
+						lua.script(std::format("t={}", buffer));
+						auto mode_str = lua["t"]["mode"].get_or<std::string>(global::CURVE_NAME_NORMAL);
+						auto param = lua["t"]["param"].get_or<int, int>(1);
 						auto mode = global::editor.get_mode(mode_str);
 						if (mode != EditMode::NumEditMode) {
 							this_->post_message(

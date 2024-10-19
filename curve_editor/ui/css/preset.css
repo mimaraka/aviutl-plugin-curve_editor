@@ -26,7 +26,7 @@ body {
 }
 
 #searchbar {
-    width: calc(100% - var(--margin) * 4);
+    width: 100%;
     height: calc(var(--searchbar-height) - var(--margin) * 4);
     margin: calc(var(--margin) * 2);
     background-color: var(--color-bg-editbox);
@@ -43,6 +43,7 @@ body {
 
 .searchbar-container {
     position: relative;
+    width: calc(100% - var(--margin) * 4);
 }
 
 .searchbar-container::before {
@@ -75,4 +76,8 @@ body {
 
 .menu-button {
     flex-grow: 1;
+}
+
+#button-filter, #button-sort {
+    width: 40px;
 }

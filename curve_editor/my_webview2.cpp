@@ -4,7 +4,6 @@
 #include "dialog_id_jumpto.hpp"
 #include "global.hpp"
 #include "host_object_config.hpp"
-#include "host_object_editor.hpp"
 #include "host_object_editor_graph.hpp"
 #include "host_object_editor_script.hpp"
 #include "menu_curve_segment.hpp"
@@ -93,7 +92,6 @@ namespace cved {
 								add_host_object<GraphEditorHostObject>(L"graphEditor");
 								add_host_object<ScriptEditorHostObject>(L"scriptEditor");
 								add_host_object<ConfigHostObject>(L"config");
-								add_host_object<EditorHostObject>(L"editor");
 								after_callback(this);
 								return S_OK;
 							}
@@ -277,6 +275,23 @@ namespace cved {
 			else if (command == "drag-and-drop") {
 				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::StartDnd, NULL);
 				return true;
+			}
+			else if (command == "drag-end") {
+				auto curve_id = message.at("curveId").get<uint32_t>();
+				auto curve_numeric = global::id_manager.get_curve<NumericGraphCurve>(curve_id);
+				if (curve_numeric) {
+					if (global::config.get_auto_copy()) {
+						auto code = std::to_string(curve_numeric->encode());
+						if (!util::copy_to_clipboard(hwnd_, code.c_str()) and global::config.get_show_popup()) {
+							my_messagebox(global::string_table[StringId::ErrorCodeCopyFailed], hwnd_, MessageBoxIcon::Error);
+						}
+					}
+				}
+				else {
+					if (global::config.get_auto_apply()) {
+						::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::RedrawAviutl, 0);
+					}
+				}
 			}
 			else if (command == "contextmenu-graph") {
 				auto mode = message.at("mode").get<EditMode>();

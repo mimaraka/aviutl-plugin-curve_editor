@@ -1,3 +1,5 @@
+'use strict';
+
 require.config({ paths: { 'vs': 'libs/monaco-editor/min/vs' }});
 require(['vs/editor/editor.main'], function() {
     window.editor = monaco.editor.create(document.getElementById('container'), {
