@@ -1,5 +1,5 @@
 #include "global.hpp"
-#include "json_loader.hpp"
+#include "util_json.hpp"
 #include "preferences.hpp"
 #include <strconv2.h>
 
@@ -27,11 +27,11 @@ namespace cved {
 	}
 
 	void Preferences::from_json(const nlohmann::json& data) noexcept {
-#define GET_VALUE(v) JsonLoader::get_value(data, #v, v)
+#define GET_VALUE(v) set_from_json(data, #v, v)
 		GET_VALUE(language);
-		JsonLoader::get_value(data, "theme", theme);
+		GET_VALUE(theme);
 		COLORREF tmp;
-		if (JsonLoader::get_value(data, "curve_color", tmp)) curve_color = tmp;
+		if (set_from_json(data, "curve_color", tmp)) curve_color = tmp;
 		GET_VALUE(curve_thickness);
 		GET_VALUE(curve_resolution);
 		GET_VALUE(show_popup);
@@ -42,7 +42,7 @@ namespace cved {
 		GET_VALUE(notify_update);
 		GET_VALUE(set_bg_image);
 		std::string str_tmp;
-		if (JsonLoader::get_value(data, "bg_image_path", str_tmp)) bg_image_path = utf8_to_sjis(str_tmp);
+		if (set_from_json(data, "bg_image_path", str_tmp)) bg_image_path = utf8_to_sjis(str_tmp);
 		GET_VALUE(bg_image_opacity);
 		GET_VALUE(enable_hotkeys);
 		GET_VALUE(enable_animation);

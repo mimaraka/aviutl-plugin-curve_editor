@@ -2,13 +2,10 @@
 #include "constants.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
-#include "json_loader.hpp"
 #include "string_table.hpp"
 #include <fstream>
 
 
-
-using json = nlohmann::json;
 
 namespace cved {
 	namespace global {
@@ -151,12 +148,14 @@ namespace cved {
 		bool Config::load_json() {
 			std::ifstream ifs{ dir_plugin_ / CONFIG_FILE_NAME };
 			if (!ifs) return false;
-			json data;
+			nlohmann::json data;
 			try {
-				data = json::parse(ifs);
-				if (data.contains("preferences")) pref_.from_json(data["preferences"]);
-				if (data.contains(GET_KEY(edit_mode_))) set_edit_mode(data[GET_KEY(edit_mode_)]);
-				if (data.contains(GET_KEY(layout_mode_))) set_layout_mode(data[GET_KEY(layout_mode_)]);
+				data = nlohmann::json::parse(ifs);
+				if (data.contains("preferences")) {
+					pref_.from_json(data["preferences"]);
+				}
+				set_from_json(this, data, GET_KEY(edit_mode_), &Config::set_edit_mode);
+				set_from_json(this, data, GET_KEY(layout_mode_), &Config::set_layout_mode);
 				if (data[GET_KEY(apply_mode_)].is_array()) {
 					size_t count = 0u;
 					for (const auto& el : data[GET_KEY(apply_mode_)]) {
@@ -164,19 +163,19 @@ namespace cved {
 						set_apply_mode((EditMode)count++, (ApplyMode)el);
 					}
 				}
-				JsonLoader::get_value(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
-				JsonLoader::get_value(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
-				JsonLoader::get_value(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
-				if (data.contains(GET_KEY(show_library_))) set_show_library(data[GET_KEY(show_library_)]);
-				if (data.contains(GET_KEY(show_velocity_graph_))) set_show_velocity_graph(data[GET_KEY(show_velocity_graph_)]);
-				if (data.contains(GET_KEY(show_x_label_))) set_show_x_label(data[GET_KEY(show_x_label_)]);
-				if (data.contains(GET_KEY(show_y_label_))) set_show_y_label(data[GET_KEY(show_y_label_)]);
-				if (data.contains(GET_KEY(align_handle_))) set_align_handle(data[GET_KEY(align_handle_)]);
-				if (data.contains(GET_KEY(ignore_autosaver_warning_))) set_ignore_autosaver_warning(data[GET_KEY(ignore_autosaver_warning_)]);
-				if (data.contains(GET_KEY(separator_pos_))) set_separator_pos(data[GET_KEY(separator_pos_)]);
-				if (data.contains(GET_KEY(preset_size_))) set_preset_size(data[GET_KEY(preset_size_)]);
+				set_from_json(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
+				set_from_json(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
+				set_from_json(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
+				set_from_json(this, data, GET_KEY(show_library_), &Config::set_show_library);
+				set_from_json(this, data, GET_KEY(show_velocity_graph_), &Config::set_show_velocity_graph);
+				set_from_json(this, data, GET_KEY(show_x_label_), &Config::set_show_x_label);
+				set_from_json(this, data, GET_KEY(show_y_label_), &Config::set_show_y_label);
+				set_from_json(this, data, GET_KEY(align_handle_), &Config::set_align_handle);
+				set_from_json(this, data, GET_KEY(ignore_autosaver_warning_), &Config::set_ignore_autosaver_warning);
+				set_from_json(this, data, GET_KEY(separator_pos_), &Config::set_separator_pos);
+				set_from_json(this, data, GET_KEY(preset_size_), &Config::set_preset_size);
 			}
-			catch (const json::exception&) {
+			catch (const nlohmann::json::exception&) {
 				return false;
 			}
 			return true;
@@ -184,10 +183,10 @@ namespace cved {
 
 		// jsonファイルを保存
 		bool Config::save_json() {
-			json data_pref;
+			nlohmann::json data_pref;
 			pref_.to_json(&data_pref);
 
-			json data = {
+			nlohmann::json data = {
 				{"preferences", data_pref},
 				{GET_KEY(edit_mode_), edit_mode_},
 				{GET_KEY(layout_mode_), layout_mode_},
