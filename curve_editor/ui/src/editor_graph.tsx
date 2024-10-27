@@ -1,15 +1,23 @@
-'use strict';
+import * as d3 from 'd3';
+import React, { useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
+import { config, graphEditor } from './host_object';
+import { NormalCurve, NumericCurve, BezierCurve, ElasticCurve, BounceCurve } from './curve';
+import { Handles, BezierHandles, ElasticHandles, BounceHandles, NormalHandles, createHandles } from './handles';
+import './scss/editor_graph.scss';
+
 
 class ImageObject {
     #image;
     #d3Image;
     #loaded = false;
-    constructor(group) {
+    constructor(group: d3.Selection<SVGGElement, unknown, HTMLElement, any>) {
         this.#image = new Image();
         this.#d3Image = group.append('svg:image');
     }
 
-    load(src, width, height) {
+    load(src: string, width: number, height: number) {
         this.#loaded = false;
         this.#d3Image
             .attr('xlink:href', src)
@@ -23,7 +31,7 @@ class ImageObject {
 
     loaded() { return this.#loaded; }
 
-    resize(width, height) {
+    resize(width: number, height: number) {
         if (this.loaded()) {
             const imageWidth = this.#image.width;
             const imageHeight = this.#image.height;
@@ -48,16 +56,18 @@ class ImageObject {
     }
 }
 
-
 class GraphEditor {
-    #width;
-    #height;
+    #width: number;
+    #height: number;
 
-    #normalCurve;
-    #valueCurve;
-    #bezierCurve;
-    #elasticCurve;
-    #bounceCurve;
+    #editMode: number;
+    #idx: number;
+
+    #normalCurve: NormalCurve;
+    #valueCurve: any;
+    #bezierCurve: BezierCurve;
+    #elasticCurve: ElasticCurve;
+    #bounceCurve: BounceCurve;
 
     #originalScaleX;
     #originalScaleY;
@@ -65,7 +75,7 @@ class GraphEditor {
     #currentScaleY;
 
     // D3.jsの要素
-    #svg;
+    #svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, unknown>;
     #group;
     #backgroundImage;
     #axisX;
@@ -81,7 +91,7 @@ class GraphEditor {
     #curvePath;
     #leftRect;
     #rightRect;
-    #handles;
+    #handles: Handles | BezierHandles | ElasticHandles| BounceHandles | NormalHandles | null;
     #labelAxisX;
     #labelAxisY;
     #labelGridX;
@@ -89,9 +99,13 @@ class GraphEditor {
     #d3Curve;
     #zoomBehavior;
 
-    constructor(normalCurveId, valueCurveId, bezierCurveId, elasticCurveId, bounceCurveId) {
-        this.#width = document.documentElement.clientWidth;
-        this.#height = document.documentElement.clientHeight;
+    constructor(editMode: number, idx: number, normalCurveId: number, valueCurveId: number, bezierCurveId: number, elasticCurveId: number, bounceCurveId: number) {
+        const container = document.getElementById('container');
+        this.#width = container!.clientWidth;
+        this.#height = container!.clientHeight;
+
+        this.#editMode = editMode;
+        this.#idx = idx;
 
         this.#normalCurve = new NormalCurve(normalCurveId);
         //this.#valueCurve = new ValueCurve(valueCurveId);
@@ -99,7 +113,7 @@ class GraphEditor {
         this.#elasticCurve = new ElasticCurve(elasticCurveId);
         this.#bounceCurve = new BounceCurve(bounceCurveId);
 
-        this.#svg = d3.select('#canvas')
+        this.#svg = d3.select<SVGSVGElement, unknown>('#canvas')
             .attr('width', this.#width)
             .attr('height', this.#height)
             .on('mousedown', event => {
@@ -107,19 +121,18 @@ class GraphEditor {
                     event.preventDefault();
                 } else if (event.button === 2) {
                     event.preventDefault();
-                    window.top.postMessage({
-                        to: 'native',
+                    window.chrome.webview.postMessage({
                         command: 'contextmenu-graph',
-                        mode: getEditMode(),
+                        mode: editMode,
                         curveId: this.getCurrentCurve().id
-                    }, '*');
+                    });
                 }
             })
             .on('dblclick', event => {
-                const x = this.#currentScaleX.invert(event.clientX);
-                const y = this.#currentScaleY.invert(event.clientY);
+                const x = this.#currentScaleX.invert(event.clientX - container!.offsetLeft);
+                const y = this.#currentScaleY.invert(event.clientY - container!.offsetTop);
                 if (this.#handles instanceof NormalHandles && x >= 0 && x <= 1) {
-                    this.#handles.curve.addCurve(x, y, this.#currentScaleX(1) - this.#currentScaleX(0));
+                    (this.#handles.curve as NormalCurve).addCurve(x, y, this.#currentScaleX(1) - this.#currentScaleX(0));
                     this.updateCurvePath();
                     this.updateVelocityPath();
                     this.updateHandles();
@@ -152,7 +165,7 @@ class GraphEditor {
         this.#axisX = d3.axisBottom(this.#originalScaleX)
             .ticks(this.#width / this.#height * nTick)
             .tickSize(-this.#height)
-            .tickFormat('');
+            .tickFormat(() => '');
         this.#gridX = this.#group.append('g')
             .attr('class', 'grid')
             .attr('transform', `translate(0,${this.#height})`)
@@ -165,7 +178,7 @@ class GraphEditor {
         this.#axisY = d3.axisLeft(this.#originalScaleY)
             .ticks(nTick)
             .tickSize(-this.#width)
-            .tickFormat('');
+            .tickFormat(() => '');
         this.#gridY = this.#group.append('g')
             .attr('class', 'grid')
             .call(this.#axisY);
@@ -174,7 +187,7 @@ class GraphEditor {
         this.#subAxisX = d3.axisBottom(this.#originalScaleX)
             .ticks(this.#width / this.#height * nTick * 2)
             .tickSize(-this.#height)
-            .tickFormat('');
+            .tickFormat(() => '');
         this.#subGridX = this.#group.append('g')
             .attr('class', 'grid-sub')
             .attr('transform', `translate(0,${this.#height})`)
@@ -184,7 +197,7 @@ class GraphEditor {
         this.#subAxisY = d3.axisLeft(this.#originalScaleY)
             .ticks(nTick * 2)
             .tickSize(-this.#width)
-            .tickFormat('');
+            .tickFormat(() => '');
         this.#subGridY = this.#group.append('g')
             .attr('class', 'grid-sub')
             .call(this.#subAxisY);
@@ -192,7 +205,7 @@ class GraphEditor {
         this.#zoomGroup = this.#group.append('g');
 
         this.#d3Curve = d3.curveCatmullRom.alpha(0.5);
-        const line = d3.line()
+        const line = d3.line<{ x: number; y: number }>()
             .x(d => this.#originalScaleX(d.x))
             .y(d => this.#originalScaleY(d.y))
             .curve(this.#d3Curve);
@@ -232,8 +245,8 @@ class GraphEditor {
         this.#handles = createHandles(this.getCurrentCurve(), this.#group, this.#currentScaleX, this.#currentScaleY);
         this.updateHandleVisibility();
 
-        this.#labelAxisX = scale => d3.axisBottom(scale).tickPadding(-15).tickFormat(d3.format('.6'));
-        this.#labelAxisY = scale => d3.axisLeft(scale).tickPadding(-15).tickFormat(d3.format('.6'));
+        this.#labelAxisX = (scale: d3.AxisScale<number>) => d3.axisBottom(scale).tickPadding(-15).tickFormat(d3.format(''));
+        this.#labelAxisY = (scale: d3.AxisScale<number>) => d3.axisLeft(scale).tickPadding(-15).tickFormat(d3.format(''));
 
         // 軸ラベル(X軸)
         this.#labelGridX = this.#group.append('g')
@@ -248,7 +261,7 @@ class GraphEditor {
             .style('visibility', config.showYLabel ? 'visible' : 'hidden')
             .call(this.#labelAxisY(this.#originalScaleY).tickSize(0));
 
-        this.#zoomBehavior = d3.zoom()
+        this.#zoomBehavior = d3.zoom<SVGSVGElement, unknown>()
             .scaleExtent([0.0001, 10000])
             .translateExtent([[-this.#width, -Infinity], [2 * this.#width, Infinity]])
             .wheelDelta(event => {
@@ -286,8 +299,36 @@ class GraphEditor {
     get backgroundImage() { return this.#backgroundImage; }
     get handles() { return this.#handles; }
 
+    setEditMode(editMode: number) {
+        if (editMode != this.#editMode) {
+            this.#editMode = editMode;
+            this.updateHandles();
+            this.updateCurvePath();
+            this.updateVelocityPath();
+            this.fit(0);
+        }
+    }
+
+    setIdx(idx: number) {
+        if (idx != this.#idx) {
+            this.#idx = idx;
+             switch (this.#editMode) {
+                case 0:
+                    this.#normalCurve = new NormalCurve(graphEditor.normal.getId(idx));
+                    break;
+                case 1:
+                    //this.#valueCurve = new ValueCurve(graphEditor.value.getId(getIdx()));
+                    break;
+            }
+            this.updateHandles();
+            this.updateCurvePath();
+            this.updateVelocityPath();
+            this.fit(0);
+        }
+    }
+
     getCurrentCurve() {
-        switch (getEditMode()) {
+        switch (this.#editMode) {
             case 0:
                 return this.#normalCurve;
             case 1:
@@ -310,7 +351,7 @@ class GraphEditor {
         }
     }
 
-    decode(code) {
+    decode(code: number) {
         const curve = this.getCurrentCurve();
         if (curve instanceof NumericCurve) {
             curve.decode(code);
@@ -319,21 +360,13 @@ class GraphEditor {
         }
     }
 
-    updateIdCurve() {
-        switch (getEditMode()) {
-            case 0:
-                this.#normalCurve = new NormalCurve(graphEditor.normal.getId(getIdx()));
-                break;
-            case 1:
-                //this.#valueCurve = new ValueCurve(graphEditor.value.getId(getIdx()));
-                break;
-        }
-    }
-
     // D3.js用のデータを生成
-    createPathData(startGraphX, endGraphX, velocity = false) {
+    createPathData(startGraphX: number, endGraphX: number, velocity = false) {
         const n = config.curveResolution;
-        let data = [];
+        let data: {
+            x: number;
+            y: number;
+        }[] = [];
         let yArray;
         const currentCurve = this.getCurrentCurve();
         if (!currentCurve) {
@@ -355,23 +388,23 @@ class GraphEditor {
     }
 
     // 描画するカーブの内容を更新
-    updateCurvePath(t = null, zoom = false) {
+    updateCurvePath(t: d3.Transition<any, unknown, any, unknown> | null = null, zoom: boolean = false) {
         const startGraphX = Math.max(0, this.#currentScaleX.invert(zoom ? -200 : 0));
         const endGraphX = Math.min(1, this.#currentScaleX.invert(this.#width + (zoom ? 200 : 0)));
 
         this.#curvePath.datum(this.createPathData(startGraphX, endGraphX));
-        (t ? this.#curvePath.transition(t) : this.#curvePath).attr('d', d3.line()
-            .x(d => this.#originalScaleX(d.x))
-            .y(d => this.#originalScaleY(d.y))
-            .curve(this.#d3Curve));
+        (t ? this.#curvePath.transition(t) : this.#curvePath)
+            .attr('d', d3.line<{ x: number; y: number }>()
+                .x(d => this.#originalScaleX(d.x))
+                .y(d => this.#originalScaleY(d.y))
+                .curve(this.#d3Curve)
+            );
 
         if (!zoom) {
-            const editMode = getEditMode();
-            if (editMode == 2 || editMode == 3 || editMode == 4) {
-                window.top.postMessage({
-                to: 'panel-editor',
+            if (this.#editMode == 2 || this.#editMode == 3 || this.#editMode == 4) {
+                window.postMessage({
                 command: 'updateParam'
-                });
+                }, '*');
             }
         }
     }
@@ -382,7 +415,7 @@ class GraphEditor {
     }
 
     // 描画するカーブの内容を更新
-    updateVelocityPath(t = null) {
+    updateVelocityPath(t: d3.Transition<any, unknown, any, unknown> | null = null) {
         if (!config.showVelocityGraph) {
             return;
         }
@@ -390,10 +423,12 @@ class GraphEditor {
         const endGraphX = Math.min(1, this.#currentScaleX.invert(this.#width));
 
         this.#velocityPath.datum(this.createPathData(startGraphX, endGraphX, true));
-        (t ? this.#velocityPath.transition(t) : this.#velocityPath).attr('d', d3.line()
-            .x(d => this.#originalScaleX(d.x))
-            .y(d => this.#originalScaleY(d.y))
-            .curve(this.#d3Curve));
+        (t ? this.#velocityPath.transition(t) : this.#velocityPath).attr('d',
+            d3.line<{ x: number; y: number }>()
+                .x(d => this.#originalScaleX(d.x))
+                .y(d => this.#originalScaleY(d.y))
+                .curve(this.#d3Curve)
+        );
     }
 
     updateVelocityGraphVisibility() {
@@ -402,16 +437,18 @@ class GraphEditor {
     }
 
     updateHandles() {
-        this.#handles.remove();
+        this.#handles?.remove();
         this.#handles = createHandles(this.getCurrentCurve(), this.#group, this.#currentScaleX, this.#currentScaleY);
     }
 
-    updateHandlePos(t = null) {
-        this.#handles.updateHandles(t);
+    updateHandlePos(t: d3.Transition<any, unknown, any, unknown> | null = null) {
+        this.#handles?.updateHandles(t);
     }
 
     updateHandleVisibility() {
-        $('.anchor, .handle, .handle-line').css('visibility', config.showHandle ? 'visible' : 'hidden');
+        document.querySelectorAll<HTMLElement>('.anchor, .handle, .handle-line').forEach((element) => {
+            element.style.visibility = config.showHandle ? 'visible' : 'hidden';
+        });
     }
 
     updateAxisLabelVisibility() {
@@ -419,27 +456,28 @@ class GraphEditor {
         this.#labelGridY.style('visibility', config.showYLabel ? 'visible' : 'hidden');
     }
 
-    loadBackgroundImage(src) {
+    loadBackgroundImage(src: string) {
         this.#backgroundImage.load(src, this.#width, this.#height);
     }
 
-    onZoomStart(event) {
+    onZoomStart(event: any) {
         if (event.sourceEvent && event.sourceEvent.type !== 'wheel') {
             this.#svg.attr('cursor', 'move');
         }
     }
 
-    onZoom(event) {
+    onZoom(event: any) {
+        const fit = document.getElementById('fit');
         if (event.transform.k == 1 && event.transform.x == 0 && event.transform.y == 0) {
-            if ($('#fit').hasClass('visible')) {
-                $('#fit').removeClass('visible');
-                $('#fit').addClass('hidden');
+            if (fit?.classList.contains('visible')) {
+                fit?.classList.remove('visible');
+                fit?.classList.add('hidden');
             }
         }
         else {
-            if ($('#fit').hasClass('hidden')) {
-                $('#fit').addClass('visible');
-                $('#fit').removeClass('hidden');
+            if (fit?.classList.contains('hidden')) {
+                fit?.classList.remove('hidden');
+                fit?.classList.add('visible');
             }
         }
 
@@ -454,28 +492,39 @@ class GraphEditor {
 
         const isZoom = event.sourceEvent && event.sourceEvent.type === 'wheel';
 
-        (isZoom? this.#gridX.transition(t) : this.#gridX).call(this.#axisX.scale(this.#currentScaleX));
-        (isZoom? this.#gridY.transition(t) : this.#gridY).call(this.#axisY.scale(this.#currentScaleY));
-        (isZoom? this.#subGridX.transition(t) : this.#subGridX).call(this.#subAxisX.scale(this.#currentScaleX));
-        (isZoom? this.#subGridY.transition(t) : this.#subGridY).call(this.#subAxisY.scale(this.#currentScaleY));
-        (isZoom? this.#labelGridX.transition(t) : this.#labelGridX).call(this.#labelAxisX(this.#currentScaleX));
-        (isZoom? this.#labelGridY.transition(t) : this.#labelGridY).call(this.#labelAxisY(this.#currentScaleY));
-        (isZoom? this.#zoomGroup.transition(t) : this.#zoomGroup).attr('transform', event.transform);
-        (isZoom? this.#leftRect.transition(t) : this.#leftRect).attr('width', Math.max(0, this.#currentScaleX(0)));
-        (isZoom? this.#rightRect.transition(t) : this.#rightRect).attr('x', this.#currentScaleX(1))
-            .attr('width', Math.max(0, this.#width - this.#currentScaleX(1)));
-        this.#handles.rescaleX(this.#currentScaleX, isZoom? t : null);
-        this.#handles.rescaleY(this.#currentScaleY, isZoom? t : null);
-
         if (isZoom) {
+            this.#gridX.transition(t).call(this.#axisX.scale(this.#currentScaleX));
+            this.#gridY.transition(t).call(this.#axisY.scale(this.#currentScaleY));
+            this.#subGridX.transition(t).call(this.#subAxisX.scale(this.#currentScaleX));
+            this.#subGridY.transition(t).call(this.#subAxisY.scale(this.#currentScaleY));
+            this.#labelGridX.transition(t).call(this.#labelAxisX(this.#currentScaleX));
+            this.#labelGridY.transition(t).call(this.#labelAxisY(this.#currentScaleY));
+            this.#zoomGroup.transition(t).attr('transform', event.transform);
+            this.#leftRect.transition(t).attr('width', Math.max(0, this.#currentScaleX(0)));
+            this.#rightRect.transition(t)
+                .attr('x', this.#currentScaleX(1))
+                .attr('width', Math.max(0, this.#width - this.#currentScaleX(1)));
             this.#curvePath.transition(t)
                 .attr('stroke-width', config.curveThickness / event.transform.k);
             this.#velocityPath.transition(t)
                 .attr('stroke-width', config.curveThickness / event.transform.k);
+        } else {
+            this.#gridX.call(this.#axisX.scale(this.#currentScaleX));
+            this.#gridY.call(this.#axisY.scale(this.#currentScaleY));
+            this.#subGridX.call(this.#subAxisX.scale(this.#currentScaleX));
+            this.#subGridY.call(this.#subAxisY.scale(this.#currentScaleY));
+            this.#labelGridX.call(this.#labelAxisX(this.#currentScaleX));
+            this.#labelGridY.call(this.#labelAxisY(this.#currentScaleY));
+            this.#zoomGroup.attr('transform', event.transform);
+            this.#leftRect.attr('width', Math.max(0, this.#currentScaleX(0)));
+            this.#rightRect.attr('x', this.#currentScaleX(1))
+                .attr('width', Math.max(0, this.#width - this.#currentScaleX(1)));
         }
+        this.#handles?.rescaleX(this.#currentScaleX, isZoom? t : null);
+        this.#handles?.rescaleY(this.#currentScaleY, isZoom? t : null);
     }
 
-    onZoomEnd(event) {
+    onZoomEnd(event: any) {
         this.#svg.attr('cursor', 'default');
     }
 
@@ -490,7 +539,7 @@ class GraphEditor {
             .attr('stroke-width', config.curveThickness);
     }
 
-    resize(width, height) {
+    resize(width: number, height: number) {
         this.#width = width;
         this.#height = height;
 
@@ -510,10 +559,14 @@ class GraphEditor {
             .domain([-graphMarginY / innerGraphHeight, 1 + graphMarginY / innerGraphHeight])
             .range([height + 2, -2]);
         
-        const transform = d3.zoomTransform(this.#svg.node());
+        let transform: d3.ZoomTransform | null = null;
+        const svgNode = this.#svg.node();
+        if (svgNode) {
+            transform = d3.zoomTransform(svgNode);
+        }
 
-        this.#currentScaleX = transform.rescaleX(this.#originalScaleX);
-        this.#currentScaleY = transform.rescaleY(this.#originalScaleY);
+        this.#currentScaleX = transform?.rescaleX(this.#originalScaleX) ?? this.#originalScaleX;
+        this.#currentScaleY = transform?.rescaleY(this.#originalScaleY) ?? this.#originalScaleY;
 
         this.#backgroundImage.resize(width, height);
         this.#gridX.call(this.#axisX.scale(this.#currentScaleX).tickSize(-height)).attr('transform', `translate(0,${height})`);
@@ -522,11 +575,11 @@ class GraphEditor {
         this.#subGridY.call(this.#subAxisY.scale(this.#currentScaleY).tickSize(-width));
         this.#labelGridX.call(this.#labelAxisX(this.#currentScaleX));
         this.#labelGridY.call(this.#labelAxisY(this.#currentScaleY));
-        this.#curvePath.attr('d', d3.line()
+        this.#curvePath.attr('d', d3.line<{ x: number; y: number }>()
             .x(d => this.#originalScaleX(d.x))
             .y(d => this.#originalScaleY(d.y))
             .curve(this.#d3Curve));
-        this.#velocityPath.attr('d', d3.line()
+        this.#velocityPath.attr('d', d3.line<{ x: number; y: number }>()
             .x(d => this.#originalScaleX(d.x))
             .y(d => this.#originalScaleY(d.y))
             .curve(this.#d3Curve));
@@ -535,132 +588,177 @@ class GraphEditor {
         this.#rightRect.attr('x', this.#currentScaleX(1))
             .attr('width', width - this.#currentScaleX(1))
             .attr('height', height);
-        this.#handles.rescaleX(this.#currentScaleX);
-        this.#handles.rescaleY(this.#currentScaleY);
+        this.#handles?.rescaleX(this.#currentScaleX);
+        this.#handles?.rescaleY(this.#currentScaleY);
     }
 }
 
 
-$(document).ready(() => {
-    window.graphEditor = new GraphEditor(
-        graphEditor.normal.getId(getIdx()),
-        null,
-        graphEditor.bezier.getId(window.top.isSelectDialog),
-        graphEditor.elastic.getId(window.top.isSelectDialog),
-        graphEditor.bounce.getId(window.top.isSelectDialog)
-    );
-});
+interface GraphEditorPanelProps {
+    isSelectDialog: boolean;
+    editMode: number;
+    idx: number;
+    size: number;
+    setIdx: (idx: number) => void;
+}
 
+const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPanelProps) => {
+    const ref = useRef<HTMLDivElement | null>(null);
+    const editorRef = useRef<GraphEditor | null>(null);
 
-$(window).on('message', event => {
-    const data = event.originalEvent.data;
-    switch (data.command) {
-        case 'changeCurve':
-            window.graphEditor?.updateIdCurve();
-            window.graphEditor?.updateCurvePath();
-            window.graphEditor?.updateVelocityPath();
-            window.graphEditor?.fit(0);
-            window.graphEditor?.updateHandles();
-            break;
+    editorRef.current?.setEditMode(props.editMode);
+    editorRef.current?.setIdx(props.idx);
 
-        case 'updateCurvePath':
-            window.graphEditor.updateCurvePath();
-            window.graphEditor.updateVelocityPath();
-            break;
-
-        case 'updateEditor':
-        case 'updateHandles':
-            window.graphEditor.updateHandles();
-            window.graphEditor.updateCurvePath();
-            window.graphEditor.updateVelocityPath();
-            break;
-
-        case 'updateHandlePos':
-            if (window.graphEditor.handles instanceof NormalHandles && window.graphEditor.handles.segmentHandlesArray.length > 1) {
-                window.graphEditor.updateHandles();
-                window.graphEditor.updateCurvePath();
-                window.graphEditor.updateVelocityPath();
-            }
-            else {
-                const duration = config.enableAnimation ? 180 : 0;
-                const t = d3.transition().duration(duration).ease(d3.easeCubicOut);
-                window.graphEditor.updateHandlePos(t);
-                window.graphEditor.updateCurvePath(t);
-                window.graphEditor.updateVelocityPath(t);
-            }
-            break;
-
-        case 'updateAxisLabelVisibility':
-            window.graphEditor.updateAxisLabelVisibility();
-            break;
-
-        case 'updateHandleVisibility':
-            window.graphEditor.updateHandleVisibility();
-            break;
-
-        case 'updateVelocityGraphVisibility':
-            window.graphEditor.updateVelocityGraphVisibility();
-            break;
-
-        case 'applyPreferences':
-            window.graphEditor.loadBackgroundImage(config.setBackgroundImage ? config.backgroundImagePath : '');
-            window.graphEditor.updateCurvePathStyle();
-            window.graphEditor.updateCurvePath();
-            window.graphEditor.updateVelocityPath();
-            break;
-
-        case 'decode':
-            window.graphEditor.decode(data.code);
-            break;
-    }
-});
-
-$(window).on('keydown', event => {
-    if (!config.enableHotkeys) {
-        return;
-    }
-    switch (event.key) {
-    case 'Home':
-        window.graphEditor.fit();
-        break;
-
-    case 'Delete':
-        window.top.postMessage({
-            to: 'native',
-            command: 'clear'
-        }, '*');
-        break;
-
-    case 'r':
-        window.graphEditor.getCurrentCurve().reverse();
-        window.postMessage({command: 'updateHandlePos'}, '*');
-        break;
-
-    case 'a':
-        config.alignHandle = !config.alignHandle;
-        break;
-
-    case 'ArrowLeft':
-        window.top.postMessage({
-            to: 'panel-editor',
-            command: 'goBackIdx'
-        }, '*');
-        break
-
-    case 'ArrowRight':
-        if (!isIdxLast()) {
-            window.top.postMessage({
-                to: 'panel-editor',
-                command: 'goForwardIdx'
-            }, '*');
+    const updateHandlePos = () => {
+        if (editorRef.current?.handles instanceof NormalHandles && editorRef.current?.handles.segmentHandlesArray.length > 1) {
+            editorRef.current?.updateHandles();
+            editorRef.current?.updateCurvePath();
+            editorRef.current?.updateVelocityPath();
         }
-        break;
+        else {
+            const duration = config.enableAnimation ? 180 : 0;
+            const t = d3.transition().duration(duration).ease(d3.easeCubicOut);
+            editorRef.current?.updateHandlePos(t);
+            editorRef.current?.updateCurvePath(t);
+            editorRef.current?.updateVelocityPath(t);
+        }
     }
-});
 
-$(window).on('resize', () => {
-    window.graphEditor.resize(document.documentElement.clientWidth, document.documentElement.clientHeight);
-});
+    const onMessage = (event: MessageEvent) => {
+        switch (event.data.command) {
+            case 'setCurve':
+                if (event.data.mode != undefined && event.data.param != undefined) {
+                    editorRef.current?.setEditMode(event.data.mode);
+                    if (event.data.mode == 2 || event.data.mode == 3 || event.data.mode == 4) {
+                        editorRef.current?.decode(event.data.param);
+                    } else {
+                        editorRef.current?.setIdx(event.data.param);
+                    }
+                }
+                break;
 
-// フィットボタン
-$('#fit').on('click', () => window.graphEditor.fit());
+            case 'updateCurvePath':
+                editorRef.current?.updateCurvePath();
+                editorRef.current?.updateVelocityPath();
+                break;
+        }
+    }
+
+    const onMessageFromNative = (event: MessageEvent) => {
+        switch (event.data.command) {
+            case 'updateCurvePath':
+                editorRef.current?.updateCurvePath();
+                editorRef.current?.updateVelocityPath();
+                break;
+
+            case 'updateEditor':
+            case 'updateHandles':
+                editorRef.current?.updateHandles();
+                editorRef.current?.updateCurvePath();
+                editorRef.current?.updateVelocityPath();
+                break;
+
+            case 'updateHandlePos':
+                updateHandlePos();
+                break;
+
+            case 'updateAxisLabelVisibility':
+                editorRef.current?.updateAxisLabelVisibility();
+                break;
+
+            case 'updateHandleVisibility':
+                editorRef.current?.updateHandleVisibility();
+                break;
+
+            case 'updateVelocityGraphVisibility':
+                editorRef.current?.updateVelocityGraphVisibility();
+                break;
+
+            case 'applyPreferences':
+                editorRef.current?.loadBackgroundImage(config.setBackgroundImage ? config.backgroundImagePath : '');
+                editorRef.current?.updateCurvePathStyle();
+                editorRef.current?.updateCurvePath();
+                editorRef.current?.updateVelocityPath();
+                break;
+        }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (!config.enableHotkeys) {
+            return;
+        }
+        switch (event.key) {
+        case 'Home':
+            editorRef.current?.fit();
+            break;
+
+        case 'Delete':
+            window.chrome.webview.postMessage({
+                command: 'clear'
+            });
+            break;
+
+        case 'r':
+            editorRef.current?.getCurrentCurve().reverse();
+            updateHandlePos();
+            break;
+
+        case 'a':
+            config.alignHandle = !config.alignHandle;
+            break;
+
+        case 'ArrowLeft':
+            if (0 < props.idx) {
+                props.setIdx(props.idx - 1);
+            }
+            break
+
+        case 'ArrowRight':
+            if (props.idx < props.size - 1) {
+                props.setIdx(props.idx + 1);
+            }
+            break;
+        }
+    }
+
+    useEffect(() => {
+        editorRef.current = new GraphEditor(
+            props.editMode,
+            props.idx,
+            graphEditor.normal.getId(props.idx),
+            0,
+            graphEditor.bezier.getId(props.isSelectDialog),
+            graphEditor.elastic.getId(props.isSelectDialog),
+            graphEditor.bounce.getId(props.isSelectDialog)
+        );
+
+        window.addEventListener('message', onMessage);
+        window.chrome.webview.addEventListener('message', onMessageFromNative);
+        window.addEventListener('keydown', onKeyDown);
+
+        const observer = new ResizeObserver((entries) => {
+            entries.forEach((entry) => {
+                editorRef.current?.resize(entry.contentRect.width, entry.contentRect.height);
+            });
+        });
+        observer.observe(ref.current!);
+
+        return () => {
+            window.removeEventListener('message', onMessage);
+            window.chrome.webview.removeEventListener('message', onMessageFromNative);
+            window.removeEventListener('keydown', onKeyDown);
+            observer.disconnect();
+        };
+    }, []);
+
+    return (
+        <div id='container' ref={ref}>
+            <svg id='canvas'></svg>
+            <button id='fit' className='hidden' title='ビューをフィット' onClick={() => { editorRef.current?.fit(); }}>
+                <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} size='sm' />
+            </button>
+        </div>
+    );
+}
+
+export default GraphEditorPanel;

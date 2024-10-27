@@ -21,10 +21,11 @@ namespace cved {
 				mkaul::WindowRectangle bounds;
 				bounds.from_client_rect(this_->get_hwnd());
 				this_->put_bounds(bounds);
-				this_->navigate(L"select_dialog", [mode, param](MyWebView2* this_) {
+				this_->navigate([mode, param](MyWebView2* this_) {
 					this_->post_message(
-						L"panel-editor", L"setCurve",
+						L"init",
 						{
+							{ "isSelectDialog", true},
 							{ "mode", mode},
 							{ "param", param }
 						}
@@ -58,7 +59,7 @@ namespace cved {
 		case WM_COMMAND:
 			switch (wparam) {
 			case (WPARAM)WindowCommand::SelectCurveOk:
-				global::webview.get(global::MyWebView2Reference::WebViewType::Main)->post_message(L"panel-editor", L"updateEditor");
+				global::webview.get(global::MyWebView2Reference::WebViewType::Main)->post_message(L"updateEditor");
 				[[fallthrough]];
 
 			case (WPARAM)WindowCommand::SelectCurveCancel:

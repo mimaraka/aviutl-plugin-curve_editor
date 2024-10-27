@@ -103,7 +103,7 @@ namespace cved {
 			auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
 			if (curve) {
 				curve->reverse();
-				webview.post_message(L"editor-graph", L"updateHandlePos");
+				webview.post_message(L"updateHandlePos");
 			}
 			break;
 		}
@@ -121,22 +121,22 @@ namespace cved {
 
 		case ID_GRAPH_SHOW_X_LABEL:
 			global::config.set_show_x_label(!global::config.get_show_x_label());
-			webview.post_message(L"editor-graph", L"updateAxisLabelVisibility");
+			webview.post_message(L"updateAxisLabelVisibility");
 			break;
 
 		case ID_GRAPH_SHOW_Y_LABEL:
 			global::config.set_show_y_label(!global::config.get_show_y_label());
-			webview.post_message(L"editor-graph", L"updateAxisLabelVisibility");
+			webview.post_message(L"updateAxisLabelVisibility");
 			break;
 
 		case ID_GRAPH_SHOWHANDLE:
 			global::config.set_show_handle(!global::config.get_show_handle());
-			webview.post_message(L"editor-graph", L"updateHandleVisibility");
+			webview.post_message(L"updateHandleVisibility");
 			break;
 
 		case ID_GRAPH_VELOCITY:
 			global::config.set_show_velocity_graph(!global::config.get_show_velocity_graph());
-			webview.post_message(L"editor-graph", L"updateVelocityGraphVisibility");
+			webview.post_message(L"updateVelocityGraphVisibility");
 			break;
 
 		default:

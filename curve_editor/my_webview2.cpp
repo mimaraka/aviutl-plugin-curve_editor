@@ -115,7 +115,7 @@ namespace cved {
 		}
 	}
 
-	void MyWebView2::navigate(const std::wstring& html_name, std::function<void(MyWebView2*)> after_callback) {
+	void MyWebView2::navigate(std::function<void(MyWebView2*)> after_callback) {
 		using StringId = global::StringTable::StringId;
 		if (is_ready_) {
 			webview_->add_NavigationCompleted(
@@ -134,15 +134,7 @@ namespace cved {
 					}
 				).Get(), nullptr
 			);
-
-			std::filesystem::path ce_dir;
-#ifdef _DEBUG
-			std::filesystem::path this_path = __FILE__;
-			ce_dir = this_path.parent_path();
-#else
-			ce_dir = global::config.get_dir_plugin();
-#endif
-			webview_->Navigate(std::format(L"{}\\ui\\{}.html", ce_dir.wstring(), html_name).c_str());
+			webview_->Navigate(std::format(L"{}\\ui\\index.html", global::config.get_dir_plugin().wstring()).c_str());
 		}
 	}
 
@@ -150,12 +142,6 @@ namespace cved {
 		if (is_ready_) {
 			webview_->Reload();
 		}
-	}
-
-	void MyWebView2::execute_script(const std::wstring& script) {
-		if (is_ready_) {
-			webview_->ExecuteScript(script.c_str(), nullptr);
-		}	
 	}
 
 	void MyWebView2::put_bounds(const mkaul::WindowRectangle& bounds) {
@@ -170,7 +156,7 @@ namespace cved {
 		}
 	}
 
-	void MyWebView2::post_message(const std::wstring& to, const std::wstring& command, const nlohmann::json& options) const noexcept {
+	void MyWebView2::post_message(const std::wstring& command, const nlohmann::json& options) const noexcept {
 		if (!is_ready_) {
 			return;
 		}
@@ -181,7 +167,7 @@ namespace cved {
 			options_str.replace(0, 1, L",");
 		}
 		webview_->PostWebMessageAsJson(
-			std::format(L"{{\"to\":\"{}\",\"command\":\"{}\"{}}}", to, command, options_str).c_str()
+			std::format(L"{{\"command\":\"{}\"{}}}", command, options_str).c_str()
 		);
 	}
 
@@ -252,7 +238,7 @@ namespace cved {
 					auto curve = global::editor.current_curve();
 					if (curve) {
 						curve->clear();
-						post_message(L"editor-graph", L"updateHandles");
+						post_message(L"updateHandles");
 					}
 				}
 				return true;
@@ -310,29 +296,8 @@ namespace cved {
 			}
 			else if (command == "selectdlg-ok") {
 				auto mode = message.at("mode").get<EditMode>();
-				auto id_or_idx = message.at("idOrIdx").get<uint32_t>();
-				int param = 0;
-				std::pair<std::string, int> ret;
-
-				switch (mode) {
-				case EditMode::Normal:
-				case EditMode::Value:
-				case EditMode::Script:
-					param = (int)id_or_idx + 1;
-					break;
-
-				case EditMode::Bezier:
-				case EditMode::Elastic:
-				case EditMode::Bounce:
-				{
-					auto curve = global::id_manager.get_curve<NumericGraphCurve>(id_or_idx);
-					if (curve) {
-						param = curve->encode();
-					}
-					break;
-				}
-				}
-				ret = std::make_pair(global::editor.get_curve(mode)->get_type(), param);
+				auto param = message.at("param").get<int32_t>();
+				std::pair<std::string, int> ret = std::make_pair(global::editor.get_curve(mode)->get_type(), param);
 				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveOk, std::bit_cast<LPARAM>(&ret));
 				return true;
 			}

@@ -46,7 +46,7 @@ namespace cved {
 				}
 			}
 			// ウィンドウの更新
-			if (global::webview) global::webview->post_message(L"panel-editor", L"updateEditor");
+			if (global::webview) global::webview->post_message(L"updateEditor");
 		}
 		return ret;
 	}

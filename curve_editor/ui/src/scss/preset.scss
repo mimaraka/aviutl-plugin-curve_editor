@@ -1,4 +1,4 @@
-@import url('./toolbar.css');
+@import url('./toolbar.scss');
 
 :root {
     --color-content-searchbar: rgb(70, 70, 70);
@@ -10,18 +10,13 @@
     }
 }
 
-html {
-    width: 100%;
-    height: 100%;
-}
-
-body {
+.preset-container {
     display: flex;
     flex-direction: column;
     width: calc(100% - var(--margin) * 2);
     height: calc(100% - var(--margin) * 2);
     margin: var(--margin);
-    background: var(--color-bg);
+    background-color: var(--color-bg);
     overflow: hidden;
 }
 
@@ -43,7 +38,7 @@ body {
 
 .searchbar-container {
     position: relative;
-    width: calc(100% - var(--margin) * 4);
+    width: calc(70% - var(--margin) * 2);
 }
 
 .searchbar-container::before {
@@ -69,15 +64,20 @@ body {
 }
 
 #collection-container {
-    /*TODO: ゴリ押し*/
-    width: 2000px;
+    width: calc(50% - var(--margin));
     height: 100%;
 }
 
-.menu-button {
-    flex-grow: 1;
+.index-buttons {
+    display: flex;
+    flex-direction: row;
+    width: 30%;
+    margin-left: calc(var(--margin) * 2);
 }
 
-#button-filter, #button-sort {
-    width: 40px;
+.collection-buttons {
+    display: flex;
+    flex-direction: row;
+    width: calc(50% - var(--margin));
+    margin-left: calc(var(--margin) * 2);
 }

@@ -42,12 +42,11 @@ namespace cved {
 		void destroy() noexcept;
 		auto get_webview() const noexcept { return webview_.get(); }
 		auto get_hwnd() const noexcept { return hwnd_; }
-		void navigate(const std::wstring& uri, std::function<void(MyWebView2*)> after_callback = nullptr);
+		void navigate(std::function<void(MyWebView2*)> after_callback = nullptr);
 		void reload() noexcept;
-		void execute_script(const std::wstring& script);
 		void put_bounds(const mkaul::WindowRectangle& bounds);
 		void on_move() noexcept;
-		void post_message(const std::wstring& to, const std::wstring& command, const nlohmann::json& options = nlohmann::json::object()) const noexcept;
+		void post_message(const std::wstring& command, const nlohmann::json& options = nlohmann::json::object()) const noexcept;
 		void update_color_scheme() noexcept;
 	};
 } // namespace cved

@@ -52,7 +52,9 @@ namespace cved {
 					mkaul::WindowRectangle bounds;
 					bounds.from_client_rect(this_->get_hwnd());
 					this_->put_bounds(bounds);
-					this_->navigate(L"panel_main");
+					this_->navigate([](MyWebView2* this_) {
+						this_->post_message(L"init", {{"isSelectDialog", false}});
+					});
 				});
 				global::webview.set(global::MyWebView2Reference::WebViewType::Main, my_webview);
 			}
@@ -80,7 +82,7 @@ namespace cved {
 			if (dnd.is_dragging()) {
 				::ReleaseCapture();
 				dnd.drop();
-				my_webview.execute_script(L"onDrop();");
+				my_webview.post_message(L"drop");
 			}
 			break;
 

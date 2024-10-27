@@ -1,9 +1,10 @@
-'use strict';
+import { graphEditor } from './host_object';
 
-class Curve {
-    #id;
-    #parentId;
-    constructor(id, parentId = 0) {
+
+export class Curve {
+    #id: number;
+    #parentId: number;
+    constructor(id: number, parentId = 0) {
         this.#id = id;
         this.#parentId = parentId;
     }
@@ -24,7 +25,7 @@ class Curve {
         return graphEditor.graph.getAnchorStartY(this.id);
     }
 
-    setAnchorStart(x, y) {
+    setAnchorStart(x: number, y: number) {
         graphEditor.graph.setAnchorStart(this.id, x, y);
     }
 
@@ -36,7 +37,7 @@ class Curve {
         return graphEditor.graph.getAnchorEndY(this.id);
     }
 
-    setAnchorEnd(x, y) {
+    setAnchorEnd(x: number, y: number) {
         graphEditor.graph.setAnchorEnd(this.id, x, y);
     }
 
@@ -55,17 +56,17 @@ class Curve {
     }
 }
 
-class NumericCurve extends Curve {
+export class NumericCurve extends Curve {
     encode() {
         return graphEditor.numeric.encode(this.id);
     }
 
-    decode(code) {
+    decode(code: number) {
         return graphEditor.numeric.decode(this.id, code);
     }
 }
 
-class BezierCurve extends NumericCurve {
+export class BezierCurve extends NumericCurve {
     getHandleLeftX() {
         return graphEditor.bezier.getHandleLeftX(this.id);
     }
@@ -74,7 +75,7 @@ class BezierCurve extends NumericCurve {
         return graphEditor.bezier.getHandleLeftY(this.id);
     }
 
-    setHandleLeft(x, y, keepAngle = false) {
+    setHandleLeft(x: number, y: number, keepAngle = false) {
         graphEditor.bezier.setHandleLeft(this.id, x, y, keepAngle);
     }
 
@@ -86,12 +87,12 @@ class BezierCurve extends NumericCurve {
         return graphEditor.bezier.getHandleRightY(this.id);
     }
 
-    setHandleRight(x, y, keepAngle = false) {
+    setHandleRight(x: number, y: number, keepAngle = false) {
         graphEditor.bezier.setHandleRight(this.id, x, y, keepAngle);
     }
 }
 
-class ElasticCurve extends NumericCurve {
+export class ElasticCurve extends NumericCurve {
     getHandleAmpLeftX() {
         return graphEditor.elastic.getHandleAmpLeftX(this.id);
     }
@@ -100,7 +101,7 @@ class ElasticCurve extends NumericCurve {
         return graphEditor.elastic.getHandleAmpLeftY(this.id);
     }
 
-    setHandleAmpLeft(y) {
+    setHandleAmpLeft(y: number) {
         graphEditor.elastic.setHandleAmpLeft(this.id, y);
     }
 
@@ -112,7 +113,7 @@ class ElasticCurve extends NumericCurve {
         return graphEditor.elastic.getHandleAmpRightY(this.id);
     }
 
-    setHandleAmpRight(y) {
+    setHandleAmpRight(y: number) {
         graphEditor.elastic.setHandleAmpRight(this.id, y);
     }
 
@@ -128,12 +129,12 @@ class ElasticCurve extends NumericCurve {
         return graphEditor.elastic.getHandleFreqDecayRootY(this.id);
     }
 
-    setHandleFreqDecay(x, y) {
+    setHandleFreqDecay(x: number, y: number) {
         graphEditor.elastic.setHandleFreqDecay(this.id, x, y);
     }
 }
 
-class BounceCurve extends NumericCurve {
+export class BounceCurve extends NumericCurve {
     getHandleX() {
         return graphEditor.bounce.getHandleX(this.id);
     }
@@ -142,15 +143,15 @@ class BounceCurve extends NumericCurve {
         return graphEditor.bounce.getHandleY(this.id);
     }
 
-    setHandle(x, y) {
+    setHandle(x: number, y: number) {
         graphEditor.bounce.setHandle(this.id, x, y);
     }
 }
 
-class LinearCurve extends Curve {
+export class LinearCurve extends Curve {
 }
 
-class NormalCurve extends Curve {
+export class NormalCurve extends Curve {
     getSegments() {
         const idArray = graphEditor.normal.getIdArray(this.id);
         let segments = Array(idArray.length).fill(null);
@@ -160,12 +161,12 @@ class NormalCurve extends Curve {
         return segments;
     }
 
-    addCurve(x, y, scaleX) {
+    addCurve(x: number, y: number, scaleX: number) {
         graphEditor.normal.addCurve(this.id, x, y, scaleX);
     }
 }
 
-function createCurve(id, parentId = 0) {
+export function createCurve(id: number, parentId = 0): BezierCurve | ElasticCurve | BounceCurve | LinearCurve | NormalCurve | null {
     switch (graphEditor.getCurveType(id)) {
         case 'bezier':
             return new BezierCurve(id, parentId);

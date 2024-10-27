@@ -1,9 +1,45 @@
-'use strict';
+import * as d3 from 'd3';
+import { config, graphEditor } from './host_object';
+import { Curve, BezierCurve, ElasticCurve, BounceCurve, LinearCurve, NormalCurve } from './curve';
+
+
+interface PrevHandleFunc {
+    onAnchorEndDragStart: (event: MouseEvent, bound?: boolean) => void;
+    onAnchorEndDrag: (event: MouseEvent, bound?: boolean) => void;
+    onAnchorEndDragEnd: (event: MouseEvent, bound?: boolean) => void;
+    update: () => void;
+};
+
+interface NextHandleFunc {
+    onAnchorStartDragStart: (event: MouseEvent, bound?: boolean) => void;
+    onAnchorStartDrag: (event: MouseEvent, bound?: boolean) => void;
+    onAnchorStartDragEnd: (event: MouseEvent, bound?: boolean) => void;
+    update: () => void;
+};
 
 // ハンドル (アンカー)
-class Handles {
+export class Handles {
+    handleRadius: number;
+    anchorRadius: number;
+    prevHandleFunc: PrevHandleFunc | null;
+    nextHandleFunc: NextHandleFunc | null;
+    scaleX: d3.ScaleLinear<number, number>;
+    scaleY: d3.ScaleLinear<number, number>;
+    curve: Curve;
+    _bufferAnchorStartX;
+    _bufferAnchorStartY;
+    _bufferAnchorEndX;
+    _bufferAnchorEndY;
+    anchorStart;
+    anchorEnd;
+
     // コンストラクタ
-    constructor(curve, g, scaleX, scaleY) {
+    constructor(
+        curve: Curve,
+        g: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
+        scaleX: d3.ScaleLinear<number, number>,
+        scaleY: d3.ScaleLinear<number, number>
+    ) {
         this.handleRadius = 4.8;
         this.anchorRadius = 3.6;
         this.prevHandleFunc = null;
@@ -23,10 +59,9 @@ class Handles {
             .attr('class', 'anchor')
             .on('mousedown', event => {
                 // TODO: 値指定モードに対応
-                if (event.button === 2 && getEditMode() == 0) {
+                if (event.button === 2) {
                     event.stopPropagation();
-                    window.top.postMessage({
-                        to: 'native',
+                    window.chrome.webview.postMessage({
                         command: 'contextmenu-curve-segment',
                         curveId: curve.parentId,
                         segmentId: curve.id,
@@ -41,28 +76,28 @@ class Handles {
             .attr('class', 'anchor');
 
         this.anchorStart.call(
-            d3.drag()
-                .on('start', this.onAnchorStartDragStart.bind(this))
-                .on('drag', this.onAnchorStartDrag.bind(this))
-                .on('end', this.onAnchorStartDragEnd.bind(this))
+            d3.drag<SVGRectElement, unknown>()
+                .on('start', (event) => this.onAnchorStartDragStart(event))
+                .on('drag', (event) => this.onAnchorStartDrag(event))
+                .on('end', (event) => this.onAnchorStartDragEnd(event))
         );
         this.anchorEnd.call(
-            d3.drag()
-                .on('start', this.onAnchorEndDragStart.bind(this))
-                .on('drag', this.onAnchorEndDrag.bind(this))
-                .on('end', this.onAnchorEndDragEnd.bind(this))
+            d3.drag<SVGRectElement, unknown>()
+                .on('start', (event) => this.onAnchorEndDragStart(event))
+                .on('drag', (event) => this.onAnchorEndDrag(event))
+                .on('end', (event) => this.onAnchorEndDragEnd(event))
         );
     }
 
-    setPrevHandleFunc(func) {
+    setPrevHandleFunc(func: PrevHandleFunc | null) {
         this.prevHandleFunc = func;
     }
 
-    setNextHandleFunc(func) {
+    setNextHandleFunc(func: NextHandleFunc | null) {
         this.nextHandleFunc = func;
     }
 
-    rescaleX(scaleX, transition = null) {
+    rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         this.scaleX = scaleX;
         const startX = this.scaleX(this._bufferAnchorStartX);
         const endX = this.scaleX(this._bufferAnchorEndX);
@@ -72,7 +107,7 @@ class Handles {
             .attr('x', endX - this.anchorRadius);
     }
 
-    rescaleY(scaleY, transition = null) {
+    rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         this.scaleY = scaleY;
         const startY = this.scaleY(this._bufferAnchorStartY);
         const endY = this.scaleY(this._bufferAnchorEndY);
@@ -87,17 +122,32 @@ class Handles {
         this.updateCurvePath();
     }
 
-    updateHandles(transition = null, anchorStartX = null, anchorStartY = null, anchorEndX = null, anchorEndY = null) {
+    updateHandles(
+        transition: d3.Transition<any, unknown, any, unknown> | null = null,
+        anchorStartX: number| null = null,
+        anchorStartY: number| null = null,
+        anchorEndX: number| null = null,
+        anchorEndY: number| null = null
+    ) {
         this._bufferAnchorStartX = anchorStartX || this.curve.getAnchorStartX();
         this._bufferAnchorStartY = anchorStartY || this.curve.getAnchorStartY();
         this._bufferAnchorEndX = anchorEndX || this.curve.getAnchorEndX();
         this._bufferAnchorEndY = anchorEndY || this.curve.getAnchorEndY();
-        (transition ? this.anchorStart.transition(transition) : this.anchorStart)
-            .attr('x', this.scaleX(this._bufferAnchorStartX) - this.anchorRadius)
-            .attr('y', this.scaleY(this._bufferAnchorStartY) - this.anchorRadius);
-        (transition ? this.anchorEnd.transition(transition) : this.anchorEnd)
-            .attr('x', this.scaleX(this._bufferAnchorEndX) - this.anchorRadius)
-            .attr('y', this.scaleY(this._bufferAnchorEndY) - this.anchorRadius);
+        if (transition) {
+            this.anchorStart.transition(transition)
+                .attr('x', this.scaleX(this._bufferAnchorStartX) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorStartY) - this.anchorRadius);
+            this.anchorEnd.transition(transition)
+                .attr('x', this.scaleX(this._bufferAnchorEndX) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorEndY) - this.anchorRadius);
+        } else {
+            this.anchorStart
+                .attr('x', this.scaleX(this._bufferAnchorStartX) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorStartY) - this.anchorRadius);
+            this.anchorEnd
+                .attr('x', this.scaleX(this._bufferAnchorEndX) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorEndY) - this.anchorRadius);
+        }
     }
 
     updateCurvePath() {
@@ -105,14 +155,14 @@ class Handles {
     }
 
     // 開始アンカーのドラッグ開始
-    onAnchorStartDragStart(event, bound = false) {
+    onAnchorStartDragStart(event: DragEvent, bound = false) {
         if (!bound) {
             this.prevHandleFunc?.onAnchorEndDragStart(event, true);
         }
     }
 
     // 開始アンカーのドラッグ
-    onAnchorStartDrag(event, bound = false) {
+    onAnchorStartDrag(event: DragEvent, bound = false) {
         const x = this.scaleX.invert(event.x);
         const y = this.scaleY.invert(event.y);
         this.curve.setAnchorStart(x, y);
@@ -128,7 +178,7 @@ class Handles {
     }
 
     // 開始アンカーのドラッグ終了
-    onAnchorStartDragEnd(event, bound = false) {
+    onAnchorStartDragEnd(event: DragEvent, bound = false) {
         this._bufferAnchorStartX = this.curve.getAnchorStartX();
         this._bufferAnchorStartY = this.curve.getAnchorStartY();
         if (!bound) {
@@ -139,14 +189,14 @@ class Handles {
     }
 
     // 終了アンカーのドラッグ開始
-    onAnchorEndDragStart(event, bound = false) {
+    onAnchorEndDragStart(event: DragEvent, bound = false) {
         if (!bound) {
             this.nextHandleFunc?.onAnchorStartDragStart(event, true);
         }
     }
 
     // 終了アンカーのドラッグ
-    onAnchorEndDrag(event, bound = false) {
+    onAnchorEndDrag(event: DragEvent, bound = false) {
         const x = this.scaleX.invert(event.x);
         const y = this.scaleY.invert(event.y);
         this.curve.setAnchorEnd(x, y);
@@ -161,7 +211,7 @@ class Handles {
     }
 
     // 終了アンカーのドラッグ終了
-    onAnchorEndDragEnd(event, bound = false) {
+    onAnchorEndDragEnd(event: DragEvent, bound = false) {
         this._bufferAnchorEndX = this.curve.getAnchorEndX();
         this._bufferAnchorEndY = this.curve.getAnchorEndY();
         if (!bound) {
@@ -171,9 +221,8 @@ class Handles {
         }
     }
 
-    onDragEnd(event) {
-        window.top.postMessage({
-            to: 'native',
+    onDragEnd() {
+        window.chrome.webview.postMessage({
             command: 'drag-end',
             curveId: (this.curve.parentId != 0) ? this.curve.parentId : this.curve.id,
         });
@@ -187,16 +236,25 @@ class Handles {
 }
 
 // ハンドル (ベジェ)
-class BezierHandles extends Handles {
-    #bufferHandleLeftOffsetX;
-    #bufferHandleLeftOffsetY;
-    #bufferHandleRightOffsetX;
-    #bufferHandleRightOffsetY;
-    #lengthBuffer;
+export class BezierHandles extends Handles {
+    #bufferHandleLeftOffsetX = 0;
+    #bufferHandleLeftOffsetY = 0;
+    #bufferHandleRightOffsetX = 0;
+    #bufferHandleRightOffsetY = 0;
+    #lengthBuffer = 0;
     #alignHandleFlag = false;
+    handleLeft;
+    handleRight;
+    handleLineLeft;
+    handleLineRight;
 
     // コンストラクタ
-    constructor(curve, g, scaleX, scaleY) {
+    constructor(
+        curve: BezierCurve,
+        g: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
+        scaleX: d3.ScaleLinear<number, number>,
+        scaleY: d3.ScaleLinear<number, number>
+    ) {
         super(curve, g, scaleX, scaleY);
         this.handleLeft = g.append('circle')
             .attr('cx', scaleX(curve.getHandleLeftX()))
@@ -221,88 +279,139 @@ class BezierHandles extends Handles {
             .attr('y2', scaleY(curve.getHandleRightY()))
             .attr('class', 'handle-line');
         this.handleLeft.call(
-            d3.drag()
+            d3.drag<SVGCircleElement, unknown>()
                 .on('start', this.onHandleLeftDragStart.bind(this))
                 .on('drag', this.onHandleLeftDrag.bind(this))
                 .on('end', this.onHandleLeftDragEnd.bind(this))
         );
         this.handleRight.call(
-            d3.drag()
+            d3.drag<SVGCircleElement, unknown>()
                 .on('start', this.onHandleRightDragStart.bind(this))
                 .on('drag', this.onHandleRightDrag.bind(this))
                 .on('end', this.onHandleRightDragEnd.bind(this))
         );
     }
 
-    rescaleX(scaleX, transition = null) {
+    rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleX(scaleX, transition);
-        const leftX = this.scaleX(this.curve.getHandleLeftX());
-        const rightX = this.scaleX(this.curve.getHandleRightX());
+        const leftX = this.scaleX((this.curve as BezierCurve).getHandleLeftX());
+        const rightX = this.scaleX((this.curve as BezierCurve).getHandleRightX());
         const startX = this.scaleX(this._bufferAnchorStartX);
         const endX = this.scaleX(this._bufferAnchorEndX);
-        (transition ? this.handleLeft.transition(transition) : this.handleLeft)
-            .attr('cx', leftX);
-        (transition ? this.handleRight.transition(transition) : this.handleRight)
-            .attr('cx', rightX);
-        (transition ? this.handleLineLeft.transition(transition) : this.handleLineLeft)
-            .attr('x1', startX)
-            .attr('x2', leftX);
-        (transition ? this.handleLineRight.transition(transition) : this.handleLineRight)
-            .attr('x1', endX)
-            .attr('x2', rightX);
+        if (transition) {
+            this.handleLeft.transition(transition)
+                .attr('cx', leftX);
+            this.handleRight.transition(transition)
+                .attr('cx', rightX);
+            this.handleLineLeft.transition(transition)
+                .attr('x1', startX)
+                .attr('x2', leftX);
+            this.handleLineRight.transition(transition)
+                .attr('x1', endX)
+                .attr('x2', rightX);
+        } else {
+            this.handleLeft
+                .attr('cx', leftX);
+            this.handleRight
+                .attr('cx', rightX);
+            this.handleLineLeft
+                .attr('x1', startX)
+                .attr('x2', leftX);
+            this.handleLineRight
+                .attr('x1', endX)
+                .attr('x2', rightX);
+        }
     }
 
-    rescaleY(scaleY, transition = null) {
+    rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleY(scaleY, transition);
-        const leftY = this.scaleY(this.curve.getHandleLeftY());
-        const rightY = this.scaleY(this.curve.getHandleRightY());
+        const leftY = this.scaleY((this.curve as BezierCurve).getHandleLeftY());
+        const rightY = this.scaleY((this.curve as BezierCurve).getHandleRightY());
         const startY = this.scaleY(this._bufferAnchorStartY);
         const endY = this.scaleY(this._bufferAnchorEndY);
-        (transition ? this.handleLeft.transition(transition) : this.handleLeft)
-            .attr('cy', leftY);
-        (transition ? this.handleRight.transition(transition) : this.handleRight)
-            .attr('cy', rightY);
-        (transition ? this.handleLineLeft.transition(transition) : this.handleLineLeft)
-            .attr('y1', startY)
-            .attr('y2', leftY);
-        (transition ? this.handleLineRight.transition(transition) : this.handleLineRight)
-            .attr('y1', endY)
-            .attr('y2', rightY);
+        if (transition) {
+            this.handleLeft.transition(transition)
+                .attr('cy', leftY);
+            this.handleRight.transition(transition)
+                .attr('cy', rightY);
+            this.handleLineLeft.transition(transition)
+                .attr('y1', startY)
+                .attr('y2', leftY);
+            this.handleLineRight.transition(transition)
+                .attr('y1', endY)
+                .attr('y2', rightY);
+        } else {
+            this.handleLeft
+                .attr('cy', leftY);
+            this.handleRight
+                .attr('cy', rightY);
+            this.handleLineLeft
+                .attr('y1', startY)
+                .attr('y2', leftY);
+            this.handleLineRight
+                .attr('y1', endY)
+                .attr('y2', rightY);
+        }
     }
 
-    updateHandles(transition = null, anchorStartX = null, anchorStartY = null, anchorEndX = null, anchorEndY = null) {
+    updateHandles(
+        transition: d3.Transition<any, unknown, any, unknown> | null = null,
+        anchorStartX: number| null = null,
+        anchorStartY: number| null = null,
+        anchorEndX: number| null = null,
+        anchorEndY: number| null = null
+    ) {
         super.updateHandles(transition, anchorStartX, anchorStartY, anchorEndX, anchorEndY);
         const scaledAnchorStartX = this.scaleX(anchorStartX || this.curve.getAnchorStartX());
         const scaledAnchorStartY = this.scaleY(anchorStartY || this.curve.getAnchorStartY());
         const scaledAnchorEndX = this.scaleX(anchorEndX || this.curve.getAnchorEndX());
         const scaledAnchorEndY = this.scaleY(anchorEndY || this.curve.getAnchorEndY());
-        const scaledHandleLeftX = this.scaleX(this.curve.getHandleLeftX());
-        const scaledHandleLeftY = this.scaleY(this.curve.getHandleLeftY());
-        const scaledHandleRightX = this.scaleX(this.curve.getHandleRightX());
-        const scaledHandleRightY = this.scaleY(this.curve.getHandleRightY());
-        (transition ? this.handleLeft.transition(transition) : this.handleLeft)
-            .attr('cx', scaledHandleLeftX)
-            .attr('cy', scaledHandleLeftY);
-        (transition ? this.handleRight.transition(transition) : this.handleRight)
-            .attr('cx', scaledHandleRightX)
-            .attr('cy', scaledHandleRightY);
-        (transition ? this.handleLineLeft.transition(transition) : this.handleLineLeft)
-            .attr('x1', scaledAnchorStartX)
-            .attr('y1', scaledAnchorStartY)
-            .attr('x2', scaledHandleLeftX)
-            .attr('y2', scaledHandleLeftY);
-        (transition ? this.handleLineRight.transition(transition) : this.handleLineRight)
-            .attr('x1', scaledAnchorEndX)
-            .attr('y1', scaledAnchorEndY)
-            .attr('x2', scaledHandleRightX)
-            .attr('y2', scaledHandleRightY);
+        const scaledHandleLeftX = this.scaleX((this.curve as BezierCurve).getHandleLeftX());
+        const scaledHandleLeftY = this.scaleY((this.curve as BezierCurve).getHandleLeftY());
+        const scaledHandleRightX = this.scaleX((this.curve as BezierCurve).getHandleRightX());
+        const scaledHandleRightY = this.scaleY((this.curve as BezierCurve).getHandleRightY());
+        if (transition) {
+            this.handleLeft.transition(transition)
+                .attr('cx', scaledHandleLeftX)
+                .attr('cy', scaledHandleLeftY);
+            this.handleRight.transition(transition)
+                .attr('cx', scaledHandleRightX)
+                .attr('cy', scaledHandleRightY);
+            this.handleLineLeft.transition(transition)
+                .attr('x1', scaledAnchorStartX)
+                .attr('y1', scaledAnchorStartY)
+                .attr('x2', scaledHandleLeftX)
+                .attr('y2', scaledHandleLeftY);
+            this.handleLineRight.transition(transition)
+                .attr('x1', scaledAnchorEndX)
+                .attr('y1', scaledAnchorEndY)
+                .attr('x2', scaledHandleRightX)
+                .attr('y2', scaledHandleRightY);
+        } else {
+            this.handleLeft
+                .attr('cx', scaledHandleLeftX)
+                .attr('cy', scaledHandleLeftY);
+            this.handleRight
+                .attr('cx', scaledHandleRightX)
+                .attr('cy', scaledHandleRightY);
+            this.handleLineLeft
+                .attr('x1', scaledAnchorStartX)
+                .attr('y1', scaledAnchorStartY)
+                .attr('x2', scaledHandleLeftX)
+                .attr('y2', scaledHandleLeftY);
+            this.handleLineRight
+                .attr('x1', scaledAnchorEndX)
+                .attr('y1', scaledAnchorEndY)
+                .attr('x2', scaledHandleRightX)
+                .attr('y2', scaledHandleRightY);
+        }
     }
 
     onAnchorDragStart() {
-        this.#bufferHandleLeftOffsetX = this.curve.getHandleLeftX() - this.curve.getAnchorStartX();
-        this.#bufferHandleLeftOffsetY = this.curve.getHandleLeftY() - this.curve.getAnchorStartY();
-        this.#bufferHandleRightOffsetX = this.curve.getHandleRightX() - this.curve.getAnchorEndX();
-        this.#bufferHandleRightOffsetY = this.curve.getHandleRightY() - this.curve.getAnchorEndY();
+        this.#bufferHandleLeftOffsetX = (this.curve as BezierCurve).getHandleLeftX() - this.curve.getAnchorStartX();
+        this.#bufferHandleLeftOffsetY = (this.curve as BezierCurve).getHandleLeftY() - this.curve.getAnchorStartY();
+        this.#bufferHandleRightOffsetX = (this.curve as BezierCurve).getHandleRightX() - this.curve.getAnchorEndX();
+        this.#bufferHandleRightOffsetY = (this.curve as BezierCurve).getHandleRightY() - this.curve.getAnchorEndY();
     }
 
     onAnchorDrag() {
@@ -310,19 +419,19 @@ class BezierHandles extends Handles {
         const anchorStartY = this.curve.getAnchorStartY();
         const anchorEndX = this.curve.getAnchorEndX();
         const anchorEndY = this.curve.getAnchorEndY();
-        this.curve.setHandleLeft(anchorStartX + this.#bufferHandleLeftOffsetX, anchorStartY + this.#bufferHandleLeftOffsetY, true);
-        this.curve.setHandleRight(anchorEndX + this.#bufferHandleRightOffsetX, anchorEndY + this.#bufferHandleRightOffsetY, true);
+        (this.curve as BezierCurve).setHandleLeft(anchorStartX + this.#bufferHandleLeftOffsetX, anchorStartY + this.#bufferHandleLeftOffsetY, true);
+        (this.curve as BezierCurve).setHandleRight(anchorEndX + this.#bufferHandleRightOffsetX, anchorEndY + this.#bufferHandleRightOffsetY, true);
         this.updateHandles(null, anchorStartX, anchorStartY, anchorEndX, anchorEndY);
     }
 
     // 開始アンカーのドラッグ開始
-    onAnchorStartDragStart(event, bound = false) {
+    onAnchorStartDragStart(event: DragEvent, bound = false) {
         super.onAnchorStartDragStart(event, bound);
         this.onAnchorDragStart();
     }
 
     // 開始アンカーのドラッグ
-    onAnchorStartDrag(event, bound = false) {
+    onAnchorStartDrag(event: DragEvent, bound = false) {
         super.onAnchorStartDrag(event, bound);
         this.onAnchorDrag();
         if (!bound) {
@@ -331,13 +440,13 @@ class BezierHandles extends Handles {
     }
 
     // 終了アンカーのドラッグ開始
-    onAnchorEndDragStart(event, bound = false) {
+    onAnchorEndDragStart(event: DragEvent, bound = false) {
         super.onAnchorEndDragStart(event, bound);
         this.onAnchorDragStart();
     }
 
     // 終了アンカーのドラッグ
-    onAnchorEndDrag(event, bound = false) {
+    onAnchorEndDrag(event: DragEvent, bound = false) {
         super.onAnchorEndDrag(event, bound);
         this.onAnchorDrag();
         if (!bound) {
@@ -346,7 +455,7 @@ class BezierHandles extends Handles {
     }
 
     // 左ハンドルのドラッグ開始
-    onHandleLeftDragStart(event) {
+    onHandleLeftDragStart(event: DragEvent) {
         const prevCurve = this.curve.getPrevCurve();
         if ((prevCurve instanceof BezierCurve) && config.alignHandle) {
             this.#alignHandleFlag = true;
@@ -359,12 +468,12 @@ class BezierHandles extends Handles {
     }
 
     // 左ハンドルのドラッグ
-    onHandleLeftDrag(event) {
+    onHandleLeftDrag(event: DragEvent) {
         const x = this.scaleX.invert(event.x);
         const y = this.scaleY.invert(event.y);
-        this.curve.setHandleLeft(x, y);
-        const newX = this.curve.getHandleLeftX();
-        const newY = this.curve.getHandleLeftY();
+        (this.curve as BezierCurve).setHandleLeft(x, y);
+        const newX = (this.curve as BezierCurve).getHandleLeftX();
+        const newY = (this.curve as BezierCurve).getHandleLeftY();
         this.handleLeft
             .attr('cx', this.scaleX(newX))
             .attr('cy', this.scaleY(newY));
@@ -380,7 +489,7 @@ class BezierHandles extends Handles {
             );
             const scaledX = this.scaleX(this._bufferAnchorStartX) + this.#lengthBuffer * Math.cos(scaledAngle + Math.PI);
             const scaledY = this.scaleY(this._bufferAnchorStartY) - this.#lengthBuffer * Math.sin(scaledAngle + Math.PI);
-            prevCurve.setHandleRight(this.scaleX.invert(scaledX), this.scaleY.invert(scaledY), true);
+            (prevCurve as BezierCurve).setHandleRight(this.scaleX.invert(scaledX), this.scaleY.invert(scaledY), true);
             this.prevHandleFunc?.update();
         } else {
             this.updateCurvePath();
@@ -388,13 +497,13 @@ class BezierHandles extends Handles {
     }
 
     // 左ハンドルのドラッグ終了
-    onHandleLeftDragEnd(event) {
+    onHandleLeftDragEnd(event: DragEvent) {
         this.#alignHandleFlag = false;
         this.onDragEnd();
     }
 
     // 右ハンドルのドラッグ開始
-    onHandleRightDragStart(event) {
+    onHandleRightDragStart(event: DragEvent) {
         const nextCurve = this.curve.getNextCurve();
         if ((nextCurve instanceof BezierCurve) && config.alignHandle) {
             this.#alignHandleFlag = true;
@@ -407,12 +516,12 @@ class BezierHandles extends Handles {
     }
 
     // 右ハンドルのドラッグ
-    onHandleRightDrag(event) {
+    onHandleRightDrag(event: DragEvent) {
         const x = this.scaleX.invert(event.x);
         const y = this.scaleY.invert(event.y);
-        this.curve.setHandleRight(x, y);
-        const newX = this.curve.getHandleRightX();
-        const newY = this.curve.getHandleRightY();
+        (this.curve as BezierCurve).setHandleRight(x, y);
+        const newX = (this.curve as BezierCurve).getHandleRightX();
+        const newY = (this.curve as BezierCurve).getHandleRightY();
         this.handleRight
             .attr('cx', this.scaleX(newX))
             .attr('cy', this.scaleY(newY));
@@ -428,7 +537,7 @@ class BezierHandles extends Handles {
             );
             const scaledX = this.scaleX(this._bufferAnchorEndX) + this.#lengthBuffer * Math.cos(scaledAngle + Math.PI);
             const scaledY = this.scaleY(this._bufferAnchorEndY) - this.#lengthBuffer * Math.sin(scaledAngle + Math.PI);
-            nextCurve.setHandleLeft(this.scaleX.invert(scaledX), this.scaleY.invert(scaledY), true);
+            (nextCurve as BezierCurve).setHandleLeft(this.scaleX.invert(scaledX), this.scaleY.invert(scaledY), true);
             this.nextHandleFunc?.update();
         } else {
             this.updateCurvePath();
@@ -436,7 +545,7 @@ class BezierHandles extends Handles {
     }
 
     // 右ハンドルのドラッグ終了
-    onHandleRightDragEnd(event) {
+    onHandleRightDragEnd(event: DragEvent) {
         this.#alignHandleFlag = false;
         this.onDragEnd();
     }
@@ -452,8 +561,20 @@ class BezierHandles extends Handles {
 }
 
 // ハンドル (振動)
-class ElasticHandles extends Handles {
-    constructor(curve, g, scaleX, scaleY) {
+export class ElasticHandles extends Handles {
+    handleAmpLeft;
+    handleAmpRight;
+    handleFreqDecayRoot;
+    handleFreqDecay;
+    handleLineAmp;
+    handleLineFreqDecay;
+
+    constructor(
+        curve: ElasticCurve,
+        g: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
+        scaleX: d3.ScaleLinear<number, number>,
+        scaleY: d3.ScaleLinear<number, number>
+    ) {
         super(curve, g, scaleX, scaleY);
         this.handleAmpLeft = g.append('circle')
             .attr('cx', scaleX(curve.getHandleAmpLeftX()))
@@ -489,134 +610,193 @@ class ElasticHandles extends Handles {
             .attr('y2', scaleY(curve.getHandleFreqDecayY()))
             .attr('class', 'handle-line');
         this.handleAmpLeft.call(
-            d3.drag()
+            d3.drag<SVGCircleElement, unknown>()
                 .on('drag', this.onHandleAmpLeftDrag.bind(this))
                 .on('end', this.onDragEnd.bind(this))
         );
         this.handleAmpRight.call(
-            d3.drag()
+            d3.drag<SVGCircleElement, unknown>()
                 .on('drag', this.onHandleAmpRightDrag.bind(this))
                 .on('end', this.onDragEnd.bind(this))
         );
         this.handleFreqDecay.call(
-            d3.drag()
+            d3.drag<SVGCircleElement, unknown>()
                 .on('drag', this.onHandleFreqDecayDrag.bind(this))
                 .on('end', this.onDragEnd.bind(this))
         );
     }
 
-    rescaleX(scaleX, transition = null) {
+    rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleX(scaleX, transition);
-        const ampLeftX = this.scaleX(this.curve.getHandleAmpLeftX());
-        const ampRightX = this.scaleX(this.curve.getHandleAmpRightX());
-        const freqDecayX = this.scaleX(this.curve.getHandleFreqDecayX());
-        (transition ? this.handleAmpLeft.transition(transition) : this.handleAmpLeft)
-            .attr('cx', ampLeftX);
-        (transition ? this.handleAmpRight.transition(transition) : this.handleAmpRight)
-            .attr('cx', ampRightX);
-        (transition ? this.handleFreqDecay.transition(transition) : this.handleFreqDecay)
-            .attr('cx', freqDecayX);
-        (transition ? this.handleFreqDecayRoot.transition(transition) : this.handleFreqDecayRoot)
-            .attr('x', freqDecayX - this.anchorRadius);
-        (transition ? this.handleLineAmp.transition(transition) : this.handleLineAmp)
-            .attr('x1', ampLeftX)
-            .attr('x2', ampRightX);
-        (transition ? this.handleLineFreqDecay.transition(transition) : this.handleLineFreqDecay)
-            .attr('x1', freqDecayX)
-            .attr('x2', freqDecayX);
+        const ampLeftX = this.scaleX((this.curve as ElasticCurve).getHandleAmpLeftX());
+        const ampRightX = this.scaleX((this.curve as ElasticCurve).getHandleAmpRightX());
+        const freqDecayX = this.scaleX((this.curve as ElasticCurve).getHandleFreqDecayX());
+        if (transition) {
+            this.handleAmpLeft.transition(transition)
+                .attr('cx', ampLeftX);
+            this.handleAmpRight.transition(transition)
+                .attr('cx', ampRightX);
+            this.handleFreqDecay.transition(transition)
+                .attr('cx', freqDecayX);
+            this.handleFreqDecayRoot.transition(transition)
+                .attr('x', freqDecayX - this.anchorRadius);
+            this.handleLineAmp.transition(transition)
+                .attr('x1', ampLeftX)
+                .attr('x2', ampRightX);
+            this.handleLineFreqDecay.transition(transition)
+                .attr('x1', freqDecayX)
+                .attr('x2', freqDecayX);
+        } else {
+            this.handleAmpLeft
+                .attr('cx', ampLeftX);
+            this.handleAmpRight
+                .attr('cx', ampRightX);
+            this.handleFreqDecay
+                .attr('cx', freqDecayX);
+            this.handleFreqDecayRoot
+                .attr('x', freqDecayX - this.anchorRadius);
+            this.handleLineAmp
+                .attr('x1', ampLeftX)
+                .attr('x2', ampRightX);
+            this.handleLineFreqDecay
+                .attr('x1', freqDecayX)
+                .attr('x2', freqDecayX);
+        }
     }
 
-    rescaleY(scaleY, transition = null) {
+    rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleY(scaleY, transition);
-        const ampY = this.scaleY(this.curve.getHandleAmpLeftY());
-        const freqDecayY = this.scaleY(this.curve.getHandleFreqDecayY());
-        const freqDecayRootY = this.scaleY(this.curve.getHandleFreqDecayRootY());
-        (transition ? this.handleAmpLeft.transition(transition) : this.handleAmpLeft)
-            .attr('cy', ampY);
-        (transition ? this.handleAmpRight.transition(transition) : this.handleAmpRight)
-            .attr('cy', ampY);
-        (transition ? this.handleFreqDecay.transition(transition) : this.handleFreqDecay)
-            .attr('cy', freqDecayY);
-        (transition ? this.handleFreqDecayRoot.transition(transition) : this.handleFreqDecayRoot)
-            .attr('y', freqDecayRootY - this.anchorRadius);
-        (transition ? this.handleLineAmp.transition(transition) : this.handleLineAmp)
-            .attr('y1', ampY)
-            .attr('y2', ampY);
-        (transition ? this.handleLineFreqDecay.transition(transition) : this.handleLineFreqDecay)
-            .attr('y1', freqDecayRootY)
-            .attr('y2', freqDecayY);
+        const ampY = this.scaleY((this.curve as ElasticCurve).getHandleAmpLeftY());
+        const freqDecayY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayY());
+        const freqDecayRootY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayRootY());
+        if (transition) {
+            this.handleAmpLeft.transition(transition)
+                .attr('cy', ampY);
+            this.handleAmpRight.transition(transition)
+                .attr('cy', ampY);
+            this.handleFreqDecay.transition(transition)
+                .attr('cy', freqDecayY);
+            this.handleFreqDecayRoot.transition(transition)
+                .attr('y', freqDecayRootY - this.anchorRadius);
+            this.handleLineAmp.transition(transition)
+                .attr('y1', ampY)
+                .attr('y2', ampY);
+            this.handleLineFreqDecay.transition(transition)
+                .attr('y1', freqDecayRootY)
+                .attr('y2', freqDecayY);
+        } else {
+            this.handleAmpLeft
+                .attr('cy', ampY);
+            this.handleAmpRight
+                .attr('cy', ampY);
+            this.handleFreqDecay
+                .attr('cy', freqDecayY);
+            this.handleFreqDecayRoot
+                .attr('y', freqDecayRootY - this.anchorRadius);
+            this.handleLineAmp
+                .attr('y1', ampY)
+                .attr('y2', ampY);
+            this.handleLineFreqDecay
+                .attr('y1', freqDecayRootY)
+                .attr('y2', freqDecayY);
+        }
     }
 
-    updateHandles(transition = null) {
+    updateHandles(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.updateHandles(transition);
-        const ampLeftX = this.scaleX(this.curve.getHandleAmpLeftX());
-        const ampRightX = this.scaleX(this.curve.getHandleAmpRightX());
-        const ampY = this.scaleY(this.curve.getHandleAmpLeftY());
-        const freqDecayX = this.scaleX(this.curve.getHandleFreqDecayX());
-        const freqDecayY = this.scaleY(this.curve.getHandleFreqDecayY());
-        const freqDecayRootY = this.scaleY(this.curve.getHandleFreqDecayRootY());
-        (transition ? this.handleAmpLeft.transition(transition) : this.handleAmpLeft)
-            .attr('cx', ampLeftX)
-            .attr('cy', ampY);
-        (transition ? this.handleAmpRight.transition(transition) : this.handleAmpRight)
-            .attr('cx', ampRightX)
-            .attr('cy', ampY);
-        (transition ? this.handleFreqDecay.transition(transition) : this.handleFreqDecay)
-            .attr('cx', freqDecayX)
-            .attr('cy', freqDecayY);
-        (transition ? this.handleFreqDecayRoot.transition(transition) : this.handleFreqDecayRoot)
-            .attr('x', freqDecayX - this.anchorRadius)
-            .attr('y', freqDecayRootY - this.anchorRadius);
-        (transition ? this.handleLineAmp.transition(transition) : this.handleLineAmp)
-            .attr('x1', ampLeftX)
-            .attr('y1', ampY)
-            .attr('x2', ampRightX)
-            .attr('y2', ampY);
-        (transition ? this.handleLineFreqDecay.transition(transition) : this.handleLineFreqDecay)
-            .attr('x1', freqDecayX)
-            .attr('y1', freqDecayRootY)
-            .attr('x2', freqDecayX)
-            .attr('y2', freqDecayY);
+        const ampLeftX = this.scaleX((this.curve as ElasticCurve).getHandleAmpLeftX());
+        const ampRightX = this.scaleX((this.curve as ElasticCurve).getHandleAmpRightX());
+        const ampY = this.scaleY((this.curve as ElasticCurve).getHandleAmpLeftY());
+        const freqDecayX = this.scaleX((this.curve as ElasticCurve).getHandleFreqDecayX());
+        const freqDecayY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayY());
+        const freqDecayRootY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayRootY());
+        if (transition) {
+            this.handleAmpLeft.transition(transition)
+                .attr('cx', ampLeftX)
+                .attr('cy', ampY);
+            this.handleAmpRight.transition(transition)
+                .attr('cx', ampRightX)
+                .attr('cy', ampY);
+            this.handleFreqDecay.transition(transition)
+                .attr('cx', freqDecayX)
+                .attr('cy', freqDecayY);
+            this.handleFreqDecayRoot.transition(transition)
+                .attr('x', freqDecayX - this.anchorRadius)
+                .attr('y', freqDecayRootY - this.anchorRadius);
+            this.handleLineAmp.transition(transition)
+                .attr('x1', ampLeftX)
+                .attr('y1', ampY)
+                .attr('x2', ampRightX)
+                .attr('y2', ampY);
+            this.handleLineFreqDecay.transition(transition)
+                .attr('x1', freqDecayX)
+                .attr('y1', freqDecayRootY)
+                .attr('x2', freqDecayX)
+                .attr('y2', freqDecayY);
+        } else {
+            this.handleAmpLeft
+                .attr('cx', ampLeftX)
+                .attr('cy', ampY);
+            this.handleAmpRight
+                .attr('cx', ampRightX)
+                .attr('cy', ampY);
+            this.handleFreqDecay
+                .attr('cx', freqDecayX)
+                .attr('cy', freqDecayY);
+            this.handleFreqDecayRoot
+                .attr('x', freqDecayX - this.anchorRadius)
+                .attr('y', freqDecayRootY - this.anchorRadius);
+            this.handleLineAmp
+                .attr('x1', ampLeftX)
+                .attr('y1', ampY)
+                .attr('x2', ampRightX)
+                .attr('y2', ampY);
+            this.handleLineFreqDecay
+                .attr('x1', freqDecayX)
+                .attr('y1', freqDecayRootY)
+                .attr('x2', freqDecayX)
+                .attr('y2', freqDecayY);
+        }
     }
 
-    onAnchorStartDrag(event, bound = false) {
+    onAnchorStartDrag(event: DragEvent, bound = false) {
         super.onAnchorStartDrag(event, bound);
         this.update();
     }
 
-    onAnchorEndDrag(event, bound = false) {
+    onAnchorEndDrag(event: DragEvent, bound = false) {
         super.onAnchorEndDrag(event, bound);
         this.update();
     }
 
-    onHandleAmpLeftDrag(event) {
+    onHandleAmpLeftDrag(event: DragEvent) {
         const y = this.scaleY.invert(event.y);
-        this.curve.setHandleAmpLeft(y);
-        const newX = this.curve.getHandleAmpLeftX();
-        const newY = this.curve.getHandleAmpLeftY();
+        (this.curve as ElasticCurve).setHandleAmpLeft(y);
+        const newX = (this.curve as ElasticCurve).getHandleAmpLeftX();
+        const newY = (this.curve as ElasticCurve).getHandleAmpLeftY();
         this.handleAmpLeft
             .attr('cx', this.scaleX(newX))
             .attr('cy', this.scaleY(newY));
         this.update();
     }
 
-    onHandleAmpRightDrag(event) {
+    onHandleAmpRightDrag(event: DragEvent) {
         const y = this.scaleY.invert(event.y);
-        this.curve.setHandleAmpRight(y);
-        const newX = this.curve.getHandleAmpRightX();
-        const newY = this.curve.getHandleAmpRightY();
+        (this.curve as ElasticCurve).setHandleAmpRight(y);
+        const newX = (this.curve as ElasticCurve).getHandleAmpRightX();
+        const newY = (this.curve as ElasticCurve).getHandleAmpRightY();
         this.handleAmpRight
             .attr('cx', this.scaleX(newX))
             .attr('cy', this.scaleY(newY));
         this.update();
     }
 
-    onHandleFreqDecayDrag(event) {
+    onHandleFreqDecayDrag(event: DragEvent) {
         const x = this.scaleX.invert(event.x);
         const y = this.scaleY.invert(event.y);
-        this.curve.setHandleFreqDecay(x, y);
-        const newX = this.curve.getHandleFreqDecayX();
-        const newY = this.curve.getHandleFreqDecayY();
+        (this.curve as ElasticCurve).setHandleFreqDecay(x, y);
+        const newX = (this.curve as ElasticCurve).getHandleFreqDecayX();
+        const newY = (this.curve as ElasticCurve).getHandleFreqDecayY();
         this.handleFreqDecay
             .attr('cx', this.scaleX(newX))
             .attr('cy', this.scaleY(newY));
@@ -636,9 +816,16 @@ class ElasticHandles extends Handles {
 }
 
 // ハンドル (バウンス)
-class BounceHandles extends Handles {
+export class BounceHandles extends Handles {
+    handle;
+
     // コンストラクタ
-    constructor(curve, g, scaleX, scaleY) {
+    constructor(
+        curve: BounceCurve,
+        g: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
+        scaleX: d3.ScaleLinear<number, number>,
+        scaleY: d3.ScaleLinear<number, number>
+    ) {
         super(curve, g, scaleX, scaleY);
         this.handle = g.append('circle')
             .attr('cx', scaleX(curve.getHandleX()))
@@ -646,49 +833,55 @@ class BounceHandles extends Handles {
             .attr('r', this.handleRadius)
             .attr('class', 'handle');
         this.handle.call(
-            d3.drag()
+            d3.drag<SVGCircleElement, unknown>()
                 .on('drag', this.onHandleDrag.bind(this))
                 .on('end', this.onDragEnd.bind(this))
         );
     }
 
-    rescaleX(scaleX, transition = null) {
+    rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleX(scaleX, transition);
-        const x = this.scaleX(this.curve.getHandleX());
+        const x = this.scaleX((this.curve as BounceCurve).getHandleX());
         (transition ? this.handle.transition(transition) : this.handle)
             .attr('cx', x);
     }
 
-    rescaleY(scaleY, transition = null) {
+    rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleY(scaleY, transition);
-        const y = this.scaleY(this.curve.getHandleY());
+        const y = this.scaleY((this.curve as BounceCurve).getHandleY());
         (transition ? this.handle.transition(transition) : this.handle)
             .attr('cy', y);
     }
 
-    updateHandles(transition = null) {
+    updateHandles(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.updateHandles(transition);
-        (transition ? this.handle.transition(transition) : this.handle)
-            .attr('cx', this.scaleX(this.curve.getHandleX()))
-            .attr('cy', this.scaleY(this.curve.getHandleY()));
+        if (transition) {
+            this.handle.transition(transition)
+                .attr('cx', this.scaleX((this.curve as BounceCurve).getHandleX()))
+                .attr('cy', this.scaleY((this.curve as BounceCurve).getHandleY()));
+        } else {
+            this.handle
+                .attr('cx', this.scaleX((this.curve as BounceCurve).getHandleX()))
+                .attr('cy', this.scaleY((this.curve as BounceCurve).getHandleY()));
+        }
     }
 
-    onAnchorStartDrag(event, bound = false) {
+    onAnchorStartDrag(event: DragEvent, bound = false) {
         super.onAnchorStartDrag(event, bound);
         this.update();
     }
 
-    onAnchorEndDrag(event, bound = false) {
+    onAnchorEndDrag(event: DragEvent, bound = false) {
         super.onAnchorEndDrag(event, bound);
         this.update();
     }
 
-    onHandleDrag(event) {
+    onHandleDrag(event: DragEvent) {
         const x = this.scaleX.invert(event.x);
         const y = this.scaleY.invert(event.y);
-        this.curve.setHandle(x, y);
-        const newX = this.curve.getHandleX();
-        const newY = this.curve.getHandleY();
+        (this.curve as BounceCurve).setHandle(x, y);
+        const newX = (this.curve as BounceCurve).getHandleX();
+        const newY = (this.curve as BounceCurve).getHandleY();
         this.handle
             .attr('cx', this.scaleX(newX))
             .attr('cy', this.scaleY(newY));
@@ -703,21 +896,27 @@ class BounceHandles extends Handles {
 }
 
 class LinearHandles extends Handles {
-    onAnchorStartDrag(event, bound = false) {
+    onAnchorStartDrag(event: DragEvent, bound = false) {
         super.onAnchorStartDrag(event, bound);
         this.update();
     }
 
-    onAnchorEndDrag(event, bound = false) {
+    onAnchorEndDrag(event: DragEvent, bound = false) {
         super.onAnchorEndDrag(event, bound);
         this.update();
     }
 }
 
 // ハンドル (標準)
-class NormalHandles extends Handles {
+export class NormalHandles extends Handles {
+    segmentHandlesArray;
     // コンストラクタ
-    constructor(curve, g, scaleX, scaleY) {
+    constructor(
+        curve: NormalCurve,
+        g: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
+        scaleX: d3.ScaleLinear<number, number>,
+        scaleY: d3.ScaleLinear<number, number>
+    ) {
         super(curve, g, scaleX, scaleY);
         const segments = curve.getSegments();
         this.segmentHandlesArray = Array(segments.length).fill(null);
@@ -741,7 +940,7 @@ class NormalHandles extends Handles {
             this.segmentHandlesArray[i].setNextHandleFunc(nextHandleFunc);
         }
         for (let i = 0; i < segments.length; i++) {
-            this.segmentHandlesArray[i].anchorStart.on('dblclick', event => {
+            this.segmentHandlesArray[i].anchorStart.on('dblclick', (event: MouseEvent) => {
                 event.stopPropagation();
                 graphEditor.normal.deleteCurve(curve.id, this.segmentHandlesArray[i].curve.id);
                 this.segmentHandlesArray[i].remove();
@@ -753,21 +952,21 @@ class NormalHandles extends Handles {
         }
     }
 
-    rescaleX(scaleX, transition = null) {
+    rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleX(scaleX, transition);
         this.segmentHandlesArray.forEach((handle) => {
             handle.rescaleX(scaleX, transition);
         });
     }
 
-    rescaleY(scaleY, transition = null) {
+    rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleY(scaleY, transition);
         this.segmentHandlesArray.forEach((handle) => {
             handle.rescaleY(scaleY, transition);
         });
     }
 
-    updateHandles(transition = null) {
+    updateHandles(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.updateHandles(transition);
         this.segmentHandlesArray.forEach((handle) => {
             handle.updateHandles(transition);
@@ -784,7 +983,12 @@ class NormalHandles extends Handles {
 }
 
 // ハンドルを作成
-function createHandles(curve, g, scaleX, scaleY) {
+export function createHandles(
+    curve: BezierCurve | ElasticCurve | BounceCurve | LinearCurve | NormalCurve,
+    g: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>,
+    scaleX: d3.ScaleLinear<number, number>,
+    scaleY: d3.ScaleLinear<number, number>
+) {
     if (curve instanceof BezierCurve) {
         return new BezierHandles(curve, g, scaleX, scaleY);
     }
@@ -799,5 +1003,8 @@ function createHandles(curve, g, scaleX, scaleY) {
     }
     else if (curve instanceof NormalCurve) {
         return new NormalHandles(curve, g, scaleX, scaleY);
+    }
+    else {
+        return null;
     }
 }

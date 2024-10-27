@@ -137,10 +137,16 @@ xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"</Command>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y "$(ProjectDir)curve_editor.lua" "$(OutDir)"
+
 xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"
+
 rd /s /q "$(OutDir)ui"
-xcopy /s /y /i "$(ProjectDir)ui" "$(OutDir)ui"
-node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
+rd /s /q "$(ProjectDir)ui\dist\js"
+cd "$(ProjectDir)ui"
+call npx webpack --mode production
+cd $(SolutionDir)
+xcopy /s /y /i "$(ProjectDir)ui\dist\js" "$(OutDir)ui\js"
+xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>
@@ -300,6 +306,7 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <ClCompile Include="host_object_config.cpp" />
     <ClCompile Include="host_object_curve_normal.cpp" />
     <ClCompile Include="host_object_curve_graph_numeric.cpp" />
+    <ClCompile Include="host_object_editor_script.cpp" />
     <ClCompile Include="modifier_base.cpp" />
     <ClCompile Include="modifier_discretization.cpp" />
     <ClCompile Include="drag_and_drop.cpp" />
@@ -398,30 +405,28 @@ node "$(ProjectDir)minify.js" "$(OutDir)ui"</Command>
     <None Include="minify.js" />
     <None Include="packages.config" />
     <None Include="resources\cursor\drag.cur" />
-    <None Include="ui\css\editor_graph.css" />
-    <None Include="ui\css\editor_text.css" />
-    <None Include="ui\css\panel_editor.css" />
-    <None Include="ui\css\panel_main.css" />
-    <None Include="ui\css\preset.css" />
-    <None Include="ui\css\select_dialog.css" />
-    <None Include="ui\css\toolbar.css" />
-    <None Include="ui\css\variables.css" />
-    <None Include="ui\editor_graph.html" />
-    <None Include="ui\editor_text.html" />
-    <None Include="ui\js\curve.js" />
-    <None Include="ui\js\editor_graph.js" />
-    <None Include="ui\js\editor_text.js" />
-    <None Include="ui\js\handles.js" />
-    <None Include="ui\js\panel_editor.js" />
-    <None Include="ui\js\panel_main.js" />
-    <None Include="ui\js\preset.js" />
-    <None Include="ui\js\select_dialog.js" />
-    <None Include="ui\js\toolbar.js" />
-    <None Include="ui\panel_editor.html" />
-    <None Include="ui\panel_main.html" />
-    <None Include="ui\preset.html" />
-    <None Include="ui\select_dialog.html" />
-    <None Include="ui\toolbar.html" />
+    <None Include="ui\src\button.tsx" />
+    <None Include="ui\src\curve.ts" />
+    <None Include="ui\src\editor_graph.tsx" />
+    <None Include="ui\src\editor_text.tsx" />
+    <None Include="ui\src\handles.ts" />
+    <None Include="ui\src\host_object.ts" />
+    <None Include="ui\src\index.tsx" />
+    <None Include="ui\src\panel_editor.tsx" />
+    <None Include="ui\src\panel_main.tsx" />
+    <None Include="ui\src\preset.tsx" />
+    <None Include="ui\src\scss\button.scss" />
+    <None Include="ui\src\scss\common.scss" />
+    <None Include="ui\src\scss\editor_graph.scss" />
+    <None Include="ui\src\scss\editor_text.scss" />
+    <None Include="ui\src\scss\panel_editor.scss" />
+    <None Include="ui\src\scss\panel_main.scss" />
+    <None Include="ui\src\scss\preset.scss" />
+    <None Include="ui\src\scss\select_dialog.scss" />
+    <None Include="ui\src\scss\toolbar.scss" />
+    <None Include="ui\src\scss\variables.scss" />
+    <None Include="ui\src\select_dialog.tsx" />
+    <None Include="ui\src\toolbar.tsx" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc" />

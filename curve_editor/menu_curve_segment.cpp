@@ -115,7 +115,7 @@ namespace cved {
 				segment_id,
 				(CurveSegmentType)(id - (uint16_t)WindowCommand::CurveSegmentTypeLinear)
 			);
-			webview.post_message(L"editor-graph", L"updateHandles");
+			webview.post_message(L"updateHandles");
 			return true;
 		}
 
@@ -129,7 +129,7 @@ namespace cved {
 		case ID_CURVE_REVERSE:
 		{
 			curve->reverse_segment(segment_id);
-			webview.post_message(L"editor-graph", L"updateHandlePos");
+			webview.post_message(L"updateHandlePos");
 			break;
 		}
 
