@@ -55,10 +55,16 @@ const MainPanel: React.FC = () => {
     }
 
     const changeIdx = (idx: number) => {
-        setIdx(idx);
+        let newIdx = null;
         switch (editMode) {
             case 0:
-                graphEditor.normal.idx = idx;
+                if (graphEditor.normal.size <= idx) {
+                    graphEditor.normal.appendIdx();
+                    newIdx = graphEditor.normal.size - 1;
+                } else {
+                    newIdx = Math.max(idx, 0);
+                }
+                graphEditor.normal.idx = newIdx;
                 break;
 
             case 1:
@@ -66,8 +72,17 @@ const MainPanel: React.FC = () => {
                 break;
 
             case 5:
-                scriptEditor.idx = idx;
+                if (scriptEditor.size <= idx) {
+                    scriptEditor.appendIdx();
+                    newIdx = scriptEditor.size - 1;
+                } else {
+                    newIdx = Math.max(idx, 0);
+                }
+                scriptEditor.idx = newIdx;
                 break;
+        }
+        if (newIdx !== null) {
+            setIdx(newIdx);
         }
     }
 

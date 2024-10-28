@@ -19,9 +19,16 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
     console.log('debug');
 
     const changeIdx = (idx: number) => {
+        let newIdx = null;
         switch (editMode) {
             case 0:
-                setIdxNormal(idx);
+                if (graphEditor.normal.size <= idx) {
+                    graphEditor.normal.appendIdx();
+                    newIdx = graphEditor.normal.size - 1;
+                } else {
+                    newIdx = Math.max(idx, 0);
+                }
+                setIdxNormal(newIdx);
                 break;
 
             case 1:
@@ -29,7 +36,12 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
                 break;
 
             case 5:
-                setIdxScript(idx);
+                if (scriptEditor.size <= idx) {
+                    scriptEditor.appendIdx();
+                    newIdx = scriptEditor.size - 1;
+                } else {
+                    newIdx = Math.max(idx, 0);
+                }
                 break;
         }
     }

@@ -76,29 +76,25 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
     const intervalTime = 60;
 
     const isIdxFirst = () => {
-        return props.idx == 0;
+        return props.idx <= 0;
     }
 
     const isIdxLast = () => {
-        return props.idx == props.size - 1;
+        return props.size - 1 <= props.idx;
     }
 
     const goBack = () => {
-        if (!isIdxFirst()) {
-            props.setIdx(props.idx - 1);
-            window.postMessage({
-                command: 'changeCurve'
-            })
-        }
+        props.setIdx(props.idx - 1);
+        window.postMessage({
+            command: 'changeCurve'
+        })
     }
 
     const goForward = () => {
-        if (!isIdxLast()) {
-            props.setIdx(props.idx + 1);
-            window.postMessage({
-                command: 'changeCurve'
-            })
-        }
+        props.setIdx(props.idx + 1);
+        window.postMessage({
+            command: 'changeCurve'
+        })
     }
 
     const onBackButtonHoldStart = (event: React.MouseEvent) => {
