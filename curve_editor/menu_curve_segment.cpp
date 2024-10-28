@@ -40,7 +40,7 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_CURVE_TYPE, FALSE, &minfo_tmp);
 	}
 
-	void CurveSegmentMenu::update_state(uint32_t curve_id) noexcept {
+	void CurveSegmentMenu::update_state(uint32_t segment_id) noexcept {
 		constexpr size_t n_segment_types = (size_t)CurveSegmentType::NumCurveSegmentType;
 		// カーブセグメントの型情報(のポインタ)の配列
 		const std::type_info* p_segment_types[n_segment_types] = {
@@ -50,7 +50,7 @@ namespace cved {
 			&typeid(BounceCurve)
 		};
 
-		auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
+		auto curve = global::id_manager.get_curve<GraphCurve>(segment_id);
 		if (!curve) {
 			return;
 		}
@@ -71,13 +71,14 @@ namespace cved {
 		::SetMenuItemInfoA(menu_, ID_CURVE_PASTE, FALSE, &minfo_tmp);
 	}
 
-	HMENU CurveSegmentMenu::get_handle(uint32_t curve_id) noexcept {
-		update_state(curve_id);
+	HMENU CurveSegmentMenu::get_handle(uint32_t segment_id) noexcept {
+		update_state(segment_id);
 		return Menu::get_handle();
 	}
 
 	int CurveSegmentMenu::show(
 		uint32_t curve_id,
+		uint32_t segment_id,
 		const MyWebView2& webview,
 		HWND hwnd,
 		UINT flags,
@@ -88,7 +89,7 @@ namespace cved {
 		if (p_custom_pt_screen) {
 			tmp = p_custom_pt_screen->to<POINT>();
 		}
-		update_state(curve_id);
+		update_state(segment_id);
 		auto ret = ::TrackPopupMenu(
 			menu_,
 			flags | TPM_RETURNCMD | TPM_NONOTIFY,
@@ -96,20 +97,25 @@ namespace cved {
 			tmp.y,
 			0, hwnd, NULL
 		);
-		return callback(curve_id, webview, static_cast<uint16_t>(ret));
+		return callback(curve_id, segment_id, webview, static_cast<uint16_t>(ret));
 	}
 
-	bool CurveSegmentMenu::callback(uint32_t curve_id, const MyWebView2& webview, uint16_t id) noexcept {
+	bool CurveSegmentMenu::callback(uint32_t curve_id, uint32_t segment_id, const MyWebView2& webview, uint16_t id) noexcept {
+		auto curve = global::id_manager.get_curve<NormalCurve>(curve_id);
+		if (!curve) {
+			return false;
+		}
+
 		if (mkaul::in_range(
 			id,
 			(uint16_t)WindowCommand::CurveSegmentTypeLinear,
 			(uint16_t)WindowCommand::CurveSegmentTypeLinear + (uint16_t)CurveSegmentType::NumCurveSegmentType - 1u
 		)) {
-			global::editor.editor_graph().curve_normal()->replace_curve(
-				curve_id,
+			curve->replace_curve(
+				segment_id,
 				(CurveSegmentType)(id - (uint16_t)WindowCommand::CurveSegmentTypeLinear)
 			);
-			webview.post_message(L"editor-graph", L"updateHandles");
+			webview.post_message(L"updateHandles");
 			return true;
 		}
 
@@ -122,21 +128,15 @@ namespace cved {
 
 		case ID_CURVE_REVERSE:
 		{
-			auto p_curve_normal = global::editor.editor_graph().curve_normal();
-			if (p_curve_normal) {
-				p_curve_normal->reverse_segment(curve_id);
-				webview.post_message(L"editor-graph", L"updateHandlePos");
-			}
+			curve->reverse_segment(segment_id);
+			webview.post_message(L"updateHandlePos");
 			break;
 		}
 
 		case ID_CURVE_MODIFIER:
 		{
-			auto p_curve_normal = global::editor.editor_graph().curve_normal();
-			if (p_curve_normal) {
-				ModifierDialog dialog;
-				dialog.show(webview.get_hwnd(), static_cast<LPARAM>(curve_id));
-			}
+			ModifierDialog dialog;
+			dialog.show(webview.get_hwnd(), static_cast<LPARAM>(segment_id));
 			break;
 		}
 

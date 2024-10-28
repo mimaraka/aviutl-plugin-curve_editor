@@ -4,7 +4,6 @@
 #include "dialog_id_jumpto.hpp"
 #include "global.hpp"
 #include "host_object_config.hpp"
-#include "host_object_editor.hpp"
 #include "host_object_editor_graph.hpp"
 #include "host_object_editor_script.hpp"
 #include "menu_curve_segment.hpp"
@@ -93,7 +92,6 @@ namespace cved {
 								add_host_object<GraphEditorHostObject>(L"graphEditor");
 								add_host_object<ScriptEditorHostObject>(L"scriptEditor");
 								add_host_object<ConfigHostObject>(L"config");
-								add_host_object<EditorHostObject>(L"editor");
 								after_callback(this);
 								return S_OK;
 							}
@@ -117,7 +115,7 @@ namespace cved {
 		}
 	}
 
-	void MyWebView2::navigate(const std::wstring& html_name, std::function<void(MyWebView2*)> after_callback) {
+	void MyWebView2::navigate(std::function<void(MyWebView2*)> after_callback) {
 		using StringId = global::StringTable::StringId;
 		if (is_ready_) {
 			webview_->add_NavigationCompleted(
@@ -136,15 +134,7 @@ namespace cved {
 					}
 				).Get(), nullptr
 			);
-
-			std::filesystem::path ce_dir;
-#ifdef _DEBUG
-			std::filesystem::path this_path = __FILE__;
-			ce_dir = this_path.parent_path();
-#else
-			ce_dir = global::config.get_dir_plugin();
-#endif
-			webview_->Navigate(std::format(L"{}\\ui\\{}.html", ce_dir.wstring(), html_name).c_str());
+			webview_->Navigate(std::format(L"{}\\ui\\index.html", global::config.get_dir_plugin().wstring()).c_str());
 		}
 	}
 
@@ -152,12 +142,6 @@ namespace cved {
 		if (is_ready_) {
 			webview_->Reload();
 		}
-	}
-
-	void MyWebView2::execute_script(const std::wstring& script) {
-		if (is_ready_) {
-			webview_->ExecuteScript(script.c_str(), nullptr);
-		}	
 	}
 
 	void MyWebView2::put_bounds(const mkaul::WindowRectangle& bounds) {
@@ -172,7 +156,7 @@ namespace cved {
 		}
 	}
 
-	void MyWebView2::post_message(const std::wstring& to, const std::wstring& command, const nlohmann::json& options) const noexcept {
+	void MyWebView2::post_message(const std::wstring& command, const nlohmann::json& options) const noexcept {
 		if (!is_ready_) {
 			return;
 		}
@@ -183,7 +167,7 @@ namespace cved {
 			options_str.replace(0, 1, L",");
 		}
 		webview_->PostWebMessageAsJson(
-			std::format(L"{{\"to\":\"{}\",\"command\":\"{}\"{}}}", to, command, options_str).c_str()
+			std::format(L"{{\"command\":\"{}\"{}}}", command, options_str).c_str()
 		);
 	}
 
@@ -254,7 +238,7 @@ namespace cved {
 					auto curve = global::editor.current_curve();
 					if (curve) {
 						curve->clear();
-						global::webview_main.post_message(L"editor-graph", L"updateHandles");
+						post_message(L"updateHandles");
 					}
 				}
 				return true;
@@ -278,47 +262,48 @@ namespace cved {
 				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::StartDnd, NULL);
 				return true;
 			}
+			else if (command == "drag-end") {
+				auto curve_id = message.at("curveId").get<uint32_t>();
+				auto curve_numeric = global::id_manager.get_curve<NumericGraphCurve>(curve_id);
+				if (curve_numeric) {
+					if (global::config.get_auto_copy()) {
+						auto code = std::to_string(curve_numeric->encode());
+						if (!util::copy_to_clipboard(hwnd_, code.c_str()) and global::config.get_show_popup()) {
+							my_messagebox(global::string_table[StringId::ErrorCodeCopyFailed], hwnd_, MessageBoxIcon::Error);
+						}
+					}
+				}
+				else {
+					if (global::config.get_auto_apply()) {
+						::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::RedrawAviutl, 0);
+					}
+				}
+				return true;
+			}
 			else if (command == "contextmenu-graph") {
 				auto mode = message.at("mode").get<EditMode>();
 				auto curve_id = message.at("curveId").get<uint32_t>();
 				GraphMenu menu{ global::fp->dll_hinst };
 				menu.show(mode, curve_id, *this, hwnd_);
+				return true;
 			}
 			else if (command == "contextmenu-curve-segment") {
-				auto id = message["curveId"].get<uint32_t>();
+				auto id = message.at("curveId").get<uint32_t>();
+				auto segment_id = message.at("segmentId").get<uint32_t>();
 				CurveSegmentMenu menu{ global::fp->dll_hinst };
-				menu.show(id, *this, hwnd_);
+				menu.show(id, segment_id, *this, hwnd_);
+				return true;
 			}
 			else if (command == "selectdlg-ok") {
 				auto mode = message.at("mode").get<EditMode>();
-				auto id_or_idx = message.at("idOrIdx").get<uint32_t>();
-				int param = 0;
-				std::pair<std::string, int> ret;
-
-				switch (mode) {
-				case EditMode::Normal:
-				case EditMode::Value:
-				case EditMode::Script:
-					param = (int)id_or_idx + 1;
-					break;
-
-				case EditMode::Bezier:
-				case EditMode::Elastic:
-				case EditMode::Bounce:
-				{
-					auto curve = global::id_manager.get_curve<NumericGraphCurve>(id_or_idx);
-					if (curve) {
-						param = curve->encode();
-					}
-					break;
-				}
-				}
-				ret = std::make_pair(global::editor.get_curve(mode)->get_type(), param);
-				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SetCurveInfo, std::bit_cast<LPARAM>(&ret));
-				::DestroyWindow(hwnd_);
+				auto param = message.at("param").get<int32_t>();
+				std::pair<std::string, int> ret = std::make_pair(global::editor.get_curve(mode)->get_type(), param);
+				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveOk, std::bit_cast<LPARAM>(&ret));
+				return true;
 			}
 			else if (command == "selectdlg-cancel") {
-				::DestroyWindow(hwnd_);
+				::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveCancel, 0);
+				return true;
 			}
 		}
 		catch (const nlohmann::json::exception&) {}

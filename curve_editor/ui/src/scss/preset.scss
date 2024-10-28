@@ -1,0 +1,78 @@
+@import url('./toolbar.scss');
+
+:root {
+    --color-content-searchbar: rgb(70, 70, 70);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-content-searchbar: rgb(180, 180, 180);
+    }
+}
+
+.preset-container {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - var(--margin) * 2);
+    height: calc(100% - var(--margin) * 2);
+    margin: var(--margin);
+    background-color: var(--color-bg);
+    overflow: hidden;
+}
+
+#searchbar {
+    width: 100%;
+    height: calc(var(--searchbar-height) - var(--margin) * 4);
+    margin: calc(var(--margin) * 2);
+    background-color: var(--color-bg-editbox);
+    color: var(--color-content-searchbar);
+    border: none;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 20px;
+    padding-left: 32px;
+    box-sizing: border-box;
+}
+
+.searchbar-container {
+    position: relative;
+    width: calc(70% - var(--margin) * 2);
+}
+
+.searchbar-icon {
+    position: absolute;
+    color: var(--color-content-searchbar);
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#searchbar:focus {
+    outline: none;
+}
+
+.menu-row {
+    height: 32px;
+    margin: var(--margin);
+}
+
+#collection-container {
+    width: calc(50% - var(--margin));
+    height: 100%;
+}
+
+.index-buttons {
+    display: flex;
+    flex-direction: row;
+    width: 30%;
+    margin-left: calc(var(--margin) * 2);
+}
+
+.collection-buttons {
+    display: flex;
+    flex-direction: row;
+    width: calc(50% - var(--margin));
+    margin-left: calc(var(--margin) * 2);
+}

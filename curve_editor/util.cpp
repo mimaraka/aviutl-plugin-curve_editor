@@ -15,7 +15,9 @@ namespace cved {
 			LPTSTR buffer = nullptr;
 			bool ret = false;
 
-			if (!::OpenClipboard(hwnd)) return false;
+			if (!::OpenClipboard(hwnd)) {
+				return false;
+			}
 
 			// クリップボードを空にする
 			::EmptyClipboard();
@@ -24,7 +26,7 @@ namespace cved {
 
 			if (memory) {
 				// メモリブロックへのアクセスを開始
-				buffer = (LPTSTR)::GlobalLock(memory);
+				buffer = static_cast<LPTSTR>(::GlobalLock(memory));
 				if (buffer) {
 					// 文字列をコピー
 					::lstrcpyA(buffer, str);

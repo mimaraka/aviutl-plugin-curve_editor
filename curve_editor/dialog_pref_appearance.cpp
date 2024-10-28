@@ -1,7 +1,7 @@
 #include "config.hpp"
 #include "dialog_pref_appearance.hpp"
 #include "enum.hpp"
-#include "global.hpp"
+#include "my_webview2_reference.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 #include <Commctrl.h>
@@ -171,7 +171,7 @@ namespace cved {
 					::GetWindowTextA(hwnd_edit_bg_image_path_, buffer, MAX_PATH);
 					global::config.set_bg_image_path(std::filesystem::path(buffer));
 				}
-				global::webview_main.update_color_scheme();
+				if (global::webview) global::webview->update_color_scheme();
 				return TRUE;
 
 			case IDC_BUTTON_CURVE_COLOR:

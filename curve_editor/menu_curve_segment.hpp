@@ -9,15 +9,16 @@
 namespace cved {
 	class CurveSegmentMenu : public Menu {
 		HMENU submenu_segment_type_;
-		void update_state(uint32_t curve_id) noexcept;
-		bool callback(uint32_t curve_id, const MyWebView2& webview, uint16_t id) noexcept;
+		void update_state(uint32_t segment_id) noexcept;
+		bool callback(uint32_t curve_id, uint32_t segment_id, const MyWebView2& webview, uint16_t id) noexcept;
 
 	public:
 		CurveSegmentMenu(HINSTANCE hinst);
 
-		HMENU get_handle(uint32_t curve_id) noexcept;
+		HMENU get_handle(uint32_t segment_id) noexcept;
 		int show(
 			uint32_t curve_id,
+			uint32_t segment_id,
 			const MyWebView2& webview,
 			HWND hwnd,
 			UINT flags = NULL,

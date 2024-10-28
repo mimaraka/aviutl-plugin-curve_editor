@@ -1,5 +1,5 @@
 #include "dialog_modifier_noise.hpp"
-#include "global.hpp"
+#include "my_webview2_reference.hpp"
 #include "resource.h"
 #include <Commctrl.h>
 
@@ -66,7 +66,7 @@ namespace cved {
 					p_mod_noise->set_amplitude(value);
 				}
 				::SetWindowTextA(hwnd_static_amplitude_, std::format("{:.2f}", value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"updateCurvePath");
 			}
 			else if (lparam == (LPARAM)hwnd_slider_frequency_) {
 				double value = static_cast<double>(::SendMessageA(hwnd_slider_frequency_, TBM_GETPOS, NULL, NULL)) * 0.1;
@@ -75,7 +75,7 @@ namespace cved {
 					p_mod_noise->update();
 				}
 				::SetWindowTextA(hwnd_static_frequency_, std::format("{:.1f}", value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"updateCurvePath");
 			}
 			else if (lparam == (LPARAM)hwnd_slider_phase_) {
 				double value = static_cast<double>(::SendMessageA(hwnd_slider_phase_, TBM_GETPOS, NULL, NULL) - 1000) * 0.01;
@@ -83,7 +83,7 @@ namespace cved {
 					p_mod_noise->set_phase(value);
 				}
 				::SetWindowTextA(hwnd_static_phase_, std::format("{:.2f}", value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"updateCurvePath");
 			}
 			else if (lparam == (LPARAM)hwnd_slider_octaves_) {
 				int32_t value = ::SendMessageA(hwnd_slider_octaves_, TBM_GETPOS, NULL, NULL);
@@ -92,7 +92,7 @@ namespace cved {
 					p_mod_noise->update();
 				}
 				::SetWindowTextA(hwnd_static_octaves_, std::to_string(value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"updateCurvePath");
 			}
 			else if (lparam == (LPARAM)hwnd_slider_decay_sharpness_) {
 				double value = static_cast<double>(::SendMessageA(hwnd_slider_decay_sharpness_, TBM_GETPOS, NULL, NULL)) * 0.1;
@@ -100,7 +100,7 @@ namespace cved {
 					p_mod_noise->set_decay_sharpness(value);
 				}
 				::SetWindowTextA(hwnd_static_decay_sharpness_, std::format("{:.1f}", value).c_str());
-				global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+				if (global::webview) global::webview->post_message(L"updateCurvePath");
 			}
 			return TRUE;
 
@@ -109,7 +109,7 @@ namespace cved {
 			case IDCANCEL:
 				if (p_mod_noise) {
 					*p_mod_noise = mod_noise_prev;
-					global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+					if (global::webview) global::webview->post_message(L"updateCurvePath");
 				}
 				[[fallthrough]];
 			case IDOK:
@@ -129,7 +129,7 @@ namespace cved {
 						catch (std::invalid_argument&) {}
 						catch (std::out_of_range&) {}
 					}
-					global::webview_main.post_message(L"editor-graph", L"updateCurvePath");
+					if (global::webview) global::webview->post_message(L"updateCurvePath");
 				}
 				return TRUE;
 			}

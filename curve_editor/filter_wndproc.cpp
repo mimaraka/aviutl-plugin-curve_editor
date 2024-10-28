@@ -5,9 +5,9 @@
 #include "drag_and_drop.hpp"
 #include "exedit_hook.hpp"
 #include "filter_wndproc.hpp"
-#include "global.hpp"
 #include "my_messagebox.hpp"
 #include "my_webview2.hpp"
+#include "my_webview2_reference.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 #include <nlohmann/json.hpp>
@@ -20,6 +20,7 @@ namespace cved {
 		using WindowMessage = AviUtl::FilterPlugin::WindowMessage;
 		using StringId = global::StringTable::StringId;
 
+		static MyWebView2 my_webview;
 		static ActCtxHelper actctx_helper;
 		static DragAndDrop dnd;
 		static bool init = false;
@@ -47,12 +48,15 @@ namespace cved {
 				actctx_helper.init(fp->dll_hinst);
 				dnd.init();
 				init = true;
-				global::webview_main.init(hwnd, [](MyWebView2* this_) {
+				my_webview.init(hwnd, [](MyWebView2* this_) {
 					mkaul::WindowRectangle bounds;
 					bounds.from_client_rect(this_->get_hwnd());
 					this_->put_bounds(bounds);
-					this_->navigate(L"panel_main");
+					this_->navigate([](MyWebView2* this_) {
+						this_->post_message(L"init", {{"isSelectDialog", false}});
+					});
 				});
+				global::webview.set(global::MyWebView2Reference::WebViewType::Main, my_webview);
 			}
 			break;
 
@@ -60,12 +64,12 @@ namespace cved {
 		{
 			mkaul::WindowRectangle bounds;
 			bounds.from_client_rect(hwnd);
-			global::webview_main.put_bounds(bounds);
+			my_webview.put_bounds(bounds);
 			break;
 		}
 
 		case WM_MOVE:
-			global::webview_main.on_move();
+			my_webview.on_move();
 			break;
 
 		case WM_MOUSEMOVE:
@@ -78,7 +82,7 @@ namespace cved {
 			if (dnd.is_dragging()) {
 				::ReleaseCapture();
 				dnd.drop();
-				global::webview_main.execute_script(L"onDrop();");
+				my_webview.post_message(L"drop");
 			}
 			break;
 

@@ -25,7 +25,6 @@ namespace cved {
 			register_member(L"appendIdx", DispatchType::Method, +[] { global::editor.editor_graph().append_idx_normal(); });
 			register_member(L"popIdx", DispatchType::Method, +[] { global::editor.editor_graph().pop_idx_normal(); });
 			register_member(L"isIdxMax", DispatchType::PropertyGet, +[] { return global::editor.editor_graph().is_idx_max_normal(); });
-			register_member(L"deleteLastIdx", DispatchType::Method, +[] { global::editor.editor_graph().pop_idx_normal(); });
 		}
 	};
 } // namespace cved

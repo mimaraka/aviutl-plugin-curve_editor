@@ -1,7 +1,7 @@
 #include "config.hpp"
 #include "dialog_pref.hpp"
 #include "enum.hpp"
-#include "global.hpp"
+#include "my_webview2_reference.hpp"
 #include "my_messagebox.hpp"
 #include "resource.h"
 #include "string_table.hpp"
@@ -100,7 +100,7 @@ namespace cved {
 			::SendMessageA(category.hwnd, WM_COMMAND, (WPARAM)WindowCommand::SaveConfig, NULL);
 		}
 		global::config.save_json();
-		global::webview_main.post_message(L"editor-graph", L"applyPreferences");
+		if (global::webview) global::webview->post_message(L"applyPreferences");
 	}
 
 

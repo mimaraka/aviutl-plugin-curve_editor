@@ -2,6 +2,7 @@
 
 #include "enum.hpp"
 #include "preferences.hpp"
+#include "util_json.hpp"
 #include <mkaul/color.hpp>
 #include <mkaul/util.hpp>
 

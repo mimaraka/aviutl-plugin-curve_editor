@@ -2,7 +2,7 @@
 #include "constants.hpp"
 #include "curve_editor.hpp"
 #include "filter_project_load.hpp"
-#include "global.hpp"
+#include "my_webview2_reference.hpp"
 #include "my_messagebox.hpp"
 #include "string_table.hpp"
 #include <cereal/archives/binary.hpp>
@@ -46,7 +46,7 @@ namespace cved {
 				}
 			}
 			// ウィンドウの更新
-			global::webview_main.post_message(L"panel-editor", L"updateEditor");
+			if (global::webview) global::webview->post_message(L"updateEditor");
 		}
 		return ret;
 	}

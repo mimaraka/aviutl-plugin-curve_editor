@@ -1,0 +1,73 @@
+@import url('./variables.scss');
+
+:root {
+    --okcancel-height: 32px;
+    --color-cancel: #d9d9d9;
+    --color-cancel-hover: #e6e6e6;
+    --color-cancel-active: #c5c5c5;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-cancel: #494949;
+        --color-cancel-hover: #3a3a3a;
+        --color-cancel-active: #2b2b2b;
+    }
+}
+
+.selectdialog-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.okcancel-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    background-color: var(--color-bg);
+    height: var(--okcancel-height);
+    padding: var(--margin);
+}
+
+.okcancel {
+    width: 50%;
+    height: calc(100% - 2 * var(--margin));
+    margin: var(--margin);
+    color: var(--color-content);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 500;
+    transition: all .2s ease-out;
+}
+
+#button-ok {
+    background-color: var(--color-button);
+    color: rgb(228, 228, 228);
+
+    &:hover {
+        background-color: var(--color-button-hover);
+    }
+
+    &:active {
+        background-color: var(--color-button-active);
+    }
+}
+
+#button-cancel {
+    background-color: var(--color-cancel);
+
+    &:hover {
+        background-color: var(--color-cancel-hover);
+    }
+
+    &:active {
+        background-color: var(--color-cancel-active);
+    }
+}

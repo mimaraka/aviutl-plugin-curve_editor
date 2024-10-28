@@ -79,24 +79,6 @@
     <Filter Include="Source Files\Web UI">
       <UniqueIdentifier>{0399c6fd-b3cf-4852-ba38-63ee70f64562}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Web UI\Editor">
-      <UniqueIdentifier>{a7830379-15db-447d-b38d-67a0ec2014d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Web UI\Editor\Graph Editor">
-      <UniqueIdentifier>{58c12fda-ec59-4f31-a912-3e8a6e076d4c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Web UI\Editor\Text Editor">
-      <UniqueIdentifier>{24a0ee43-a38f-4917-b8a0-37c130219d4b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Web UI\Preset">
-      <UniqueIdentifier>{e31805eb-aec8-4671-83b8-1c31dbd494dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Web UI\Select Dialog">
-      <UniqueIdentifier>{042cf677-61e8-4bf1-926d-50e43f328264}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Web UI\Toolbar">
-      <UniqueIdentifier>{9e3ba4aa-5aae-433c-931b-b4d9a0a45ed3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\WebView2\Host Object">
       <UniqueIdentifier>{a7bd3995-09d3-4d1c-84d7-aa577228eb0f}</UniqueIdentifier>
     </Filter>
@@ -258,9 +240,6 @@
     <ClInclude Include="dialog_id_jumpto.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="json_loader.hpp">
-      <Filter>Header Files\Util</Filter>
-    </ClInclude>
     <ClInclude Include="modifier.hpp">
       <Filter>Header Files\Curve\Modifier</Filter>
     </ClInclude>
@@ -286,9 +265,6 @@
       <Filter>Header Files\WebView2</Filter>
     </ClInclude>
     <ClInclude Include="host_object_config.hpp">
-      <Filter>Header Files\WebView2\Host Object</Filter>
-    </ClInclude>
-    <ClInclude Include="host_object_editor.hpp">
       <Filter>Header Files\WebView2\Host Object</Filter>
     </ClInclude>
     <ClInclude Include="host_object_editor_graph.hpp">
@@ -338,6 +314,12 @@
     </ClInclude>
     <ClInclude Include="curve.hpp">
       <Filter>Header Files\Curve</Filter>
+    </ClInclude>
+    <ClInclude Include="util_json.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="my_webview2_reference.hpp">
+      <Filter>Header Files\WebView2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -476,9 +458,6 @@
     <ClCompile Include="dialog_id_jumpto.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
-    <ClCompile Include="json_loader.cpp">
-      <Filter>Source Files\Util</Filter>
-    </ClCompile>
     <ClCompile Include="modifier_noise.cpp">
       <Filter>Source Files\Curve\Modifier</Filter>
     </ClCompile>
@@ -542,6 +521,9 @@
     <ClCompile Include="window_select_curve.cpp">
       <Filter>Source Files\Window</Filter>
     </ClCompile>
+    <ClCompile Include="host_object_editor_script.cpp">
+      <Filter>Source Files\WebView2\Host Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\cursor\drag.cur">
@@ -551,84 +533,78 @@
       <Filter>Module</Filter>
     </None>
     <None Include="packages.config" />
-    <None Include="ui\css\editor_graph.css">
-      <Filter>Source Files\Web UI\Editor\Graph Editor</Filter>
-    </None>
-    <None Include="ui\editor_graph.html">
-      <Filter>Source Files\Web UI\Editor\Graph Editor</Filter>
-    </None>
-    <None Include="ui\js\editor_graph.js">
-      <Filter>Source Files\Web UI\Editor\Graph Editor</Filter>
-    </None>
-    <None Include="ui\css\editor_text.css">
-      <Filter>Source Files\Web UI\Editor\Text Editor</Filter>
-    </None>
-    <None Include="ui\editor_text.html">
-      <Filter>Source Files\Web UI\Editor\Text Editor</Filter>
-    </None>
-    <None Include="ui\js\editor_text.js">
-      <Filter>Source Files\Web UI\Editor\Text Editor</Filter>
-    </None>
-    <None Include="ui\css\preset.css">
-      <Filter>Source Files\Web UI\Preset</Filter>
-    </None>
-    <None Include="ui\preset.html">
-      <Filter>Source Files\Web UI\Preset</Filter>
-    </None>
-    <None Include="ui\js\preset.js">
-      <Filter>Source Files\Web UI\Preset</Filter>
-    </None>
-    <None Include="ui\css\select_dialog.css">
-      <Filter>Source Files\Web UI\Select Dialog</Filter>
-    </None>
-    <None Include="ui\select_dialog.html">
-      <Filter>Source Files\Web UI\Select Dialog</Filter>
-    </None>
-    <None Include="ui\js\select_dialog.js">
-      <Filter>Source Files\Web UI\Select Dialog</Filter>
-    </None>
-    <None Include="ui\css\toolbar.css">
-      <Filter>Source Files\Web UI\Toolbar</Filter>
-    </None>
-    <None Include="ui\toolbar.html">
-      <Filter>Source Files\Web UI\Toolbar</Filter>
-    </None>
-    <None Include="ui\js\toolbar.js">
-      <Filter>Source Files\Web UI\Toolbar</Filter>
-    </None>
-    <None Include="ui\css\variables.css">
-      <Filter>Source Files\Web UI</Filter>
-    </None>
     <None Include="%40Curve Editor.tra">
       <Filter>Source Files</Filter>
     </None>
     <None Include="curve_editor.lua">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="ui\panel_main.html">
-      <Filter>Source Files\Web UI</Filter>
-    </None>
-    <None Include="ui\css\panel_main.css">
-      <Filter>Source Files\Web UI</Filter>
-    </None>
-    <None Include="ui\js\panel_main.js">
-      <Filter>Source Files\Web UI</Filter>
-    </None>
-    <None Include="ui\js\panel_editor.js">
-      <Filter>Source Files\Web UI\Editor</Filter>
-    </None>
-    <None Include="ui\css\panel_editor.css">
-      <Filter>Source Files\Web UI\Editor</Filter>
-    </None>
-    <None Include="ui\panel_editor.html">
-      <Filter>Source Files\Web UI\Editor</Filter>
-    </None>
     <None Include="minify.js" />
-    <None Include="ui\js\handles.js">
-      <Filter>Source Files\Web UI\Editor\Graph Editor</Filter>
+    <None Include="ui\src\toolbar.tsx">
+      <Filter>Source Files\Web UI</Filter>
     </None>
-    <None Include="ui\js\curve.js">
-      <Filter>Source Files\Web UI\Editor\Graph Editor</Filter>
+    <None Include="ui\src\button.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\curve.ts">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\editor_graph.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\editor_text.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\handles.ts">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\host_object.ts">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\index.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\panel_editor.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\panel_main.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\preset.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\select_dialog.tsx">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\variables.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\button.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\common.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\editor_graph.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\editor_text.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\panel_editor.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\panel_main.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\preset.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\select_dialog.scss">
+      <Filter>Source Files\Web UI</Filter>
+    </None>
+    <None Include="ui\src\scss\toolbar.scss">
+      <Filter>Source Files\Web UI</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
