@@ -41,9 +41,6 @@ namespace cved {
 			minfo_tmp.fState = MFS_CHECKED;
 			::SetMenuItemInfoA(menu_, ID_LAYOUT_HORIZONTAL, FALSE, &minfo_tmp);
 		}
-		// 「ライブラリを表示」のチェックを変更
-		minfo_tmp.fState = global::config.get_show_library() ? MFS_CHECKED : MFS_UNCHECKED;
-		::SetMenuItemInfoA(menu_, ID_MORE_SHOWLIBRARY, FALSE, &minfo_tmp);
 	}
 
 	bool OthersMenu::callback(uint16_t id) noexcept {
@@ -58,11 +55,6 @@ namespace cved {
 		case ID_LAYOUT_HORIZONTAL:
 			global::config.set_layout_mode(LayoutMode::Horizontal);
 			//global::window_main.send_command((WPARAM)WindowCommand::MoveWindow);
-			break;
-			
-		case ID_MORE_SHOWLIBRARY:
-			global::config.set_show_library(!global::config.get_show_library());
-			//global::window_main.send_command((WPARAM)WindowCommand::Update);
 			break;
 
 		case ID_MORE_RELOAD:

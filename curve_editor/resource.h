@@ -190,13 +190,18 @@
 #define ID_GRAPH_SHOW_Y_LABEL           40177
 #define ID_MENU_40178                   40178
 #define ID_GRAPH_ADD_ANCHOR             40179
+#define ID_MENU_40180                   40180
+#define ID_40181                        40181
+#define ID_EXTENSION_INSTALL            40182
+#define ID_MENU_EXTENSIONS              40183
+#define ID_EXTENSIONS_INSTALLANEXTENSION 40184
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        158
-#define _APS_NEXT_COMMAND_VALUE         40180
+#define _APS_NEXT_COMMAND_VALUE         40185
 #define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
