@@ -1,7 +1,8 @@
 import React from 'react';
-import { faFilter, faArrowDownWideShort, faPlus, faFileImport, faFileExport } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faFilter, faArrowDownWideShort, faPlus, faFileImport, faFileExport } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon } from './button';
 import './scss/preset.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 interface PresetProps {
@@ -13,6 +14,9 @@ const Preset: React.FC<PresetProps> = ({ style }) => {
         <div className='preset-container' style={style}>
             <div className='menu-row'>
                 <div className='searchbar-container'>
+                    <div className='searchbar-icon'>
+                        <FontAwesomeIcon icon={faMagnifyingGlass} size='sm'/>
+                    </div>
                     <input type='text' id='searchbar' name='searchbar' autoComplete='off' placeholder='プリセットを検索...'></input>
                 </div>
                 <div className='index-buttons'>

@@ -41,15 +41,10 @@
     width: calc(70% - var(--margin) * 2);
 }
 
-.searchbar-container::before {
-    content: '\f002';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    font-size: 14px;
-    display: inline-block;
-    color: var(--color-content-searchbar);
+.searchbar-icon {
     position: absolute;
-    left: 10px;
+    color: var(--color-content-searchbar);
+    left: 12px;
     top: 50%;
     transform: translateY(-50%);
 }
