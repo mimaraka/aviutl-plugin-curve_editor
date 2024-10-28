@@ -12,13 +12,8 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
     const editorRef = React.useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
     const idxRef = React.useRef(props.idx);
 
-    const getIdx = () => {
-        return props.idx;
-    }
-
     const updateEditor = () => {
         editorRef.current?.setValue(scriptEditor.getScript(scriptEditor.getId(props.idx)));
-        console.log(props.idx, scriptEditor.getScript(scriptEditor.getId(props.idx)));
     }
 
     const applyPreferences = () => {
@@ -42,10 +37,12 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
         }
     }
 
-    if (idxRef.current != props.idx) {
-        idxRef.current = props.idx;
-        updateEditor();
-    }
+    React.useEffect(() => {
+        if (idxRef.current != props.idx) {
+            idxRef.current = props.idx;
+            updateEditor();
+        }
+    }, [props.idx]);
 
     React.useEffect(() => {
         const container = document.getElementById('container');
@@ -70,8 +67,7 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
         // });
 
         editorRef.current?.getModel()?.onDidChangeContent(event => {
-            scriptEditor.setScript(scriptEditor.getId(getIdx()), editorRef.current?.getValue() ?? '');
-            console.log(getIdx(), scriptEditor.getId(getIdx()), editorRef.current?.getValue() ?? '', scriptEditor.getScript(scriptEditor.getId(props.idx)));
+            scriptEditor.setScript(scriptEditor.getId(idxRef.current), editorRef.current?.getValue() ?? '');
         });
 
         window.chrome.webview.addEventListener('message', onMessageFromNative);
