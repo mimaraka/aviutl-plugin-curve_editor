@@ -57,7 +57,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
         },
         {
             icon: isLocked? faLock : faLockOpen,
-            title: isLocked ? 'カーブは編集可能です' : 'カーブの編集はロックされています',
+            title: isLocked ? 'カーブの編集はロックされています' : 'カーブは編集可能です',
             onClick: () => {
                 window.chrome.webview.postMessage({
                     command: 'lock'
