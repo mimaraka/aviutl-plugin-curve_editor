@@ -14,9 +14,6 @@
     <Filter Include="Source Files\Curve\Editor">
       <UniqueIdentifier>{3e7ea665-8ff6-4961-879c-616bebb916fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Menu">
-      <UniqueIdentifier>{757f7728-9757-4416-b7d0-1796cf4c5c04}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Dialog">
       <UniqueIdentifier>{1c0ea417-2665-488e-8651-8b9406678d62}</UniqueIdentifier>
     </Filter>
@@ -35,9 +32,6 @@
     </Filter>
     <Filter Include="Header Files\Curve\Editor">
       <UniqueIdentifier>{6fc4954d-fb0f-4ba9-a148-9cbe1c6e00df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Menu">
-      <UniqueIdentifier>{feb162eb-045d-4525-96f7-62d50e0e1182}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Dialog">
       <UniqueIdentifier>{a6042aa4-e356-4401-a70c-ce74744909ac}</UniqueIdentifier>
@@ -91,6 +85,21 @@
     <Filter Include="Source Files\Window">
       <UniqueIdentifier>{d57a18c0-7f46-4755-bb42-4c85ba952e0b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Preset">
+      <UniqueIdentifier>{db81e7ee-10ee-40ba-bab7-4c1d02108938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Preset">
+      <UniqueIdentifier>{470d9e81-3fa9-4660-a7a8-e1822182da29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Web UI\Curve">
+      <UniqueIdentifier>{2e281262-cf62-4bc7-bf86-bc2ccb3a4763}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Web UI\Control">
+      <UniqueIdentifier>{5a0b172d-1c03-429f-acd0-ad2884c6cb50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Web UI\React Component">
+      <UniqueIdentifier>{24bfaaa9-0a31-490b-9195-f184e3ff0727}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curve_base.hpp">
@@ -109,9 +118,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="enum.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="preset.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="curve_bezier.hpp">
@@ -147,18 +153,6 @@
     <ClInclude Include="curve_editor_graph.hpp">
       <Filter>Header Files\Curve\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="menu_others.hpp">
-      <Filter>Header Files\Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="menu_graph.hpp">
-      <Filter>Header Files\Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="menu.hpp">
-      <Filter>Header Files\Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="menu_curve_segment.hpp">
-      <Filter>Header Files\Menu</Filter>
-    </ClInclude>
     <ClInclude Include="curve_graph_numeric.hpp">
       <Filter>Header Files\Curve</Filter>
     </ClInclude>
@@ -168,7 +162,7 @@
     <ClInclude Include="trackbar_button.hpp">
       <Filter>Header Files\Exedit Hook</Filter>
     </ClInclude>
-    <ClInclude Include="my_messagebox.hpp">
+    <ClInclude Include="message_box.hpp">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
     <ClInclude Include="actctx_helper.hpp">
@@ -210,12 +204,6 @@
     <ClInclude Include="dialog_about.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
-    <ClInclude Include="dialog_curve_param.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog_curve_code.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
     <ClInclude Include="dialog_warning_autosaver.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
@@ -230,12 +218,6 @@
     </ClInclude>
     <ClInclude Include="drag_and_drop.hpp">
       <Filter>Header Files\Exedit Hook</Filter>
-    </ClInclude>
-    <ClInclude Include="menu_id.hpp">
-      <Filter>Header Files\Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="menu_bezier_handle.hpp">
-      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="dialog_id_jumpto.hpp">
       <Filter>Header Files\Dialog</Filter>
@@ -321,6 +303,39 @@
     <ClInclude Include="my_webview2_reference.hpp">
       <Filter>Header Files\WebView2</Filter>
     </ClInclude>
+    <ClInclude Include="host_object_editor.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
+    <ClInclude Include="host_object_preset.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
+    <ClInclude Include="preset.hpp">
+      <Filter>Header Files\Preset</Filter>
+    </ClInclude>
+    <ClInclude Include="preset_manager.hpp">
+      <Filter>Header Files\Preset</Filter>
+    </ClInclude>
+    <ClInclude Include="input_box.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_input.hpp">
+      <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="message_handler.hpp">
+      <Filter>Header Files\WebView2</Filter>
+    </ClInclude>
+    <ClInclude Include="update_checker.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="context_menu.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="menu_item.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_update_notification.hpp">
+      <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve_base.cpp">
@@ -353,9 +368,6 @@
     <ClCompile Include="lua_export.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="preset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="curve_linear.cpp">
       <Filter>Source Files\Curve</Filter>
     </ClCompile>
@@ -364,18 +376,6 @@
     </ClCompile>
     <ClCompile Include="curve_editor_graph.cpp">
       <Filter>Source Files\Curve\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_others.cpp">
-      <Filter>Source Files\Menu</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_graph.cpp">
-      <Filter>Source Files\Menu</Filter>
-    </ClCompile>
-    <ClCompile Include="menu.cpp">
-      <Filter>Source Files\Menu</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_curve_segment.cpp">
-      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="curve_editor.cpp">
       <Filter>Source Files\Curve\Editor</Filter>
@@ -425,12 +425,6 @@
     <ClCompile Include="dialog_about.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
-    <ClCompile Include="dialog_curve_param.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog_curve_code.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
     <ClCompile Include="dialog_warning_autosaver.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
@@ -448,12 +442,6 @@
     </ClCompile>
     <ClCompile Include="drag_and_drop.cpp">
       <Filter>Source Files\Exedit Hook</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_id.cpp">
-      <Filter>Source Files\Menu</Filter>
-    </ClCompile>
-    <ClCompile Include="menu_bezier_handle.cpp">
-      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="dialog_id_jumpto.cpp">
       <Filter>Source Files\Dialog</Filter>
@@ -524,6 +512,39 @@
     <ClCompile Include="host_object_editor_script.cpp">
       <Filter>Source Files\WebView2\Host Object</Filter>
     </ClCompile>
+    <ClCompile Include="host_object_editor.cpp">
+      <Filter>Source Files\WebView2\Host Object</Filter>
+    </ClCompile>
+    <ClCompile Include="preset.cpp">
+      <Filter>Source Files\Preset</Filter>
+    </ClCompile>
+    <ClCompile Include="preset_manager.cpp">
+      <Filter>Source Files\Preset</Filter>
+    </ClCompile>
+    <ClCompile Include="host_object_preset.cpp">
+      <Filter>Source Files\WebView2\Host Object</Filter>
+    </ClCompile>
+    <ClCompile Include="input_box.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_input.cpp">
+      <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="message_handler.cpp">
+      <Filter>Source Files\WebView2</Filter>
+    </ClCompile>
+    <ClCompile Include="update_checker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="context_menu.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="menu_item.cpp">
+      <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_update_notification.cpp">
+      <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\cursor\drag.cur">
@@ -539,71 +560,115 @@
     <None Include="curve_editor.lua">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="minify.js" />
-    <None Include="ui\src\toolbar.tsx">
+    <None Include="ui\src\index.html">
       <Filter>Source Files\Web UI</Filter>
     </None>
-    <None Include="ui\src\button.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\curve_base.ts">
+      <Filter>Source Files\Web UI\Curve</Filter>
     </None>
-    <None Include="ui\src\curve.ts">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\curve_bezier.ts">
+      <Filter>Source Files\Web UI\Curve</Filter>
     </None>
-    <None Include="ui\src\editor_graph.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\curve_bounce.ts">
+      <Filter>Source Files\Web UI\Curve</Filter>
     </None>
-    <None Include="ui\src\editor_text.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\curve_elastic.ts">
+      <Filter>Source Files\Web UI\Curve</Filter>
     </None>
-    <None Include="ui\src\handles.ts">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\curve_linear.ts">
+      <Filter>Source Files\Web UI\Curve</Filter>
     </None>
-    <None Include="ui\src\host_object.ts">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\curve_normal.ts">
+      <Filter>Source Files\Web UI\Curve</Filter>
     </None>
-    <None Include="ui\src\index.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\curve_numeric.ts">
+      <Filter>Source Files\Web UI\Curve</Filter>
     </None>
-    <None Include="ui\src\panel_editor.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\control.ts">
+      <Filter>Source Files\Web UI\Control</Filter>
     </None>
-    <None Include="ui\src\panel_main.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\control_base.ts">
+      <Filter>Source Files\Web UI\Control</Filter>
     </None>
-    <None Include="ui\src\preset.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\control_bezier.ts">
+      <Filter>Source Files\Web UI\Control</Filter>
     </None>
-    <None Include="ui\src\select_dialog.tsx">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\control_bounce.ts">
+      <Filter>Source Files\Web UI\Control</Filter>
     </None>
-    <None Include="ui\src\scss\variables.scss">
-      <Filter>Source Files\Web UI</Filter>
+    <None Include="ui\src\control_elastic.ts">
+      <Filter>Source Files\Web UI\Control</Filter>
+    </None>
+    <None Include="ui\src\control_linear.ts">
+      <Filter>Source Files\Web UI\Control</Filter>
+    </None>
+    <None Include="ui\src\control_normal.ts">
+      <Filter>Source Files\Web UI\Control</Filter>
     </None>
     <None Include="ui\src\scss\button.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\button.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\common.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\editor_graph.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\editor_graph.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\editor_text.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\editor_text.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\index.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\panel_editor.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\panel_editor.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\panel_main.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\panel_main.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\preset.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\preset.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\scss\preset_item.scss">
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\preset_item.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\select_dialog.scss">
-      <Filter>Source Files\Web UI</Filter>
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\select_dialog.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
     </None>
     <None Include="ui\src\scss\toolbar.scss">
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\toolbar.tsx">
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\scss\variables.scss">
+      <Filter>Source Files\Web UI\React Component</Filter>
+    </None>
+    <None Include="ui\src\host_object.ts">
       <Filter>Source Files\Web UI</Filter>
     </None>
   </ItemGroup>

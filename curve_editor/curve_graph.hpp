@@ -62,20 +62,27 @@ namespace cved {
 
 		// コピーコンストラクタ
 		GraphCurve(const GraphCurve& curve) noexcept :
+			Curve{ curve },
 			anchor_start_{ curve.anchor_start_ },
 			anchor_end_{ curve.anchor_end_ },
 			anchor_fixed_{ curve.anchor_fixed_ },
 			prev_{ nullptr },
-			next_{ nullptr }
-		{}
+			next_{ nullptr },
+			modifiers_{}
+		{
+			for (const auto& modifier : curve.modifiers_) {
+				modifiers_.emplace_back(modifier->clone());
+				modifiers_.back()->set_curve(this);
+			}
+		}
 
-		auto prev() const noexcept { return prev_; }
-		auto next() const noexcept { return next_; }
+		[[nodiscard]] auto prev() const noexcept { return prev_; }
+		[[nodiscard]] auto next() const noexcept { return next_; }
 		virtual void set_prev(GraphCurve* p) noexcept { prev_ = p; }
 		virtual void set_next(GraphCurve* p) noexcept { next_ = p; }
 
-		const auto& modifiers() const noexcept { return modifiers_; }
-		Modifier* get_modifier(size_t idx) const noexcept;
+		[[nodiscard]] const auto& modifiers() const noexcept { return modifiers_; }
+		[[nodiscard]] Modifier* get_modifier(size_t idx) const noexcept;
 		void add_modifier(std::unique_ptr<Modifier>&& modifier) noexcept { modifiers_.emplace_back(std::move(modifier)); }
 		void add_modifier(std::unique_ptr<Modifier>& modifier) noexcept { modifiers_.emplace_back(std::move(modifier)); }
 		bool remove_modifier(size_t idx) noexcept;
@@ -83,15 +90,15 @@ namespace cved {
 		void set_modifiers(std::vector<std::unique_ptr<Modifier>>& modifiers) noexcept { modifiers_ = std::move(modifiers); }
 		void pop_modifier() noexcept { modifiers_.pop_back(); }
 
-		double get_value(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double get_value(double progress, double start, double end) const noexcept override;
 
-		const auto& anchor_start() const noexcept { return anchor_start_; }
-		const auto& anchor_end() const noexcept { return anchor_end_; }
+		[[nodiscard]] const auto& anchor_start() const noexcept { return anchor_start_; }
+		[[nodiscard]] const auto& anchor_end() const noexcept { return anchor_end_; }
 
-		double get_anchor_start_x() const noexcept { return anchor_start_.x; }
-		double get_anchor_start_y() const noexcept { return anchor_start_.y; }
-		double get_anchor_end_x() const noexcept { return anchor_end_.x; }
-		double get_anchor_end_y() const noexcept { return anchor_end_.y; }
+		[[nodiscard]] double get_anchor_start_x() const noexcept { return anchor_start_.x; }
+		[[nodiscard]] double get_anchor_start_y() const noexcept { return anchor_start_.y; }
+		[[nodiscard]] double get_anchor_end_x() const noexcept { return anchor_end_.x; }
+		[[nodiscard]] double get_anchor_end_y() const noexcept { return anchor_end_.y; }
 		void set_anchor_start(double x, double y, bool forced = false) noexcept;
 		void set_anchor_start(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_start(pt.x, pt.y, forced); }
 		void set_anchor_end(double x, double y, bool forced = false) noexcept;
@@ -99,7 +106,7 @@ namespace cved {
 
 		virtual void reverse(bool fix_pt = false) noexcept;
 
-		virtual nlohmann::json create_json() const noexcept override;
+		[[nodiscard]] virtual nlohmann::json create_json() const noexcept override;
 		virtual bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>

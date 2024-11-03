@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "curve_graph_numeric.hpp"
+#include "string_table.hpp"
 
 
 
@@ -31,28 +32,29 @@ namespace cved {
 		// コピーコンストラクタ
 		BounceCurve(const BounceCurve& curve) noexcept;
 
-		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_BOUNCE; }
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BOUNCE; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBounce]; }
 
 		// カーブの値を生成
-		double curve_function(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		bool is_default() const noexcept override;
+		[[nodiscard]] bool is_default() const noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
-		bool is_reversed() const noexcept { return reversed_; }
+		[[nodiscard]] bool is_reversed() const noexcept { return reversed_; }
 
-		auto get_cor() const noexcept { return cor_; }
-		auto get_period() const noexcept { return period_; }
-
-		double get_handle_x() const noexcept;
-		double get_handle_y() const noexcept;
+		[[nodiscard]] double get_handle_x() const noexcept;
+		[[nodiscard]] double get_handle_y() const noexcept;
 		void set_handle(double x, double y) noexcept;
 
 		// カーブから一意な整数値を生成
-		int32_t encode() const noexcept override;
+		[[nodiscard]] int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
-		nlohmann::json create_json() const noexcept override;
+		[[nodiscard]] std::string create_params_str(size_t precision = 2) const noexcept override;
+		bool read_params(const std::vector<double>& params) noexcept override;
+
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>

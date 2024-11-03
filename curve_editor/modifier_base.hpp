@@ -29,6 +29,8 @@ namespace cved {
 		{}
 		virtual ~Modifier() = default;
 
+		virtual std::unique_ptr<Modifier> clone() const noexcept = 0;
+
 		constexpr virtual std::string get_type() const noexcept = 0;
 
 		auto name() const noexcept { return name_; }

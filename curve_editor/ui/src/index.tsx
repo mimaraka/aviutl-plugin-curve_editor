@@ -5,17 +5,18 @@ import SelectDialog from './select_dialog';
 
 
 window.chrome.webview.addEventListener('message', (event: MessageEvent) => {
-    if (event.data.command == 'init') {
+    if (event.data.command == 'InitComponent') {
         const container = document.getElementById('root');
         const root = createRoot(container!);
         const isSelectDialog = event.data.isSelectDialog ?? false;
+        const isUpdateAvailable = event.data.isUpdateAvailable ?? false;
         let component: React.ReactElement;
         if (isSelectDialog) {
             const editMode = event.data.mode ?? 0;
             const param = event.data.param ?? 0;
             component = <SelectDialog editMode={editMode} param={param}/>;
         } else {
-            component = <MainPanel/>;
+            component = <MainPanel isUpdateAvailable={isUpdateAvailable}/>;
         }
         root.render(component);
     }

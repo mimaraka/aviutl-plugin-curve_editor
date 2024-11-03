@@ -2,36 +2,37 @@
 
 .dropdown-container {
     position: relative;
-
     &::after {
+        pointer-events: none;
         content: "";
         position: absolute;
-        top: 11px;
+        top: 13px;
         right: 18px;
+        transform: rotate(45deg);
         width: 5.5px;
         height: 5.5px;
         border-right: 2.3px solid var(--color-dropdown-arrow);
         border-bottom: 2.3px solid var(--color-dropdown-arrow);
-        transform: rotate(45deg);
-        pointer-events: none;
     }
 }
 
 .dropdown {
     appearance: none;
-    background-color: var(--color-control);
-    border: none;
-    border-radius: var(--border-radius);
-    color: var(--color-content);
-    padding-left: 20px;
+    user-select: none;
     width: 100%;
     height: calc(100% - 2 * var(--margin));
     margin: var(--margin);
+    padding-left: 20px;
+    transition: var(--transition);
+    background-color: var(--color-control);
     cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
     font: var(--font);
-    transition: all .2s ease-out;
-    user-select: none;
-
+    color: var(--color-content);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
     &:hover {
         background-color: var(--color-control-hover);
     }

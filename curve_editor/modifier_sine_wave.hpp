@@ -27,6 +27,10 @@ namespace cved {
 			phase_{ sinewave.phase_ }
 		{}
 
+		std::unique_ptr<Modifier> clone() const noexcept override {
+			return std::make_unique<SineWaveModifier>(*this);
+		}
+
 		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_SINE_WAVE; }
 
 		auto amplitude() const noexcept { return amplitude_; }

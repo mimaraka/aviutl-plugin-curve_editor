@@ -21,3 +21,6 @@
 [submodule "curve_editor/external/sol2"]
 	path = curve_editor/external/sol2
 	url = https://github.com/ThePhD/sol2.git
+[submodule "curve_editor/external/magic_enum"]
+	path = curve_editor/external/magic_enum
+	url = https://github.com/Neargye/magic_enum

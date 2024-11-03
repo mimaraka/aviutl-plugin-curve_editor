@@ -1,18 +1,12 @@
 #include "config.hpp"
-#include "dialog_curve_code.hpp"
-#include "dialog_curve_param.hpp"
-#include "dialog_id_jumpto.hpp"
 #include "global.hpp"
 #include "host_object_config.hpp"
-#include "host_object_editor_graph.hpp"
-#include "host_object_editor_script.hpp"
-#include "menu_curve_segment.hpp"
-#include "menu_graph.hpp"
-#include "menu_others.hpp"
-#include "my_messagebox.hpp"
+#include "host_object_editor.hpp"
+#include "host_object_preset.hpp"
+#include "message_box.hpp"
+#include "message_handler.hpp"
 #include "my_webview2.hpp"
 #include "string_table.hpp"
-#include "util.hpp"
 #include <strconv2.h>
 #include <WebView2EnvironmentOptions.h>
 
@@ -82,16 +76,16 @@ namespace cved {
 										LPWSTR json;
 										args->get_WebMessageAsJson(&json);
 										auto json_obj = nlohmann::json::parse(::wide_to_utf8(json));
-										handle_message(json_obj);
+										MessageHandler{ hwnd_, this }.handle_message(json_obj);
 										return S_OK;
 									}).Get(), nullptr
 								);
 
 								is_ready_ = true;
 								update_color_scheme();
-								add_host_object<GraphEditorHostObject>(L"graphEditor");
-								add_host_object<ScriptEditorHostObject>(L"scriptEditor");
 								add_host_object<ConfigHostObject>(L"config");
+								add_host_object<EditorHostObject>(L"editor");
+								add_host_object<PresetHostObject>(L"preset");
 								after_callback(this);
 								return S_OK;
 							}
@@ -128,7 +122,7 @@ namespace cved {
 								after_callback(this);
 							}
 						} else {
-							my_messagebox(global::string_table[StringId::ErrorPageLoadFailed], hwnd_, MessageBoxIcon::Error);
+							util::message_box(global::string_table[StringId::ErrorPageLoadFailed], hwnd_, util::MessageBoxIcon::Error);
 						}
 						return S_OK;
 					}
@@ -192,121 +186,5 @@ namespace cved {
 			}
 			profile->put_PreferredColorScheme(color_scheme);
 		}
-	}
-
-	bool MyWebView2::handle_message(const nlohmann::json& message) noexcept {
-		using StringId = global::StringTable::StringId;
-
-		try {
-			auto command = message.at("command").get<std::string>();
-			if (command == "copy") {
-				auto tmp = std::to_string(global::editor.track_param());
-				if (!util::copy_to_clipboard(hwnd_, tmp.c_str()) and global::config.get_show_popup()) {
-					my_messagebox(global::string_table[StringId::ErrorCodeCopyFailed], hwnd_, MessageBoxIcon::Error);
-				}
-				return true;
-			}
-			else if (command == "read") {
-				CurveCodeDialog dialog;
-				dialog.show(hwnd_);
-				return true;
-			}
-			else if (command == "save") {
-				return true;
-			}
-			else if (command == "lock") {
-				bool sw = message.at("switch").get<bool>();
-				if (sw) {
-					return true;
-				}
-				else {
-					return true;
-				}
-			}
-			else if (command == "clear") {
-				int response = IDOK;
-				if (global::config.get_show_popup()) {
-					response = my_messagebox(
-						global::string_table[StringId::WarningDeleteCurve],
-						hwnd_,
-						MessageBoxIcon::Warning,
-						MessageBoxButton::OkCancel
-					);
-				}
-
-				if (response == IDOK) {
-					auto curve = global::editor.current_curve();
-					if (curve) {
-						curve->clear();
-						post_message(L"updateHandles");
-					}
-				}
-				return true;
-			}
-			else if (command == "others") {
-				OthersMenu menu(global::fp->dll_hinst);
-				menu.show(hwnd_);
-				return true;
-			}
-			else if (command == "button-id") {
-				IdJumptoDialog dialog;
-				dialog.show(hwnd_);
-				return true;
-			}
-			else if (command == "button-param") {
-				CurveParamDialog dialog;
-				dialog.show(hwnd_);
-				return true;
-			}
-			else if (command == "drag-and-drop") {
-				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::StartDnd, NULL);
-				return true;
-			}
-			else if (command == "drag-end") {
-				auto curve_id = message.at("curveId").get<uint32_t>();
-				auto curve_numeric = global::id_manager.get_curve<NumericGraphCurve>(curve_id);
-				if (curve_numeric) {
-					if (global::config.get_auto_copy()) {
-						auto code = std::to_string(curve_numeric->encode());
-						if (!util::copy_to_clipboard(hwnd_, code.c_str()) and global::config.get_show_popup()) {
-							my_messagebox(global::string_table[StringId::ErrorCodeCopyFailed], hwnd_, MessageBoxIcon::Error);
-						}
-					}
-				}
-				else {
-					if (global::config.get_auto_apply()) {
-						::SendMessageA(global::fp->hwnd, WM_COMMAND, (WPARAM)WindowCommand::RedrawAviutl, 0);
-					}
-				}
-				return true;
-			}
-			else if (command == "contextmenu-graph") {
-				auto mode = message.at("mode").get<EditMode>();
-				auto curve_id = message.at("curveId").get<uint32_t>();
-				GraphMenu menu{ global::fp->dll_hinst };
-				menu.show(mode, curve_id, *this, hwnd_);
-				return true;
-			}
-			else if (command == "contextmenu-curve-segment") {
-				auto id = message.at("curveId").get<uint32_t>();
-				auto segment_id = message.at("segmentId").get<uint32_t>();
-				CurveSegmentMenu menu{ global::fp->dll_hinst };
-				menu.show(id, segment_id, *this, hwnd_);
-				return true;
-			}
-			else if (command == "selectdlg-ok") {
-				auto mode = message.at("mode").get<EditMode>();
-				auto param = message.at("param").get<int32_t>();
-				std::pair<std::string, int> ret = std::make_pair(global::editor.get_curve(mode)->get_type(), param);
-				::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveOk, std::bit_cast<LPARAM>(&ret));
-				return true;
-			}
-			else if (command == "selectdlg-cancel") {
-				::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveCancel, 0);
-				return true;
-			}
-		}
-		catch (const nlohmann::json::exception&) {}
-		return false;
 	}
 } // namespace cved

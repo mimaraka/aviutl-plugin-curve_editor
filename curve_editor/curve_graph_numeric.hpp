@@ -14,6 +14,9 @@ namespace cved {
 		// 整数値からカーブに変換
 		virtual bool decode(int32_t code) noexcept = 0;
 
+		virtual std::string create_params_str(size_t precision = 2) const noexcept = 0;
+		virtual bool read_params(const std::vector<double>& params) = 0;
+
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
 			archive(

@@ -6,19 +6,20 @@
 
 
 namespace cved {
-	class ConfigHostObject : public mkaul::wv2::HostObject {
+	class ConfigHostObject : public mkaul::ole::HostObject {
 		static std::wstring get_curve_color();
-		static bool is_latest_version(std::wstring latest_version_str);
 
 	public:
 		ConfigHostObject() {
 			register_member(L"editMode", DispatchType::PropertyGet, +[] { return global::config.get_edit_mode(); });
 			register_member(L"editMode", DispatchType::PropertyPut, +[](int edit_mode) { global::config.set_edit_mode((EditMode)edit_mode); });
+			register_member(L"layoutMode", DispatchType::PropertyGet, +[] { return global::config.get_layout_mode(); });
 			register_member(L"editModeNum", DispatchType::PropertyGet, +[] { return (uint32_t)EditMode::NumEditMode; });
 			register_member(L"getEditModeName", DispatchType::Method, +[](int edit_mode) { return global::config.get_edit_mode_dispname((EditMode)edit_mode); });
 			register_member(L"showXLabel", DispatchType::PropertyGet, +[] {return global::config.get_show_x_label(); });
 			register_member(L"showYLabel", DispatchType::PropertyGet, +[] { return global::config.get_show_y_label(); });
 			register_member(L"showHandle", DispatchType::PropertyGet, +[] { return global::config.get_show_handle(); });
+			register_member(L"showHandle", DispatchType::PropertyPut, +[](bool show_handle) { return global::config.set_show_handle(show_handle); });
 			register_member(L"alignHandle", DispatchType::PropertyGet, +[] { return global::config.get_align_handle(); });
 			register_member(L"alignHandle", DispatchType::PropertyPut, +[](bool align_handle) { return global::config.set_align_handle(align_handle); });
 			register_member(L"enableHotkeys", DispatchType::PropertyGet, +[] { return global::config.get_enable_hotkeys(); });
@@ -35,8 +36,8 @@ namespace cved {
 			register_member(L"notifyUpdate", DispatchType::PropertyGet, +[] { return global::config.get_notify_update(); });
 			register_member(L"separatorPos", DispatchType::PropertyGet, +[] { return global::config.get_separator_pos(); });
 			register_member(L"separatorPos", DispatchType::PropertyPut, +[](double separator_pos) { global::config.set_separator_pos(separator_pos); });
-			// TODO: configに載せるべきか？
-			register_member(L"isLatestVersion", DispatchType::Method, is_latest_version);
+			register_member(L"presetSize", DispatchType::PropertyGet, +[] { return global::config.get_preset_size(); });
+			register_member(L"presetSize", DispatchType::PropertyPut, +[](int preset_size) { global::config.set_preset_size(preset_size); });
 		}
 	};
 } // namespace cved

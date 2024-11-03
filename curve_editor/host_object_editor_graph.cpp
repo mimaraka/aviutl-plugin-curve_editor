@@ -32,12 +32,4 @@ namespace cved {
 		}
 		return result;
 	}
-
-	std::wstring GraphEditorHostObject::get_curve_type(uint32_t id) {
-		auto curve = global::id_manager.get_curve<GraphCurve>(id);
-		if (!curve) {
-			return std::wstring();
-		}
-		return ::sjis_to_wide(curve->get_type());
-	}
 } // namespace cved

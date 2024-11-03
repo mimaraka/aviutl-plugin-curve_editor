@@ -2,7 +2,7 @@
 #include "curve_editor.hpp"
 #include "dialog_id_jumpto.hpp"
 #include "global.hpp"
-#include "my_messagebox.hpp"
+#include "message_box.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 

@@ -41,11 +41,11 @@ namespace cved {
 		curve->set_handle(x, y);
 	}
 
-	std::wstring BounceCurveHostObject::get_param(uint32_t id) {
+	std::string BounceCurveHostObject::get_param(uint32_t id) {
 		auto curve = global::id_manager.get_curve<BounceCurve>(id);
 		if (!curve) {
-			return L"";
+			return "";
 		}
-		return std::format(L"{:.2f}, {:.2f}", curve->get_cor(), curve->get_period());
+		return curve->create_params_str();
 	}
 } // namespace cved

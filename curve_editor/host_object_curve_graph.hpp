@@ -7,7 +7,7 @@
 
 
 namespace cved {
-	class GraphCurveHostObject : public mkaul::wv2::HostObject {
+	class GraphCurveHostObject : public mkaul::ole::HostObject {
 		static double get_anchor_start_x(uint32_t id);
 		static double get_anchor_start_y(uint32_t id);
 		static void set_anchor_start(uint32_t id, double x, double y);

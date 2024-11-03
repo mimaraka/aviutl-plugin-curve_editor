@@ -1,6 +1,6 @@
 import React from 'react';
 import * as monaco from 'monaco-editor';
-import { config, scriptEditor } from './host_object';
+import { config, editor } from './host_object';
 import './scss/editor_text.scss';
 
 
@@ -13,7 +13,7 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
     const idxRef = React.useRef(props.idx);
 
     const updateEditor = () => {
-        editorRef.current?.setValue(scriptEditor.getScript(scriptEditor.getId(props.idx)));
+        editorRef.current?.setValue(editor.script.getScript(editor.script.getId(props.idx)));
     }
 
     const applyPreferences = () => {
@@ -25,13 +25,13 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
         }
     }
 
-    const onMessageFromNative = (event: MessageEvent) => {
+    const onMessageFromHost = (event: MessageEvent) => {
         switch (event.data.command) {
-            case 'updateEditor':
+            case 'UpdateEditor':
                 updateEditor();
                 break;
 
-            case 'applyPreferences':
+            case 'ApplyPreferences':
                 applyPreferences();
                 break;
         }
@@ -67,14 +67,14 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
         // });
 
         editorRef.current?.getModel()?.onDidChangeContent(event => {
-            scriptEditor.setScript(scriptEditor.getId(idxRef.current), editorRef.current?.getValue() ?? '');
+            editor.script.setScript(editor.script.getId(idxRef.current), editorRef.current?.getValue() ?? '');
         });
 
-        window.chrome.webview.addEventListener('message', onMessageFromNative);
+        window.chrome.webview.addEventListener('message', onMessageFromHost);
 
         return () => {
             editorRef.current?.dispose();
-            window.chrome.webview.removeEventListener('message', onMessageFromNative);
+            window.chrome.webview.removeEventListener('message', onMessageFromHost);
         };
     }, []);
 

@@ -24,7 +24,7 @@ namespace cved {
 
 	nlohmann::json Curve::create_json() const noexcept {
 		nlohmann::json data;
-		data["type"] = get_type();
+		data["type"] = get_name();
 		return data;
 	}
 }

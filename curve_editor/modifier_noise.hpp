@@ -40,6 +40,10 @@ namespace cved {
 			noise_{ noiser.noise_ }
 		{}
 
+		std::unique_ptr<Modifier> clone() const noexcept override {
+			return std::make_unique<NoiseModifier>(*this);
+		}
+
 		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_NOISE; }
 
 		auto seed() const noexcept { return seed_; }

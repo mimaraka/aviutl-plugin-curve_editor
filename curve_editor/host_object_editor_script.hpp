@@ -6,7 +6,7 @@
 
 
 namespace cved {
-	class ScriptEditorHostObject : public mkaul::wv2::HostObject {
+	class ScriptEditorHostObject : public mkaul::ole::HostObject {
 		static const std::string& get_script(uint32_t id);
 		static void set_script(uint32_t id, std::string script);
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import Preset from './preset';
+import PresetPanel from './preset';
 import Toolbar from './toolbar';
 import EditorPanel from './panel_editor';
-import { config, graphEditor, scriptEditor } from './host_object';
+import { config, editor } from './host_object';
 import './scss/panel_main.scss';
 
 
@@ -20,12 +20,18 @@ import './scss/panel_main.scss';
 //     $('#disabled-overlay').remove();
 // }
 
-const MainPanel: React.FC = () => {
+interface MainPanelProps {
+    isUpdateAvailable: boolean;
+}
+
+const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     const [isDraggingSeparator, setIsDraggingSeparator] = React.useState(false);
     const [isDragging, setIsDragging] = React.useState(false);
     const [separatorPos, setSeparatorPos] = React.useState(config.separatorPos);
+    const [width, setWidth] = React.useState(document.documentElement.clientWidth);
     const [height, setHeight] = React.useState(document.documentElement.clientHeight);
     const [editMode, setEditMode] = React.useState(config.editMode);
+    const [layoutMode, setLayoutMode] = React.useState(config.layoutMode);
     const [idx, setIdx] = React.useState(0);
     const ref = React.useRef<HTMLDivElement | null>(null);
     const separatorPosRef = React.useRef<number>(separatorPos);
@@ -40,45 +46,45 @@ const MainPanel: React.FC = () => {
     }
 
     const getIdx = () => {
-        switch (editMode) {
+        switch (config.editMode) {
             case 0:
-                return graphEditor.normal.idx;
+                return editor.graph.normal.idx;
 
             case 1:
-                //return graphEditor.value.idx;
+                //return editor.graph.value.idx;
                 return 0;
 
             case 5:
-                return scriptEditor.idx;
+                return editor.script.idx;
         }
         return 0;
     }
 
     const changeIdx = (idx: number) => {
         let newIdx = null;
-        switch (editMode) {
+        switch (config.editMode) {
             case 0:
-                if (graphEditor.normal.size <= idx) {
-                    graphEditor.normal.appendIdx();
-                    newIdx = graphEditor.normal.size - 1;
+                if (editor.graph.normal.size <= idx) {
+                    editor.graph.normal.appendIdx();
+                    newIdx = editor.graph.normal.size - 1;
                 } else {
                     newIdx = Math.max(idx, 0);
                 }
-                graphEditor.normal.idx = newIdx;
+                editor.graph.normal.idx = newIdx;
                 break;
 
             case 1:
-                //graphEditor.value.idx = idx;
+                //editor.graph.value.idx = idx;
                 break;
 
             case 5:
-                if (scriptEditor.size <= idx) {
-                    scriptEditor.appendIdx();
-                    newIdx = scriptEditor.size - 1;
+                if (editor.script.size <= idx) {
+                    editor.script.appendIdx();
+                    newIdx = editor.script.size - 1;
                 } else {
                     newIdx = Math.max(idx, 0);
                 }
-                scriptEditor.idx = newIdx;
+                editor.script.idx = newIdx;
                 break;
         }
         if (newIdx !== null) {
@@ -87,24 +93,37 @@ const MainPanel: React.FC = () => {
     }
 
     const getSize = () => {
-        switch (editMode) {
+        switch (config.editMode) {
             case 0:
-                return graphEditor.normal.size;
+                return editor.graph.normal.size;
 
             case 1:
-                //return graphEditor.value.size;
+                //return editor.graph.value.size;
                 return 0;
 
             case 5:
-                return scriptEditor.size;
+                return editor.script.size;
         }
         return 0;
     }
 
-    const onMessageFromNative = (e: MessageEvent) => {
+    const onMessageFromHost = (e: MessageEvent) => {
         switch (e.data.command) {
-            case 'drop':
+            case 'OnDndEnd':
                 onDrop();
+                break;
+
+            case 'ChangeLayoutMode':
+                setLayoutMode(config.layoutMode);
+                break;
+
+            case 'ChangeEditMode':
+                setEditMode(config.editMode);
+                break;
+
+            case 'UpdateEditor':
+                setEditMode(config.editMode);
+                changeIdx(getIdx());
                 break;
         }
     }
@@ -128,27 +147,29 @@ const MainPanel: React.FC = () => {
     }, [isDraggingSeparator]);
 
     React.useEffect(() => {
-        window.chrome.webview.addEventListener('message', onMessageFromNative);
+        window.chrome.webview.addEventListener('message', onMessageFromHost);
 
         const observer = new ResizeObserver((entries) => {
             entries.forEach((entry) => {
+                setWidth(document.documentElement.clientWidth);
                 setHeight(document.documentElement.clientHeight);
             });
         });
         observer.observe(ref.current!);
 
         return () => {
-            window.chrome.webview.removeEventListener('message', onMessageFromNative);
+            window.chrome.webview.removeEventListener('message', onMessageFromHost);
             observer.disconnect();
         };
     }, []);
 
-    const onDrag = () => {
-        setIsDragging(true);
-        window.chrome.webview.postMessage({
-            to: 'native',
-            command: 'drag-and-drop'
-        });
+    const onMouseDown = (event: React.MouseEvent) => {
+        if (event.button === 0) {
+            setIsDragging(true);
+            window.chrome.webview.postMessage({
+                command: 'OnDndStart'
+            });
+        }
     }
 
     const onDrop = () => {
@@ -162,9 +183,13 @@ const MainPanel: React.FC = () => {
 
     // ドラッグ中のイベントハンドラ
     const handleMouseMove = (e: MouseEvent) => {
-        const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorHeight;
-        const tmp = (e.clientY - toolbarHeight * 2 - applyButtonHeight - separatorHeight * 0.5) / editorPresetHeight;
-        separatorPosRef.current = Math.max(Math.min(tmp, 1), 0);
+        if (config.layoutMode == 1) {
+            separatorPosRef.current = Math.max(Math.min(e.clientX / width, 1), 0);
+        } else {
+            const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorHeight;
+            const tmp = (e.clientY - toolbarHeight * 2 - applyButtonHeight - separatorHeight * 0.5) / editorPresetHeight;
+            separatorPosRef.current = Math.max(Math.min(tmp, 1), 0);
+        }
         setSeparatorPos(separatorPosRef.current);
     };
 
@@ -179,29 +204,43 @@ const MainPanel: React.FC = () => {
     const userSelect = isDraggingSeparator ? 'none' : 'auto';
 
     return (
-        <div className='container-panel-main' ref={ref}>
-            <Toolbar editMode={editMode}/>
-            <EditorPanel
-                isSelectDialog={false}
-                editMode={editMode}
-                setEditMode={changeEditMode}
-                idx={getIdx()}
-                size={getSize()}
-                setIdx={changeIdx}
+        <div className='container-panel-main' ref={ref} style={{ flexDirection: layoutMode ? 'row' : 'column' }}>
+            <div
+                className='panel-upside'
                 style={{
-                    height: `${toolbarHeight + editorPresetHeight * separatorPos}px`,
-                    pointerEvents: pointerEvents,
-                    userSelect: userSelect
+                    width: layoutMode ? width * separatorPos - separatorHeight * 0.5 : '100%',
+                    height: layoutMode ? '100%' : `${toolbarHeight * 2 + editorPresetHeight * separatorPos + applyButtonHeight}px`
                 }}
-            />
-            <button className='button-apply' id='button-apply' onMouseDown={onDrag}>
-                {isDragging? 'トラックバーにドラッグ&ドロップして適用' : '適用'}
-            </button>
-            <div id='separator' onMouseDown={handleMouseDown}>
-                <div id='separator-handle'></div>
+            >
+                <Toolbar editMode={editMode} isUpdateAvailable={props.isUpdateAvailable}/>
+                <EditorPanel
+                    isSelectDialog={false}
+                    editMode={editMode}
+                    setEditMode={changeEditMode}
+                    idx={getIdx()}
+                    size={getSize()}
+                    setIdx={changeIdx}
+                    style={{
+                        height: layoutMode ? '100%' : `${toolbarHeight + editorPresetHeight * separatorPos}px`,
+                        pointerEvents: pointerEvents,
+                        userSelect: userSelect
+                    }}
+                />
+                <button className='button-apply' id='button-apply' onMouseDown={onMouseDown}>
+                    {isDragging? 'トラックバーにドラッグ&ドロップして適用' : '適用'}
+                </button>
             </div>
-            <Preset style={{
-                height: `${editorPresetHeight * (1 - separatorPos)}px`,
+            <div
+                id='separator'
+                className={layoutMode ? 'separator-horizontal' : 'separator-vertical'}
+                onMouseDown={handleMouseDown}
+                style={{ cursor: layoutMode ? 'col-resize' : 'row-resize'}}
+            >
+                <div id='separator-handle' className={layoutMode ? 'separator-handle-horizontal' : 'separator-handle-vertical'}></div>
+            </div>
+            <PresetPanel style={{
+                width: layoutMode ? width * (1 - separatorPos) - separatorHeight * 0.5 : '100%',
+                height: layoutMode ? '100%' : `${editorPresetHeight * (1 - separatorPos)}px`,
                 pointerEvents: pointerEvents,
                 userSelect: userSelect
             }}/>

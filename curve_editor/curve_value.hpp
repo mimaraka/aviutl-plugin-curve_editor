@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "curve_graph.hpp"
 #include "enum.hpp"
+#include "string_table.hpp"
 
 
 
@@ -19,17 +20,18 @@ namespace cved {
 
 		ValueCurve(const ValueCurve& curve) noexcept;
 
-		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_VALUE; }
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_VALUE; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeValue]; }
 
-		double curve_function(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		bool is_default() const noexcept override;
+		[[nodiscard]] bool is_default() const noexcept override;
 
 		bool add_curve(const mkaul::Point<double>& pt, double scale_x) noexcept;
 		bool delete_curve(GraphCurve* p_segment) noexcept;
 		bool replace_curve(size_t idx, CurveSegmentType segment_type) noexcept;
 
-		nlohmann::json create_json() const noexcept override;
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 	};
 }

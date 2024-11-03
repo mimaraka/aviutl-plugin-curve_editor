@@ -39,8 +39,10 @@ namespace cved {
 			bool advance_idx_value(int n) noexcept { return set_idx_value((int)idx_value_ + n); }
 			void jump_to_last_idx_normal() noexcept;
 			void jump_to_last_idx_value() noexcept;
-			void append_idx_normal() noexcept { curves_normal_.emplace_back(NormalCurve{}); }
-			void append_idx_value() noexcept { curves_value_.emplace_back(ValueCurve{}); }
+			void append_idx_normal() noexcept { append_curve_normal(NormalCurve{}); }
+			void append_idx_value() noexcept { append_curve_value(ValueCurve{}); }
+			void append_curve_normal(const NormalCurve& curve) noexcept { curves_normal_.emplace_back(curve); }
+			void append_curve_value(const ValueCurve& curve) noexcept { curves_value_.emplace_back(curve); }
 			void pop_idx_normal() noexcept;
 			void pop_idx_value() noexcept;
 			bool is_idx_first_normal() const noexcept { return idx_normal_ == 0u; }

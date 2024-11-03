@@ -1,6 +1,6 @@
 import React from 'react';
 import { faPlus, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { config, graphEditor } from './host_object';
+import { config, editor } from './host_object';
 import { ToolbarButtonIcon, ToolbarButtonText } from './button';
 import GraphEditorPanel from './editor_graph';
 import TextEditorPanel from './editor_text';
@@ -17,22 +17,27 @@ const ParamButton: React.FC<ParamButtonProps> = (props: ParamButtonProps) => {
 
     const onClick = () => {
         window.chrome.webview.postMessage({
-            command: 'button-param'
+            command: 'ButtonParam',
+            curveId: getCurveHostObject()?.getId(props.isSelectDialog) ?? 0
         });
     }
 
-    const getParam = () => {
+    const getCurveHostObject = () => {
         switch (props.editMode) {
             case 2:
-                return graphEditor.bezier.getParam(graphEditor.bezier.getId(props.isSelectDialog));
+                return editor.graph.bezier;
 
             case 3:
-                return graphEditor.elastic.getParam(graphEditor.elastic.getId(props.isSelectDialog));
+                return editor.graph.elastic;
 
             case 4:
-                return graphEditor.bounce.getParam(graphEditor.bounce.getId(props.isSelectDialog));
+                return editor.graph.bounce;
         }
-        return '';
+        return null;
+    }
+
+    const getParam = () => {
+        return getCurveHostObject()?.getParam(getCurveHostObject()?.getId(props.isSelectDialog) ?? 0);
     }
 
     const [_, setParam] = React.useState(getParam());
@@ -85,16 +90,10 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
 
     const goBack = () => {
         props.setIdx(props.idx - 1);
-        window.postMessage({
-            command: 'changeCurve'
-        })
     }
 
     const goForward = () => {
         props.setIdx(props.idx + 1);
-        window.postMessage({
-            command: 'changeCurve'
-        })
     }
 
     const onBackButtonHoldStart = (event: React.MouseEvent) => {
@@ -116,10 +115,18 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
         clearInterval(refIntervalBack.current);
     }
 
-    const onIdButtonClicked = () => {
+    const onIdxButtonClick = (event: React.MouseEvent) => {
         window.chrome.webview.postMessage({
-            command: 'button-id'
+            command: 'ButtonIdx'
         });
+    }
+
+    const onIdxButtonMouseDown = (event: React.MouseEvent) => {
+        if (event.button == 2) {
+            window.chrome.webview.postMessage({
+                command: 'ContextMenuIdx'
+            });
+        }
     }
 
     const onForwardButtonHoldStart = (event: React.MouseEvent) => {
@@ -156,7 +163,8 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
                 style={{ width: '50%' }}
                 title='編集中のID'
                 label={String(props.idx + 1)}
-                onClick={onIdButtonClicked}
+                onClick={onIdxButtonClick}
+                onMouseDown={onIdxButtonMouseDown}
             />
             <ToolbarButtonIcon
                 style={{ width: '25%' }}

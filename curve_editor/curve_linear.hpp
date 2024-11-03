@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "curve_graph.hpp"
+#include "string_table.hpp"
 
 
 
@@ -19,14 +20,15 @@ namespace cved {
 			GraphCurve{ anchor_start, anchor_end, pt_fixed, prev, next }
 		{}
 
-		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_LINEAR; }
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_LINEAR; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelCurveSegmentTypeLinear]; }
 
 		// カーブの値を取得
-		double curve_function(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		// カーブを初期化
 		void clear() noexcept override {}
 		// カーブがデフォルトかどうか
-		bool is_default() const noexcept override { return true; }
+		[[nodiscard]] bool is_default() const noexcept override { return true; }
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {

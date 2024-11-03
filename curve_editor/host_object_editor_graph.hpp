@@ -13,10 +13,9 @@
 
 
 namespace cved {
-	class GraphEditorHostObject : public mkaul::wv2::HostObject {
+	class GraphEditorHostObject : public mkaul::ole::HostObject {
 		static std::vector<double> get_curve_value_array(uint32_t id, double start_x, double start_y, double end_x, double end_y, size_t n);
 		static std::vector<double> get_curve_velocity_array(uint32_t id, double start_x, double start_y, double end_x, double end_y, size_t n);
-		static std::wstring get_curve_type(uint32_t id);
 
 	public:
 		GraphEditorHostObject() {
@@ -28,7 +27,6 @@ namespace cved {
 				return global::editor.editor_graph().get_curve(mode)->get_velocity(prog, start, end);
 			});
 			register_member(L"getCurveVelocityArray", DispatchType::Method, get_curve_velocity_array);
-			register_member(L"getCurveType", DispatchType::Method, get_curve_type);
 			register_member(L"graph", DispatchType::PropertyGet, create_host_object<GraphCurveHostObject>);
 			register_member(L"numeric", DispatchType::PropertyGet, create_host_object<NumericGraphCurveHostObject>);
 			register_member(L"bezier", DispatchType::PropertyGet, create_host_object<BezierCurveHostObject>);

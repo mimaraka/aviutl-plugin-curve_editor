@@ -70,6 +70,6 @@ namespace cved {
 		if (!curve) {
 			return std::string("");
 		}
-		return curve->make_param();
+		return curve->create_params_str();
 	}
 } // namespace cved

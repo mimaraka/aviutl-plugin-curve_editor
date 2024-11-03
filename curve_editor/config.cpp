@@ -9,31 +9,34 @@
 
 namespace cved {
 	namespace global {
-		void Config::init(HINSTANCE hinst) noexcept {
+		Config::Config() noexcept :
+			edit_mode_{ EditMode::Normal },
+			layout_mode_{ LayoutMode::Horizontal },
+			apply_mode_{},
+			curve_code_bezier_{ 145674282 },
+			curve_code_elastic_{ 2554290 },
+			curve_code_bounce_{ 10612242 },
+			show_x_label_{ false },
+			show_y_label_{ true },
+			show_handle_{ true },
+			show_library_{ true },
+			show_velocity_graph_{ false },
+			align_handle_{ true },
+			ignore_autosaver_warning_{ false },
+			separator_pos_{ 0.56 },
+			preset_size_{ 64 }
+		{
 			pref_.reset();
-			edit_mode_ = EditMode::Normal;
-			layout_mode_ = LayoutMode::Vertical;
 			apply_mode_.fill(ApplyMode::Normal);
 			set_apply_mode(EditMode::Value, ApplyMode::IgnoreMidPoint);
-			curve_code_bezier_ = 145674282;
-			curve_code_elastic_ = 2554290;
-			curve_code_bounce_ = 10612242;
-			show_x_label_ = false;
-			show_y_label_ = true;
-			show_handle_ = true;
-			show_library_ = true;
-			show_velocity_graph_ = false;
-			align_handle_ = true;
-			ignore_autosaver_warning_ = false;
-			separator_pos_ = 1.;
-			preset_size_ = 50;
+			set_apply_mode(EditMode::Script, ApplyMode::IgnoreMidPoint);
 
 			// AviUtlのディレクトリの取得
 			char path_str[MAX_PATH];
 			::GetModuleFileNameA(NULL, path_str, MAX_PATH);
 			std::filesystem::path path_aviutl{ path_str };
 			dir_aviutl_ = path_aviutl.parent_path();
-			::GetModuleFileNameA(hinst, path_str, MAX_PATH);
+			::GetModuleFileNameA(::GetModuleHandleA(global::PLUGIN_DLL_NAME), path_str, MAX_PATH);
 			std::filesystem::path path_plugin{ path_str };
 			dir_plugin_ = path_plugin.parent_path() / "curve_editor";
 		}
@@ -67,9 +70,6 @@ namespace cved {
 
 		const char* Config::get_edit_mode_dispname(EditMode edit_mode) const noexcept {
 			using StringId = StringTable::StringId;
-
-			if (!string_table.loaded()) return nullptr;
-
 			switch (edit_mode) {
 			case EditMode::Normal:
 				return string_table[StringId::LabelEditModeNormal];
@@ -138,8 +138,8 @@ namespace cved {
 			separator_pos_ = mkaul::clamp(separator_pos, 0., 1.);
 		}
 
-		void Config::set_preset_size(int) noexcept {
-
+		void Config::set_preset_size(int preset_size) noexcept {
+			preset_size_ = mkaul::clamp(preset_size, 20, 200);
 		}
 
 #define GET_KEY(var) std::string{ #var, 0u, strlen(#var) - 1u}.c_str()
@@ -206,7 +206,7 @@ namespace cved {
 
 			std::ofstream ofs{ dir_plugin_ / CONFIG_FILE_NAME };
 			if (!ofs) return false;
-			ofs << data.dump(4);
+			ofs << data.dump(2);
 			return true;
 		}
 

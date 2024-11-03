@@ -22,10 +22,11 @@ namespace cved {
 		inline constexpr auto MODIFIER_NAME_SQUARE_WAVE = "square_wave";
 
 		inline constexpr auto PLUGIN_NAME = "Curve Editor";
+		inline constexpr auto PLUGIN_DLL_NAME = "curve_editor.auf";
 		inline constexpr auto PLUGIN_VERSION = mkaul::Version{
 			mkaul::VersionNumber{2},
 			mkaul::PreviewType{mkaul::PreviewType::Type::Alpha},
-			mkaul::VersionNumber{2, 1, 1}
+			mkaul::VersionNumber{2, 2}
 		};
 		inline constexpr auto PLUGIN_DEVELOPER = "mimaraka";
 		inline constexpr auto PLUGIN_TRANSLATOR = "Deepdive";

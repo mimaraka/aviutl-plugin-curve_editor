@@ -11,8 +11,12 @@
             display: flex;
             font-family: system-ui, sans-serif;
         }
+        * {
+            -webkit-user-drag: none;
+        }
         .loading {
             margin: auto;
+            user-select: none;
         }
         @media (prefers-color-scheme: dark) {
             #root {

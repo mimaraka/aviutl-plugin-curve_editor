@@ -1,22 +1,21 @@
 @import url('./variables.scss');
 
 .button-toolbar {
+    user-select: none;
     position: relative;
+    overflow: hidden;
     width: 100%;
     height: calc(100% - 2 * var(--margin));
     margin: var(--margin);
+    transition: var(--transition);
     background: var(--color-control);
-    color: var(--color-content);
+    cursor: pointer;
     border: none;
     border-radius: var(--border-radius);
-    cursor: pointer;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    user-select: none;
-    transition: all .2s ease-out;
     font: var(--font);
-
+    color: var(--color-content);
+    text-overflow: ellipsis;
+    white-space: nowrap;
     &:hover {
         background: var(--color-control-hover);
     }
@@ -30,10 +29,9 @@
     }
 
     &:disabled {
-        cursor: default;
         background: var(--color-bg);
+        cursor: default;
         color: var(--color-content-disabled);
-
         &:hover {
             background: var(--color-bg);
         }
@@ -47,26 +45,26 @@
         display: inline-block;
         position: absolute;
         top: 0;
-        right: 0;
         bottom: 0;
         left: 0;
+        right: 0;
         height: 1.5em;
         margin: auto;
+        font: var(--font);
+        color: var(--color-content);
         text-align: center;
         vertical-align: middle;
-        color: var(--color-content);
-        font: var(--font);
     }
 
     .badge {
-        position: absolute;
-        display: block;
         content: "";
+        display: block;
+        position: absolute;
+        top: 3px;
+        left: 55%;
         width: 8px;
         height: 8px;
-        border-radius: 100%;
         background: #2d8ceb;
-        left: 55%;
-        top: 3px;
+        border-radius: 100%;
     }
 }

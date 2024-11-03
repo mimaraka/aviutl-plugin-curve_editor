@@ -1,14 +1,31 @@
 #include "config.hpp"
+#include "constants.hpp"
 #include "curve_editor.hpp"
 #include "drag_and_drop.hpp"
 #include "global.hpp"
 #include "util.hpp"
 #include <mkaul/util_hook.hpp>
 #include <mkaul/aviutl.hpp>
+#include <regex>
 
 
 
 namespace cved {
+	int16_t DragAndDrop::get_track_script_idx() noexcept {
+		const std::regex regex_script_name{ std::format(R"(^Type1@{}(\x01.+)?$)", global::PLUGIN_NAME) };
+		auto tra_script_names = global::exedit_internal.get<const char*>(0x231488u);
+		int16_t script_idx = 0;
+
+		while (true) {
+			if (!tra_script_names[script_idx]) return -1;
+			if (std::regex_match(tra_script_names[script_idx], regex_script_name)) {
+				break;
+			}
+			script_idx++;
+		}
+		return script_idx;
+	}
+
 	// イージングが適用されるトラックバーのインデックスの配列を取得する
 	void DragAndDrop::get_applied_track_idcs(int32_t obj_idx, int32_t track_idx, std::vector<int32_t>& ret) noexcept {
 		ret.clear();
@@ -27,11 +44,32 @@ namespace cved {
 
 	// 指定したトラックバーにCEのイージングを適用する
 	void DragAndDrop::apply_easing_to_track(int32_t obj_idx, int32_t track_idx) noexcept {
-		int16_t type_idx;
+		int16_t type_idx = 0;
+		int32_t param;
 		auto obj_array = *(global::exedit_internal.p_array_obj());
 		auto p_obj = &obj_array[obj_idx];
+		EditMode mode = EditMode::Normal;
 
-		switch (global::config.get_edit_mode()) {
+		auto curve = global::id_manager.get_curve<NumericGraphCurve>(curve_id_);
+		if (curve) {
+			// TODO: get_type()を実装し次第変更
+			if (curve->get_name() == global::CURVE_NAME_BEZIER) {
+				mode = EditMode::Bezier;
+			}
+			else if (curve->get_name() == global::CURVE_NAME_ELASTIC) {
+				mode = EditMode::Elastic;
+			}
+			else if (curve->get_name() == global::CURVE_NAME_BOUNCE) {
+				mode = EditMode::Bounce;
+			}
+			param = curve->encode();
+		}
+		else {
+			mode = global::config.get_edit_mode();
+			param = global::editor.track_param();
+		}
+
+		switch (mode) {
 		case EditMode::Elastic:
 		case EditMode::Bounce:
 			type_idx = 1;
@@ -40,16 +78,17 @@ namespace cved {
 		default:
 			type_idx = 0;
 		}
-		int16_t apply_mode = (int16_t)global::config.get_apply_mode(global::config.get_edit_mode());
+		
+		int16_t apply_mode = (int16_t)global::config.get_apply_mode(mode);
 		int16_t script_idx_offset = type_idx * (int16_t)ApplyMode::NumApplyMode + apply_mode;
 
 		// track_mode, track_paramの該当要素の値を変更
 		mkaul::replace_var(&(p_obj->track_mode[track_idx].num), ExEdit::Object::TrackMode::isScript);
 		mkaul::replace_var(
 			&(p_obj->track_mode[track_idx].script_idx),
-			(int16_t)(util::get_track_script_idx() + script_idx_offset)
+			(int16_t)(get_track_script_idx() + script_idx_offset)
 		);
-		mkaul::replace_var(&(p_obj->track_param[track_idx]), global::editor.track_param());
+		mkaul::replace_var(&(p_obj->track_param[track_idx]), param);
 	}
 
 	void DragAndDrop::apply_easing_to_tracks(int32_t obj_idx, int32_t track_idx) noexcept {
@@ -103,8 +142,9 @@ namespace cved {
 		}
 	}
 
-	bool DragAndDrop::drag() noexcept {
+	bool DragAndDrop::drag(uint32_t curve_id) noexcept {
 		if (!dragging_) {
+			curve_id_ = curve_id;
 			dragging_ = true;
 			return true;
 		}

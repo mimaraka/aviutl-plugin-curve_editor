@@ -23,7 +23,8 @@ namespace cved {
 			bool set_idx(int idx) noexcept;
 			bool advance_idx(int n) noexcept { return set_idx((int)idx_ + n); }
 			void jump_to_last_idx() noexcept;
-			void append_idx() noexcept { curves_script_.emplace_back(ScriptCurve{}); }
+			void append_idx() noexcept { append_curve(ScriptCurve{}); }
+			void append_curve(const ScriptCurve& curve) noexcept { curves_script_.emplace_back(curve); }
 			void pop_idx() noexcept;
 			bool is_idx_first() const noexcept { return idx_ == 0u; }
 			bool is_idx_last() const noexcept { return idx_ == curves_script_.size() - 1; }
