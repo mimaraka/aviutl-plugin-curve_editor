@@ -12,7 +12,11 @@
     --color-button: rgb(26, 115, 170);
     --color-button-hover: rgb(23, 91, 133);
     --color-button-active: rgb(17, 76, 113);
+    --color-preset-item: rgb(225, 225, 225);
+    --color-preset-item-hover: rgb(204, 204, 204);
+    --color-preset-item-active: rgb(191, 191, 191);
     --color-focus-outline: rgb(109, 109, 109);
+    --color-scrollbar-thumb: rgb(180, 180, 180);
     
     --menu-row-height: 36px;
     --separator-height: 12px;
@@ -20,6 +24,7 @@
     --searchbar-height: 40px;
     --border-radius: 6px;
     --margin: 2px;
+    --transition: all .2s ease-out;
 
     --font: bold 14px system-ui,
         -apple-system,
@@ -46,6 +51,10 @@
         --color-content: rgb(228, 228, 228);
         --color-dropdown-arrow: rgb(175, 175, 175);
         --color-content-disabled: rgb(128, 128, 128);
+        --color-preset-item: rgb(45, 45, 45);
+        --color-preset-item-hover: rgb(60, 60, 60);
+        --color-preset-item-active: rgb(30, 30, 30);
         --color-focus-outline: rgb(33, 33, 33);
+        --color-scrollbar-thumb: rgb(80, 80, 80);
     }
 }

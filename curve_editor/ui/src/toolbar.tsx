@@ -1,27 +1,31 @@
 import React from 'react';
 import { faClone, faSquareUpRight, faStar, faLock, faLockOpen, faTrash, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon, ToolbarButtonIconProps } from './button';
-import { config } from './host_object';
 import './scss/toolbar.scss';
 
 
 interface ToolbarProps {
     editMode: number;
+    isUpdateAvailable: boolean;
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
     const [isLocked, setIsLocked] = React.useState(false);
-    const [showNotification, setShowNotification] = React.useState(false);
+    const [showNotification, setShowNotification] = React.useState(props.isUpdateAvailable);
+
+    const onMessageFromHost = (event: MessageEvent) => {
+        switch (event.data.command) {
+            case 'NotifyUpdateAvailable':
+                setShowNotification(true);
+                break;
+        }
+    }
 
     React.useEffect(() => {
-        if (config.notifyUpdate) {
-            fetch('https://api.github.com/repos/mimaraka/aviutl-plugin-curve_editor/releases/latest').then(response => {
-                return response.json();
-            }).then(data => {
-                if (!config.isLatestVersion(data.tag_name)) {
-                    setShowNotification(true);
-                }
-            });
+        window.chrome.webview.addEventListener('message', onMessageFromHost);
+
+        return () => {
+            window.chrome.webview.removeEventListener('message', onMessageFromHost);
         }
     }, []);
 
@@ -31,8 +35,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
             title: 'カーブのコード/IDをコピー',
             onClick: () => {
                 window.chrome.webview.postMessage({
-                    to: 'native',
-                    command: 'copy'
+                    command: 'ButtonCopy'
                 });
             }
         },
@@ -41,7 +44,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
             title: 'カーブのコードを読み取り',
             onClick: () => {
                 window.chrome.webview.postMessage({
-                    command: 'read'
+                    command: 'ButtonCurveCode'
                 });
             },
             disabled: !(props.editMode == 2 || props.editMode == 3 || props.editMode == 4)
@@ -51,7 +54,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
             title: 'プリセットに保存',
             onClick: () => {
                 window.chrome.webview.postMessage({
-                    command: 'save'
+                    command: 'ButtonSave'
                 });
             }
         },
@@ -60,7 +63,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
             title: isLocked ? 'カーブの編集はロックされています' : 'カーブは編集可能です',
             onClick: () => {
                 window.chrome.webview.postMessage({
-                    command: 'lock'
+                    command: 'ButtonLock'
                 });
                 setIsLocked(!isLocked);
             }
@@ -70,7 +73,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
             title: 'カーブを削除',
             onClick: () => {
                 window.chrome.webview.postMessage({
-                    command: 'clear'
+                    command: 'ButtonClear'
                 });
             },
             disabled: isLocked
@@ -78,10 +81,12 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
         {
             icon: faEllipsisVertical,
             title: 'その他',
-            onClick: () => {
-                window.chrome.webview.postMessage({
-                    command: 'others'
-                });
+            onMouseDown: (event: React.MouseEvent) => {
+                if (event.button === 0) {
+                    window.chrome.webview.postMessage({
+                        command: 'ButtonOthers'
+                    });
+                }
             },
             badge: showNotification
         }

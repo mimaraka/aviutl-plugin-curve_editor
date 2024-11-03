@@ -10,7 +10,7 @@ namespace cved {
         HANDLE hactctx_ = NULL;
 
     public:
-        bool init(HINSTANCE hinst) noexcept;
+        bool init() noexcept;
         bool exit();
     };
 }

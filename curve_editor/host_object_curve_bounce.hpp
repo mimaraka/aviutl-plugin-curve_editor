@@ -9,7 +9,7 @@ namespace cved {
 		static double get_handle_x(uint32_t id);
 		static double get_handle_y(uint32_t id);
 		static void set_handle(uint32_t id, double x, double y);
-		static std::wstring get_param(uint32_t id);
+		static std::string get_param(uint32_t id);
 		static uint32_t get_id(bool is_select_dialog);
 
 	public:

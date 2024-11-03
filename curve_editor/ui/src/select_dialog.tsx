@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import EditorPanel from './panel_editor';
-import { graphEditor, scriptEditor } from './host_object';
+import { editor } from './host_object';
 import './scss/select_dialog.scss';
 
 
@@ -16,15 +16,14 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
 
     const buttonHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--okcancel-height'));
     const margin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--margin'));
-    console.log('debug');
 
     const changeIdx = (idx: number) => {
         let newIdx = null;
         switch (editMode) {
             case 0:
-                if (graphEditor.normal.size <= idx) {
-                    graphEditor.normal.appendIdx();
-                    newIdx = graphEditor.normal.size - 1;
+                if (editor.graph.normal.size <= idx) {
+                    editor.graph.normal.appendIdx();
+                    newIdx = editor.graph.normal.size - 1;
                 } else {
                     newIdx = Math.max(idx, 0);
                 }
@@ -36,12 +35,13 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
                 break;
 
             case 5:
-                if (scriptEditor.size <= idx) {
-                    scriptEditor.appendIdx();
-                    newIdx = scriptEditor.size - 1;
+                if (editor.script.size <= idx) {
+                    editor.script.appendIdx();
+                    newIdx = editor.script.size - 1;
                 } else {
                     newIdx = Math.max(idx, 0);
                 }
+                setIdxScript(newIdx);
                 break;
         }
     }
@@ -63,13 +63,13 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
     const getSize = () => {
         switch (editMode) {
             case 0:
-                return graphEditor.normal.size;
+                return editor.graph.normal.size;
 
             case 1:
-                //return graphEditor.value.size;
+                //return editor.graph.value.size;
 
             case 5:
-                return scriptEditor.size;
+                return editor.script.size;
         }
         return 0;
     }
@@ -86,15 +86,15 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
                 break;
 
             case 2:
-                param = graphEditor.numeric.encode(graphEditor.bezier.getId(true));
+                param = editor.graph.numeric.encode(editor.graph.bezier.getId(true));
                 break;
 
             case 3:
-                param = graphEditor.numeric.encode(graphEditor.elastic.getId(true));
+                param = editor.graph.numeric.encode(editor.graph.elastic.getId(true));
                 break;
 
             case 4:
-                param = graphEditor.numeric.encode(graphEditor.bounce.getId(true));
+                param = editor.graph.numeric.encode(editor.graph.bounce.getId(true));
                 break;
 
             case 5:
@@ -102,7 +102,7 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
                 break
         }
         window.chrome.webview.postMessage({
-            command: 'selectdlg-ok',
+            command: 'SelectCurveOk',
             mode: editMode,
             param: param
         });
@@ -110,13 +110,13 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
 
     const onCancelButtonClicked = () => {
         window.chrome.webview.postMessage({
-            command: 'selectdlg-cancel'
+            command: 'SelectCurveCancel'
         });
     }
 
     useEffect(() => {
         window.postMessage({
-            command: 'setCurve',
+            command: 'SetCurve',
             mode: editMode,
             param: props.param
         }, '*');
@@ -134,8 +134,8 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
                 style={{ height: `${document.documentElement.clientHeight - buttonHeight - margin}px` }}
             />
             <div className='okcancel-row'>
-                <button className="okcancel" id="button-ok" onClick={onOkButtonClicked}>OK</button>
-                <button className="okcancel" id="button-cancel" onClick={onCancelButtonClicked}>キャンセル</button>
+                <button className='okcancel' id='button-ok' onClick={onOkButtonClicked}>OK</button>
+                <button className='okcancel' id='button-cancel' onClick={onCancelButtonClicked}>キャンセル</button>
             </div>
         </div>
     );

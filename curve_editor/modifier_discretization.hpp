@@ -25,6 +25,10 @@ namespace cved {
 			quantization_resolution_{ discretizer.quantization_resolution_ }
 		{}
 
+		std::unique_ptr<Modifier> clone() const noexcept override {
+			return std::make_unique<DiscretizationModifier>(*this);
+		}
+
 		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_DISCRETIZATION; }
 
 		auto sampling_resolution() const noexcept { return sampling_resolution_; }

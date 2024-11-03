@@ -2,7 +2,7 @@
 #include "dialog_pref.hpp"
 #include "enum.hpp"
 #include "my_webview2_reference.hpp"
-#include "my_messagebox.hpp"
+#include "message_box.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 
@@ -100,7 +100,7 @@ namespace cved {
 			::SendMessageA(category.hwnd, WM_COMMAND, (WPARAM)WindowCommand::SaveConfig, NULL);
 		}
 		global::config.save_json();
-		if (global::webview) global::webview->post_message(L"applyPreferences");
+		if (global::webview) global::webview->send_command(MessageCommand::ApplyPreferences);
 	}
 
 
@@ -131,10 +131,10 @@ namespace cved {
 
 			case IDC_BUTTON_RESET:
 			{
-				auto resp = my_messagebox(
+				auto resp = util::message_box(
 					global::string_table[StringId::WarningResetPreferences],
 					hwnd,
-					MessageBoxIcon::Warning, MessageBoxButton::OkCancel
+					util::MessageBoxIcon::Warning, util::MessageBoxButton::OkCancel
 				);
 				if (resp == IDOK) {
 					global::config.reset_pref();

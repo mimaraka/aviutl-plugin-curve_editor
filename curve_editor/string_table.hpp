@@ -22,12 +22,15 @@ namespace cved {
 				ErrorWebView2InitFailed,
 				ErrorCommCtrlInitFailed,
 				ErrorPageLoadFailed,
+				ErrorPresetCreateFailed,
 				WarningDeleteCurve,
 				WarningDeleteAllCurves,
 				WarningResetPreferences,
 				WarningDeleteId,
 				WarningDeleteAllIds,
 				WarningRemoveModifier,
+				WarningRemovePreset,
+				WarningRemoveCollection,
 				InfoLatestVersion,
 				InfoUpdateAvailable,
 				InfoRestartAviutl,
@@ -63,26 +66,74 @@ namespace cved {
 				LabelModifierNoise,
 				LabelModifierSineWave,
 				LabelModifierSquareWave,
+				LabelCollectionNameAll,
+				LabelCollectionNameDefault,
+				LabelCollectionNameRoot,
+				PromptCreatePreset,
+				PromptCurveCode,
+				PromptCurveParam,
+				PromptRenamePreset,
+				PromptCreateCollection,
+				PromptRenameCollection,
+				CaptionCreatePreset,
+				CaptionCurveCode,
+				CaptionCurveParam,
+				CaptionRenamePreset,
+				CaptionCreateCollection,
+				CaptionRenameCollection,
+				CaptionImportCollection,
+				CaptionExportCollection,
 				WordVersion,
 				WordEditMode,
 				WordLanguageAutomatic,
 				WordImageFiles,
 				WordSelect,
+				WordCollectionFile,
+				MenuGraphApplyMode,
+				MenuGraphAddAnchor,
+				MenuGraphReverseCurve,
+				MenuGraphModifier,
+				MenuGraphAlignHandle,
+				MenuGraphShowXLabel,
+				MenuGraphShowYLabel,
+				MenuGraphShowHandle,
+				MenuGraphShowVelocityGraph,
+				MenuCurveSegmentType,
+				MenuCurveSegmentReverse,
+				MenuCurveSegmentModifier,
+				MenuOthersWindowLayout,
+				MenuOthersWindowLayoutVertical,
+				MenuOthersWindowLayoutHorizontal,
+				MenuOthersExtension,
+				MenuOthersExtensionInstall,
+				MenuOthersReloadWindow,
+				MenuOthersPreferences,
+				MenuOthersHelp,
+				MenuOthersAbout,
+				MenuOthersUpdateAvailable,
+				MenuPresetItemRename,
+				MenuPresetItemRemove,
+				MenuCollectionAddNew,
+				MenuCollectionAddImport,
+				MenuCollectionRename,
+				MenuCollectionRemove,
+				MenuCollectionExport,
+				MenuBezierHandleRoot,
+				MenuBezierHandleAdjustAngle,
+				MenuIdxJumpToFirst,
+				MenuIdxJumpToLast,
+				MenuIdxDelete,
+				MenuIdxDeleteAll,
 				NumStringId
 			};
 
 		private:
 			static constexpr size_t MAX_LEN = 0x200;
-			bool loaded_ = false;
 
 			std::string string_data[(size_t)StringId::NumStringId];
 		public:
-			StringTable() :
-				string_data()
-			{}
-
-			bool load(HINSTANCE hinst);
-			bool loaded() const noexcept { return loaded_; }
+			StringTable() noexcept;
+			
 			const char* operator[] (StringId str_id);
 		} string_table;
 	}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "message_handler.hpp"
 #include <format>
 #include <functional>
 #include <mkaul/rectangle.hpp>
@@ -18,8 +19,6 @@ namespace cved {
 		wil::com_ptr<ICoreWebView2> webview_ = nullptr;
 		HWND hwnd_ = NULL;
 		bool is_ready_ = false;
-
-		bool handle_message(const nlohmann::json& message) noexcept;
 
 	public:
 		MyWebView2() noexcept {};
@@ -47,6 +46,9 @@ namespace cved {
 		void put_bounds(const mkaul::WindowRectangle& bounds);
 		void on_move() noexcept;
 		void post_message(const std::wstring& command, const nlohmann::json& options = nlohmann::json::object()) const noexcept;
+		void send_command(MessageCommand command, const nlohmann::json& options = nlohmann::json::object()) noexcept {
+			MessageHandler{ hwnd_, this }.send_command(command, options);
+		}
 		void update_color_scheme() noexcept;
 	};
 } // namespace cved

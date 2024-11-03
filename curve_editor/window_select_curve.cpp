@@ -22,8 +22,8 @@ namespace cved {
 				bounds.from_client_rect(this_->get_hwnd());
 				this_->put_bounds(bounds);
 				this_->navigate([mode, param](MyWebView2* this_) {
-					this_->post_message(
-						L"init",
+					this_->send_command(
+						MessageCommand::InitComponent,
 						{
 							{ "isSelectDialog", true},
 							{ "mode", mode},
@@ -59,7 +59,7 @@ namespace cved {
 		case WM_COMMAND:
 			switch (wparam) {
 			case (WPARAM)WindowCommand::SelectCurveOk:
-				global::webview.get(global::MyWebView2Reference::WebViewType::Main)->post_message(L"updateEditor");
+				global::webview.get(global::MyWebView2Reference::WebViewType::Main)->send_command(MessageCommand::UpdateEditor);
 				[[fallthrough]];
 
 			case (WPARAM)WindowCommand::SelectCurveCancel:

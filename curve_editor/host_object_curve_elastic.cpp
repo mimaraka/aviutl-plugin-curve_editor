@@ -99,11 +99,11 @@ namespace cved {
 		curve->set_handle_freq_decay(x, y);
 	}
 
-	std::wstring ElasticCurveHostObject::get_param(uint32_t id) {
+	std::string ElasticCurveHostObject::get_param(uint32_t id) {
 		auto curve = global::id_manager.get_curve<ElasticCurve>(id);
 		if (!curve) {
-			return L"";
+			return "";
 		}
-		return std::format(L"{:.2f}, {:.2f}, {:.2f}", curve->get_amplitude(), curve->get_frequency(), curve->get_decay());
+		return curve->create_params_str();
 	}
 } // namespace cved

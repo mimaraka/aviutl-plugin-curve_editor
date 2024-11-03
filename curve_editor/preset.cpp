@@ -14,12 +14,6 @@
 
 
 namespace cved {
-	Preset::Preset() : id_(register_preset()) {}
-
-	size_t Preset::register_preset() {
-		return n_presets++;
-	}
-
 	nlohmann::json Preset::create_json() const noexcept {
 		nlohmann::json data;
 		data["name"] = ::sjis_to_utf8(name_);

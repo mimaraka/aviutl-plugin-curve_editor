@@ -24,8 +24,8 @@ namespace cved {
 
 		// TODO: ロゴ画像が容易でき次第削除する
 		HWND hwnd_static_logo = ::GetDlgItem(hwnd, IDC_STATIC_LOGO);
-		HFONT font = ::CreateFontA(48, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Yu Gothic UI");
-		::SendMessageA(hwnd_static_logo, WM_SETFONT, (WPARAM)font, TRUE);
+		font_title_ = ::CreateFontA(48, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Yu Gothic UI");
+		::SendMessageA(hwnd_static_logo, WM_SETFONT, (WPARAM)font_title_, TRUE);
 	}
 
 
@@ -55,6 +55,7 @@ namespace cved {
 			switch (LOWORD(wparam)) {
 			case IDOK:
 			case IDCANCEL:
+				::DeleteObject(font_title_);
 				::EndDialog(hwnd, 1);
 				return TRUE;
 			}

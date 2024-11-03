@@ -1,5 +1,4 @@
 #include "config.hpp"
-#include "curve_bezier.hpp"
 #include "curve_bounce.hpp"
 #include "curve_elastic.hpp"
 #include "curve_linear.hpp"
@@ -47,14 +46,29 @@ namespace cved {
 		}
 	}
 
-	//bool NormalCurve::adjust_segment_handle_angle(size_t idx, BezierHandle::Type handle_type, const GraphView& view) noexcept {
-	//	if (check_segment_type<BezierCurve>(idx)) {
-	//		auto curve_bezier = dynamic_cast<BezierCurve*>(curve_segments_[idx].get());
-	//		//curve_bezier->adjust_handle_angle(handle_type, view);
-	//		return true;
-	//	}
-	//	return false;
-	//}
+	bool NormalCurve::adjust_segment_handle_angle(size_t idx, BezierCurve::HandleType handle_type, double scale_x, double scale_y) noexcept {
+		auto curve = global::id_manager.get_curve<BezierCurve>(get_segment_id(idx));
+		if (curve) {
+			switch (handle_type) {
+			case BezierCurve::HandleType::Left:
+				if (0 < idx) {
+
+				}
+				break;
+
+			case BezierCurve::HandleType::Right:
+				if (idx < curve_segments_.size() - 1) {
+
+				}
+				break;
+
+			default:
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
 	// カーブの値を取得
 	double NormalCurve::curve_function(double progress, double start, double end) const noexcept {

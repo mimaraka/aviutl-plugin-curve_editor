@@ -1,3 +1,4 @@
+#include "constants.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 
@@ -6,8 +7,10 @@
 namespace cved {
 	namespace global {
 		// 文字列テーブルの読み込み
-		bool StringTable::load(HINSTANCE hinst)
-		{
+		StringTable::StringTable() noexcept {
+			// TODO: ロケールの設定
+			// ここに書く
+
 			for (size_t i = 0; i < (size_t)StringId::NumStringId; i++) {
 				char tmp[MAX_LEN];
 				UINT id;
@@ -61,6 +64,10 @@ namespace cved {
 					id = IDS_ERROR_PAGE_LOAD_FAILED;
 					break;
 
+				case StringId::ErrorPresetCreateFailed:
+					id = IDS_ERROR_PRESET_CREATE_FAILED;
+					break;
+
 				case StringId::WarningDeleteCurve:
 					id = IDS_WARNING_DELETE_CURVE;
 					break;
@@ -83,6 +90,14 @@ namespace cved {
 
 				case StringId::WarningRemoveModifier:
 					id = IDS_WARNING_REMOVE_MODIFIER;
+					break;
+
+				case StringId::WarningRemovePreset:
+					id = IDS_WARNING_REMOVE_PRESET;
+					break;
+
+				case StringId::WarningRemoveCollection:
+					id = IDS_WARNING_REMOVE_COLLECTION;
 					break;
 
 				case StringId::InfoLatestVersion:
@@ -225,6 +240,74 @@ namespace cved {
 					id = IDS_LABEL_MODIFIER_SQUARE_WAVE;
 					break;
 
+				case StringId::LabelCollectionNameAll:
+					id = IDS_LABEL_COLLECTION_NAME_ALL;
+					break;
+
+				case StringId::LabelCollectionNameDefault:
+					id = IDS_LABEL_COLLECTION_NAME_DEFAULT;
+					break;
+
+				case StringId::LabelCollectionNameRoot:
+					id = IDS_LABEL_COLLECTION_NAME_ROOT;
+					break;
+
+				case StringId::PromptCreatePreset:
+					id = IDS_PROMPT_CREATE_PRESET;
+					break;
+
+				case StringId::PromptCurveCode:
+					id = IDS_PROMPT_CURVE_CODE;
+					break;
+
+				case StringId::PromptCurveParam:
+					id = IDS_PROMPT_CURVE_PARAM;
+					break;
+
+				case StringId::PromptRenamePreset:
+					id = IDS_PROMPT_RENAME_PRESET;
+					break;
+
+				case StringId::PromptCreateCollection:
+					id = IDS_PROMPT_CREATE_COLLECTION;
+					break;
+
+				case StringId::PromptRenameCollection:
+					id = IDS_PROMPT_RENAME_COLLECTION;
+					break;
+
+				case StringId::CaptionCreatePreset:
+					id = IDS_CAPTION_CREATE_PRESET;
+					break;
+
+				case StringId::CaptionCurveCode:
+					id = IDS_CAPTION_CURVE_CODE;
+					break;
+
+				case StringId::CaptionCurveParam:
+					id = IDS_CAPTION_CURVE_PARAM;
+					break;
+
+				case StringId::CaptionRenamePreset:
+					id = IDS_CAPTION_RENAME_PRESET;
+					break;
+
+				case StringId::CaptionCreateCollection:
+					id = IDS_CAPTION_CREATE_COLLECTION;
+					break;
+
+				case StringId::CaptionRenameCollection:
+					id = IDS_CAPTION_RENAME_COLLECTION;
+					break;
+
+				case StringId::CaptionImportCollection:
+					id = IDS_CAPTION_IMPORT_COLLECTION;
+					break;
+
+				case StringId::CaptionExportCollection:
+					id = IDS_CAPTION_EXPORT_COLLECTION;
+					break;
+
 				case StringId::WordVersion:
 					id = IDS_WORD_VERSION;
 					break;
@@ -245,17 +328,158 @@ namespace cved {
 					id = IDS_WORD_SELECT;
 					break;
 
+				case StringId::WordCollectionFile:
+					id = IDS_WORD_COLLECTION_FILE;
+					break;
+
+				case StringId::MenuGraphApplyMode:
+					id = IDS_MENU_GRAPH_APPLY_MODE;
+					break;
+
+				case StringId::MenuGraphAddAnchor:
+					id = IDS_MENU_GRAPH_ADD_ANCHOR;
+					break;
+
+				case StringId::MenuGraphReverseCurve:
+					id = IDS_MENU_GRAPH_REVERSE_CURVE;
+					break;
+
+				case StringId::MenuGraphModifier:
+					id = IDS_MENU_GRAPH_MODIFIER;
+					break;
+
+				case StringId::MenuGraphAlignHandle:
+					id = IDS_MENU_GRAPH_ALIGN_HANDLE;
+					break;
+
+				case StringId::MenuGraphShowXLabel:
+					id = IDS_MENU_GRAPH_SHOW_X_LABEL;
+					break;
+
+				case StringId::MenuGraphShowYLabel:
+					id = IDS_MENU_GRAPH_SHOW_Y_LABEL;
+					break;
+
+				case StringId::MenuGraphShowHandle:
+					id = IDS_MENU_GRAPH_SHOW_HANDLE;
+					break;
+
+				case StringId::MenuGraphShowVelocityGraph:
+					id = IDS_MENU_GRAPH_SHOW_VELOCITY_GRAPH;
+					break;
+
+				case StringId::MenuCurveSegmentType:
+					id = IDS_MENU_CURVE_SEGMENT_TYPE;
+					break;
+
+				case StringId::MenuCurveSegmentReverse:
+					id = IDS_MENU_CURVE_SEGMENT_REVERSE;
+					break;
+
+				case StringId::MenuCurveSegmentModifier:
+					id = IDS_MENU_CURVE_SEGMENT_MODIFIER;
+					break;
+
+				case StringId::MenuOthersWindowLayout:
+					id = IDS_MENU_OTHERS_WINDOW_LAYOUT;
+					break;
+
+				case StringId::MenuOthersWindowLayoutVertical:
+					id = IDS_MENU_OTHERS_WINDOW_LAYOUT_VERTICAL;
+					break;
+
+				case StringId::MenuOthersWindowLayoutHorizontal:
+					id = IDS_MENU_OTHERS_WINDOW_LAYOUT_HORIZONTAL;
+					break;
+
+				case StringId::MenuOthersExtension:
+					id = IDS_MENU_OTHERS_EXTENSION;
+					break;
+
+				case StringId::MenuOthersExtensionInstall:
+					id = IDS_MENU_OTHERS_EXTENSION_INSTALL;
+					break;
+
+				case StringId::MenuOthersReloadWindow:
+					id = IDS_MENU_OTHERS_RELOAD_WINDOW;
+					break;
+
+				case StringId::MenuOthersPreferences:
+					id = IDS_MENU_OTHERS_PREFERENCES;
+					break;
+
+				case StringId::MenuOthersHelp:
+					id = IDS_MENU_OTHERS_HELP;
+					break;
+
+				case StringId::MenuOthersAbout:
+					id = IDS_MENU_OTHERS_ABOUT;
+					break;
+
+				case StringId::MenuOthersUpdateAvailable:
+					id = IDS_MENU_OTHERS_UPDATE_AVAILABLE;
+					break;
+
+				case StringId::MenuPresetItemRename:
+					id = IDS_MENU_PRESET_ITEM_RENAME;
+					break;
+
+				case StringId::MenuPresetItemRemove:
+					id = IDS_MENU_PRESET_ITEM_REMOVE;
+					break;
+
+				case StringId::MenuCollectionAddNew:
+					id = IDS_MENU_COLLECTION_ADD_NEW;
+					break;
+
+				case StringId::MenuCollectionAddImport:
+					id = IDS_MENU_COLLECTION_ADD_IMPORT;
+					break;
+
+				case StringId::MenuCollectionRename:
+					id = IDS_MENU_COLLECTION_RENAME;
+					break;
+
+				case StringId::MenuCollectionRemove:
+					id = IDS_MENU_COLLECTION_REMOVE;
+					break;
+
+				case StringId::MenuCollectionExport:
+					id = IDS_MENU_COLLECTION_EXPORT;
+					break;
+
+				case StringId::MenuBezierHandleRoot:
+					id = IDS_MENU_BEZIER_HANDLE_ROOT;
+					break;
+
+				case StringId::MenuBezierHandleAdjustAngle:
+					id = IDS_MENU_BEZIER_HANDLE_ADJUST_ANGLE;
+					break;
+
+				case StringId::MenuIdxJumpToFirst:
+					id = IDS_MENU_IDX_JUMP_TO_FIRST;
+					break;
+
+				case StringId::MenuIdxJumpToLast:
+					id = IDS_MENU_IDX_JUMP_TO_LAST;
+					break;
+
+				case StringId::MenuIdxDelete:
+					id = IDS_MENU_IDX_DELETE;
+					break;
+
+				case StringId::MenuIdxDeleteAll:
+					id = IDS_MENU_IDX_DELETE_ALL;
+					break;
+
 				default:
 					continue;
 				}
 
-				if (!::LoadStringA(hinst, id, tmp, MAX_LEN)) {
-					return false;
+				if (::LoadStringA(::GetModuleHandleA(global::PLUGIN_DLL_NAME), id, tmp, MAX_LEN)) {
+					string_data[i] = tmp;
 				}
-				string_data[i] = tmp;
 			}
-			loaded_ = true;
-			return true;
 		}
 
 

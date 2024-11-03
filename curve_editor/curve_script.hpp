@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "curve_base.hpp"
+#include "string_table.hpp"
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/polymorphic.hpp>
 #include <cereal/types/string.hpp>
@@ -15,18 +16,24 @@ namespace cved {
 		std::string script_;
 
 	public:
-		ScriptCurve() : script_{DEFAULT_SCRIPT}
+		ScriptCurve() : script_{ DEFAULT_SCRIPT }
 		{}
 
-		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_SCRIPT; }
-		double curve_function(double, double start, double) const noexcept override;
-		void clear() noexcept override { script_ = DEFAULT_SCRIPT; }
-		bool is_default() const noexcept override { return true; }
+		ScriptCurve(const ScriptCurve& curve) :
+			Curve{ curve },
+			script_{ curve.script_ }
+		{}
 
-		const auto& script() const noexcept { return script_; }
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_SCRIPT; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeScript]; }
+		[[nodiscard]] double curve_function(double, double start, double) const noexcept override;
+		void clear() noexcept override { script_ = DEFAULT_SCRIPT; }
+		[[nodiscard]] bool is_default() const noexcept override { return true; }
+
+		[[nodiscard]] const auto& script() const noexcept { return script_; }
 		void set_script(const std::string& script) noexcept { script_ = script; }
 
-		nlohmann::json create_json() const noexcept override;
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>

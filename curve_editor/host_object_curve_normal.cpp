@@ -11,7 +11,7 @@ namespace cved {
 		}
 		std::vector<uint32_t> id_array;
 		for (size_t i = 0; i < curve->segment_n(); i++) {
-			id_array.emplace_back(curve->get_segment(i)->get_id());
+			id_array.emplace_back(curve->get_segment_id(i));
 		}
 		return id_array;
 	}

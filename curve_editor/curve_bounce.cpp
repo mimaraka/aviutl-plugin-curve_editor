@@ -156,6 +156,25 @@ namespace cved {
 		return true;
 	}
 
+	std::string BounceCurve::create_params_str(size_t precision) const noexcept {
+		std::ostringstream oss;
+		oss << std::fixed << std::setprecision(precision) << cor_;
+		oss << ", " << std::fixed << std::setprecision(precision) << period_;
+		return oss.str();
+	}
+
+	bool BounceCurve::read_params(const std::vector<double>& params) noexcept {
+		if (params.size() != 2) {
+			return false;
+		}
+		if (!mkaul::real_in_range(params[0], 0., 1.) or !mkaul::real_in_range(params[1], 0., 2.)) {
+			return false;
+		}
+		cor_ = params[0];
+		period_ = params[1];
+		return true;
+	}
+
 	nlohmann::json BounceCurve::create_json() const noexcept {
 		auto data = GraphCurve::create_json();
 		data["cor"] = cor_;

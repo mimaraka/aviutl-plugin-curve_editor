@@ -13,7 +13,7 @@ namespace cved {
 			std::vector<std::pair<uint32_t, Curve*>> info_;
 
 		public:
-			uint32_t create_id(Curve* curve) noexcept {
+			[[nodiscard]] uint32_t create_id(Curve* curve) noexcept {
 				const auto new_id = counter_++;
 				info_.emplace_back(new_id, curve);
 				return new_id;
@@ -30,7 +30,7 @@ namespace cved {
 			}
 
 			template<class CurveClass>
-			CurveClass* get_curve(uint32_t id) noexcept {
+			[[nodiscard]] CurveClass* get_curve(uint32_t id) noexcept {
 				for (const auto& [id_, curve] : info_) {
 					if (id_ == id) {
 						return dynamic_cast<CurveClass*>(curve);

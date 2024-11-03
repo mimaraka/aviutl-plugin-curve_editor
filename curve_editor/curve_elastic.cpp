@@ -233,6 +233,30 @@ namespace cved {
 		return true;
 	}
 
+	std::string ElasticCurve::create_params_str(size_t precision) const noexcept {
+		std::ostringstream oss;
+		oss << std::fixed << std::setprecision(precision) << amplitude_;
+		oss << ", " << std::fixed << std::setprecision(precision) << frequency_;
+		oss << ", " << std::fixed << std::setprecision(precision) << decay_;
+		return oss.str();
+	}
+
+	bool ElasticCurve::read_params(const std::vector<double>& params) noexcept {
+		if (params.size() != 3) {
+			return false;
+		}
+		const auto amplitude = params[0];
+		const auto frequency = params[1];
+		const auto decay = params[2];
+		if (!mkaul::real_in_range(amplitude, 0., 1.) or frequency < 0.5 or decay < 1.) {
+			return false;
+		}
+		amplitude_ = amplitude;
+		frequency_ = frequency;
+		decay_ = decay;
+		return true;
+	}
+
 	nlohmann::json ElasticCurve::create_json() const noexcept {
 		auto data = GraphCurve::create_json();
 		data["amplitude"] = amplitude_;

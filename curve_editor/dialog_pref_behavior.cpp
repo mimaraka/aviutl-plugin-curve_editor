@@ -1,7 +1,7 @@
 #include "config.hpp"
 #include "dialog_pref_behavior.hpp"
 #include "enum.hpp"
-#include "my_messagebox.hpp"
+#include "message_box.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 #include <mkaul/graphics.hpp>

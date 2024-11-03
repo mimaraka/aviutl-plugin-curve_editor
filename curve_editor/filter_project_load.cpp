@@ -3,7 +3,7 @@
 #include "curve_editor.hpp"
 #include "filter_project_load.hpp"
 #include "my_webview2_reference.hpp"
-#include "my_messagebox.hpp"
+#include "message_box.hpp"
 #include "string_table.hpp"
 #include <cereal/archives/binary.hpp>
 #include <sstream>
@@ -36,17 +36,17 @@ namespace cved {
 				catch (const std::exception&) {
 					global::editor.reset_id_curves();
 					ActCtxHelper actctx_helper;
-					actctx_helper.init(fp->dll_hinst);
-					my_messagebox(
+					actctx_helper.init();
+					util::message_box(
 						global::string_table[StringId::ErrorDataLoadFailed],
 						fp->hwnd,
-						MessageBoxIcon::Error
+						util::MessageBoxIcon::Error
 					);
 					actctx_helper.exit();
 				}
 			}
 			// ウィンドウの更新
-			if (global::webview) global::webview->post_message(L"updateEditor");
+			if (global::webview) global::webview->send_command(MessageCommand::UpdateEditor);
 		}
 		return ret;
 	}

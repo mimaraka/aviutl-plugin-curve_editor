@@ -8,7 +8,6 @@
 
 namespace cved {
 	namespace global {
-		inline AviUtl::FilterPlugin* fp = nullptr;
 		inline mkaul::exedit::Internal exedit_internal;
 	}
 }

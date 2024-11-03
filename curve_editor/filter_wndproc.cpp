@@ -5,18 +5,19 @@
 #include "drag_and_drop.hpp"
 #include "exedit_hook.hpp"
 #include "filter_wndproc.hpp"
-#include "my_messagebox.hpp"
+#include "message_box.hpp"
 #include "my_webview2.hpp"
 #include "my_webview2_reference.hpp"
 #include "resource.h"
 #include "string_table.hpp"
+#include "update_checker.hpp"
 #include <nlohmann/json.hpp>
 
 
 
 namespace cved {
 	// ウィンドウプロシージャ
-	BOOL filter_wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM, AviUtl::EditHandle*, AviUtl::FilterPlugin* fp) {
+	BOOL filter_wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, AviUtl::EditHandle*, AviUtl::FilterPlugin* fp) {
 		using WindowMessage = AviUtl::FilterPlugin::WindowMessage;
 		using StringId = global::StringTable::StringId;
 
@@ -45,7 +46,7 @@ namespace cved {
 
 		case WindowMessage::ChangeWindow:
 			if (fp->exfunc->is_filter_window_disp(fp) and !init) {
-				actctx_helper.init(fp->dll_hinst);
+				actctx_helper.init();
 				dnd.init();
 				init = true;
 				my_webview.init(hwnd, [](MyWebView2* this_) {
@@ -53,7 +54,10 @@ namespace cved {
 					bounds.from_client_rect(this_->get_hwnd());
 					this_->put_bounds(bounds);
 					this_->navigate([](MyWebView2* this_) {
-						this_->post_message(L"init", {{"isSelectDialog", false}});
+						this_->send_command(MessageCommand::InitComponent, {
+							{"isSelectDialog", false},
+							{"isUpdateAvailable", global::update_checker.is_update_available()}
+						});
 					});
 				});
 				global::webview.set(global::MyWebView2Reference::WebViewType::Main, my_webview);
@@ -82,7 +86,7 @@ namespace cved {
 			if (dnd.is_dragging()) {
 				::ReleaseCapture();
 				dnd.drop();
-				my_webview.post_message(L"drop");
+				my_webview.send_command(MessageCommand::OnDndEnd);
 			}
 			break;
 
@@ -94,7 +98,7 @@ namespace cved {
 			case WindowCommand::StartDnd:
 				::SetCapture(hwnd);
 				::SetCursor(::LoadCursorA(fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
-				dnd.drag();
+				dnd.drag(static_cast<uint32_t>(lparam));
 				break;
 			}
 			break;

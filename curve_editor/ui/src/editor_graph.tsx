@@ -2,9 +2,18 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
-import { config, graphEditor } from './host_object';
-import { NormalCurve, NumericCurve, BezierCurve, ElasticCurve, BounceCurve } from './curve';
-import { Handles, BezierHandles, ElasticHandles, BounceHandles, NormalHandles, createHandles } from './handles';
+import { config, editor } from './host_object';
+import NormalCurve from './curve_normal';
+import BezierCurve from './curve_bezier';
+import ElasticCurve from './curve_elastic';
+import BounceCurve from './curve_bounce';
+import NumericCurve from './curve_numeric';
+import Control from './control_base';
+import BezierControl from './control_bezier';
+import ElasticControl from './control_elastic';
+import BounceControl from './control_bounce';
+import NormalControl from './control_normal';
+import createControl from './control';
 import './scss/editor_graph.scss';
 
 
@@ -91,7 +100,7 @@ class GraphEditor {
     #curvePath;
     #leftRect;
     #rightRect;
-    #handles: Handles | BezierHandles | ElasticHandles| BounceHandles | NormalHandles | null;
+    #control: Control | BezierControl | ElasticControl| BounceControl | NormalControl | null;
     #labelAxisX;
     #labelAxisY;
     #labelGridX;
@@ -122,8 +131,8 @@ class GraphEditor {
                 } else if (event.button === 2) {
                     event.preventDefault();
                     window.chrome.webview.postMessage({
-                        command: 'contextmenu-graph',
-                        mode: editMode,
+                        command: 'ContextMenuGraph',
+                        mode: this.#editMode,
                         curveId: this.getCurrentCurve().id
                     });
                 }
@@ -131,11 +140,11 @@ class GraphEditor {
             .on('dblclick', event => {
                 const x = this.#currentScaleX.invert(event.clientX - container!.offsetLeft);
                 const y = this.#currentScaleY.invert(event.clientY - container!.offsetTop);
-                if (this.#handles instanceof NormalHandles && x >= 0 && x <= 1) {
-                    (this.#handles.curve as NormalCurve).addCurve(x, y, this.#currentScaleX(1) - this.#currentScaleX(0));
+                if (this.#control instanceof NormalControl && x >= 0 && x <= 1) {
+                    (this.#control.curve as NormalCurve).addCurve(x, y, this.#currentScaleX(1) - this.#currentScaleX(0));
                     this.updateCurvePath();
                     this.updateVelocityPath();
-                    this.updateHandles();
+                    this.updateControl();
                 }
             })
             .on('contextmenu', event => {
@@ -242,7 +251,7 @@ class GraphEditor {
             .attr('class', 'rect');
 
         // ハンドル
-        this.#handles = createHandles(this.getCurrentCurve(), this.#group, this.#currentScaleX, this.#currentScaleY);
+        this.#control = createControl(this.getCurrentCurve(), this.#group, this.#currentScaleX, this.#currentScaleY);
         this.updateHandleVisibility();
 
         this.#labelAxisX = (scale: d3.AxisScale<number>) => d3.axisBottom(scale).tickPadding(-15).tickFormat(d3.format(''));
@@ -297,12 +306,12 @@ class GraphEditor {
     }
 
     get backgroundImage() { return this.#backgroundImage; }
-    get handles() { return this.#handles; }
+    get control() { return this.#control; }
 
     setEditMode(editMode: number) {
         if (editMode != this.#editMode) {
             this.#editMode = editMode;
-            this.updateHandles();
+            this.updateControl();
             this.updateCurvePath();
             this.updateVelocityPath();
             this.fit(0);
@@ -314,13 +323,13 @@ class GraphEditor {
             this.#idx = idx;
              switch (this.#editMode) {
                 case 0:
-                    this.#normalCurve = new NormalCurve(graphEditor.normal.getId(idx));
+                    this.#normalCurve = new NormalCurve(editor.graph.normal.getId(idx));
                     break;
                 case 1:
-                    //this.#valueCurve = new ValueCurve(graphEditor.value.getId(getIdx()));
+                    //this.#valueCurve = new ValueCurve(editor.graph.value.getId(getIdx()));
                     break;
             }
-            this.updateHandles();
+            this.updateControl();
             this.updateCurvePath();
             this.updateVelocityPath();
             this.fit(0);
@@ -356,7 +365,7 @@ class GraphEditor {
         if (curve instanceof NumericCurve) {
             curve.decode(code);
             this.updateCurvePath();
-            this.updateHandlePos();
+            this.updateHandlePosition();
         }
     }
 
@@ -373,9 +382,9 @@ class GraphEditor {
             return data;
         }
         if (velocity) {
-            yArray = graphEditor.getCurveVelocityArray(currentCurve.id, startGraphX, 0, endGraphX, 1, n);
+            yArray = editor.graph.getCurveVelocityArray(currentCurve.id, startGraphX, 0, endGraphX, 1, n);
         } else {
-            yArray = graphEditor.getCurveValueArray(currentCurve.id, startGraphX, 0, endGraphX, 1, n);
+            yArray = editor.graph.getCurveValueArray(currentCurve.id, startGraphX, 0, endGraphX, 1, n);
         } 
         for (let i = 0; i < n; i++) {
             const x = startGraphX + (endGraphX - startGraphX) / (n - 1) * i;
@@ -436,13 +445,13 @@ class GraphEditor {
         this.updateVelocityPath();
     }
 
-    updateHandles() {
-        this.#handles?.remove();
-        this.#handles = createHandles(this.getCurrentCurve(), this.#group, this.#currentScaleX, this.#currentScaleY);
+    updateControl() {
+        this.#control?.remove();
+        this.#control = createControl(this.getCurrentCurve(), this.#group, this.#currentScaleX, this.#currentScaleY);
     }
 
-    updateHandlePos(t: d3.Transition<any, unknown, any, unknown> | null = null) {
-        this.#handles?.updateHandles(t);
+    updateHandlePosition(t: d3.Transition<any, unknown, any, unknown> | null = null) {
+        this.#control?.updateControl(t);
     }
 
     updateHandleVisibility() {
@@ -520,8 +529,8 @@ class GraphEditor {
             this.#rightRect.attr('x', this.#currentScaleX(1))
                 .attr('width', Math.max(0, this.#width - this.#currentScaleX(1)));
         }
-        this.#handles?.rescaleX(this.#currentScaleX, isZoom? t : null);
-        this.#handles?.rescaleY(this.#currentScaleY, isZoom? t : null);
+        this.#control?.rescaleX(this.#currentScaleX, isZoom? t : null);
+        this.#control?.rescaleY(this.#currentScaleY, isZoom? t : null);
     }
 
     onZoomEnd(event: any) {
@@ -588,8 +597,8 @@ class GraphEditor {
         this.#rightRect.attr('x', this.#currentScaleX(1))
             .attr('width', width - this.#currentScaleX(1))
             .attr('height', height);
-        this.#handles?.rescaleX(this.#currentScaleX);
-        this.#handles?.rescaleY(this.#currentScaleY);
+        this.#control?.rescaleX(this.#currentScaleX);
+        this.#control?.rescaleY(this.#currentScaleY);
     }
 }
 
@@ -609,16 +618,16 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
     editorRef.current?.setEditMode(props.editMode);
     editorRef.current?.setIdx(props.idx);
 
-    const updateHandlePos = () => {
-        if (editorRef.current?.handles instanceof NormalHandles && editorRef.current?.handles.segmentHandlesArray.length > 1) {
-            editorRef.current?.updateHandles();
+    const updateHandlePosition = () => {
+        if (editorRef.current?.control instanceof NormalControl && editorRef.current?.control.segmentHandlesArray.length > 1) {
+            editorRef.current?.updateControl();
             editorRef.current?.updateCurvePath();
             editorRef.current?.updateVelocityPath();
         }
         else {
             const duration = config.enableAnimation ? 180 : 0;
             const t = d3.transition().duration(duration).ease(d3.easeCubicOut);
-            editorRef.current?.updateHandlePos(t);
+            editorRef.current?.updateHandlePosition(t);
             editorRef.current?.updateCurvePath(t);
             editorRef.current?.updateVelocityPath(t);
         }
@@ -626,7 +635,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
 
     const onMessage = (event: MessageEvent) => {
         switch (event.data.command) {
-            case 'setCurve':
+            case 'SetCurve':
                 if (event.data.mode != undefined && event.data.param != undefined) {
                     editorRef.current?.setEditMode(event.data.mode);
                     if (event.data.mode == 2 || event.data.mode == 3 || event.data.mode == 4) {
@@ -637,44 +646,44 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
                 }
                 break;
 
-            case 'updateCurvePath':
+            case 'UpdateCurvePath':
                 editorRef.current?.updateCurvePath();
                 editorRef.current?.updateVelocityPath();
                 break;
         }
     }
 
-    const onMessageFromNative = (event: MessageEvent) => {
+    const onMessageFromHost = (event: MessageEvent) => {
         switch (event.data.command) {
-            case 'updateCurvePath':
+            case 'UpdateCurvePath':
                 editorRef.current?.updateCurvePath();
                 editorRef.current?.updateVelocityPath();
                 break;
 
-            case 'updateEditor':
-            case 'updateHandles':
-                editorRef.current?.updateHandles();
+            case 'UpdateEditor':
+            case 'UpdateControl':
+                editorRef.current?.updateControl();
                 editorRef.current?.updateCurvePath();
                 editorRef.current?.updateVelocityPath();
                 break;
 
-            case 'updateHandlePos':
-                updateHandlePos();
+            case 'UpdateHandlePosition':
+                updateHandlePosition();
                 break;
 
-            case 'updateAxisLabelVisibility':
+            case 'UpdateAxisLabelVisibility':
                 editorRef.current?.updateAxisLabelVisibility();
                 break;
 
-            case 'updateHandleVisibility':
+            case 'UpdateHandleVisibility':
                 editorRef.current?.updateHandleVisibility();
                 break;
 
-            case 'updateVelocityGraphVisibility':
+            case 'UpdateVelocityGraphVisibility':
                 editorRef.current?.updateVelocityGraphVisibility();
                 break;
 
-            case 'applyPreferences':
+            case 'ApplyPreferences':
                 editorRef.current?.loadBackgroundImage(config.setBackgroundImage ? config.backgroundImagePath : '');
                 editorRef.current?.updateCurvePathStyle();
                 editorRef.current?.updateCurvePath();
@@ -684,7 +693,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
-        if (!config.enableHotkeys) {
+        if (!config.enableHotkeys || (event.target as HTMLElement).tagName === 'INPUT') {
             return;
         }
         switch (event.key) {
@@ -700,11 +709,16 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
 
         case 'r':
             editorRef.current?.getCurrentCurve().reverse();
-            updateHandlePos();
+            updateHandlePosition();
             break;
 
         case 'a':
             config.alignHandle = !config.alignHandle;
+            break;
+
+        case 's':
+            config.showHandle = !config.showHandle;
+            editorRef.current?.updateHandleVisibility();
             break;
 
         case 'ArrowLeft':
@@ -725,15 +739,15 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
         editorRef.current = new GraphEditor(
             props.editMode,
             props.idx,
-            graphEditor.normal.getId(props.idx),
+            editor.graph.normal.getId(props.idx),
             0,
-            graphEditor.bezier.getId(props.isSelectDialog),
-            graphEditor.elastic.getId(props.isSelectDialog),
-            graphEditor.bounce.getId(props.isSelectDialog)
+            editor.graph.bezier.getId(props.isSelectDialog),
+            editor.graph.elastic.getId(props.isSelectDialog),
+            editor.graph.bounce.getId(props.isSelectDialog)
         );
 
         window.addEventListener('message', onMessage);
-        window.chrome.webview.addEventListener('message', onMessageFromNative);
+        window.chrome.webview.addEventListener('message', onMessageFromHost);
         window.addEventListener('keydown', onKeyDown);
 
         const observer = new ResizeObserver((entries) => {
@@ -745,7 +759,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
 
         return () => {
             window.removeEventListener('message', onMessage);
-            window.chrome.webview.removeEventListener('message', onMessageFromNative);
+            window.chrome.webview.removeEventListener('message', onMessageFromHost);
             window.removeEventListener('keydown', onKeyDown);
             observer.disconnect();
         };

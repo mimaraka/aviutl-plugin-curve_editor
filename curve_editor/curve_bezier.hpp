@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include "curve_graph_numeric.hpp"
+#include "string_table.hpp"
 
 
 namespace cved {
@@ -11,6 +12,11 @@ namespace cved {
 		mkaul::Point<double> handle_right_;
 
 	public:
+		enum class HandleType {
+			Left,
+			Right
+		};
+
 		static constexpr double DEFAULT_HANDLE_XY = 0.3;
 		// コンストラクタ
 		BezierCurve(
@@ -26,30 +32,32 @@ namespace cved {
 		// コピーコンストラクタ
 		BezierCurve(const BezierCurve& curve) noexcept;
 
-		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_BEZIER; }
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BEZIER; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBezier]; }
 
-		double get_handle_left_x() const noexcept { return anchor_start().x + handle_left_.x; }
-		double get_handle_left_y() const noexcept { return anchor_start().y + handle_left_.y; }
-		double get_handle_right_x() const noexcept { return anchor_end().x + handle_right_.x; }
-		double get_handle_right_y() const noexcept { return anchor_end().y + handle_right_.y; }
+		[[nodiscard]] double get_handle_left_x() const noexcept { return anchor_start().x + handle_left_.x; }
+		[[nodiscard]] double get_handle_left_y() const noexcept { return anchor_start().y + handle_left_.y; }
+		[[nodiscard]] double get_handle_right_x() const noexcept { return anchor_end().x + handle_right_.x; }
+		[[nodiscard]] double get_handle_right_y() const noexcept { return anchor_end().y + handle_right_.y; }
 
 		void set_handle_left(double x, double y, bool keep_angle = false) noexcept;
 		void set_handle_right(double x, double y, bool keep_angle = false) noexcept;
 
 		// カーブの値を取得する
-		double curve_function(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		bool is_default() const noexcept override;
+		[[nodiscard]] bool is_default() const noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
 
 		// カーブから一意な整数値を生成
-		int32_t encode() const noexcept override;
+		[[nodiscard]] int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
-		std::string make_param() const noexcept;
+		[[nodiscard]] std::string create_params_str(size_t precision = 2) const noexcept override;
+		bool read_params(const std::vector<double>& params) noexcept override;
 
-		nlohmann::json create_json() const noexcept override;
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>

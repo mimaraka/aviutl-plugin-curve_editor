@@ -1,5 +1,6 @@
+#include "constants.hpp"
 #include "dialog.hpp"
-#include "global.hpp"
+#include <bit>
 
 
 
@@ -7,7 +8,7 @@ namespace cved {
 	HWND Dialog::create(HWND hwnd, LPARAM init_param) noexcept {
 		init_param_ = init_param;
 		return ::CreateDialogParamA(
-			global::fp->dll_hinst,
+			::GetModuleHandleA(global::PLUGIN_DLL_NAME),
 			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,
@@ -18,7 +19,7 @@ namespace cved {
 	INT_PTR Dialog::show(HWND hwnd, LPARAM init_param) noexcept {
 		init_param_ = init_param;
 		return ::DialogBoxParamA(
-			global::fp->dll_hinst,
+			::GetModuleHandleA(global::PLUGIN_DLL_NAME),
 			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,

@@ -20,14 +20,15 @@ declare global {
 
     interface SyncProxy {
         config: ConfigHostObject;
-        graphEditor: GraphEditorHostObject;
-        scriptEditor: ScriptEditorHostObject;
+        editor: EditorHostObject;
+        preset: PresetHostObject;
     }
 
     interface ConfigHostObject {
         editMode: number;
         editModeNum: number;
         getEditModeName: (editMode: number) => string;
+        layoutMode: number;
         showXLabel: boolean;
         showYLabel: boolean;
         showHandle: boolean;
@@ -45,13 +46,19 @@ declare global {
         curveThickness: number;
         notifyUpdate: boolean;
         separatorPos: number;
-        isLatestVersion: (latest_version_str: string) => boolean;
+        presetSize: number;
+    }
+
+    interface EditorHostObject {
+        getCurveName: (id: number) => string;
+        getCurveDispName: (id: number) => string;
+        graph: GraphEditorHostObject;
+        script: ScriptEditorHostObject;
     }
 
     interface GraphEditorHostObject {
         getCurveValueArray: (id: number, startX: number, startY: number, endX: number, endY: number, resolution: number) => number[];
         getCurveVelocityArray: (id: number, startX: number, startY: number, endX: number, endY: number, resolution: number) => number[];
-        getCurveType: (id: number) => string;
         graph: GraphCurveHostObject;
         numeric: NumericGraphCurveHostObject;
         bezier: BezierCurveHostObject;
@@ -133,9 +140,16 @@ declare global {
         popIdx: () => void;
         isIdxMax: boolean;
     }
+
+    interface PresetHostObject {
+        getPresetsAsJson: () => string;
+        getCollectionsAsJson: () => string;
+        getCollectionName: (id: number) => string;
+        currentCollectionId: number;
+    }
 }
 
 
 export const config = (window.top ?? window).chrome.webview.hostObjects.sync.config;
-export const graphEditor = (window.top ?? window).chrome.webview.hostObjects.sync.graphEditor;
-export const scriptEditor = (window.top ?? window).chrome.webview.hostObjects.sync.scriptEditor;
+export const editor = (window.top ?? window).chrome.webview.hostObjects.sync.editor;
+export const preset = (window.top ?? window).chrome.webview.hostObjects.sync.preset;

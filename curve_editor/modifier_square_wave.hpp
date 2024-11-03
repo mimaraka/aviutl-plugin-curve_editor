@@ -27,6 +27,10 @@ namespace cved {
 			phase_{ squarewave.phase_ }
 		{}
 
+		std::unique_ptr<Modifier> clone() const noexcept override {
+			return std::make_unique<SquareWaveModifier>(*this);
+		}
+
 		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_SQUARE_WAVE; }
 
 		auto amplitude() const noexcept { return amplitude_; }

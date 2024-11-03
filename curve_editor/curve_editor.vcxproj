@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -91,14 +91,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\</AdditionalIncludeDirectories>
-      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/source-charset:utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)external\aviutl-mkaul\mkaul\$(Configuration)\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
@@ -110,6 +110,12 @@ xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"</Command>
       <AdditionalManifestFiles>
       </AdditionalManifestFiles>
     </Manifest>
+    <PreBuildEvent>
+      <Command>set PreferredUILang=en-US
+cd $(ProjectDir)external\aviutl-mkaul
+msbuild -t:restore -p:RestorePackagesConfig=true
+msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Platform)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -121,8 +127,8 @@ xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"</Command>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\</AdditionalIncludeDirectories>
-      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
+      <AdditionalOptions>/source-charset:utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
@@ -132,7 +138,7 @@ xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"</Command>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
-      <AdditionalDependencies>C:\aviutl_libs\mkaul\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)external\aviutl-mkaul\mkaul\$(Configuration)\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
     <PostBuildEvent>
@@ -152,6 +158,12 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
       <AdditionalManifestFiles>
       </AdditionalManifestFiles>
     </Manifest>
+    <PreBuildEvent>
+      <Command>set PreferredUILang=en-US
+cd $(ProjectDir)external\aviutl-mkaul
+msbuild -t:restore -p:RestorePackagesConfig=true
+msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Platform)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -209,8 +221,7 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <ClInclude Include="curve_value.hpp" />
     <ClInclude Include="dialog.hpp" />
     <ClInclude Include="dialog_about.hpp" />
-    <ClInclude Include="dialog_curve_param.hpp" />
-    <ClInclude Include="dialog_curve_code.hpp" />
+    <ClInclude Include="dialog_input.hpp" />
     <ClInclude Include="dialog_modifier_discretization.hpp" />
     <ClInclude Include="dialog_id_jumpto.hpp" />
     <ClInclude Include="dialog_modifier.hpp" />
@@ -222,10 +233,17 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <ClInclude Include="dialog_pref_behavior.hpp" />
     <ClInclude Include="dialog_pref_editing.hpp" />
     <ClInclude Include="dialog_pref_general.hpp" />
+    <ClInclude Include="dialog_update_notification.hpp" />
     <ClInclude Include="dialog_warning_autosaver.hpp" />
     <ClInclude Include="host_object_curve_normal.hpp" />
     <ClInclude Include="host_object_curve_graph_numeric.hpp" />
+    <ClInclude Include="host_object_editor.hpp" />
     <ClInclude Include="host_object_editor_script.hpp" />
+    <ClInclude Include="host_object_preset.hpp" />
+    <ClInclude Include="input_box.hpp" />
+    <ClInclude Include="message_handler.hpp" />
+    <ClInclude Include="context_menu.hpp" />
+    <ClInclude Include="menu_item.hpp" />
     <ClInclude Include="modifier_discretization.hpp" />
     <ClInclude Include="drag_and_drop.hpp" />
     <ClInclude Include="enum.hpp" />
@@ -247,22 +265,18 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <ClInclude Include="host_object_curve_linear.hpp" />
     <ClInclude Include="host_object_editor_graph.hpp" />
     <ClInclude Include="host_object_config.hpp" />
-    <ClInclude Include="menu.hpp" />
-    <ClInclude Include="menu_bezier_handle.hpp" />
-    <ClInclude Include="menu_curve_segment.hpp" />
-    <ClInclude Include="menu_graph.hpp" />
-    <ClInclude Include="menu_id.hpp" />
-    <ClInclude Include="menu_others.hpp" />
     <ClInclude Include="modifier.hpp" />
     <ClInclude Include="modifier_sine_wave.hpp" />
     <ClInclude Include="modifier_square_wave.hpp" />
-    <ClInclude Include="my_messagebox.hpp" />
+    <ClInclude Include="message_box.hpp" />
     <ClInclude Include="modifier_noise.hpp" />
     <ClInclude Include="preferences.hpp" />
+    <ClInclude Include="preset_manager.hpp" />
     <ClInclude Include="trackbar_button.hpp" />
     <ClInclude Include="preset.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="string_table.hpp" />
+    <ClInclude Include="update_checker.hpp" />
     <ClInclude Include="util.hpp" />
     <ClInclude Include="my_webview2.hpp" />
     <ClInclude Include="util_json.hpp" />
@@ -272,6 +286,7 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
   <ItemGroup>
     <ClCompile Include="actctx_helper.cpp" />
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="context_menu.cpp" />
     <ClCompile Include="curve_base.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
@@ -289,8 +304,7 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <ClCompile Include="curve_graph.cpp" />
     <ClCompile Include="dialog.cpp" />
     <ClCompile Include="dialog_about.cpp" />
-    <ClCompile Include="dialog_curve_param.cpp" />
-    <ClCompile Include="dialog_curve_code.cpp" />
+    <ClCompile Include="dialog_input.cpp" />
     <ClCompile Include="dialog_modifier_discretization.cpp" />
     <ClCompile Include="dialog_id_jumpto.cpp" />
     <ClCompile Include="dialog_modifier.cpp" />
@@ -302,11 +316,17 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <ClCompile Include="dialog_pref_behavior.cpp" />
     <ClCompile Include="dialog_pref_editing.cpp" />
     <ClCompile Include="dialog_pref_general.cpp" />
+    <ClCompile Include="dialog_update_notification.cpp" />
     <ClCompile Include="dialog_warning_autosaver.cpp" />
     <ClCompile Include="host_object_config.cpp" />
     <ClCompile Include="host_object_curve_normal.cpp" />
     <ClCompile Include="host_object_curve_graph_numeric.cpp" />
+    <ClCompile Include="host_object_editor.cpp" />
     <ClCompile Include="host_object_editor_script.cpp" />
+    <ClCompile Include="host_object_preset.cpp" />
+    <ClCompile Include="input_box.cpp" />
+    <ClCompile Include="menu_item.cpp" />
+    <ClCompile Include="message_handler.cpp" />
     <ClCompile Include="modifier_base.cpp" />
     <ClCompile Include="modifier_discretization.cpp" />
     <ClCompile Include="drag_and_drop.cpp" />
@@ -315,6 +335,8 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <ClCompile Include="filter_project_load.cpp" />
     <ClCompile Include="filter_project_save.cpp" />
     <ClCompile Include="filter_wndproc.cpp" />
+    <ClCompile Include="preset_manager.cpp" />
+    <ClCompile Include="update_checker.cpp" />
     <ClCompile Include="window_select_curve.cpp" />
     <ClInclude Include="host_object_curve_elastic.hpp" />
     <ClCompile Include="host_object_curve_bezier.cpp">
@@ -343,15 +365,6 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     </ClCompile>
     <ClCompile Include="host_object_editor_graph.cpp" />
     <ClCompile Include="host_object_curve_graph.cpp" />
-    <ClCompile Include="menu.cpp" />
-    <ClCompile Include="menu_bezier_handle.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="menu_curve_segment.cpp" />
-    <ClCompile Include="menu_graph.cpp" />
-    <ClCompile Include="menu_id.cpp" />
-    <ClCompile Include="menu_others.cpp" />
     <ClCompile Include="modifier_noise.cpp" />
     <ClCompile Include="modifier_sine_wave.cpp" />
     <ClCompile Include="modifier_square_wave.cpp" />
@@ -402,19 +415,32 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <None Include="curve_editor.def" />
     <ClInclude Include="modifier_base.hpp" />
     <None Include="curve_editor.lua" />
-    <None Include="minify.js" />
     <None Include="packages.config" />
     <None Include="resources\cursor\drag.cur" />
     <None Include="ui\src\button.tsx" />
-    <None Include="ui\src\curve.ts" />
+    <None Include="ui\src\control.ts" />
+    <None Include="ui\src\control_base.ts" />
+    <None Include="ui\src\control_bezier.ts" />
+    <None Include="ui\src\control_bounce.ts" />
+    <None Include="ui\src\control_elastic.ts" />
+    <None Include="ui\src\control_linear.ts" />
+    <None Include="ui\src\control_normal.ts" />
+    <None Include="ui\src\curve_base.ts" />
+    <None Include="ui\src\curve_bezier.ts" />
+    <None Include="ui\src\curve_bounce.ts" />
+    <None Include="ui\src\curve_elastic.ts" />
+    <None Include="ui\src\curve_linear.ts" />
+    <None Include="ui\src\curve_normal.ts" />
+    <None Include="ui\src\curve_numeric.ts" />
     <None Include="ui\src\editor_graph.tsx" />
     <None Include="ui\src\editor_text.tsx" />
-    <None Include="ui\src\handles.ts" />
     <None Include="ui\src\host_object.ts" />
+    <None Include="ui\src\index.html" />
     <None Include="ui\src\index.tsx" />
     <None Include="ui\src\panel_editor.tsx" />
     <None Include="ui\src\panel_main.tsx" />
     <None Include="ui\src\preset.tsx" />
+    <None Include="ui\src\preset_item.tsx" />
     <None Include="ui\src\scss\button.scss" />
     <None Include="ui\src\scss\common.scss" />
     <None Include="ui\src\scss\editor_graph.scss" />
@@ -422,6 +448,7 @@ xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
     <None Include="ui\src\scss\panel_editor.scss" />
     <None Include="ui\src\scss\panel_main.scss" />
     <None Include="ui\src\scss\preset.scss" />
+    <None Include="ui\src\scss\preset_item.scss" />
     <None Include="ui\src\scss\select_dialog.scss" />
     <None Include="ui\src\scss\toolbar.scss" />
     <None Include="ui\src\scss\variables.scss" />

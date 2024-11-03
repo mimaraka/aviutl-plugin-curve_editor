@@ -1,8 +1,10 @@
 #pragma once
 
 #include "constants.hpp"
+#include "curve_bezier.hpp"
 #include "curve_graph.hpp"
 #include "enum.hpp"
+#include "string_table.hpp"
 #include <cereal/types/vector.hpp>
 
 
@@ -22,30 +24,31 @@ namespace cved {
 		// コピーコンストラクタ
 		NormalCurve(const NormalCurve& curve) noexcept;
 
-		constexpr std::string get_type() const noexcept override { return global::CURVE_NAME_NORMAL; }
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_NORMAL; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeNormal]; }
 
 		// セグメント数を取得
-		auto segment_n() const noexcept { return curve_segments_.size(); }
+		[[nodiscard]] auto segment_n() const noexcept { return curve_segments_.size(); }
 		// セグメントを取得
-		const GraphCurve* get_segment(size_t idx) const noexcept {
+		[[nodiscard]] const GraphCurve* get_segment(size_t idx) const noexcept {
 			if (idx < curve_segments_.size()) {
 				return curve_segments_[idx].get();
 			}
 			return nullptr;
 		}
 
-		// セグメントの型をチェック
-		template <class CurveType>
-		bool check_segment_type(size_t idx) const noexcept {
-			auto segment = get_segment(idx);
-			return segment != nullptr and typeid(*segment) == typeid(CurveType);
+		[[nodiscard]] uint32_t get_segment_id(size_t idx) const noexcept {
+			if (idx < curve_segments_.size()) {
+				return curve_segments_[idx]->get_id();
+			}
+			return 0;
 		}
 
-		//bool adjust_segment_handle_angle(size_t idx, BezierHandle::Type handle_type, const GraphView& view) noexcept;
+		bool adjust_segment_handle_angle(size_t idx, BezierCurve::HandleType handle_type, double scale_x, double scale_y) noexcept;
 
-		double curve_function(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		bool is_default() const noexcept override;
+		[[nodiscard]] bool is_default() const noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
 		void reverse_segment(uint32_t segment_id) noexcept;
 
@@ -55,7 +58,7 @@ namespace cved {
 		bool delete_curve(uint32_t segment_id) noexcept;
 		bool replace_curve(uint32_t segment_id, CurveSegmentType segment_type) noexcept;
 
-		nlohmann::json create_json() const noexcept override;
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>

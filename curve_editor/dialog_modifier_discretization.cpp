@@ -46,7 +46,7 @@ namespace cved {
 					p_mod_discretization->set_sampling_resolution((uint32_t)value);
 				}
 				::SetWindowTextA(hwnd_static_sampling_, std::to_string(value).c_str());
-				if (global::webview) global::webview->post_message(L"updateCurvePath");
+				if (global::webview) global::webview->send_command(MessageCommand::UpdateCurvePath);
 			}
 			else if (lparam == (LPARAM)hwnd_slider_quantization_) {
 				int value = (int)::SendMessageA(hwnd_slider_quantization_, TBM_GETPOS, NULL, NULL);
@@ -54,7 +54,7 @@ namespace cved {
 					p_mod_discretization->set_quantization_resolution((uint32_t)value);
 				}
 				::SetWindowTextA(hwnd_static_quantization_, std::to_string(value).c_str());
-				if (global::webview) global::webview->post_message(L"updateCurvePath");
+				if (global::webview) global::webview->send_command(MessageCommand::UpdateCurvePath);
 			}
 			return TRUE;
 
@@ -67,7 +67,7 @@ namespace cved {
 			case IDCANCEL:
 				if (p_mod_discretization) {
 					*p_mod_discretization = mod_discretization_prev;
-					if (global::webview) global::webview->post_message(L"updateCurvePath");
+					if (global::webview) global::webview->send_command(MessageCommand::UpdateCurvePath);
 				}
 				::EndDialog(hwnd, IDCANCEL);
 				return TRUE;

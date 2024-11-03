@@ -20,25 +20,25 @@ namespace cved {
 			LayoutMode layout_mode_ = LayoutMode::Vertical;
 			std::array<ApplyMode, (size_t)EditMode::NumEditMode> apply_mode_ = {};
 
-			int curve_code_bezier_ = 0;
-			int curve_code_elastic_ = 0;
-			int curve_code_bounce_ = 0;
+			int curve_code_bezier_;
+			int curve_code_elastic_;
+			int curve_code_bounce_;
 
-			bool show_x_label_ = false;
-			bool show_y_label_ = false;
-			bool show_handle_ = false;
-			bool show_library_ = false;
-			bool show_velocity_graph_ = false;
-			bool align_handle_ = false;
-			bool ignore_autosaver_warning_ = false;
-			double separator_pos_ = 0.;
-			int preset_size_ = 0;
+			bool show_x_label_;
+			bool show_y_label_;
+			bool show_handle_;
+			bool show_library_;
+			bool show_velocity_graph_;
+			bool align_handle_;
+			bool ignore_autosaver_warning_;
+			double separator_pos_;
+			int preset_size_;
 
 			std::filesystem::path dir_aviutl_;
 			std::filesystem::path dir_plugin_;
 
 		public:
-			void init(HINSTANCE hinst) noexcept;
+			Config() noexcept;
 
 			auto get_language() const noexcept { return pref_.language; }
 			bool set_language(Language language) noexcept;

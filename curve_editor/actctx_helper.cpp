@@ -1,16 +1,17 @@
 #include "actctx_helper.hpp"
+#include "constants.hpp"
 #include "resource.h"
 #include <WinBase.h>
 
 
 
 namespace cved {
-	bool ActCtxHelper::init(HINSTANCE hinst) noexcept {
+	bool ActCtxHelper::init() noexcept {
 		ACTCTXA actctx{
 			.cbSize = sizeof(ACTCTXA),
 			.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_HMODULE_VALID,
 			.lpResourceName = MAKEINTRESOURCEA(ID_MANIFEST_VISUALSTYLE),
-			.hModule = hinst
+			.hModule = ::GetModuleHandleA(global::PLUGIN_DLL_NAME)
 		};
 		HANDLE tmp = NULL;
 		::GetCurrentActCtx(&tmp);

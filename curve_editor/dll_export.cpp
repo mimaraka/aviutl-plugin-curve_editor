@@ -19,8 +19,8 @@ auto __stdcall GetFilterTable() {
 				| Flag::WindowThickFrame
 				| Flag::DispFilter
 				| Flag::ExInformation,
-		.x = 320,
-		.y = 540,
+		.x = 550,
+		.y = 460,
 		.name = cved::global::PLUGIN_NAME,
 		.func_init = cved::filter_init,
 		.func_exit = cved::filter_exit,

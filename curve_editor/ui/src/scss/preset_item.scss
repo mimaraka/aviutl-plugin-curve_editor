@@ -1,0 +1,63 @@
+@import url('./variables.scss');
+
+:root {
+    --preset-item-text-height: 16px;
+    --color-curve-preset: rgb(100, 100, 100);
+    --color-preset-item-text: rgb(70, 70, 70);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-curve-preset: rgb(170, 170, 170);
+        --color-preset-item-text: rgb(200, 200, 200);
+    }
+}
+
+.preset-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.preset-item-thumbnail {
+    width: calc(100% - var(--margin) * 2);
+    height: calc(100% - var(--margin) * 2 - var(--preset-item-text-height));
+    margin: var(--margin);
+    transition: var(--transition);
+    background-color: var(--color-preset-item);
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    &:hover {
+        background-color: var(--color-preset-item-hover);
+    }
+
+    &:active {
+        background-color: var(--color-preset-item-active);
+    }
+}
+
+.thumbnail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.preset-item-text {
+    user-select: none;
+    overflow: hidden;
+    width: calc(100% - var(--margin) * 4);
+    height: var(--preset-item-text-height);
+    padding: 0 calc(var(--margin) * 2);
+    font-size: 12px;
+    color: var(--color-preset-item-text);
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.curve-preset {
+    fill: none;
+    stroke: var(--color-curve-preset);
+    stroke-width: 1px;
+}

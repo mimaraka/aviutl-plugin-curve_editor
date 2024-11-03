@@ -287,16 +287,39 @@ namespace cved {
 		return true;
 	}
 
-	std::string BezierCurve::make_param() const noexcept {
+	std::string BezierCurve::create_params_str(size_t precision) const noexcept {
 		const double width = anchor_end().x - anchor_start().x;
 		const double height = anchor_end().y - anchor_start().y;
 
-		float x1 = static_cast<float>(handle_left_.x / width);
-		float y1 = static_cast<float>(handle_left_.y / height);
-		float x2 = static_cast<float>(handle_right_.x / width + 1.f);
-		float y2 = static_cast<float>(handle_right_.y / height + 1.f);
+		auto x1 = handle_left_.x / width;
+		auto y1 = handle_left_.y / height;
+		auto x2 = handle_right_.x / width + 1.;
+		auto y2 = handle_right_.y / height + 1.;
 
-		return std::format("{:.2f}, {:.2f}, {:.2f}, {:.2f}", x1, y1, x2, y2);
+		std::ostringstream oss;
+		oss << std::fixed << std::setprecision(precision) << x1;
+		oss << ", " << std::fixed << std::setprecision(precision) << y1;
+		oss << ", " << std::fixed << std::setprecision(precision) << x2;
+		oss << ", " << std::fixed << std::setprecision(precision) << y2;
+		return oss.str();
+	}
+
+	bool BezierCurve::read_params(const std::vector<double>& params) noexcept {
+		if (params.size() != 4) {
+			return false;
+		}
+		auto x1 = params[0];
+		auto y1 = params[1];
+		auto x2 = params[2];
+		auto y2 = params[3];
+		auto width = anchor_end().x - anchor_start().x;
+		auto height = anchor_end().y - anchor_start().y;
+		if (!mkaul::real_in_range(x1, 0., 1.) or !mkaul::real_in_range(x2, 0., 1.)) {
+			return false;
+		}
+		handle_left_ = mkaul::Point{ x1 * width, y1 * height };
+		handle_right_ = mkaul::Point{ (x2 - 1.) * width, (y2 - 1.) * height };
+		return true;
 	}
 
 	nlohmann::json BezierCurve::create_json() const noexcept {
