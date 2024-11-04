@@ -136,10 +136,69 @@ namespace cved {
 		return start + (end - start) * rel_value;
 	}
 
-	void BezierCurve::set_handle_left(double x, double y, bool keep_angle) noexcept {
-		auto offset_x = x - anchor_start().x;
-		auto offset_y = y - anchor_start().y;
-		auto ret_x = mkaul::clamp(offset_x, 0., anchor_end().x - anchor_start().x);
+	void BezierCurve::begin_move_anchor_start(bool bound) noexcept {
+		if (is_locked()) return;
+		GraphCurve::begin_move_anchor_start(bound);
+		handle_left_buffer_ = handle_left_;
+		handle_right_buffer_ = handle_right_;
+	}
+
+	void BezierCurve::begin_move_anchor_end(bool bound) noexcept {
+		if (is_locked()) return;
+		GraphCurve::begin_move_anchor_end(bound);
+		handle_left_buffer_ = handle_left_;
+		handle_right_buffer_ = handle_right_;
+	}
+
+	void BezierCurve::move_anchor_start(double x, double y, bool forced, bool bound) noexcept {
+		if (is_locked()) return;
+		GraphCurve::move_anchor_start(x, y, forced, bound);
+		if (!forced) {
+			move_handle_left(anchor_start() + handle_left_buffer_, true, true);
+			move_handle_right(anchor_end() + handle_right_buffer_, true, true);
+		}
+	}
+
+	void BezierCurve::move_anchor_end(double x, double y, bool forced, bool bound) noexcept {
+		if (is_locked()) return;
+		GraphCurve::move_anchor_end(x, y, forced, bound);
+		if (!forced) {
+			move_handle_left(anchor_start() + handle_left_buffer_, true, true);
+			move_handle_right(anchor_end() + handle_right_buffer_, true, true);
+		}
+	}
+
+	void BezierCurve::begin_move_handle_left(double scale_x, double scale_y) noexcept {
+		if (is_locked()) return;
+		handle_left_buffer_ = handle_left_;
+		auto prev_bezier = prev() ? global::id_manager.get_curve<BezierCurve>(prev()->get_id()) : nullptr;
+		if (prev_bezier and global::config.get_align_handle()) {
+			scale_x_buffer_ = scale_x;
+			scale_y_buffer_ = scale_y;
+			auto scaled_prev_offset_x = prev_bezier->handle_right_.x * scale_x;
+			auto scaled_prev_offset_y = prev_bezier->handle_right_.y * scale_y;
+			length_buffer_ = std::sqrt(scaled_prev_offset_x * scaled_prev_offset_x + scaled_prev_offset_y * scaled_prev_offset_y);
+		}
+	}
+
+	void BezierCurve::begin_move_handle_right(double scale_x, double scale_y) noexcept {
+		if (is_locked()) return;
+		handle_right_buffer_ = handle_right_;
+		auto next_bezier = next() ? global::id_manager.get_curve<BezierCurve>(next()->get_id()) : nullptr;
+		if (next_bezier and global::config.get_align_handle()) {
+			scale_x_buffer_ = scale_x;
+			scale_y_buffer_ = scale_y;
+			auto scaled_next_offset_x = next_bezier->handle_left_.x * scale_x;
+			auto scaled_next_offset_y = next_bezier->handle_left_.y * scale_y;
+			length_buffer_ = std::sqrt(scaled_next_offset_x * scaled_next_offset_x + scaled_next_offset_y * scaled_next_offset_y);
+		}
+	}
+
+	void BezierCurve::move_handle_left(double x, double y, bool keep_angle, bool bound) noexcept {
+		if (is_locked()) return;
+		const auto offset_x = x - anchor_start().x;
+		const auto offset_y = y - anchor_start().y;
+		const auto ret_x = mkaul::clamp(offset_x, 0., anchor_end().x - anchor_start().x);
 		double ret_y;
 		if (keep_angle) {
 			auto angle = std::atan2(offset_y, offset_x);
@@ -148,11 +207,21 @@ namespace cved {
 		else {
 			ret_y = offset_y;
 		}
-		
 		handle_left_ = mkaul::Point{ ret_x, ret_y };
+		
+		auto prev_bezier = prev() ? global::id_manager.get_curve<BezierCurve>(prev()->get_id()) : nullptr;
+		if (!bound and prev_bezier and global::config.get_align_handle()) {
+			const auto scaled_angle = std::atan2(-scale_y_buffer_ * ret_y, scale_x_buffer_ * ret_x);
+			const auto scaled_offset_x = length_buffer_ * std::cos(scaled_angle + std::numbers::pi);
+			const auto scaled_offset_y = -length_buffer_ * std::sin(scaled_angle + std::numbers::pi);
+			const auto ret_prev_x = prev_bezier->anchor_end().x + scaled_offset_x / scale_x_buffer_;
+			const auto ret_prev_y = prev_bezier->anchor_end().y + scaled_offset_y / scale_y_buffer_;
+			prev_bezier->move_handle_right(ret_prev_x, ret_prev_y, true, true);
+	}
 	}
 
-	void BezierCurve::set_handle_right(double x, double y, bool keep_angle) noexcept {
+	void BezierCurve::move_handle_right(double x, double y, bool keep_angle, bool bound) noexcept {
+		if (is_locked()) return;
 		auto offset_x = x - anchor_end().x;
 		auto offset_y = y - anchor_end().y;
 		auto ret_x = mkaul::clamp(offset_x, anchor_start().x - anchor_end().x, 0.);
@@ -164,8 +233,17 @@ namespace cved {
 		else {
 			ret_y = offset_y;
 		}
-
 		handle_right_ = mkaul::Point{ ret_x, ret_y };
+
+		auto next_bezier = next() ? global::id_manager.get_curve<BezierCurve>(next()->get_id()) : nullptr;
+		if (!bound and next_bezier and global::config.get_align_handle()) {
+			const auto scaled_angle = std::atan2(-scale_y_buffer_ * ret_y, scale_x_buffer_ * ret_x);
+			const auto scaled_offset_x = length_buffer_ * std::cos(scaled_angle + std::numbers::pi);
+			const auto scaled_offset_y = -length_buffer_ * std::sin(scaled_angle + std::numbers::pi);
+			const auto ret_next_x = next_bezier->anchor_start().x + scaled_offset_x / scale_x_buffer_;
+			const auto ret_next_y = next_bezier->anchor_start().y + scaled_offset_y / scale_y_buffer_;
+			next_bezier->move_handle_left(ret_next_x, ret_next_y, true, true);
+		}
 	}
 
 	void BezierCurve::clear() noexcept {

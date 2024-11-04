@@ -17,7 +17,7 @@ namespace cved {
 			register_member(L"getId", DispatchType::Method, get_id);
 			register_member(L"getHandleX", DispatchType::Method, get_handle_x);
 			register_member(L"getHandleY", DispatchType::Method, get_handle_y);
-			register_member(L"setHandle", DispatchType::Method, set_handle);
+			register_member(L"moveHandle", DispatchType::Method, set_handle);
 			register_member(L"getParam", DispatchType::Method, get_param);
 		}
 	};

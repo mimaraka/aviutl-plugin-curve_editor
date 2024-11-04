@@ -10,6 +10,11 @@ namespace cved {
 	class BezierCurve : public NumericGraphCurve {
 		mkaul::Point<double> handle_left_;
 		mkaul::Point<double> handle_right_;
+		mkaul::Point<double> handle_left_buffer_;
+		mkaul::Point<double> handle_right_buffer_;
+		double length_buffer_ = 0.;
+		double scale_x_buffer_ = 0.;
+		double scale_y_buffer_ = 0.;
 
 	public:
 		enum class HandleType {
@@ -35,13 +40,25 @@ namespace cved {
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BEZIER; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBezier]; }
 
+		// アンカーを移動する
+		void begin_move_anchor_start(bool bound = false) noexcept override;
+		void begin_move_anchor_end(bool bound = false) noexcept override;
+		void move_anchor_start(double x, double y, bool forced = false, bool bound = false) noexcept override;
+		void move_anchor_end(double x, double y, bool forced = false, bool bound = false) noexcept override;
+
+		// ハンドルの座標を取得する
 		[[nodiscard]] double get_handle_left_x() const noexcept { return anchor_start().x + handle_left_.x; }
 		[[nodiscard]] double get_handle_left_y() const noexcept { return anchor_start().y + handle_left_.y; }
 		[[nodiscard]] double get_handle_right_x() const noexcept { return anchor_end().x + handle_right_.x; }
 		[[nodiscard]] double get_handle_right_y() const noexcept { return anchor_end().y + handle_right_.y; }
 
-		void set_handle_left(double x, double y, bool keep_angle = false) noexcept;
-		void set_handle_right(double x, double y, bool keep_angle = false) noexcept;
+		// ハンドルを移動する
+		void begin_move_handle_left(double scale_x, double scale_y) noexcept;
+		void begin_move_handle_right(double scale_x, double scale_y) noexcept;
+		void move_handle_left(double x, double y, bool keep_angle = false, bool bound = false) noexcept;
+		void move_handle_left(const mkaul::Point<double>& pt, bool keep_angle = false, bool bound = false) noexcept { move_handle_left(pt.x, pt.y, keep_angle, bound); }
+		void move_handle_right(double x, double y, bool keep_angle = false, bool bound = false) noexcept;
+		void move_handle_right(const mkaul::Point<double>& pt, bool keep_angle = false, bool bound = false) noexcept { move_handle_right(pt.x, pt.y, keep_angle, bound); }
 
 		// カーブの値を取得する
 		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;

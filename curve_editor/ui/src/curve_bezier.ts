@@ -11,8 +11,12 @@ class BezierCurve extends NumericCurve {
         return editor.graph.bezier.getHandleLeftY(this.id);
     }
 
-    setHandleLeft(x: number, y: number, keepAngle = false) {
-        editor.graph.bezier.setHandleLeft(this.id, x, y, keepAngle);
+    beginMoveHandleLeft(scaleX: number, scaleY: number) {
+        editor.graph.bezier.beginMoveHandleLeft(this.id, scaleX, scaleY);
+    }
+
+    moveHandleLeft(x: number, y: number, keepAngle = false) {
+        editor.graph.bezier.moveHandleLeft(this.id, x, y, keepAngle);
     }
 
     getHandleRightX() {
@@ -23,24 +27,26 @@ class BezierCurve extends NumericCurve {
         return editor.graph.bezier.getHandleRightY(this.id);
     }
 
-    setHandleRight(x: number, y: number, keepAngle = false) {
-        editor.graph.bezier.setHandleRight(this.id, x, y, keepAngle);
+    beginMoveHandleRight(scaleX: number, scaleY: number) {
+        editor.graph.bezier.beginMoveHandleRight(this.id, scaleX, scaleY);
+    }
+
+    moveHandleRight(x: number, y: number, keepAngle = false) {
+        editor.graph.bezier.moveHandleRight(this.id, x, y, keepAngle);
     }
 
     getPrevBezier() {
-        const id = editor.graph.graph.getPrevCurveId(this.id);
-        if (editor.getCurveName(id) !== 'bezier') {
+        if (editor.getCurveName(this.prevId) !== 'bezier') {
             return null;
         }
-        return new BezierCurve(id);
+        return new BezierCurve(this.prevId);
     }
 
     getNextBezier() {
-        const id = editor.graph.graph.getNextCurveId(this.id);
-        if (editor.getCurveName(id) !== 'bezier') {
+        if (editor.getCurveName(this.prevId) !== 'bezier') {
             return null;
         }
-        return new BezierCurve(id);
+        return new BezierCurve(this.prevId);
     }
 }
 

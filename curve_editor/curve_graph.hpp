@@ -99,10 +99,14 @@ namespace cved {
 		[[nodiscard]] double get_anchor_start_y() const noexcept { return anchor_start_.y; }
 		[[nodiscard]] double get_anchor_end_x() const noexcept { return anchor_end_.x; }
 		[[nodiscard]] double get_anchor_end_y() const noexcept { return anchor_end_.y; }
-		void set_anchor_start(double x, double y, bool forced = false) noexcept;
-		void set_anchor_start(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_start(pt.x, pt.y, forced); }
-		void set_anchor_end(double x, double y, bool forced = false) noexcept;
-		void set_anchor_end(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_end(pt.x, pt.y, forced); }
+
+		// アンカー参照・操作
+		virtual void begin_move_anchor_start(bool bound = false) noexcept;
+		virtual void begin_move_anchor_end(bool bound = false) noexcept;
+		virtual void move_anchor_start(double x, double y, bool forced = false, bool bound = false) noexcept;
+		void move_anchor_start(const mkaul::Point<double>& pt, bool forced = false, bool bound = false) noexcept { move_anchor_start(pt.x, pt.y, forced, bound); }
+		virtual void move_anchor_end(double x, double y, bool forced = false, bool bound = false) noexcept;
+		void move_anchor_end(const mkaul::Point<double>& pt, bool forced = false, bool bound = false) noexcept { move_anchor_end(pt.x, pt.y, forced, bound); }
 
 		virtual void reverse(bool fix_pt = false) noexcept;
 

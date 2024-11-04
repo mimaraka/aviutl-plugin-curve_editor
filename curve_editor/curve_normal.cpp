@@ -192,23 +192,23 @@ namespace cved {
 
 				auto new_curve = std::make_unique<BezierCurve>();
 				// ポイントの移動
-				new_curve->set_anchor_start(
+				new_curve->move_anchor_start(
 					pts[i].pt_center.x / (double)GRAPH_RESOLUTION,
 					pts[i].pt_center.y / (double)GRAPH_RESOLUTION,
 					true
 				);
-				new_curve->set_anchor_end(
+				new_curve->move_anchor_end(
 					pts[i + 1u].pt_center.x / (double)GRAPH_RESOLUTION,
 					pts[i + 1u].pt_center.y / (double)GRAPH_RESOLUTION,
 					true
 				);
 
 				// ハンドルの移動
-				new_curve->set_handle_left(
+				new_curve->move_handle_left(
 					new_curve->anchor_start().x + (pts[i].pt_right.x - pts[i].pt_center.x) / (double)GRAPH_RESOLUTION,
 					new_curve->anchor_start().y + (pts[i].pt_right.y - pts[i].pt_center.y) / (double)GRAPH_RESOLUTION
 				);
-				new_curve->set_handle_right(
+				new_curve->move_handle_right(
 					new_curve->anchor_end().x + (pts[i + 1u].pt_left.x - pts[i + 1u].pt_center.x) / (double)GRAPH_RESOLUTION,
 					new_curve->anchor_end().y + (pts[i + 1u].pt_left.y - pts[i + 1u].pt_center.y) / (double)GRAPH_RESOLUTION
 				);
@@ -250,29 +250,29 @@ namespace cved {
 				};
 
 				// 既存のカーブを移動させる
-				(*it)->set_anchor_end(pt, true);
+				(*it)->move_anchor_end(pt, true);
 
 				// 左のカーブがベジェの場合、右のハンドルをnew_curveの右ハンドルにコピーする
 				// TODO: このあたりの処理がゴリ押しだから何とかしたい
 				if (typeid(**it) == typeid(BezierCurve)) {
 					auto bezier_prev = dynamic_cast<BezierCurve*>((*it).get());
 					auto bezier_new = dynamic_cast<BezierCurve*>(new_curve.get());
-					bezier_new->set_handle_right(
+					bezier_new->move_handle_right(
 						bezier_prev->get_handle_right_x() - pt.x + new_curve->anchor_end().x,
 						bezier_prev->get_handle_right_y() - pt.y + new_curve->anchor_end().y,
 						true
 					);
-					bezier_new->set_handle_left(
+					bezier_new->move_handle_left(
 						pt.x + HANDLE_DEFAULT_LENGTH / scale_x,
 						pt.y,
 						true
 					);
-					bezier_prev->set_handle_right(
+					bezier_prev->move_handle_right(
 						pt.x - HANDLE_DEFAULT_LENGTH / scale_x,
 						pt.y,
 						true
 					);
-					bezier_prev->set_handle_left(
+					bezier_prev->move_handle_left(
 						bezier_prev->get_handle_left_x(),
 						bezier_prev->get_handle_left_y(),
 						true
@@ -298,7 +298,7 @@ namespace cved {
 			// 先頭のカーブでない場合
 			if ((*it).get()->get_id() == segment_id and *it != curve_segments_.front()) {
 				// 前のカーブの終点を削除するカーブの終点に移動させる
-				(*std::prev(it))->set_anchor_end((*it)->anchor_end());
+				(*std::prev(it))->move_anchor_end((*it)->anchor_end(), true, true);
 				// prev, nextの更新
 				(*std::prev(it))->set_next((*it)->next());
 				if ((*it)->next()) {
@@ -309,7 +309,7 @@ namespace cved {
 					// 前のベジェの右ハンドルを自身の右ハンドルにする
 					auto bezier_prev = dynamic_cast<BezierCurve*>((*std::prev(it)).get());
 					auto bezier_self = dynamic_cast<BezierCurve*>((*it).get());
-					bezier_prev->set_handle_right(
+					bezier_prev->move_handle_right(
 						bezier_self->get_handle_right_x(), bezier_self->get_handle_right_y(), true
 					);
 				}
@@ -324,7 +324,7 @@ namespace cved {
 					// 前のベジェの右ハンドルを次のベジェの左ハンドルに合わせて回転
 					auto bezier_prev = dynamic_cast<BezierCurve*>((*std::prev(it)).get());
 					auto bezier_next = dynamic_cast<BezierCurve*>((*std::next(it)).get());
-					/*bezier_prev->set_handle_right(
+					/*bezier_prev->move_handle_right(
 						(*it)->anchor_end().pt() - bezier_next->handle_left()->pt_offset(),
 						view, true
 					);*/

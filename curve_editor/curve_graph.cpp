@@ -21,8 +21,22 @@ namespace cved {
 		}
 	}
 
-	void GraphCurve::set_anchor_start(double x, double y, bool forced) noexcept {
-		if ((anchor_fixed_ or !prev_) and !forced) {
+	void GraphCurve::begin_move_anchor_start(bool bound) noexcept {
+		if (is_locked()) return;
+		if (!bound and prev_) {
+			prev_->begin_move_anchor_end(true);
+		}
+	}
+
+	void GraphCurve::begin_move_anchor_end(bool bound) noexcept {
+		if (is_locked()) return;
+		if (!bound and next_) {
+			next_->begin_move_anchor_start(true);
+		}
+	}
+
+	void GraphCurve::move_anchor_start(double x, double y, bool forced, bool bound) noexcept {
+		if ((anchor_fixed_ or !prev_ or is_locked()) and !forced) {
 			return;
 		}
 		auto ret = mkaul::Point{
@@ -30,11 +44,13 @@ namespace cved {
 			y
 		};
 		anchor_start_ = ret;
-		//prev_->anchor_end_ = ret;
+		if (!bound and prev_) {
+			prev_->move_anchor_end(ret, false, true);
+		}
 	}
 
-	void GraphCurve::set_anchor_end(double x, double y, bool forced) noexcept {
-		if ((anchor_fixed_ or !next_) and !forced) {
+	void GraphCurve::move_anchor_end(double x, double y, bool forced, bool bound) noexcept {
+		if ((anchor_fixed_ or !next_ or is_locked()) and !forced) {
 			return;
 		}
 		auto ret = mkaul::Point{
@@ -42,10 +58,10 @@ namespace cved {
 			y
 		};
 		anchor_end_ = ret;
-		//next_->anchor_start_ = ret;
+		if (!bound and next_) {
+			next_->move_anchor_start(ret, false, true);
+		}
 	}
-
-
 
 	Modifier* GraphCurve::get_modifier(size_t idx) const noexcept {
 		if (idx < modifiers_.size()) {

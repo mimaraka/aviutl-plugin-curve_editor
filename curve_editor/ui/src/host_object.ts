@@ -70,10 +70,12 @@ declare global {
     interface GraphCurveHostObject {
         getAnchorStartX: (id: number) => number;
         getAnchorStartY: (id: number) => number;
-        setAnchorStart: (id: number, x: number, y: number) => void;
+        beginMoveAnchorStart: (id: number) => void;
+        moveAnchorStart: (id: number, x: number, y: number) => void;
         getAnchorEndX: (id: number) => number;
         getAnchorEndY: (id: number) => number;
-        setAnchorEnd: (id: number, x: number, y: number) => void;
+        beginMoveAnchorEnd: (id: number) => void;
+        moveAnchorEnd: (id: number, x: number, y: number) => void;
         getPrevCurveId: (id: number) => number;
         getNextCurveId: (id: number) => number;
         reverse: (id: number) => void;
@@ -88,10 +90,12 @@ declare global {
         getId: (isSelectDialog: boolean) => number;
         getHandleLeftX: (id: number) => number;
         getHandleLeftY: (id: number) => number;
-        setHandleLeft: (id: number, x: number, y: number, keepAngle: boolean) => void;
+        beginMoveHandleLeft: (id: number, scaleX: number, scaleY: number) => void;
+        moveHandleLeft: (id: number, x: number, y: number, keepAngle: boolean) => void;
         getHandleRightX: (id: number) => number;
         getHandleRightY: (id: number) => number;
-        setHandleRight: (id: number, x: number, y: number, keepAngle: boolean) => void;
+        beginMoveHandleRight: (id: number, scaleX: number, scaleY: number) => void;
+        moveHandleRight: (id: number, x: number, y: number, keepAngle: boolean) => void;
         getParam: (id: number) => string;
     }
 
@@ -99,14 +103,14 @@ declare global {
         getId: (isSelectDialog: boolean) => number;
         getHandleAmpLeftX: (id: number) => number;
         getHandleAmpLeftY: (id: number) => number;
-        setHandleAmpLeft: (id: number, y: number) => void;
+        moveHandleAmpLeft: (id: number, y: number) => void;
         getHandleAmpRightX: (id: number) => number;
         getHandleAmpRightY: (id: number) => number;
-        setHandleAmpRight: (id: number, y: number) => void;
+        moveHandleAmpRight: (id: number, y: number) => void;
         getHandleFreqDecayX: (id: number) => number;
         getHandleFreqDecayY: (id: number) => number;
         getHandleFreqDecayRootY: (id: number) => number;
-        setHandleFreqDecay: (id: number, x: number, y: number) => void;
+        moveHandleFreqDecay: (id: number, x: number, y: number) => void;
         getParam: (id: number) => string;
     }
 
@@ -114,7 +118,7 @@ declare global {
         getId: (isSelectDialog: boolean) => number;
         getHandleX: (id: number) => number;
         getHandleY: (id: number) => number;
-        setHandle: (id: number, x: number, y: number) => void;
+        moveHandle: (id: number, x: number, y: number) => void;
         getParam: (id: number) => string;
     }
 

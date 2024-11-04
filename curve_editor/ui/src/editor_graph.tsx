@@ -623,7 +623,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
     editorRef.current?.setIdx(props.idx);
 
     const updateHandlePosition = () => {
-        if (editorRef.current?.control instanceof NormalControl && editorRef.current?.control.segmentHandlesArray.length > 1) {
+        if (editorRef.current?.control instanceof NormalControl && editorRef.current?.control.segmentControlArray.length > 1) {
             editorRef.current?.updateControl();
             editorRef.current?.updateCurvePath();
             editorRef.current?.updateVelocityPath();

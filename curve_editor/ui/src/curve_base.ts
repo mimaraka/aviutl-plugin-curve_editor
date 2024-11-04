@@ -4,9 +4,13 @@ import { editor } from './host_object';
 class Curve {
     #id: number;
     #parentId: number;
-    constructor(id: number, parentId = 0) {
+    #prevId: number;
+    #nextId: number;
+    constructor(id: number, parentId = 0, prevId = 0, nextId = 0) {
         this.#id = id;
         this.#parentId = parentId;
+        this.#prevId = prevId;
+        this.#nextId = nextId;
     }
 
     get id() {
@@ -17,6 +21,22 @@ class Curve {
         return this.#parentId;
     }
 
+    get prevId() {
+        return this.#prevId;
+    }
+
+    get nextId() {
+        return this.#nextId;
+    }
+
+    setPrevId(prevId: number) {
+        this.#prevId = prevId;
+    }
+
+    setNextId(nextId: number) {
+        this.#nextId = nextId;
+    }
+
     getAnchorStartX() {
         return editor.graph.graph.getAnchorStartX(this.id);
     }
@@ -25,8 +45,12 @@ class Curve {
         return editor.graph.graph.getAnchorStartY(this.id);
     }
 
-    setAnchorStart(x: number, y: number) {
-        editor.graph.graph.setAnchorStart(this.id, x, y);
+    beginMoveAnchorStart() {
+        editor.graph.graph.beginMoveAnchorStart(this.id);
+    }
+
+    moveAnchorStart(x: number, y: number) {
+        editor.graph.graph.moveAnchorStart(this.id, x, y);
     }
 
     getAnchorEndX() {
@@ -37,12 +61,30 @@ class Curve {
         return editor.graph.graph.getAnchorEndY(this.id);
     }
 
-    setAnchorEnd(x: number, y: number) {
-        editor.graph.graph.setAnchorEnd(this.id, x, y);
+    beginMoveAnchorEnd() {
+        editor.graph.graph.beginMoveAnchorEnd(this.id);
+    }
+
+    moveAnchorEnd(x: number, y: number) {
+        editor.graph.graph.moveAnchorEnd(this.id, x, y);
     }
 
     reverse() {
         editor.graph.graph.reverse(this.id);
+    }
+
+    getPrevCurve() {
+        if (this.prevId === 0) {
+            return null;
+        }
+        return new Curve(this.prevId, this.parentId);
+    }
+
+    getNextCurve() {
+        if (this.nextId === 0) {
+            return null;
+        }
+        return new Curve(this.nextId, this.parentId);
     }
 }
 

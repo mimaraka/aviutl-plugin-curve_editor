@@ -11,8 +11,8 @@ class ElasticCurve extends NumericCurve {
         return editor.graph.elastic.getHandleAmpLeftY(this.id);
     }
 
-    setHandleAmpLeft(y: number) {
-        editor.graph.elastic.setHandleAmpLeft(this.id, y);
+    moveHandleAmpLeft(y: number) {
+        editor.graph.elastic.moveHandleAmpLeft(this.id, y);
     }
 
     getHandleAmpRightX() {
@@ -23,8 +23,8 @@ class ElasticCurve extends NumericCurve {
         return editor.graph.elastic.getHandleAmpRightY(this.id);
     }
 
-    setHandleAmpRight(y: number) {
-        editor.graph.elastic.setHandleAmpRight(this.id, y);
+    moveHandleAmpRight(y: number) {
+        editor.graph.elastic.moveHandleAmpRight(this.id, y);
     }
 
     getHandleFreqDecayX() {
@@ -39,8 +39,8 @@ class ElasticCurve extends NumericCurve {
         return editor.graph.elastic.getHandleFreqDecayRootY(this.id);
     }
 
-    setHandleFreqDecay(x: number, y: number) {
-        editor.graph.elastic.setHandleFreqDecay(this.id, x, y);
+    moveHandleFreqDecay(x: number, y: number) {
+        editor.graph.elastic.moveHandleFreqDecay(this.id, x, y);
     }
 }
 

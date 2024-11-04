@@ -11,8 +11,8 @@ class BounceCurve extends NumericCurve {
         return editor.graph.bounce.getHandleY(this.id);
     }
 
-    setHandle(x: number, y: number) {
-        editor.graph.bounce.setHandle(this.id, x, y);
+    moveHandle(x: number, y: number) {
+        editor.graph.bounce.moveHandle(this.id, x, y);
     }
 }
 
