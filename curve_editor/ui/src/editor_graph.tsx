@@ -336,6 +336,10 @@ class GraphEditor {
         }
     }
 
+    updateIdCurve() {
+        this.#normalCurve = new NormalCurve(editor.graph.normal.getId(this.#idx));
+    }
+
     getCurrentCurve() {
         switch (this.#editMode) {
             case 0:
@@ -606,7 +610,7 @@ class GraphEditor {
 interface GraphEditorPanelProps {
     isSelectDialog: boolean;
     editMode: number;
-    idx: number;
+    idx: number; // idxNormal
     size: number;
     setIdx: (idx: number) => void;
 }
@@ -662,6 +666,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
 
             case 'UpdateEditor':
             case 'UpdateControl':
+                editorRef.current?.updateIdCurve();
                 editorRef.current?.updateControl();
                 editorRef.current?.updateCurvePath();
                 editorRef.current?.updateVelocityPath();
