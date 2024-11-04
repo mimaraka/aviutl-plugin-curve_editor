@@ -70,12 +70,9 @@ class NormalControl extends Control {
             this.segmentControlArray[i]?.anchorStart.on('dblclick', (event: MouseEvent) => {
                 event.stopPropagation();
                 editor.graph.normal.deleteCurve(curve.id, this.segmentControlArray[i]?.curve.id ?? 0);
-                this.segmentControlArray[i]?.remove();
-                this.segmentControlArray.splice(i, 1);
-                for (let control of this.segmentControlArray) {
-                    control?.updateControl();
-                }
-                this.updateCurvePath();
+                window.postMessage({
+                    command: 'UpdateControl'
+                }, '*');
             });
         }
     }

@@ -654,6 +654,12 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
                 editorRef.current?.updateCurvePath();
                 editorRef.current?.updateVelocityPath();
                 break;
+
+            case 'UpdateControl':
+                editorRef.current?.updateControl();
+                editorRef.current?.updateCurvePath();
+                editorRef.current?.updateVelocityPath();
+                break;
         }
     }
 
@@ -665,8 +671,8 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
                 break;
 
             case 'UpdateEditor':
-            case 'UpdateControl':
                 editorRef.current?.updateIdCurve();
+            case 'UpdateControl':
                 editorRef.current?.updateControl();
                 editorRef.current?.updateCurvePath();
                 editorRef.current?.updateVelocityPath();

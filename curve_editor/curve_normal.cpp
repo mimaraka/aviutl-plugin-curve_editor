@@ -231,8 +231,7 @@ namespace cved {
 		for (auto it = curve_segments_.begin(), end = curve_segments_.end(); it != end; it++) {
 			// X座標がカーブの始点と終点の範囲内であった場合
 			if (mkaul::in_range(pt.x, (*it)->anchor_start().x, (*it)->anchor_end().x, false)) {
-				std::unique_ptr<GraphCurve> new_curve{
-					new BezierCurve{
+				std::unique_ptr<GraphCurve> new_curve = std::make_unique<BezierCurve>(
 						pt,
 						(*it)->anchor_end(),
 						false,
@@ -246,36 +245,34 @@ namespace cved {
 							(pt.x - (*it)->anchor_end().x) * BezierCurve::DEFAULT_HANDLE_XY,
 							(pt.y - (*it)->anchor_end().y) * BezierCurve::DEFAULT_HANDLE_XY,
 						}
-					}
-				};
+				);
 
 				// 既存のカーブを移動させる
-				(*it)->move_anchor_end(pt, true);
+				(*it)->move_anchor_end(pt, true, true);
 
 				// 左のカーブがベジェの場合、右のハンドルをnew_curveの右ハンドルにコピーする
-				// TODO: このあたりの処理がゴリ押しだから何とかしたい
-				if (typeid(**it) == typeid(BezierCurve)) {
 					auto bezier_prev = dynamic_cast<BezierCurve*>((*it).get());
 					auto bezier_new = dynamic_cast<BezierCurve*>(new_curve.get());
+				if (bezier_prev and bezier_new) {
 					bezier_new->move_handle_right(
 						bezier_prev->get_handle_right_x() - pt.x + new_curve->anchor_end().x,
 						bezier_prev->get_handle_right_y() - pt.y + new_curve->anchor_end().y,
-						true
+						true, true
 					);
 					bezier_new->move_handle_left(
 						pt.x + HANDLE_DEFAULT_LENGTH / scale_x,
 						pt.y,
-						true
+						true, true
 					);
 					bezier_prev->move_handle_right(
 						pt.x - HANDLE_DEFAULT_LENGTH / scale_x,
 						pt.y,
-						true
+						true, true
 					);
 					bezier_prev->move_handle_left(
 						bezier_prev->get_handle_left_x(),
 						bezier_prev->get_handle_left_y(),
-						true
+						true, true
 					);
 				}
 
@@ -305,29 +302,13 @@ namespace cved {
 					(*it)->next()->set_prev((*std::prev(it)).get());
 				}
 				// 自身と前のカーブがともにベジェの場合
-				if (typeid(**it) == typeid(BezierCurve) and typeid(**std::prev(it)) == typeid(BezierCurve)) {
-					// 前のベジェの右ハンドルを自身の右ハンドルにする
 					auto bezier_prev = dynamic_cast<BezierCurve*>((*std::prev(it)).get());
 					auto bezier_self = dynamic_cast<BezierCurve*>((*it).get());
+				if (bezier_prev and bezier_self) {
+					// 前のベジェの右ハンドルを自身の右ハンドルにする
 					bezier_prev->move_handle_right(
-						bezier_self->get_handle_right_x(), bezier_self->get_handle_right_y(), true
+						bezier_self->get_handle_right_x(), bezier_self->get_handle_right_y(), true, true
 					);
-				}
-				// ハンドルの整列が有効で、かつ自身が非ベジェのカーブで、自身の両端がベジェのカーブの場合
-				else if (
-					global::config.get_align_handle()
-					and *it != curve_segments_.back()
-					and typeid(**it) != typeid(BezierCurve)
-					and typeid(**std::prev(it)) == typeid(BezierCurve)
-					and typeid(**std::next(it)) == typeid(BezierCurve)
-				) {
-					// 前のベジェの右ハンドルを次のベジェの左ハンドルに合わせて回転
-					auto bezier_prev = dynamic_cast<BezierCurve*>((*std::prev(it)).get());
-					auto bezier_next = dynamic_cast<BezierCurve*>((*std::next(it)).get());
-					/*bezier_prev->move_handle_right(
-						(*it)->anchor_end().pt() - bezier_next->handle_left()->pt_offset(),
-						view, true
-					);*/
 				}
 				curve_segments_.erase(it);
 				return true;
