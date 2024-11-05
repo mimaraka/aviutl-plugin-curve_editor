@@ -645,7 +645,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
                     if (event.data.mode == 2 || event.data.mode == 3 || event.data.mode == 4) {
                         editorRef.current?.decode(event.data.param);
                     } else {
-                        editorRef.current?.setIdx(event.data.param);
+                        editorRef.current?.setIdx(Math.max(event.data.param - 1, 0));
                     }
                 }
                 break;

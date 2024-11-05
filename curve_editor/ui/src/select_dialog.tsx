@@ -11,8 +11,8 @@ interface SelectDialogProps {
 
 const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => {
     const [editMode, setEditMode] = React.useState(props.editMode);
-    const [idxNormal, setIdxNormal] = React.useState(editMode == 0 ? props.param - 1 : 0);
-    const [idxScript, setIdxScript] = React.useState(editMode == 5 ? props.param - 1 : 0);
+    const [idxNormal, setIdxNormal] = React.useState(editMode == 0 ? Math.max(props.param - 1, 0) : 0);
+    const [idxScript, setIdxScript] = React.useState(editMode == 5 ? Math.max(props.param - 1, 0) : 0);
 
     const buttonHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--okcancel-height'));
     const margin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--margin'));
