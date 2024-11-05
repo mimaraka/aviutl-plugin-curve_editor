@@ -1,3 +1,4 @@
+#include "config.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
 #include "my_webview2_reference.hpp"
@@ -51,10 +52,15 @@ namespace cved {
 
 		case WM_DESTROY:
 		case WM_CLOSE:
+		{
+			RECT rect;
+			::GetClientRect(hwnd, &rect);
+			global::config.set_select_window_size(mkaul::Size{ static_cast<uint32_t>(rect.right), static_cast<uint32_t>(rect.bottom) });
 			my_webview.destroy();
 			global::webview.switch_to(WebViewType::Main);
 			::PostMessageA(::GetParent(hwnd), WM_COMMAND, (WPARAM)WindowCommand::SelectCurveClose, 0);
 			return 0;
+		}
 
 		case WM_COMMAND:
 			switch (wparam) {
@@ -74,11 +80,10 @@ namespace cved {
 
 	HWND SelectCurveWindow::create(HWND hwnd, const ModeParamPair* mode_param) noexcept {
 		using StringId = global::StringTable::StringId;
-		constexpr long WINDOW_WIDTH = 300;
-		constexpr long WINDOW_HEIGHT = 450;
 
 		hwnd_parent_ = hwnd;
-		auto rect = mkaul::WindowRectangle{ 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+		auto window_size = global::config.get_select_window_size();
+		auto rect = mkaul::WindowRectangle{ 0, 0, static_cast<LONG>(window_size.width), static_cast<LONG>(window_size.height)};
 		rect.client_to_screen(hwnd);
 
 		return mkaul::ui::Window::create(

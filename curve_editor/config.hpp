@@ -4,6 +4,7 @@
 #include "preferences.hpp"
 #include "util_json.hpp"
 #include <mkaul/color.hpp>
+#include <mkaul/size.hpp>
 #include <mkaul/util.hpp>
 
 
@@ -33,6 +34,7 @@ namespace cved {
 			bool ignore_autosaver_warning_;
 			double separator_pos_;
 			int preset_size_;
+			mkaul::Size<uint32_t> select_window_size_;
 
 			std::filesystem::path dir_aviutl_;
 			std::filesystem::path dir_plugin_;
@@ -135,6 +137,9 @@ namespace cved {
 
 			auto get_preset_size() const noexcept { return preset_size_; }
 			void set_preset_size(int preset_size) noexcept;
+
+			const auto& get_select_window_size() const noexcept { return select_window_size_; }
+			void set_select_window_size(const mkaul::Size<uint32_t>& select_window_size) noexcept { select_window_size_ = select_window_size; }
 
 			const auto& get_dir_aviutl() const noexcept { return dir_aviutl_; }
 			const auto& get_dir_plugin() const noexcept { return dir_plugin_; }

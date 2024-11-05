@@ -131,7 +131,7 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
                 idx={getIdx()}
                 size={getSize()}
                 setIdx={changeIdx}
-                style={{ height: `${document.documentElement.clientHeight - buttonHeight - margin}px` }}
+                style={{ height: `calc(100% - ${buttonHeight - margin}px)` }}
             />
             <div className='okcancel-row'>
                 <button className='okcancel' id='button-ok' onClick={onOkButtonClicked}>OK</button>

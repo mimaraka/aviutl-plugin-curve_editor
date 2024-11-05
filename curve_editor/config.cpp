@@ -24,7 +24,8 @@ namespace cved {
 			align_handle_{ true },
 			ignore_autosaver_warning_{ false },
 			separator_pos_{ 0.56 },
-			preset_size_{ 64 }
+			preset_size_{ 64 },
+			select_window_size_{ 300, 450 }
 		{
 			pref_.reset();
 			apply_mode_.fill(ApplyMode::Normal);
@@ -174,6 +175,8 @@ namespace cved {
 				set_from_json(this, data, GET_KEY(ignore_autosaver_warning_), &Config::set_ignore_autosaver_warning);
 				set_from_json(this, data, GET_KEY(separator_pos_), &Config::set_separator_pos);
 				set_from_json(this, data, GET_KEY(preset_size_), &Config::set_preset_size);
+				set_from_json(data, "select_window_width", select_window_size_.width);
+				set_from_json(data, "select_window_height", select_window_size_.height);
 			}
 			catch (const nlohmann::json::exception&) {
 				return false;
@@ -201,7 +204,9 @@ namespace cved {
 				{GET_KEY(align_handle_), align_handle_},
 				{GET_KEY(ignore_autosaver_warning_), ignore_autosaver_warning_},
 				{GET_KEY(separator_pos_), separator_pos_},
-				{GET_KEY(preset_size_), preset_size_}
+				{GET_KEY(preset_size_), preset_size_},
+				{"select_window_width", select_window_size_.width},
+				{"select_window_height", select_window_size_.height}
 			};
 
 			std::ofstream ofs{ dir_plugin_ / CONFIG_FILE_NAME };
