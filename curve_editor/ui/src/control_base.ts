@@ -29,10 +29,8 @@ class Control {
     anchorStart;
     anchorEnd;
     // バッファ
-    _bufferAnchorStartX: number;
-    _bufferAnchorStartY: number;
-    _bufferAnchorEndX: number;
-    _bufferAnchorEndY: number;
+    _bufferAnchorStart;
+    _bufferAnchorEnd;
 
     // コンストラクタ
     constructor(
@@ -48,15 +46,13 @@ class Control {
         this.scaleX = scaleX;
         this.scaleY = scaleY;
         this.curve = curve;
-        this._bufferAnchorStartX = this.curve.getAnchorStartX();
-        this._bufferAnchorStartY = this.curve.getAnchorStartY();
-        this._bufferAnchorEndX = this.curve.getAnchorEndX();
-        this._bufferAnchorEndY = this.curve.getAnchorEndY();
+        this._bufferAnchorStart = this.curve.getAnchorStart();
+        this._bufferAnchorEnd = this.curve.getAnchorEnd();
 
         // D3オブジェクトの作成
         this.anchorStart = g.append('rect')
-            .attr('x', scaleX(this._bufferAnchorStartX) - this.anchorRadius)
-            .attr('y', scaleY(this._bufferAnchorStartY) - this.anchorRadius)
+            .attr('x', scaleX(this._bufferAnchorStart.x) - this.anchorRadius)
+            .attr('y', scaleY(this._bufferAnchorStart.y) - this.anchorRadius)
             .attr('width', this.anchorRadius * 2)
             .attr('height', this.anchorRadius * 2)
             .attr('class', 'anchor')
@@ -72,8 +68,8 @@ class Control {
                 }
             });
         this.anchorEnd = g.append('rect')
-            .attr('x', scaleX(this._bufferAnchorEndX) - this.anchorRadius)
-            .attr('y', scaleY(this._bufferAnchorEndY) - this.anchorRadius)
+            .attr('x', scaleX(this._bufferAnchorEnd.x) - this.anchorRadius)
+            .attr('y', scaleY(this._bufferAnchorEnd.y) - this.anchorRadius)
             .attr('width', this.anchorRadius * 2)
             .attr('height', this.anchorRadius * 2)
             .attr('class', 'anchor');
@@ -103,8 +99,8 @@ class Control {
 
     rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         this.scaleX = scaleX;
-        const scaledStartX = this.scaleX(this._bufferAnchorStartX);
-        const scaledEndX = this.scaleX(this._bufferAnchorEndX);
+        const scaledStartX = this.scaleX(this._bufferAnchorStart.x);
+        const scaledEndX = this.scaleX(this._bufferAnchorEnd.x);
         if (transition) {
             this.anchorStart.transition(transition)
                 .attr('x', scaledStartX - this.anchorRadius);
@@ -120,8 +116,8 @@ class Control {
 
     rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         this.scaleY = scaleY;
-        const scaledStartY = this.scaleY(this._bufferAnchorStartY);
-        const scaledEndY = this.scaleY(this._bufferAnchorEndY);
+        const scaledStartY = this.scaleY(this._bufferAnchorStart.y);
+        const scaledEndY = this.scaleY(this._bufferAnchorEnd.y);
         if (transition) {
             this.anchorStart.transition(transition)
                 .attr('y', scaledStartY - this.anchorRadius);
@@ -136,30 +132,28 @@ class Control {
     }
 
     updateAnchorStart(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
-        this._bufferAnchorStartX = this.curve.getAnchorStartX();
-        this._bufferAnchorStartY = this.curve.getAnchorStartY();
+        this._bufferAnchorStart = this.curve.getAnchorStart();
         if (transition) {
             this.anchorStart.transition(transition)
-                .attr('x', this.scaleX(this._bufferAnchorStartX) - this.anchorRadius)
-                .attr('y', this.scaleY(this._bufferAnchorStartY) - this.anchorRadius);
+                .attr('x', this.scaleX(this._bufferAnchorStart.x) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorStart.y) - this.anchorRadius);
         } else {
             this.anchorStart
-                .attr('x', this.scaleX(this._bufferAnchorStartX) - this.anchorRadius)
-                .attr('y', this.scaleY(this._bufferAnchorStartY) - this.anchorRadius);
+                .attr('x', this.scaleX(this._bufferAnchorStart.x) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorStart.y) - this.anchorRadius);
         }
     }
 
     updateAnchorEnd(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
-        this._bufferAnchorEndX = this.curve.getAnchorEndX();
-        this._bufferAnchorEndY = this.curve.getAnchorEndY();
+        this._bufferAnchorEnd = this.curve.getAnchorEnd();
         if (transition) {
             this.anchorEnd.transition(transition)
-                .attr('x', this.scaleX(this._bufferAnchorEndX) - this.anchorRadius)
-                .attr('y', this.scaleY(this._bufferAnchorEndY) - this.anchorRadius);
+                .attr('x', this.scaleX(this._bufferAnchorEnd.x) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorEnd.y) - this.anchorRadius);
         } else {
             this.anchorEnd
-                .attr('x', this.scaleX(this._bufferAnchorEndX) - this.anchorRadius)
-                .attr('y', this.scaleY(this._bufferAnchorEndY) - this.anchorRadius);
+                .attr('x', this.scaleX(this._bufferAnchorEnd.x) - this.anchorRadius)
+                .attr('y', this.scaleY(this._bufferAnchorEnd.y) - this.anchorRadius);
         }
     }
 

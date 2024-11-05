@@ -6,8 +6,7 @@ import BounceCurve from './curve_bounce';
 // ハンドル (バウンス)
 class BounceControl extends Control {
     // バッファ
-    #bufferHandleX: number;
-    #bufferHandleY: number;
+    #bufferHandle;
     // D3オブジェクト
     handle;
 
@@ -19,11 +18,10 @@ class BounceControl extends Control {
         scaleY: d3.ScaleLinear<number, number>
     ) {
         super(curve, g, scaleX, scaleY);
-        this.#bufferHandleX = curve.getHandleX();
-        this.#bufferHandleY = curve.getHandleY();
+        this.#bufferHandle = curve.getHandle();
         this.handle = g.append('circle')
-            .attr('cx', scaleX(this.#bufferHandleX))
-            .attr('cy', scaleY(this.#bufferHandleY))
+            .attr('cx', scaleX(this.#bufferHandle.x))
+            .attr('cy', scaleY(this.#bufferHandle.y))
             .attr('r', this.handleRadius)
             .attr('class', 'handle');
         this.handle.call(
@@ -35,7 +33,7 @@ class BounceControl extends Control {
 
     rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleX(scaleX, transition);
-        const x = this.scaleX(this.#bufferHandleX);
+        const x = this.scaleX(this.#bufferHandle.x);
         if (transition) {
             this.handle.transition(transition)
                 .attr('cx', x);
@@ -47,7 +45,7 @@ class BounceControl extends Control {
 
     rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleY(scaleY, transition);
-        const y = this.scaleY(this.#bufferHandleY);
+        const y = this.scaleY(this.#bufferHandle.y);
         if (transition) {
             this.handle.transition(transition)
                 .attr('cy', y);
@@ -58,16 +56,15 @@ class BounceControl extends Control {
     }
 
     updateHandle(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
-        this.#bufferHandleX = (this.curve as BounceCurve).getHandleX();
-        this.#bufferHandleY = (this.curve as BounceCurve).getHandleY();
+        this.#bufferHandle = (this.curve as BounceCurve).getHandle();
         if (transition) {
             this.handle.transition(transition)
-                .attr('cx', this.scaleX(this.#bufferHandleX))
-                .attr('cy', this.scaleY(this.#bufferHandleY));
+                .attr('cx', this.scaleX(this.#bufferHandle.x))
+                .attr('cy', this.scaleY(this.#bufferHandle.y));
         } else {
             this.handle
-                .attr('cx', this.scaleX(this.#bufferHandleX))
-                .attr('cy', this.scaleY(this.#bufferHandleY));
+                .attr('cx', this.scaleX(this.#bufferHandle.x))
+                .attr('cy', this.scaleY(this.#bufferHandle.y));
         }
     }
 

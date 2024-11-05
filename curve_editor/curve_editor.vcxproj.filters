@@ -100,6 +100,12 @@
     <Filter Include="Source Files\Web UI\React Component">
       <UniqueIdentifier>{24bfaaa9-0a31-490b-9195-f184e3ff0727}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Curve\Handle">
+      <UniqueIdentifier>{7aa721b2-af23-4511-8a32-4eede7d04442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Curve\Handle">
+      <UniqueIdentifier>{12f3f76f-c5ca-4a1f-95b5-97c8ea43baaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="curve_base.hpp">
@@ -336,6 +342,15 @@
     <ClInclude Include="dialog_update_notification.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
+    <ClInclude Include="key_state_observer.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="handle_bezier.hpp">
+      <Filter>Header Files\Curve\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="cereal_mkaul_point.hpp">
+      <Filter>Header Files\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve_base.cpp">
@@ -544,6 +559,9 @@
     </ClCompile>
     <ClCompile Include="dialog_update_notification.cpp">
       <Filter>Source Files\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="handle_bezier.cpp">
+      <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

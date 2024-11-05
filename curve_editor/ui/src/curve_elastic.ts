@@ -3,36 +3,45 @@ import { editor } from './host_object';
 
 
 class ElasticCurve extends NumericCurve {
-    getHandleAmpLeftX() {
-        return editor.graph.elastic.getHandleAmpLeftX(this.id);
-    }
-
-    getHandleAmpLeftY() {
-        return editor.graph.elastic.getHandleAmpLeftY(this.id);
+    getHandleAmpLeft() {
+        let result = editor.graph.elastic.getHandleAmpLeft(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     moveHandleAmpLeft(y: number) {
         editor.graph.elastic.moveHandleAmpLeft(this.id, y);
     }
 
-    getHandleAmpRightX() {
-        return editor.graph.elastic.getHandleAmpRightX(this.id);
-    }
-
-    getHandleAmpRightY() {
-        return editor.graph.elastic.getHandleAmpRightY(this.id);
+    getHandleAmpRight() {
+        let result = editor.graph.elastic.getHandleAmpRight(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     moveHandleAmpRight(y: number) {
         editor.graph.elastic.moveHandleAmpRight(this.id, y);
     }
 
-    getHandleFreqDecayX() {
-        return editor.graph.elastic.getHandleFreqDecayX(this.id);
-    }
-
-    getHandleFreqDecayY() {
-        return editor.graph.elastic.getHandleFreqDecayY(this.id);
+    getHandleFreqDecay() {
+        let result = editor.graph.elastic.getHandleFreqDecay(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     getHandleFreqDecayRootY() {

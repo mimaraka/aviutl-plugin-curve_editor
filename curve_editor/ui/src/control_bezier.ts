@@ -6,10 +6,8 @@ import BezierCurve from './curve_bezier';
 // 制御点 (ベジェ)
 class BezierControl extends Control {
     // バッファ
-    #bufferHandleLeftX: number;
-    #bufferHandleLeftY: number;
-    #bufferHandleRightX: number;
-    #bufferHandleRightY: number;
+    #bufferHandleLeft;
+    #bufferHandleRight;
     // D3オブジェクト
     handleLeft;
     handleRight;
@@ -24,15 +22,13 @@ class BezierControl extends Control {
         scaleY: d3.ScaleLinear<number, number>
     ) {
         super(curve, g, scaleX, scaleY);
-        this.#bufferHandleLeftX = curve.getHandleLeftX();
-        this.#bufferHandleLeftY = curve.getHandleLeftY();
-        this.#bufferHandleRightX = curve.getHandleRightX();
-        this.#bufferHandleRightY = curve.getHandleRightY();
+        this.#bufferHandleLeft = curve.getHandleLeft();
+        this.#bufferHandleRight = curve.getHandleRight();
 
         // ハンドルの制御点(左)の作成
         this.handleLeft = g.append('circle')
-            .attr('cx', scaleX(this.#bufferHandleLeftX))
-            .attr('cy', scaleY(this.#bufferHandleLeftY))
+            .attr('cx', scaleX(this.#bufferHandleLeft.x))
+            .attr('cy', scaleY(this.#bufferHandleLeft.y))
             .attr('r', this.handleRadius)
             .attr('class', 'handle')
             .on('mousedown', event => {
@@ -50,8 +46,8 @@ class BezierControl extends Control {
             });
         // ハンドルの制御点(右)の作成
         this.handleRight = g.append('circle')
-            .attr('cx', scaleX(this.#bufferHandleRightX))
-            .attr('cy', scaleY(this.#bufferHandleRightY))
+            .attr('cx', scaleX(this.#bufferHandleRight.x))
+            .attr('cy', scaleY(this.#bufferHandleRight.y))
             .attr('r', this.handleRadius)
             .attr('class', 'handle')
             .on('mousedown', event => {
@@ -70,17 +66,17 @@ class BezierControl extends Control {
 
         // ハンドルの棒(左)の作成
         this.handleLineLeft = g.append('line')
-            .attr('x1', scaleX(this._bufferAnchorStartX))
-            .attr('y1', scaleY(this._bufferAnchorStartY))
-            .attr('x2', scaleX(this.#bufferHandleLeftX))
-            .attr('y2', scaleY(this.#bufferHandleLeftY))
+            .attr('x1', scaleX(this._bufferAnchorStart.x))
+            .attr('y1', scaleY(this._bufferAnchorStart.y))
+            .attr('x2', scaleX(this.#bufferHandleLeft.x))
+            .attr('y2', scaleY(this.#bufferHandleLeft.y))
             .attr('class', 'handle-line');
         // ハンドルの棒(右)の作成
         this.handleLineRight = g.append('line')
-            .attr('x1', scaleX(this._bufferAnchorEndX))
-            .attr('y1', scaleY(this._bufferAnchorEndY))
-            .attr('x2', scaleX(this.#bufferHandleRightX))
-            .attr('y2', scaleY(this.#bufferHandleRightY))
+            .attr('x1', scaleX(this._bufferAnchorEnd.x))
+            .attr('y1', scaleY(this._bufferAnchorEnd.y))
+            .attr('x2', scaleX(this.#bufferHandleRight.x))
+            .attr('y2', scaleY(this.#bufferHandleRight.y))
             .attr('class', 'handle-line');
 
         // ドラッグイベントの設定
@@ -100,10 +96,10 @@ class BezierControl extends Control {
 
     rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleX(scaleX, transition);
-        const leftX = this.scaleX(this.#bufferHandleLeftX);
-        const rightX = this.scaleX(this.#bufferHandleRightX);
-        const startX = this.scaleX(this._bufferAnchorStartX);
-        const endX = this.scaleX(this._bufferAnchorEndX);
+        const leftX = this.scaleX(this.#bufferHandleLeft.x);
+        const rightX = this.scaleX(this.#bufferHandleRight.x);
+        const startX = this.scaleX(this._bufferAnchorStart.x);
+        const endX = this.scaleX(this._bufferAnchorEnd.x);
         if (transition) {
             this.handleLeft.transition(transition)
                 .attr('cx', leftX);
@@ -131,10 +127,10 @@ class BezierControl extends Control {
 
     rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleY(scaleY, transition);
-        const leftY = this.scaleY(this.#bufferHandleLeftY);
-        const rightY = this.scaleY(this.#bufferHandleRightY);
-        const startY = this.scaleY(this._bufferAnchorStartY);
-        const endY = this.scaleY(this._bufferAnchorEndY);
+        const leftY = this.scaleY(this.#bufferHandleLeft.y);
+        const rightY = this.scaleY(this.#bufferHandleRight.y);
+        const startY = this.scaleY(this._bufferAnchorStart.y);
+        const endY = this.scaleY(this._bufferAnchorEnd.y);
         if (transition) {
             this.handleLeft.transition(transition)
                 .attr('cy', leftY);
@@ -166,12 +162,12 @@ class BezierControl extends Control {
         super.updateAnchorStart(transition);
         if (transition) {
             this.handleLineLeft.transition(transition)
-                .attr('x1', this.scaleX(this._bufferAnchorStartX))
-                .attr('y1', this.scaleY(this._bufferAnchorStartY));
+                .attr('x1', this.scaleX(this._bufferAnchorStart.x))
+                .attr('y1', this.scaleY(this._bufferAnchorStart.y));
         } else {
             this.handleLineLeft
-                .attr('x1', this.scaleX(this._bufferAnchorStartX))
-                .attr('y1', this.scaleY(this._bufferAnchorStartY));
+                .attr('x1', this.scaleX(this._bufferAnchorStart.x))
+                .attr('y1', this.scaleY(this._bufferAnchorStart.y));
         }
     }
 
@@ -181,12 +177,12 @@ class BezierControl extends Control {
         super.updateAnchorEnd(transition);
         if (transition) {
             this.handleLineRight.transition(transition)
-                .attr('x1', this.scaleX(this._bufferAnchorEndX))
-                .attr('y1', this.scaleY(this._bufferAnchorEndY));
+                .attr('x1', this.scaleX(this._bufferAnchorEnd.x))
+                .attr('y1', this.scaleY(this._bufferAnchorEnd.y));
         } else {
             this.handleLineRight
-                .attr('x1', this.scaleX(this._bufferAnchorEndX))
-                .attr('y1', this.scaleY(this._bufferAnchorEndY));
+                .attr('x1', this.scaleX(this._bufferAnchorEnd.x))
+                .attr('y1', this.scaleY(this._bufferAnchorEnd.y));
         }
     }
 
@@ -197,10 +193,9 @@ class BezierControl extends Control {
     }
 
     updateHandleLeft(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
-        this.#bufferHandleLeftX = (this.curve as BezierCurve).getHandleLeftX();
-        this.#bufferHandleLeftY = (this.curve as BezierCurve).getHandleLeftY();
-        const scaledX = this.scaleX(this.#bufferHandleLeftX);
-        const scaledY = this.scaleY(this.#bufferHandleLeftY);
+        this.#bufferHandleLeft = (this.curve as BezierCurve).getHandleLeft();
+        const scaledX = this.scaleX(this.#bufferHandleLeft.x);
+        const scaledY = this.scaleY(this.#bufferHandleLeft.y);
         if (transition) {
             this.handleLeft.transition(transition)
                 .attr('cx', scaledX)
@@ -219,10 +214,9 @@ class BezierControl extends Control {
     }
 
     updateHandleRight(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
-        this.#bufferHandleRightX = (this.curve as BezierCurve).getHandleRightX();
-        this.#bufferHandleRightY = (this.curve as BezierCurve).getHandleRightY();
-        const scaledX = this.scaleX(this.#bufferHandleRightX);
-        const scaledY = this.scaleY(this.#bufferHandleRightY);
+        this.#bufferHandleRight = (this.curve as BezierCurve).getHandleRight();
+        const scaledX = this.scaleX(this.#bufferHandleRight.x);
+        const scaledY = this.scaleY(this.#bufferHandleRight.y);
         if (transition) {
             this.handleRight.transition(transition)
                 .attr('cx', scaledX)

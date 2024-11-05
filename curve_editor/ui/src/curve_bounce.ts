@@ -3,12 +3,15 @@ import { editor } from './host_object';
 
 
 class BounceCurve extends NumericCurve {
-    getHandleX() {
-        return editor.graph.bounce.getHandleX(this.id);
-    }
-
-    getHandleY() {
-        return editor.graph.bounce.getHandleY(this.id);
+    getHandle() {
+        let result = editor.graph.bounce.getHandle(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     moveHandle(x: number, y: number) {

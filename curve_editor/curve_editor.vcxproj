@@ -207,6 +207,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="actctx_helper.hpp" />
+    <ClInclude Include="cereal_mkaul_point.hpp" />
     <ClInclude Include="curve.hpp" />
     <ClInclude Include="curve_bezier.hpp" />
     <ClInclude Include="curve_bounce.hpp" />
@@ -235,12 +236,14 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClInclude Include="dialog_pref_general.hpp" />
     <ClInclude Include="dialog_update_notification.hpp" />
     <ClInclude Include="dialog_warning_autosaver.hpp" />
+    <ClInclude Include="handle_bezier.hpp" />
     <ClInclude Include="host_object_curve_normal.hpp" />
     <ClInclude Include="host_object_curve_graph_numeric.hpp" />
     <ClInclude Include="host_object_editor.hpp" />
     <ClInclude Include="host_object_editor_script.hpp" />
     <ClInclude Include="host_object_preset.hpp" />
     <ClInclude Include="input_box.hpp" />
+    <ClInclude Include="key_state_observer.hpp" />
     <ClInclude Include="message_handler.hpp" />
     <ClInclude Include="context_menu.hpp" />
     <ClInclude Include="menu_item.hpp" />
@@ -318,6 +321,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClCompile Include="dialog_pref_general.cpp" />
     <ClCompile Include="dialog_update_notification.cpp" />
     <ClCompile Include="dialog_warning_autosaver.cpp" />
+    <ClCompile Include="handle_bezier.cpp" />
     <ClCompile Include="host_object_config.cpp" />
     <ClCompile Include="host_object_curve_normal.cpp" />
     <ClCompile Include="host_object_curve_graph_numeric.cpp" />

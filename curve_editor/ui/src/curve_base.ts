@@ -37,12 +37,15 @@ class Curve {
         this.#nextId = nextId;
     }
 
-    getAnchorStartX() {
-        return editor.graph.graph.getAnchorStartX(this.id);
-    }
-
-    getAnchorStartY() {
-        return editor.graph.graph.getAnchorStartY(this.id);
+    getAnchorStart() {
+        let result = editor.graph.graph.getAnchorStart(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     beginMoveAnchorStart() {
@@ -53,12 +56,15 @@ class Curve {
         editor.graph.graph.moveAnchorStart(this.id, x, y);
     }
 
-    getAnchorEndX() {
-        return editor.graph.graph.getAnchorEndX(this.id);
-    }
-
-    getAnchorEndY() {
-        return editor.graph.graph.getAnchorEndY(this.id);
+    getAnchorEnd() {
+        let result = editor.graph.graph.getAnchorEnd(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     beginMoveAnchorEnd() {

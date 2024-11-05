@@ -3,12 +3,15 @@ import { editor } from './host_object';
 
 
 class BezierCurve extends NumericCurve {
-    getHandleLeftX() {
-        return editor.graph.bezier.getHandleLeftX(this.id);
-    }
-
-    getHandleLeftY() {
-        return editor.graph.bezier.getHandleLeftY(this.id);
+    getHandleLeft() {
+        let result = editor.graph.bezier.getHandleLeft(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     beginMoveHandleLeft(scaleX: number, scaleY: number) {
@@ -19,12 +22,15 @@ class BezierCurve extends NumericCurve {
         editor.graph.bezier.moveHandleLeft(this.id, x, y, keepAngle);
     }
 
-    getHandleRightX() {
-        return editor.graph.bezier.getHandleRightX(this.id);
-    }
-
-    getHandleRightY() {
-        return editor.graph.bezier.getHandleRightY(this.id);
+    getHandleRight() {
+        let result = editor.graph.bezier.getHandleRight(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     beginMoveHandleRight(scaleX: number, scaleY: number) {

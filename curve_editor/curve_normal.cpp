@@ -205,12 +205,16 @@ namespace cved {
 
 				// ハンドルの移動
 				new_curve->move_handle_left(
+					mkaul::Point{
 					new_curve->anchor_start().x + (pts[i].pt_right.x - pts[i].pt_center.x) / (double)GRAPH_RESOLUTION,
 					new_curve->anchor_start().y + (pts[i].pt_right.y - pts[i].pt_center.y) / (double)GRAPH_RESOLUTION
+					}
 				);
 				new_curve->move_handle_right(
+					mkaul::Point{
 					new_curve->anchor_end().x + (pts[i + 1u].pt_left.x - pts[i + 1u].pt_center.x) / (double)GRAPH_RESOLUTION,
 					new_curve->anchor_end().y + (pts[i + 1u].pt_left.y - pts[i + 1u].pt_center.y) / (double)GRAPH_RESOLUTION
+					}
 				);
 				// prev, nextの設定
 				if (!vec_tmp.empty()) {
@@ -255,23 +259,25 @@ namespace cved {
 					auto bezier_new = dynamic_cast<BezierCurve*>(new_curve.get());
 				if (bezier_prev and bezier_new) {
 					bezier_new->move_handle_right(
-						bezier_prev->get_handle_right_x() - pt.x + new_curve->anchor_end().x,
-						bezier_prev->get_handle_right_y() - pt.y + new_curve->anchor_end().y,
+						bezier_prev->get_handle_right() - pt + new_curve->anchor_end(),
 						true, true
 					);
 					bezier_new->move_handle_left(
+						mkaul::Point{
 						pt.x + HANDLE_DEFAULT_LENGTH / scale_x,
-						pt.y,
+							pt.y
+						},
 						true, true
 					);
 					bezier_prev->move_handle_right(
+						mkaul::Point{
 						pt.x - HANDLE_DEFAULT_LENGTH / scale_x,
-						pt.y,
+							pt.y
+						},
 						true, true
 					);
 					bezier_prev->move_handle_left(
-						bezier_prev->get_handle_left_x(),
-						bezier_prev->get_handle_left_y(),
+						bezier_prev->get_handle_left(),
 						true, true
 					);
 				}
@@ -307,7 +313,7 @@ namespace cved {
 				if (bezier_prev and bezier_self) {
 					// 前のベジェの右ハンドルを自身の右ハンドルにする
 					bezier_prev->move_handle_right(
-						bezier_self->get_handle_right_x(), bezier_self->get_handle_right_y(), true, true
+						bezier_self->get_handle_right(), true, true
 					);
 				}
 				curve_segments_.erase(it);

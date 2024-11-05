@@ -4,18 +4,10 @@
 
 
 namespace cved {
-	double GraphCurveHostObject::get_anchor_start_x(uint32_t id) {
+	std::vector<double> GraphCurveHostObject::get_anchor_start(uint32_t id) {
 		auto curve = global::id_manager.get_curve<GraphCurve>(id);
-		if (!curve) return 0.;
-		return curve->get_anchor_start_x();
-	}
-
-	double GraphCurveHostObject::get_anchor_start_y(uint32_t id) {
-		auto curve = global::id_manager.get_curve<GraphCurve>(id);
-		if (!curve) {
-			return 0.;
-		}
-		return curve->get_anchor_start_y();
+		if (!curve) return {};
+		return { curve->anchor_start().x, curve->anchor_start().y};
 	}
 
 	void GraphCurveHostObject::begin_move_anchor_start(uint32_t id) {
@@ -34,20 +26,12 @@ namespace cved {
 		curve->move_anchor_start(x, y);
 	}
 
-	double GraphCurveHostObject::get_anchor_end_x(uint32_t id) {
+	std::vector<double> GraphCurveHostObject::get_anchor_end(uint32_t id) {
 		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) {
-			return 0.;
+			return {};
 		}
-		return curve->get_anchor_end_x();
-	}
-
-	double GraphCurveHostObject::get_anchor_end_y(uint32_t id) {
-		auto curve = global::id_manager.get_curve<GraphCurve>(id);
-		if (!curve) {
-			return 0.;
-		}
-		return curve->get_anchor_end_y();
+		return { curve->anchor_end().x, curve->anchor_end().y };
 	}
 
 	void GraphCurveHostObject::begin_move_anchor_end(uint32_t id) {
