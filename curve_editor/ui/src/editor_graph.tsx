@@ -416,7 +416,7 @@ class GraphEditor {
         if (!zoom) {
             if (this.#editMode == 2 || this.#editMode == 3 || this.#editMode == 4) {
                 window.postMessage({
-                command: 'updateParam'
+                    command: 'UpdateParam'
                 }, '*');
             }
         }
@@ -714,8 +714,20 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
 
         case 'Delete':
             window.chrome.webview.postMessage({
-                command: 'clear'
+                command: 'ButtonClear'
             });
+            break;
+
+        case 'a':
+            config.alignHandle = !config.alignHandle;
+            break;
+
+        case 'c':
+            if (event.ctrlKey) {
+                window.chrome.webview.postMessage({
+                    command: 'ButtonCopy'
+                });
+            }
             break;
 
         case 'r':
@@ -723,13 +735,15 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
             updateHandlePosition();
             break;
 
-        case 'a':
-            config.alignHandle = !config.alignHandle;
-            break;
-
         case 's':
-            config.showHandle = !config.showHandle;
-            editorRef.current?.updateHandleVisibility();
+            if (event.ctrlKey) {
+                window.chrome.webview.postMessage({
+                    command: 'ButtonSave'
+                });
+            } else {
+                config.showHandle = !config.showHandle;
+                editorRef.current?.updateHandleVisibility();
+            }
             break;
 
         case 'ArrowLeft':

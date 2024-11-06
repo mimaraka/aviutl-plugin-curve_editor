@@ -21,7 +21,7 @@ namespace cved {
 		// コピーコンストラクタ
 		Curve(const Curve& curve) noexcept :
 			id_{global::id_manager.create_id(this)},
-			locked_{curve.locked_}
+			locked_{ curve.locked_ }
 		{}
 		// 仮想デストラクタ
 		virtual ~Curve() noexcept {

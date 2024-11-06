@@ -14,7 +14,8 @@ namespace cved {
 	public:
 		NormalCurveHostObject() {
 			register_member(L"getId", DispatchType::Method, +[](size_t idx) {
-				return global::editor.editor_graph().curve_normal(idx)->get_id();
+				auto curve = global::editor.editor_graph().curve_normal(idx);
+				return curve ? curve->get_id() : 0;
 			});
 			register_member(L"getIdArray", DispatchType::Method, get_id_array);
 			register_member(L"addCurve", DispatchType::Method, add_curve);
