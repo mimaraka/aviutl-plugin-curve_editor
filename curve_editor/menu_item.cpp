@@ -48,4 +48,4 @@ namespace cved {
 			}
 		}
 	}
-}
+} // namespace cved

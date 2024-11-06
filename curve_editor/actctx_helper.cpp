@@ -39,4 +39,4 @@ namespace cved {
 		if (hactctx_) ::ReleaseActCtx(hactctx_);
 		return ret;
 	}
-}
+} // namespace cved

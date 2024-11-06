@@ -13,4 +13,4 @@ namespace cved {
         bool init() noexcept;
         bool exit();
     };
-}
+} // namespace cved

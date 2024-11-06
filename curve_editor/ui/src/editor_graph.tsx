@@ -336,6 +336,10 @@ class GraphEditor {
         }
     }
 
+    updateIdCurve() {
+        this.#normalCurve = new NormalCurve(editor.graph.normal.getId(this.#idx));
+    }
+
     getCurrentCurve() {
         switch (this.#editMode) {
             case 0:
@@ -412,7 +416,7 @@ class GraphEditor {
         if (!zoom) {
             if (this.#editMode == 2 || this.#editMode == 3 || this.#editMode == 4) {
                 window.postMessage({
-                command: 'updateParam'
+                    command: 'UpdateParam'
                 }, '*');
             }
         }
@@ -606,7 +610,7 @@ class GraphEditor {
 interface GraphEditorPanelProps {
     isSelectDialog: boolean;
     editMode: number;
-    idx: number;
+    idx: number; // idxNormal
     size: number;
     setIdx: (idx: number) => void;
 }
@@ -619,7 +623,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
     editorRef.current?.setIdx(props.idx);
 
     const updateHandlePosition = () => {
-        if (editorRef.current?.control instanceof NormalControl && editorRef.current?.control.segmentHandlesArray.length > 1) {
+        if (editorRef.current?.control instanceof NormalControl && editorRef.current?.control.segmentControlArray.length > 1) {
             editorRef.current?.updateControl();
             editorRef.current?.updateCurvePath();
             editorRef.current?.updateVelocityPath();
@@ -641,12 +645,18 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
                     if (event.data.mode == 2 || event.data.mode == 3 || event.data.mode == 4) {
                         editorRef.current?.decode(event.data.param);
                     } else {
-                        editorRef.current?.setIdx(event.data.param);
+                        editorRef.current?.setIdx(Math.max(event.data.param - 1, 0));
                     }
                 }
                 break;
 
             case 'UpdateCurvePath':
+                editorRef.current?.updateCurvePath();
+                editorRef.current?.updateVelocityPath();
+                break;
+
+            case 'UpdateControl':
+                editorRef.current?.updateControl();
                 editorRef.current?.updateCurvePath();
                 editorRef.current?.updateVelocityPath();
                 break;
@@ -661,6 +671,7 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
                 break;
 
             case 'UpdateEditor':
+                editorRef.current?.updateIdCurve();
             case 'UpdateControl':
                 editorRef.current?.updateControl();
                 editorRef.current?.updateCurvePath();
@@ -703,8 +714,20 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
 
         case 'Delete':
             window.chrome.webview.postMessage({
-                command: 'clear'
+                command: 'ButtonClear'
             });
+            break;
+
+        case 'a':
+            config.alignHandle = !config.alignHandle;
+            break;
+
+        case 'c':
+            if (event.ctrlKey) {
+                window.chrome.webview.postMessage({
+                    command: 'ButtonCopy'
+                });
+            }
             break;
 
         case 'r':
@@ -712,13 +735,15 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
             updateHandlePosition();
             break;
 
-        case 'a':
-            config.alignHandle = !config.alignHandle;
-            break;
-
         case 's':
-            config.showHandle = !config.showHandle;
-            editorRef.current?.updateHandleVisibility();
+            if (event.ctrlKey) {
+                window.chrome.webview.postMessage({
+                    command: 'ButtonSave'
+                });
+            } else {
+                config.showHandle = !config.showHandle;
+                editorRef.current?.updateHandleVisibility();
+            }
             break;
 
         case 'ArrowLeft':

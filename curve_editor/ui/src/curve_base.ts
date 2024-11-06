@@ -4,9 +4,13 @@ import { editor } from './host_object';
 class Curve {
     #id: number;
     #parentId: number;
-    constructor(id: number, parentId = 0) {
+    #prevId: number;
+    #nextId: number;
+    constructor(id: number, parentId = 0, prevId = 0, nextId = 0) {
         this.#id = id;
         this.#parentId = parentId;
+        this.#prevId = prevId;
+        this.#nextId = nextId;
     }
 
     get id() {
@@ -17,32 +21,84 @@ class Curve {
         return this.#parentId;
     }
 
-    getAnchorStartX() {
-        return editor.graph.graph.getAnchorStartX(this.id);
+    get prevId() {
+        return this.#prevId;
     }
 
-    getAnchorStartY() {
-        return editor.graph.graph.getAnchorStartY(this.id);
+    get nextId() {
+        return this.#nextId;
     }
 
-    setAnchorStart(x: number, y: number) {
-        editor.graph.graph.setAnchorStart(this.id, x, y);
+    setPrevId(prevId: number) {
+        this.#prevId = prevId;
     }
 
-    getAnchorEndX() {
-        return editor.graph.graph.getAnchorEndX(this.id);
+    setNextId(nextId: number) {
+        this.#nextId = nextId;
     }
 
-    getAnchorEndY() {
-        return editor.graph.graph.getAnchorEndY(this.id);
+    getAnchorStart() {
+        let result = editor.graph.graph.getAnchorStart(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
-    setAnchorEnd(x: number, y: number) {
-        editor.graph.graph.setAnchorEnd(this.id, x, y);
+    beginMoveAnchorStart() {
+        editor.graph.graph.beginMoveAnchorStart(this.id);
+    }
+
+    moveAnchorStart(x: number, y: number) {
+        editor.graph.graph.moveAnchorStart(this.id, x, y);
+    }
+
+    endMoveAnchorStart() {
+        editor.graph.graph.endMoveAnchorStart(this.id);
+    }
+
+    getAnchorEnd() {
+        let result = editor.graph.graph.getAnchorEnd(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
+    }
+
+    beginMoveAnchorEnd() {
+        editor.graph.graph.beginMoveAnchorEnd(this.id);
+    }
+
+    moveAnchorEnd(x: number, y: number) {
+        editor.graph.graph.moveAnchorEnd(this.id, x, y);
+    }
+
+    endMoveAnchorEnd() {
+        editor.graph.graph.endMoveAnchorEnd(this.id);
     }
 
     reverse() {
         editor.graph.graph.reverse(this.id);
+    }
+
+    getPrevCurve() {
+        if (this.prevId === 0) {
+            return null;
+        }
+        return new Curve(this.prevId, this.parentId);
+    }
+
+    getNextCurve() {
+        if (this.nextId === 0) {
+            return null;
+        }
+        return new Curve(this.nextId, this.parentId);
     }
 }
 

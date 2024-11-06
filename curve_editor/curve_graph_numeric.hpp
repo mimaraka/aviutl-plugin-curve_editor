@@ -31,7 +31,7 @@ namespace cved {
 			);
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::NumericGraphCurve, 0)
 CEREAL_REGISTER_TYPE(cved::NumericGraphCurve)

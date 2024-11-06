@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cereal_mkaul_point.hpp"
 #include "curve_base.hpp"
 #include "modifier.hpp"
 #include <cereal/archives/binary.hpp>
@@ -7,25 +8,6 @@
 #include <cereal/types/polymorphic.hpp>
 #include <cereal/types/vector.hpp>
 
-
-
-namespace cereal {
-	template <class Archive>
-	void save(Archive& archive, const mkaul::Point<double>& pt) {
-		archive(
-			pt.x,
-			pt.y
-		);
-	}
-
-	template <class Archive>
-	void load(Archive& archive, mkaul::Point<double>& pt) {
-		archive(
-			pt.x,
-			pt.y
-		);
-	}
-}
 
 
 namespace cved {
@@ -95,14 +77,15 @@ namespace cved {
 		[[nodiscard]] const auto& anchor_start() const noexcept { return anchor_start_; }
 		[[nodiscard]] const auto& anchor_end() const noexcept { return anchor_end_; }
 
-		[[nodiscard]] double get_anchor_start_x() const noexcept { return anchor_start_.x; }
-		[[nodiscard]] double get_anchor_start_y() const noexcept { return anchor_start_.y; }
-		[[nodiscard]] double get_anchor_end_x() const noexcept { return anchor_end_.x; }
-		[[nodiscard]] double get_anchor_end_y() const noexcept { return anchor_end_.y; }
-		void set_anchor_start(double x, double y, bool forced = false) noexcept;
-		void set_anchor_start(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_start(pt.x, pt.y, forced); }
-		void set_anchor_end(double x, double y, bool forced = false) noexcept;
-		void set_anchor_end(const mkaul::Point<double>& pt, bool forced = false) noexcept { set_anchor_end(pt.x, pt.y, forced); }
+		// アンカー参照・操作
+		virtual void begin_move_anchor_start(bool bound = false) noexcept;
+		virtual void begin_move_anchor_end(bool bound = false) noexcept;
+		virtual void move_anchor_start(double x, double y, bool forced = false, bool bound = false) noexcept;
+		void move_anchor_start(const mkaul::Point<double>& pt, bool forced = false, bool bound = false) noexcept { move_anchor_start(pt.x, pt.y, forced, bound); }
+		virtual void move_anchor_end(double x, double y, bool forced = false, bool bound = false) noexcept;
+		void move_anchor_end(const mkaul::Point<double>& pt, bool forced = false, bool bound = false) noexcept { move_anchor_end(pt.x, pt.y, forced, bound); }
+		virtual void end_move_anchor_start(bool bound = false) noexcept;
+		virtual void end_move_anchor_end(bool bound = false) noexcept;
 
 		virtual void reverse(bool fix_pt = false) noexcept;
 
@@ -112,6 +95,7 @@ namespace cved {
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
 			archive(
+				cereal::base_class<Curve>(this),
 				anchor_start_,
 				anchor_end_,
 				anchor_fixed_,
@@ -122,6 +106,7 @@ namespace cved {
 		template <class Archive>
 		void load(Archive& archive, const std::uint32_t) {
 			archive(
+				cereal::base_class<Curve>(this),
 				anchor_start_,
 				anchor_end_,
 				anchor_fixed_,
@@ -133,7 +118,7 @@ namespace cved {
 			}
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::GraphCurve, 0)
 CEREAL_REGISTER_TYPE(cved::GraphCurve)

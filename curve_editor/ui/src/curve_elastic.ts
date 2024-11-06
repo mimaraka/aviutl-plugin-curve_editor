@@ -3,44 +3,53 @@ import { editor } from './host_object';
 
 
 class ElasticCurve extends NumericCurve {
-    getHandleAmpLeftX() {
-        return editor.graph.elastic.getHandleAmpLeftX(this.id);
+    getHandleAmpLeft() {
+        let result = editor.graph.elastic.getHandleAmpLeft(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
-    getHandleAmpLeftY() {
-        return editor.graph.elastic.getHandleAmpLeftY(this.id);
+    moveHandleAmpLeft(y: number) {
+        editor.graph.elastic.moveHandleAmpLeft(this.id, y);
     }
 
-    setHandleAmpLeft(y: number) {
-        editor.graph.elastic.setHandleAmpLeft(this.id, y);
+    getHandleAmpRight() {
+        let result = editor.graph.elastic.getHandleAmpRight(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
-    getHandleAmpRightX() {
-        return editor.graph.elastic.getHandleAmpRightX(this.id);
+    moveHandleAmpRight(y: number) {
+        editor.graph.elastic.moveHandleAmpRight(this.id, y);
     }
 
-    getHandleAmpRightY() {
-        return editor.graph.elastic.getHandleAmpRightY(this.id);
-    }
-
-    setHandleAmpRight(y: number) {
-        editor.graph.elastic.setHandleAmpRight(this.id, y);
-    }
-
-    getHandleFreqDecayX() {
-        return editor.graph.elastic.getHandleFreqDecayX(this.id);
-    }
-
-    getHandleFreqDecayY() {
-        return editor.graph.elastic.getHandleFreqDecayY(this.id);
+    getHandleFreqDecay() {
+        let result = editor.graph.elastic.getHandleFreqDecay(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
     getHandleFreqDecayRootY() {
         return editor.graph.elastic.getHandleFreqDecayRootY(this.id);
     }
 
-    setHandleFreqDecay(x: number, y: number) {
-        editor.graph.elastic.setHandleFreqDecay(this.id, x, y);
+    moveHandleFreqDecay(x: number, y: number) {
+        editor.graph.elastic.moveHandleFreqDecay(this.id, x, y);
     }
 }
 

@@ -6,8 +6,6 @@
 
 
 
-namespace cved {
-	namespace util {
-		bool copy_to_clipboard(HWND hwnd, const char* str) noexcept;
-	}
-}
+namespace cved::util {
+	bool copy_to_clipboard(HWND hwnd, const char* str) noexcept;
+} // namespace cved::util

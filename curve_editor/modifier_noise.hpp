@@ -98,7 +98,7 @@ namespace cved {
 			update();
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::NoiseModifier, 0)
 CEREAL_REGISTER_TYPE(cved::NoiseModifier)

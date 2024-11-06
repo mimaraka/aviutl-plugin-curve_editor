@@ -24,11 +24,24 @@ namespace cved {
 		static MyWebView2 my_webview;
 		static ActCtxHelper actctx_helper;
 		static DragAndDrop dnd;
-		static bool init = false;
 
 		switch (message) {
 			// ウィンドウ作成時
 		case WindowMessage::Init:
+			actctx_helper.init();
+			dnd.init();
+			my_webview.init(hwnd, [](MyWebView2* this_) {
+				mkaul::WindowRectangle bounds;
+				bounds.from_client_rect(this_->get_hwnd());
+				this_->put_bounds(bounds);
+				this_->navigate([](MyWebView2* this_) {
+					this_->send_command(MessageCommand::InitComponent, {
+						{"isSelectDialog", false},
+						{"isUpdateAvailable", global::update_checker.is_update_available()}
+						});
+					});
+				});
+			global::webview.set(global::MyWebView2Reference::WebViewType::Main, my_webview);
 			// Alpha版・Beta版の場合はキャプションを変更
 			if (global::PLUGIN_VERSION.is_preview()) {
 				::SetWindowTextA(
@@ -44,24 +57,9 @@ namespace cved {
 			dnd.exit();
 			break;
 
-		case WindowMessage::ChangeWindow:
-			if (fp->exfunc->is_filter_window_disp(fp) and !init) {
-				actctx_helper.init();
-				dnd.init();
-				init = true;
-				my_webview.init(hwnd, [](MyWebView2* this_) {
-					mkaul::WindowRectangle bounds;
-					bounds.from_client_rect(this_->get_hwnd());
-					this_->put_bounds(bounds);
-					this_->navigate([](MyWebView2* this_) {
-						this_->send_command(MessageCommand::InitComponent, {
-							{"isSelectDialog", false},
-							{"isUpdateAvailable", global::update_checker.is_update_available()}
-						});
-					});
-				});
-				global::webview.set(global::MyWebView2Reference::WebViewType::Main, my_webview);
-			}
+		case WindowMessage::FileClose:
+			global::editor.reset_id_curves();
+			my_webview.send_command(MessageCommand::UpdateEditor);
 			break;
 
 		case WM_SIZE:
@@ -105,4 +103,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-}
+} // namespace cved

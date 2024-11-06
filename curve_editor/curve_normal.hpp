@@ -27,6 +27,8 @@ namespace cved {
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_NORMAL; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeNormal]; }
 
+		void set_locked(bool locked) noexcept override;
+
 		// セグメント数を取得
 		[[nodiscard]] auto segment_n() const noexcept { return curve_segments_.size(); }
 		// セグメントを取得
@@ -44,7 +46,7 @@ namespace cved {
 			return 0;
 		}
 
-		bool adjust_segment_handle_angle(size_t idx, BezierCurve::HandleType handle_type, double scale_x, double scale_y) noexcept;
+		bool adjust_segment_handle_angle(uint32_t segment_id, BezierCurve::HandleType handle_type, double scale_x, double scale_y) noexcept;
 
 		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
@@ -86,7 +88,7 @@ namespace cved {
 			}
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::NormalCurve, 0)
 CEREAL_REGISTER_TYPE(cved::NormalCurve)

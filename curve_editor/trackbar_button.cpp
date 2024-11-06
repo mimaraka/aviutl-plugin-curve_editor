@@ -109,4 +109,4 @@ namespace cved {
 		::InvalidateRect(hwnd_obj_dialog_, &rect, FALSE);
 		::UpdateWindow(hwnd_obj_dialog_);
 	}
-}
+} // namespace cved

@@ -74,6 +74,4 @@ namespace cved {
 		};
 #undef MAKE_PAIR
 	}
-
-
-}
+} // namespace cved

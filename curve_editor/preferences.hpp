@@ -30,4 +30,4 @@ namespace cved {
 		void from_json(const nlohmann::json& data) noexcept;
 		void to_json(nlohmann::json* p_data) const noexcept;
 	};
-}
+} // namespace cved

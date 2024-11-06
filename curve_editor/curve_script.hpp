@@ -31,22 +31,25 @@ namespace cved {
 		[[nodiscard]] bool is_default() const noexcept override { return true; }
 
 		[[nodiscard]] const auto& script() const noexcept { return script_; }
-		void set_script(const std::string& script) noexcept { script_ = script; }
+		void set_script(const std::string& script) noexcept {
+			if (is_locked()) return;
+			script_ = script;
+		}
 
 		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
-			archive(script_);
+			archive(cereal::base_class<Curve>(this), script_);
 		}
 
 		template <class Archive>
 		void load(Archive& archive, const std::uint32_t) {
-			archive(script_);
+			archive(cereal::base_class<Curve>(this), script_);
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::ScriptCurve, 0);
 CEREAL_REGISTER_TYPE(cved::ScriptCurve)

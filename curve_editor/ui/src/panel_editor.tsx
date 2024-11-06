@@ -44,7 +44,7 @@ const ParamButton: React.FC<ParamButtonProps> = (props: ParamButtonProps) => {
 
     const onMessage = (event: MessageEvent) => {
         switch (event.data.command) {
-            case 'updateParam':
+            case 'UpdateParam':
                 setParam(getParam());
                 break;
         }

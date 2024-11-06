@@ -30,4 +30,4 @@ namespace cved {
 		bool drop() noexcept;
 		void update() noexcept;
 	};
-}
+} // namespace cved

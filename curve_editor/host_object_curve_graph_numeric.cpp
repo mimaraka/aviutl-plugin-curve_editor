@@ -19,4 +19,4 @@ namespace cved {
 		}
 		return curve->decode(code);
 	}
-}
+} // namespace cved

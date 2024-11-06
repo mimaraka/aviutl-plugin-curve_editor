@@ -99,7 +99,7 @@ interface PresetItemProps {
     name: string;
 }
 
-const PresetItem: React.FC<PresetItemProps> = (props: PresetItemProps) => {
+const PresetItem: React.FC<PresetItemProps> = React.memo((props: PresetItemProps) => {
     const [isDragging, setIsDragging] = React.useState(false);
 
     const onMouseDown = (event: React.MouseEvent) => {
@@ -173,6 +173,6 @@ const PresetItem: React.FC<PresetItemProps> = (props: PresetItemProps) => {
             </div>
         </div>
     );
-}
+});
 
 export default PresetItem;

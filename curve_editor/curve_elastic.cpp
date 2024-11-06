@@ -122,6 +122,7 @@ namespace cved {
 
 	// カーブを反転
 	void ElasticCurve::reverse(bool fix_pt) noexcept {
+		if (is_locked()) return;
 		GraphCurve::reverse(fix_pt);
 		reversed_ = !reversed_;
 	}
@@ -165,6 +166,7 @@ namespace cved {
 	
 
 	void ElasticCurve::set_handle_amp_left(double y) noexcept {
+		if (is_locked()) return;
 		const auto height_abs = std::abs(anchor_end().y - anchor_start().y);
 		amplitude_ = mkaul::clamp(
 			(y - std::max(anchor_start().y, anchor_end().y)) / height_abs,
@@ -173,6 +175,7 @@ namespace cved {
 	}
 
 	void ElasticCurve::set_handle_freq_decay(double x, double y) noexcept {
+		if (is_locked()) return;
 		const auto width = anchor_end().x - anchor_start().x;
 		const auto height_abs = std::abs(anchor_end().y - anchor_start().y);
 		double value_freq;
@@ -210,9 +213,9 @@ namespace cved {
 		//           1 ~   10211201 : Elastic
 		//    10211202 ~   11213202 : Bounce
 		//    11213203 ~ 2147483647 : Unused
+		if (is_locked()) return false;
 
 		int number;
-
 		if (mkaul::in_range(code, -10211201, -1)) {
 			reversed_ = true;
 			number = -code - 1;
@@ -242,6 +245,7 @@ namespace cved {
 	}
 
 	bool ElasticCurve::read_params(const std::vector<double>& params) noexcept {
+		if (is_locked()) return true;
 		if (params.size() != 3) {
 			return false;
 		}

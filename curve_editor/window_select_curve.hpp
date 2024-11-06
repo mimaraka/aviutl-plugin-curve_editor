@@ -15,4 +15,4 @@ namespace cved {
 	public:
 		HWND create(HWND hwnd, const ModeParamPair* mode_param = nullptr) noexcept;
 	};
-}
+} // namespace cved

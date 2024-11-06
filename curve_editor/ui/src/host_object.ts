@@ -50,8 +50,11 @@ declare global {
     }
 
     interface EditorHostObject {
+        currentCurveId: number;
         getCurveName: (id: number) => string;
         getCurveDispName: (id: number) => string;
+        isCurveLocked: (id: number) => boolean;
+        setIsCurveLocked: (id: number, isLocked: boolean) => void;
         graph: GraphEditorHostObject;
         script: ScriptEditorHostObject;
     }
@@ -68,12 +71,14 @@ declare global {
     }
 
     interface GraphCurveHostObject {
-        getAnchorStartX: (id: number) => number;
-        getAnchorStartY: (id: number) => number;
-        setAnchorStart: (id: number, x: number, y: number) => void;
-        getAnchorEndX: (id: number) => number;
-        getAnchorEndY: (id: number) => number;
-        setAnchorEnd: (id: number, x: number, y: number) => void;
+        getAnchorStart: (id: number) => number[];
+        beginMoveAnchorStart: (id: number) => void;
+        moveAnchorStart: (id: number, x: number, y: number) => void;
+        endMoveAnchorStart: (id: number) => void;
+        getAnchorEnd: (id: number) => number[];
+        beginMoveAnchorEnd: (id: number) => void;
+        moveAnchorEnd: (id: number, x: number, y: number) => void;
+        endMoveAnchorEnd: (id: number) => void;
         getPrevCurveId: (id: number) => number;
         getNextCurveId: (id: number) => number;
         reverse: (id: number) => void;
@@ -86,35 +91,34 @@ declare global {
 
     interface BezierCurveHostObject {
         getId: (isSelectDialog: boolean) => number;
-        getHandleLeftX: (id: number) => number;
-        getHandleLeftY: (id: number) => number;
-        setHandleLeft: (id: number, x: number, y: number, keepAngle: boolean) => void;
-        getHandleRightX: (id: number) => number;
-        getHandleRightY: (id: number) => number;
-        setHandleRight: (id: number, x: number, y: number, keepAngle: boolean) => void;
+        getHandleLeft: (id: number) => number[];
+        beginMoveHandleLeft: (id: number, scaleX: number, scaleY: number) => void;
+        moveHandleLeft: (id: number, x: number, y: number, keepAngle: boolean) => void;
+        endMoveHandleLeft: (id: number) => void;
+        getHandleRight: (id: number) => number[];
+        beginMoveHandleRight: (id: number, scaleX: number, scaleY: number) => void;
+        moveHandleRight: (id: number, x: number, y: number, keepAngle: boolean) => void;
+        endMoveHandleRight: (id: number) => void;
+        isMovingSymmetrically: (id: number) => boolean;
         getParam: (id: number) => string;
     }
 
     interface ElasticCurveHostObject {
         getId: (isSelectDialog: boolean) => number;
-        getHandleAmpLeftX: (id: number) => number;
-        getHandleAmpLeftY: (id: number) => number;
-        setHandleAmpLeft: (id: number, y: number) => void;
-        getHandleAmpRightX: (id: number) => number;
-        getHandleAmpRightY: (id: number) => number;
-        setHandleAmpRight: (id: number, y: number) => void;
-        getHandleFreqDecayX: (id: number) => number;
-        getHandleFreqDecayY: (id: number) => number;
+        getHandleAmpLeft: (id: number) => number[];
+        moveHandleAmpLeft: (id: number, y: number) => void;
+        getHandleAmpRight: (id: number) => number[];
+        moveHandleAmpRight: (id: number, y: number) => void;
+        getHandleFreqDecay: (id: number) => number[];
         getHandleFreqDecayRootY: (id: number) => number;
-        setHandleFreqDecay: (id: number, x: number, y: number) => void;
+        moveHandleFreqDecay: (id: number, x: number, y: number) => void;
         getParam: (id: number) => string;
     }
 
     interface BounceCurveHostObject {
         getId: (isSelectDialog: boolean) => number;
-        getHandleX: (id: number) => number;
-        getHandleY: (id: number) => number;
-        setHandle: (id: number, x: number, y: number) => void;
+        getHandle: (id: number) => number[];
+        moveHandle: (id: number, x: number, y: number) => void;
         getParam: (id: number) => string;
     }
 

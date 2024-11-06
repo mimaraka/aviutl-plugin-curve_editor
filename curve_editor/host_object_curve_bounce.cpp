@@ -17,20 +17,12 @@ namespace cved {
 		return id;
 	}
 
-	double BounceCurveHostObject::get_handle_x(uint32_t id) {
+	std::vector<double> BounceCurveHostObject::get_handle(uint32_t id) {
 		auto curve = global::id_manager.get_curve<BounceCurve>(id);
 		if (!curve) {
-			return 0.;
+			return {};
 		}
-		return curve->get_handle_x();
-	}
-
-	double BounceCurveHostObject::get_handle_y(uint32_t id) {
-		auto curve = global::id_manager.get_curve<BounceCurve>(id);
-		if (!curve) {
-			return 0.;
-		}
-		return curve->get_handle_y();
+		return { curve->get_handle_x(), curve->get_handle_y() };
 	}
 
 	void BounceCurveHostObject::set_handle(uint32_t id, double x, double y) {

@@ -37,7 +37,7 @@ namespace cved {
 					if (FAILED(result)) {
 						return result;
 					}
-					env_ = env;
+					env->QueryInterface(IID_PPV_ARGS(&env_));
 
 					auto hr = env->CreateCoreWebView2Controller(
 						hwnd_,
@@ -46,8 +46,9 @@ namespace cved {
 								if (FAILED(result)) {
 									return result;
 								}
-								controller_ = controller;
+								controller->QueryInterface(IID_PPV_ARGS(&controller_));
 								controller->get_CoreWebView2(&webview_);
+								controller->put_IsVisible(TRUE);
 								wil::com_ptr<ICoreWebView2Settings> settings;
 								webview_->get_Settings(&settings);
 								settings->put_AreHostObjectsAllowed(TRUE);

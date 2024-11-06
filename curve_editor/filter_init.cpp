@@ -67,14 +67,18 @@ namespace cved {
 			return FALSE;
 		}
 
-		//// スクリプトファイルの存在確認
-		//const char* script_name_lua = "curve_editor.lua";
-		//const char* script_name_tra = "@Curve editor.tra";
-		//if (
-		//	!std::filesystem::exists(global::config.get_dir_aviutl() / script_name_lua)
-		//	and !std::filesystem::exists(global::config.get_dir_aviutl() / )
-		//	) {
-
+		// スクリプトファイルの存在確認
+		//char path_str[MAX_PATH];
+		//::GetModuleFileNameA(global::exedit_internal.fp()->dll_hinst, path_str, MAX_PATH);
+		//std::filesystem::path path_exedit{ path_str };
+		//auto dir_exedit = path_exedit.parent_path();
+		//WIN32_FIND_DATA find_data;
+		//auto find_lua = ::FindFirstFileA((dir_exedit / "curve_editor.lua").string().c_str(), &find_data);
+		//auto find_tra = ::FindFirstFileA((dir_exedit / "script" / "@Curve Editor.tra").string().c_str(), &find_data);
+		//auto find_tra_sub = ::FindFirstFileA((dir_exedit / "script" / "mimaraka" / "*.tra").string().c_str(), &find_data);
+		//if (find_lua == INVALID_HANDLE_VALUE or (find_tra == INVALID_HANDLE_VALUE and find_tra_sub == INVALID_HANDLE_VALUE)) {
+		//	// スクリプトファイルが見つかりませんの警告
+		//	util::message_box(global::string_table[StringId::WarningScriptFileNotFound], NULL, util::MessageBoxIcon::Warning);
 		//}
 
 		// autosaverがインストールされていない場合の警告
@@ -89,4 +93,4 @@ namespace cved {
 
 		return TRUE;
 	}
-}
+} // namespace cved

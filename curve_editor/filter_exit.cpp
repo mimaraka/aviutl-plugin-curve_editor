@@ -13,4 +13,4 @@ namespace cved {
 
 		return TRUE;
 	}
-}
+} // namespace cved

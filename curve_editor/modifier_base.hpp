@@ -63,6 +63,6 @@ namespace cved {
 			);
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::Modifier, 0)

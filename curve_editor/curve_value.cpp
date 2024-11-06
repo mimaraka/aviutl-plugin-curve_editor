@@ -52,4 +52,4 @@ namespace cved {
 	{
 		return GraphCurve::load_json(data);
 	}
-}
+} // namespace cved

@@ -3,44 +3,68 @@ import { editor } from './host_object';
 
 
 class BezierCurve extends NumericCurve {
-    getHandleLeftX() {
-        return editor.graph.bezier.getHandleLeftX(this.id);
+    getHandleLeft() {
+        let result = editor.graph.bezier.getHandleLeft(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
-    getHandleLeftY() {
-        return editor.graph.bezier.getHandleLeftY(this.id);
+    beginMoveHandleLeft(scaleX: number, scaleY: number) {
+        editor.graph.bezier.beginMoveHandleLeft(this.id, scaleX, scaleY);
     }
 
-    setHandleLeft(x: number, y: number, keepAngle = false) {
-        editor.graph.bezier.setHandleLeft(this.id, x, y, keepAngle);
+    moveHandleLeft(x: number, y: number, keepAngle = false) {
+        editor.graph.bezier.moveHandleLeft(this.id, x, y, keepAngle);
     }
 
-    getHandleRightX() {
-        return editor.graph.bezier.getHandleRightX(this.id);
+    endMoveHandleLeft() {
+        editor.graph.bezier.endMoveHandleLeft(this.id);
     }
 
-    getHandleRightY() {
-        return editor.graph.bezier.getHandleRightY(this.id);
+    getHandleRight() {
+        let result = editor.graph.bezier.getHandleRight(this.id);
+        if (result.length !== 2) {
+            result = [0, 0];
+        }
+        return {
+            x: result[0],
+            y: result[1]
+        };
     }
 
-    setHandleRight(x: number, y: number, keepAngle = false) {
-        editor.graph.bezier.setHandleRight(this.id, x, y, keepAngle);
+    beginMoveHandleRight(scaleX: number, scaleY: number) {
+        editor.graph.bezier.beginMoveHandleRight(this.id, scaleX, scaleY);
+    }
+
+    moveHandleRight(x: number, y: number, keepAngle = false) {
+        editor.graph.bezier.moveHandleRight(this.id, x, y, keepAngle);
+    }
+
+    endMoveHandleRight() {
+        editor.graph.bezier.endMoveHandleRight(this.id);
+    }
+
+    isMovingSymmetrically() {
+        return editor.graph.bezier.isMovingSymmetrically(this.id);
     }
 
     getPrevBezier() {
-        const id = editor.graph.graph.getPrevCurveId(this.id);
-        if (editor.getCurveName(id) !== 'bezier') {
+        if (editor.getCurveName(this.prevId) !== 'bezier') {
             return null;
         }
-        return new BezierCurve(id);
+        return new BezierCurve(this.prevId);
     }
 
     getNextBezier() {
-        const id = editor.graph.graph.getNextCurveId(this.id);
-        if (editor.getCurveName(id) !== 'bezier') {
+        if (editor.getCurveName(this.prevId) !== 'bezier') {
             return null;
         }
-        return new BezierCurve(id);
+        return new BezierCurve(this.prevId);
     }
 }
 

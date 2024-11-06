@@ -525,25 +525,34 @@ namespace cved {
 	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
 	void MessageHandler::context_menu_bezier_handle(const nlohmann::json& options) {
 		auto id = options.at("curveId").get<uint32_t>();
-		auto type_str = options.at("handleType").get<std::string>();
+		auto parent_id = options.at("parentCurveId").get<uint32_t>();
+		auto handle_type_str = options.at("handleType").get<std::string>();
+		auto scale_x = options.at("scaleX").get<double>();
+		auto scale_y = options.at("scaleY").get<double>();
+		BezierCurve::HandleType handle_type = BezierCurve::HandleType::Left;
 		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		// TODO: Valueカーブへの対応
+		auto parent_curve = global::id_manager.get_curve<NormalCurve>(parent_id);
 		if (!curve) {
 			return;
 		}
-		bool has_adjacent = (type_str == "left" and curve->prev() != nullptr)
-			or (type_str == "right" and curve->next() != nullptr);
+		if (handle_type_str == "right") {
+			handle_type = BezierCurve::HandleType::Right;
+		}
+		bool has_adjacent = (handle_type == BezierCurve::HandleType::Left and curve->prev() != nullptr)
+			or (handle_type == BezierCurve::HandleType::Right and curve->next() != nullptr);
 
 		ContextMenu{
 			MenuItem{
 				global::string_table[StringId::MenuBezierHandleRoot],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
-				[this, curve, type_str]() {
-					if (type_str == "left") {
-						curve->set_handle_left(curve->get_anchor_start_x(), curve->get_anchor_start_y());
+				[this, curve, handle_type]() {
+					if (handle_type == BezierCurve::HandleType::Left) {
+						curve->move_handle_left(curve->anchor_start());
 					}
 					else {
-						curve->set_handle_right(curve->get_anchor_end_x(), curve->get_anchor_end_y());
+						curve->move_handle_right(curve->anchor_end());
 					}
 					if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
 				}
@@ -552,8 +561,11 @@ namespace cved {
 				global::string_table[StringId::MenuBezierHandleAdjustAngle],
 				MenuItem::Type::String,
 				has_adjacent ? MenuItem::State::Null : MenuItem::State::Disabled,
-				[]() {
-					// TODO: Implement adjust angle
+				[this, id, parent_curve, handle_type, scale_x, scale_y]() {
+					if (parent_curve) {
+						parent_curve->adjust_segment_handle_angle(id, handle_type, scale_x, scale_y);
+						if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+					}
 				}
 			}
 		}.show(hwnd_);

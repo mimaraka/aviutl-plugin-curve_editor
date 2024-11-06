@@ -22,4 +22,4 @@ namespace cved {
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd, const NoiseModifier* p_mod_noise) noexcept;
 	};
-}
+} // namespace cved

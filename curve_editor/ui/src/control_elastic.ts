@@ -5,6 +5,12 @@ import ElasticCurve from './curve_elastic';
 
 // ハンドル (振動)
 class ElasticControl extends Control {
+    // バッファ
+    #bufferHandleAmpLeft;
+    #bufferHandleAmpRight;
+    #bufferHandleFreqDecay;
+    #bufferHandleFreqDecayRootY: number;
+    // D3オブジェクト
     handleAmpLeft;
     handleAmpRight;
     handleFreqDecayRoot;
@@ -19,38 +25,43 @@ class ElasticControl extends Control {
         scaleY: d3.ScaleLinear<number, number>
     ) {
         super(curve, g, scaleX, scaleY);
+        this.#bufferHandleAmpLeft = curve.getHandleAmpLeft();
+        this.#bufferHandleAmpRight = curve.getHandleAmpRight();
+        this.#bufferHandleFreqDecay = curve.getHandleFreqDecay();
+        this.#bufferHandleFreqDecayRootY = curve.getHandleFreqDecayRootY();
+
         this.handleAmpLeft = g.append('circle')
-            .attr('cx', scaleX(curve.getHandleAmpLeftX()))
-            .attr('cy', scaleY(curve.getHandleAmpLeftY()))
+            .attr('cx', scaleX(this.#bufferHandleAmpLeft.x))
+            .attr('cy', scaleY(this.#bufferHandleAmpLeft.y))
             .attr('r', this.handleRadius)
             .attr('class', 'handle');
         this.handleAmpRight = g.append('circle')
-            .attr('cx', scaleX(curve.getHandleAmpRightX()))
-            .attr('cy', scaleY(curve.getHandleAmpRightY()))
+            .attr('cx', scaleX(this.#bufferHandleAmpRight.x))
+            .attr('cy', scaleY(this.#bufferHandleAmpRight.y))
             .attr('r', this.handleRadius)
             .attr('class', 'handle');
         this.handleFreqDecayRoot = g.append('rect')
-            .attr('x', scaleX(curve.getHandleFreqDecayX()) - this.anchorRadius)
-            .attr('y', scaleY(curve.getHandleFreqDecayRootY()) - this.anchorRadius)
+            .attr('x', scaleX(this.#bufferHandleFreqDecay.x) - this.anchorRadius)
+            .attr('y', scaleY(this.#bufferHandleFreqDecayRootY) - this.anchorRadius)
             .attr('width', this.anchorRadius * 2)
             .attr('height', this.anchorRadius * 2)
             .attr('class', 'anchor');
         this.handleFreqDecay = g.append('circle')
-            .attr('cx', scaleX(curve.getHandleFreqDecayX()))
-            .attr('cy', scaleY(curve.getHandleFreqDecayY()))
+            .attr('cx', scaleX(this.#bufferHandleFreqDecay.x))
+            .attr('cy', scaleY(this.#bufferHandleFreqDecay.y))
             .attr('r', this.handleRadius)
             .attr('class', 'handle');
         this.handleLineAmp = g.append('line')
-            .attr('x1', scaleX(curve.getHandleAmpLeftX()))
-            .attr('y1', scaleY(curve.getHandleAmpLeftY()))
-            .attr('x2', scaleX(curve.getHandleAmpRightX()))
-            .attr('y2', scaleY(curve.getHandleAmpRightY()))
+            .attr('x1', scaleX(this.#bufferHandleAmpLeft.x))
+            .attr('y1', scaleY(this.#bufferHandleAmpLeft.y))
+            .attr('x2', scaleX(this.#bufferHandleAmpRight.x))
+            .attr('y2', scaleY(this.#bufferHandleAmpRight.y))
             .attr('class', 'handle-line');
         this.handleLineFreqDecay = g.append('line')
-            .attr('x1', scaleX(curve.getHandleFreqDecayX()))
-            .attr('y1', scaleY(curve.getHandleFreqDecayRootY()))
-            .attr('x2', scaleX(curve.getHandleFreqDecayX()))
-            .attr('y2', scaleY(curve.getHandleFreqDecayY()))
+            .attr('x1', scaleX(this.#bufferHandleFreqDecay.x))
+            .attr('y1', scaleY(this.#bufferHandleFreqDecayRootY))
+            .attr('x2', scaleX(this.#bufferHandleFreqDecay.x))
+            .attr('y2', scaleY(this.#bufferHandleFreqDecay.y))
             .attr('class', 'handle-line');
         this.handleAmpLeft.call(
             d3.drag<SVGCircleElement, unknown>()
@@ -71,9 +82,9 @@ class ElasticControl extends Control {
 
     rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleX(scaleX, transition);
-        const ampLeftX = this.scaleX((this.curve as ElasticCurve).getHandleAmpLeftX());
-        const ampRightX = this.scaleX((this.curve as ElasticCurve).getHandleAmpRightX());
-        const freqDecayX = this.scaleX((this.curve as ElasticCurve).getHandleFreqDecayX());
+        const ampLeftX = this.scaleX(this.#bufferHandleAmpLeft.x);
+        const ampRightX = this.scaleX(this.#bufferHandleAmpRight.x);
+        const freqDecayX = this.scaleX(this.#bufferHandleFreqDecay.x);
         if (transition) {
             this.handleAmpLeft.transition(transition)
                 .attr('cx', ampLeftX);
@@ -109,9 +120,9 @@ class ElasticControl extends Control {
 
     rescaleY(scaleY: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
         super.rescaleY(scaleY, transition);
-        const ampY = this.scaleY((this.curve as ElasticCurve).getHandleAmpLeftY());
-        const freqDecayY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayY());
-        const freqDecayRootY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayRootY());
+        const ampY = this.scaleY(this.#bufferHandleAmpLeft.y);
+        const freqDecayY = this.scaleY(this.#bufferHandleFreqDecay.y);
+        const freqDecayRootY = this.scaleY(this.#bufferHandleFreqDecayRootY);
         if (transition) {
             this.handleAmpLeft.transition(transition)
                 .attr('cy', ampY);
@@ -145,105 +156,114 @@ class ElasticControl extends Control {
         }
     }
 
-    updateControl(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
+    updateHandleAmpLeft(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
+        this.#bufferHandleAmpLeft = (this.curve as ElasticCurve).getHandleAmpLeft();
+        const x = this.scaleX(this.#bufferHandleAmpLeft.x);
+        const y = this.scaleY(this.#bufferHandleAmpLeft.y);
+        if (transition) {
+            this.handleAmpLeft.transition(transition)
+                .attr('cx', x)
+                .attr('cy', y);
+            this.handleLineAmp.transition(transition)
+                .attr('x1', x)
+                .attr('y1', y);
+        } else {
+            this.handleAmpLeft
+                .attr('cx', x)
+                .attr('cy', y);
+            this.handleLineAmp
+                .attr('x1', x)
+                .attr('y1', y);
+        }
+    }
+
+    updateHandleAmpRight(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
+        this.#bufferHandleAmpRight = (this.curve as ElasticCurve).getHandleAmpRight();
+        const x = this.scaleX(this.#bufferHandleAmpRight.x);
+        const y = this.scaleY(this.#bufferHandleAmpRight.y);
+        if (transition) {
+            this.handleAmpRight.transition(transition)
+                .attr('cx', x)
+                .attr('cy', y);
+            this.handleLineAmp.transition(transition)
+                .attr('x2', x)
+                .attr('y2', y);
+        } else {
+            this.handleAmpRight
+                .attr('cx', x)
+                .attr('cy', y);
+            this.handleLineAmp
+                .attr('x2', x)
+                .attr('y2', y);
+        }
+    }
+
+    updateHandleFreqDecay(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
+        this.#bufferHandleFreqDecay = (this.curve as ElasticCurve).getHandleFreqDecay();
+        this.#bufferHandleFreqDecayRootY = (this.curve as ElasticCurve).getHandleFreqDecayRootY();
+        const x = this.scaleX(this.#bufferHandleFreqDecay.x);
+        const y = this.scaleY(this.#bufferHandleFreqDecay.y);
+        const rootY = this.scaleY(this.#bufferHandleFreqDecayRootY);
+        if (transition) {
+            this.handleFreqDecay.transition(transition)
+                .attr('cx', x)
+                .attr('cy', y);
+            this.handleFreqDecayRoot.transition(transition)
+                .attr('x', x - this.anchorRadius)
+                .attr('y', rootY - this.anchorRadius);
+            this.handleLineFreqDecay.transition(transition)
+                .attr('x1', x)
+                .attr('y1', rootY)
+                .attr('x2', x)
+                .attr('y2', y);
+        } else {
+            this.handleFreqDecay
+                .attr('cx', x)
+                .attr('cy', y);
+            this.handleFreqDecayRoot
+                .attr('x', x - this.anchorRadius)
+                .attr('y', rootY - this.anchorRadius);
+            this.handleLineFreqDecay
+                .attr('x1', x)
+                .attr('y1', rootY)
+                .attr('x2', x)
+                .attr('y2', y);
+        }
+    }
+
+    updateHandle(transition?: d3.Transition<any, unknown, any, unknown> | null): void {
+        this.updateHandleAmpLeft(transition);
+        this.updateHandleAmpRight(transition);
+        this.updateHandleFreqDecay(transition);
+    }
+
+    updateControl(transition?: d3.Transition<any, unknown, any, unknown> | null): void {
         super.updateControl(transition);
-        const ampLeftX = this.scaleX((this.curve as ElasticCurve).getHandleAmpLeftX());
-        const ampRightX = this.scaleX((this.curve as ElasticCurve).getHandleAmpRightX());
-        const ampY = this.scaleY((this.curve as ElasticCurve).getHandleAmpLeftY());
-        const freqDecayX = this.scaleX((this.curve as ElasticCurve).getHandleFreqDecayX());
-        const freqDecayY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayY());
-        const freqDecayRootY = this.scaleY((this.curve as ElasticCurve).getHandleFreqDecayRootY());
-        if (transition) {
-            this.handleAmpLeft.transition(transition)
-                .attr('cx', ampLeftX)
-                .attr('cy', ampY);
-            this.handleAmpRight.transition(transition)
-                .attr('cx', ampRightX)
-                .attr('cy', ampY);
-            this.handleFreqDecay.transition(transition)
-                .attr('cx', freqDecayX)
-                .attr('cy', freqDecayY);
-            this.handleFreqDecayRoot.transition(transition)
-                .attr('x', freqDecayX - this.anchorRadius)
-                .attr('y', freqDecayRootY - this.anchorRadius);
-            this.handleLineAmp.transition(transition)
-                .attr('x1', ampLeftX)
-                .attr('y1', ampY)
-                .attr('x2', ampRightX)
-                .attr('y2', ampY);
-            this.handleLineFreqDecay.transition(transition)
-                .attr('x1', freqDecayX)
-                .attr('y1', freqDecayRootY)
-                .attr('x2', freqDecayX)
-                .attr('y2', freqDecayY);
-        } else {
-            this.handleAmpLeft
-                .attr('cx', ampLeftX)
-                .attr('cy', ampY);
-            this.handleAmpRight
-                .attr('cx', ampRightX)
-                .attr('cy', ampY);
-            this.handleFreqDecay
-                .attr('cx', freqDecayX)
-                .attr('cy', freqDecayY);
-            this.handleFreqDecayRoot
-                .attr('x', freqDecayX - this.anchorRadius)
-                .attr('y', freqDecayRootY - this.anchorRadius);
-            this.handleLineAmp
-                .attr('x1', ampLeftX)
-                .attr('y1', ampY)
-                .attr('x2', ampRightX)
-                .attr('y2', ampY);
-            this.handleLineFreqDecay
-                .attr('x1', freqDecayX)
-                .attr('y1', freqDecayRootY)
-                .attr('x2', freqDecayX)
-                .attr('y2', freqDecayY);
-        }
-    }
-
-    onAnchorStartDrag(event: DragEvent, bound = false) {
-        super.onAnchorStartDrag(event, bound);
-        this.update();
-    }
-
-    onAnchorEndDrag(event: DragEvent, bound = false) {
-        super.onAnchorEndDrag(event, bound);
-        this.update();
+        this.updateHandle(transition);
     }
 
     onHandleAmpLeftDrag(event: DragEvent) {
         const y = this.scaleY.invert(event.y);
-        (this.curve as ElasticCurve).setHandleAmpLeft(y);
-        const newX = (this.curve as ElasticCurve).getHandleAmpLeftX();
-        const newY = (this.curve as ElasticCurve).getHandleAmpLeftY();
-        this.handleAmpLeft
-            .attr('cx', this.scaleX(newX))
-            .attr('cy', this.scaleY(newY));
-        this.update();
+        (this.curve as ElasticCurve).moveHandleAmpLeft(y);
+        this.updateHandleAmpLeft();
+        this.updateHandleAmpRight();
+        this.updateCurvePath();
     }
 
     onHandleAmpRightDrag(event: DragEvent) {
         const y = this.scaleY.invert(event.y);
-        (this.curve as ElasticCurve).setHandleAmpRight(y);
-        const newX = (this.curve as ElasticCurve).getHandleAmpRightX();
-        const newY = (this.curve as ElasticCurve).getHandleAmpRightY();
-        this.handleAmpRight
-            .attr('cx', this.scaleX(newX))
-            .attr('cy', this.scaleY(newY));
-        this.update();
+        (this.curve as ElasticCurve).moveHandleAmpRight(y);
+        this.updateHandleAmpLeft();
+        this.updateHandleAmpRight();
+        this.updateCurvePath();
     }
 
     onHandleFreqDecayDrag(event: DragEvent) {
         const x = this.scaleX.invert(event.x);
         const y = this.scaleY.invert(event.y);
-        (this.curve as ElasticCurve).setHandleFreqDecay(x, y);
-        const newX = (this.curve as ElasticCurve).getHandleFreqDecayX();
-        const newY = (this.curve as ElasticCurve).getHandleFreqDecayY();
-        this.handleFreqDecay
-            .attr('cx', this.scaleX(newX))
-            .attr('cy', this.scaleY(newY));
-        this.update();
+        (this.curve as ElasticCurve).moveHandleFreqDecay(x, y);
+        this.updateHandleFreqDecay();
+        this.updateCurvePath();
     }
 
     // ハンドル・アンカーを削除
