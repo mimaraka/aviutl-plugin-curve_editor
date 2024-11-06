@@ -1,16 +1,17 @@
 import React from 'react';
 import { faClone, faSquareUpRight, faStar, faLock, faLockOpen, faTrash, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon, ToolbarButtonIconProps } from './button';
+import { editor } from './host_object';
 import './scss/toolbar.scss';
 
 
 interface ToolbarProps {
-    editMode: number;
+    curveId: number;
     isUpdateAvailable: boolean;
 }
 
 const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
-    const [isLocked, setIsLocked] = React.useState(false);
+    const [isLocked, setIsLocked] = React.useState(editor.isCurveLocked(props.curveId));
     const [showNotification, setShowNotification] = React.useState(props.isUpdateAvailable);
 
     const onMessageFromHost = (event: MessageEvent) => {
@@ -47,7 +48,9 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
                     command: 'ButtonCurveCode'
                 });
             },
-            disabled: !(props.editMode == 2 || props.editMode == 3 || props.editMode == 4)
+            disabled: !(editor.getCurveName(props.curveId) == "bezier"
+                || editor.getCurveName(props.curveId) == "elastic"
+                || editor.getCurveName(props.curveId) == "bounce")
         },
         {
             icon: faStar,
@@ -59,13 +62,14 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
             }
         },
         {
-            icon: isLocked? faLock : faLockOpen,
-            title: isLocked ? 'カーブの編集はロックされています' : 'カーブは編集可能です',
+            icon: editor.isCurveLocked(props.curveId)? faLock : faLockOpen,
+            title: editor.isCurveLocked(props.curveId) ? 'カーブの編集はロックされています' : 'カーブは編集可能です',
             onClick: () => {
-                window.chrome.webview.postMessage({
-                    command: 'ButtonLock'
-                });
-                setIsLocked(!isLocked);
+                setIsLocked(!editor.isCurveLocked(props.curveId));
+                editor.setIsCurveLocked(editor.currentCurveId, !editor.isCurveLocked(props.curveId));
+                window.postMessage({
+                    command: 'UpdateCurveEditability'
+                }, '*');
             }
         },
         {
@@ -76,7 +80,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
                     command: 'ButtonClear'
                 });
             },
-            disabled: isLocked
+            disabled: editor.isCurveLocked(props.curveId)
         },
         {
             icon: faEllipsisVertical,

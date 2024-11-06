@@ -5,13 +5,13 @@ import Curve from './curve_base';
 export interface PrevHandleFunc {
     updateAnchorEnd: ((transition: d3.Transition<any, unknown, any, unknown> | null) => void) | null;
     updateHandle: ((transition: d3.Transition<any, unknown, any, unknown> | null) => void) | null;
-    updateHandleRight: ((transition: d3.Transition<any, unknown, any, unknown> | null) => void) | null;
+    updateHandleRight: ((transition: d3.Transition<any, unknown, any, unknown> | null, bound: boolean) => void) | null;
 };
 
 export interface NextHandleFunc {
     updateAnchorStart: ((transition: d3.Transition<any, unknown, any, unknown> | null) => void) | null;
     updateHandle: ((transition: d3.Transition<any, unknown, any, unknown> | null) => void) | null;
-    updateHandleLeft: ((transition: d3.Transition<any, unknown, any, unknown> | null) => void) | null;
+    updateHandleLeft: ((transition: d3.Transition<any, unknown, any, unknown> | null, bound: boolean) => void) | null;
 };
 
 // 制御点
@@ -79,13 +79,13 @@ class Control {
             d3.drag<SVGRectElement, unknown>()
                 .on('start', (event) => this.onAnchorStartDragStart(event))
                 .on('drag', (event) => this.onAnchorStartDrag(event))
-                .on('end', (event) => this.onDragEnd(event))
+                .on('end', (event) => this.onAnchorStartDragEnd(event))
         );
         this.anchorEnd.call(
             d3.drag<SVGRectElement, unknown>()
                 .on('start', (event) => this.onAnchorEndDragStart(event))
                 .on('drag', (event) => this.onAnchorEndDrag(event))
-                .on('end', (event) => this.onDragEnd(event))
+                .on('end', (event) => this.onAnchorEndDragEnd(event))
         );
     }
 
@@ -186,6 +186,11 @@ class Control {
         this.updateCurvePath();
     }
 
+    onAnchorStartDragEnd(event: DragEvent) {
+        this.curve.endMoveAnchorStart();
+        this.onDragEnd(event);
+    }
+
     // 終了アンカーのドラッグ開始
     onAnchorEndDragStart(event: DragEvent) {
         this.curve.beginMoveAnchorEnd();
@@ -202,6 +207,11 @@ class Control {
         this.nextHandleFunc?.updateAnchorStart?.(null);
         this.nextHandleFunc?.updateHandle?.(null);
         this.updateCurvePath();
+    }
+
+    onAnchorEndDragEnd(event: DragEvent) {
+        this.curve.endMoveAnchorEnd();
+        this.onDragEnd(event);
     }
 
     onDragEnd(event: DragEvent) {

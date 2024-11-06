@@ -84,13 +84,13 @@ class BezierControl extends Control {
             d3.drag<SVGCircleElement, unknown>()
                 .on('start', this.onHandleLeftDragStart.bind(this))
                 .on('drag', this.onHandleLeftDrag.bind(this))
-                .on('end', this.onDragEnd.bind(this))
+                .on('end', this.onHandleLeftDragEnd.bind(this))
         );
         this.handleRight.call(
             d3.drag<SVGCircleElement, unknown>()
                 .on('start', this.onHandleRightDragStart.bind(this))
                 .on('drag', this.onHandleRightDrag.bind(this))
-                .on('end', this.onDragEnd.bind(this))
+                .on('end', this.onHandleRightDragEnd.bind(this))
         );
     }
 
@@ -192,7 +192,7 @@ class BezierControl extends Control {
         this.updateHandleRight(transition);
     }
 
-    updateHandleLeft(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
+    updateHandleLeft(transition: d3.Transition<any, unknown, any, unknown> | null = null, bound: boolean = false) {
         this.#bufferHandleLeft = (this.curve as BezierCurve).getHandleLeft();
         const scaledX = this.scaleX(this.#bufferHandleLeft.x);
         const scaledY = this.scaleY(this.#bufferHandleLeft.y);
@@ -211,9 +211,12 @@ class BezierControl extends Control {
                 .attr('x2', scaledX)
                 .attr('y2', scaledY);
         }
+        if (!bound) {
+            this.prevHandleFunc?.updateHandleRight?.(null, true);
+        }
     }
 
-    updateHandleRight(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
+    updateHandleRight(transition: d3.Transition<any, unknown, any, unknown> | null = null, bound: boolean = false) {
         this.#bufferHandleRight = (this.curve as BezierCurve).getHandleRight();
         const scaledX = this.scaleX(this.#bufferHandleRight.x);
         const scaledY = this.scaleY(this.#bufferHandleRight.y);
@@ -232,11 +235,14 @@ class BezierControl extends Control {
                 .attr('x2', scaledX)
                 .attr('y2', scaledY);
         }
+        if (!bound) {
+            this.nextHandleFunc?.updateHandleLeft?.(null, true);
+        }
     }
 
     updateHandle(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
-        this.updateHandleLeft(transition);
-        this.updateHandleRight(transition);
+        this.updateHandleLeft(transition, true);
+        this.updateHandleRight(transition, true);
     }
 
     // 左ハンドルのドラッグ開始
@@ -253,8 +259,15 @@ class BezierControl extends Control {
         const y = this.scaleY.invert(event.y);
         (this.curve as BezierCurve).moveHandleLeft(x, y);
         this.updateHandleLeft();
-        this.prevHandleFunc?.updateHandleRight?.(null);
+        if ((this.curve as BezierCurve).isMovingSymmetrically()) {
+            this.updateHandleRight();
+        }
         this.updateCurvePath();
+    }
+
+    onHandleLeftDragEnd(event: DragEvent) {
+        (this.curve as BezierCurve).endMoveHandleLeft();
+        this.onDragEnd(event);
     }
 
     // 右ハンドルのドラッグ開始
@@ -271,8 +284,15 @@ class BezierControl extends Control {
         const y = this.scaleY.invert(event.y);
         (this.curve as BezierCurve).moveHandleRight(x, y);
         this.updateHandleRight();
-        this.nextHandleFunc?.updateHandleLeft?.(null);
+        if ((this.curve as BezierCurve).isMovingSymmetrically()) {
+            this.updateHandleLeft();
+        }
         this.updateCurvePath();
+    }
+
+    onHandleRightDragEnd(event: DragEvent) {
+        (this.curve as BezierCurve).endMoveHandleRight();
+        this.onDragEnd(event);
     }
 
     // ハンドル・アンカーを削除

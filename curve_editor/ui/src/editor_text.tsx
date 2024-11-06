@@ -16,12 +16,24 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
         editorRef.current?.setValue(editor.script.getScript(editor.script.getId(props.idx)));
     }
 
+    const UpdateEditability = () => {
+        editorRef.current?.updateOptions({ readOnly: editor.isCurveLocked(editor.script.getId(props.idx)) });
+    }
+
     const applyPreferences = () => {
         editorRef.current?.updateOptions({ wordWrap: config.wordWrap ? 'on' : 'off' });
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             monaco.editor.setTheme('vs-dark');
         } else {
             monaco.editor.setTheme('vs-light');
+        }
+    }
+
+    const onMessage = (event: MessageEvent) => {
+        switch (event.data.command) {
+            case 'UpdateCurveEditability':
+                UpdateEditability();
+                break;
         }
     }
 
@@ -41,6 +53,7 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
         if (idxRef.current != props.idx) {
             idxRef.current = props.idx;
             updateEditor();
+            UpdateEditability();
         }
     }, [props.idx]);
 
@@ -70,10 +83,12 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
             editor.script.setScript(editor.script.getId(idxRef.current), editorRef.current?.getValue() ?? '');
         });
 
+        window.addEventListener('message', onMessage);
         window.chrome.webview.addEventListener('message', onMessageFromHost);
 
         return () => {
             editorRef.current?.dispose();
+            window.removeEventListener('message', onMessage);
             window.chrome.webview.removeEventListener('message', onMessageFromHost);
         };
     }, []);

@@ -79,6 +79,7 @@ namespace cved {
 	}
 
 	void BounceCurve::reverse(bool fix_pt) noexcept {
+		if (is_locked()) return;
 		GraphCurve::reverse(fix_pt);
 		reversed_ = !reversed_;
 	}
@@ -102,6 +103,7 @@ namespace cved {
 	}
 
 	void BounceCurve::set_handle(double x, double y) noexcept {
+		if (is_locked()) return;
 		const auto width = anchor_end().x - anchor_start().x;
 		const auto height = anchor_end().y - anchor_start().y;
 		auto x_rel = mkaul::clamp((x - anchor_start().x) / width, 0., 1.);
@@ -132,6 +134,7 @@ namespace cved {
 		//           1 ~   10211201 : Elastic
 		//    10211202 ~   11213202 : Bounce
 		//    11213203 ~ 2147483647 : Unused
+		if (is_locked()) return false;
 
 		constexpr int MIN = 10211202;
 		constexpr int MAX = 11213202;
@@ -164,6 +167,7 @@ namespace cved {
 	}
 
 	bool BounceCurve::read_params(const std::vector<double>& params) noexcept {
+		if (is_locked()) return true;
 		if (params.size() != 2) {
 			return false;
 		}

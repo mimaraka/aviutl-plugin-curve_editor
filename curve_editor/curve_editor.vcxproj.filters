@@ -345,11 +345,14 @@
     <ClInclude Include="key_state_observer.hpp">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
-    <ClInclude Include="handle_bezier.hpp">
-      <Filter>Header Files\Curve\Handle</Filter>
-    </ClInclude>
     <ClInclude Include="cereal_mkaul_point.hpp">
       <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="position_converter.hpp">
+      <Filter>Header Files\Curve\Handle</Filter>
+    </ClInclude>
+    <ClInclude Include="handle_bezier.hpp">
+      <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

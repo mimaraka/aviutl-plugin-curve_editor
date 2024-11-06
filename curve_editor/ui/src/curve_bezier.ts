@@ -22,6 +22,10 @@ class BezierCurve extends NumericCurve {
         editor.graph.bezier.moveHandleLeft(this.id, x, y, keepAngle);
     }
 
+    endMoveHandleLeft() {
+        editor.graph.bezier.endMoveHandleLeft(this.id);
+    }
+
     getHandleRight() {
         let result = editor.graph.bezier.getHandleRight(this.id);
         if (result.length !== 2) {
@@ -39,6 +43,14 @@ class BezierCurve extends NumericCurve {
 
     moveHandleRight(x: number, y: number, keepAngle = false) {
         editor.graph.bezier.moveHandleRight(this.id, x, y, keepAngle);
+    }
+
+    endMoveHandleRight() {
+        editor.graph.bezier.endMoveHandleRight(this.id);
+    }
+
+    isMovingSymmetrically() {
+        return editor.graph.bezier.isMovingSymmetrically(this.id);
     }
 
     getPrevBezier() {

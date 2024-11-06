@@ -212,7 +212,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                     height: layoutMode ? '100%' : `${toolbarHeight * 2 + editorPresetHeight * separatorPos + applyButtonHeight}px`
                 }}
             >
-                <Toolbar editMode={editMode} isUpdateAvailable={props.isUpdateAvailable}/>
+                <Toolbar curveId={editor.currentCurveId} isUpdateAvailable={props.isUpdateAvailable}/>
                 <EditorPanel
                     isSelectDialog={false}
                     editMode={editMode}

@@ -84,6 +84,8 @@ namespace cved {
 		void move_anchor_start(const mkaul::Point<double>& pt, bool forced = false, bool bound = false) noexcept { move_anchor_start(pt.x, pt.y, forced, bound); }
 		virtual void move_anchor_end(double x, double y, bool forced = false, bool bound = false) noexcept;
 		void move_anchor_end(const mkaul::Point<double>& pt, bool forced = false, bool bound = false) noexcept { move_anchor_end(pt.x, pt.y, forced, bound); }
+		virtual void end_move_anchor_start(bool bound = false) noexcept;
+		virtual void end_move_anchor_end(bool bound = false) noexcept;
 
 		virtual void reverse(bool fix_pt = false) noexcept;
 
@@ -93,6 +95,7 @@ namespace cved {
 		template <class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
 			archive(
+				cereal::base_class<Curve>(this),
 				anchor_start_,
 				anchor_end_,
 				anchor_fixed_,
@@ -103,6 +106,7 @@ namespace cved {
 		template <class Archive>
 		void load(Archive& archive, const std::uint32_t) {
 			archive(
+				cereal::base_class<Curve>(this),
 				anchor_start_,
 				anchor_end_,
 				anchor_fixed_,

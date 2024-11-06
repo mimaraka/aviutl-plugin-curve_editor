@@ -561,8 +561,11 @@ namespace cved {
 				global::string_table[StringId::MenuBezierHandleAdjustAngle],
 				MenuItem::Type::String,
 				has_adjacent ? MenuItem::State::Null : MenuItem::State::Disabled,
-				[]() {
-					// TODO: Implement adjust angle
+				[this, id, parent_curve, handle_type, scale_x, scale_y]() {
+					if (parent_curve) {
+						parent_curve->adjust_segment_handle_angle(id, handle_type, scale_x, scale_y);
+						if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+					}
 				}
 			}
 		}.show(hwnd_);

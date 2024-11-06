@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 #include <Windows.h>
 
 
@@ -26,8 +27,8 @@ namespace cved {
 			current_pressed_ = std::all_of(states.begin(), states.end(), [](auto state) { return state & 0x8000; });
 		}
 
-		bool is_key_pressed() { return current_pressed_; }
-		bool is_key_down() { return !last_pressed_ and current_pressed_; }
-		bool is_key_up() { return last_pressed_ and !current_pressed_; }
+		bool is_key_pressed() const noexcept { return current_pressed_; }
+		bool is_key_down() const noexcept { return !last_pressed_ and current_pressed_; }
+		bool is_key_up() const noexcept { return last_pressed_ and !current_pressed_; }
 	};
 } // namespace cved

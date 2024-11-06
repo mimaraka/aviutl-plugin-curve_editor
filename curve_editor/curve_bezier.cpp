@@ -9,22 +9,24 @@
 namespace cved {
 	// コンストラクタ
 	BezierCurve::BezierCurve(
-		const mkaul::Point<double>& anchor_start,
-		const mkaul::Point<double>& anchor_end,
+		const mkaul::Point<double>& _anchor_start,
+		const mkaul::Point<double>& _anchor_end,
 		bool pt_fixed,
 		GraphCurve* prev,
 		GraphCurve* next,
 		mkaul::Point<double> handle_left,
 		mkaul::Point<double> handle_right
 	) noexcept :
-		NumericGraphCurve{ anchor_start, anchor_end, pt_fixed, prev, next },
-		handle_{ handle_left, handle_right }
+		NumericGraphCurve{ _anchor_start, _anchor_end, pt_fixed, prev, next },
+		handle_left_{ anchor_start(), anchor_end(), handle_left },
+		handle_right_{ anchor_end(), anchor_start(), handle_right }
 	{}
 
 	// コピーコンストラクタ
 	BezierCurve::BezierCurve(const BezierCurve& curve) noexcept :
 		NumericGraphCurve{ curve },
-		handle_{ curve.handle_ }
+		handle_left_{ anchor_start(), anchor_end(), curve.handle_left_.pos_rel() },
+		handle_right_{ anchor_end(), anchor_start(), curve.handle_right_.pos_rel() }
 	{}
 
 	// カーブの値を取得
@@ -32,8 +34,8 @@ namespace cved {
 		progress = mkaul::clamp(progress, anchor_start().x, anchor_end().x);
 
 		auto pt0 = anchor_start();
-		auto pt1 = anchor_start() + handle_.left_offset();
-		auto pt2 = anchor_end() + handle_.right_offset();
+		auto pt1 = handle_left_.pos_abs();
+		auto pt2 = handle_right_.pos_abs();
 		auto pt3 = anchor_end();
 
 		auto func_bezier = [](double v0, double v1, double v2, double v3, double t) {
@@ -134,106 +136,160 @@ namespace cved {
 		return start + (end - start) * rel_value;
 	}
 
+	void BezierCurve::on_anchor_begin_move() noexcept {
+		buffer_handle_left_ = handle_left_.pos_rel();
+		buffer_handle_right_ = handle_right_.pos_rel();
+		handle_left_.lock_tangent();
+		handle_right_.lock_tangent();
+	}
+
+	void BezierCurve::on_anchor_end_move() noexcept {
+		handle_left_.unlock_tangent();
+		handle_right_.unlock_tangent();
+	}
+
 	void BezierCurve::begin_move_anchor_start(bool bound) noexcept {
 		if (is_locked()) return;
-		GraphCurve::begin_move_anchor_start(bound);
-		handle_.on_anchor_begin_move();
+		__super::begin_move_anchor_start(bound);
+		on_anchor_begin_move();
 	}
 
 	void BezierCurve::begin_move_anchor_end(bool bound) noexcept {
 		if (is_locked()) return;
-		GraphCurve::begin_move_anchor_end(bound);
-		handle_.on_anchor_begin_move();
+		__super::begin_move_anchor_end(bound);
+		buffer_handle_left_ = handle_left_.pos_rel();
+		buffer_handle_right_ = handle_right_.pos_rel();
+		handle_left_.lock_tangent();
+		handle_right_.lock_tangent();
 	}
 
 	void BezierCurve::move_anchor_start(double x, double y, bool forced, bool bound) noexcept {
 		if (is_locked()) return;
-		GraphCurve::move_anchor_start(x, y, forced, bound);
+		__super::move_anchor_start(x, y, forced, bound);
 		if (!forced) {
-			handle_.on_anchor_move(anchor_start(), anchor_end());
+			handle_left_.move_rel(buffer_handle_left_, true);
+			handle_right_.move_rel(buffer_handle_right_, true);
 		}
 	}
 
 	void BezierCurve::move_anchor_end(double x, double y, bool forced, bool bound) noexcept {
 		if (is_locked()) return;
-		GraphCurve::move_anchor_end(x, y, forced, bound);
+		__super::move_anchor_end(x, y, forced, bound);
 		if (!forced) {
-			handle_.on_anchor_move(anchor_start(), anchor_end());
+			handle_left_.move_rel(buffer_handle_left_, true);
+			handle_right_.move_rel(buffer_handle_right_, true);
 		}
 	}
 
-	void BezierCurve::begin_move_handle_left(double scale_x, double scale_y) noexcept {
+	void BezierCurve::end_move_anchor_start(bool bound) noexcept {
+		__super::end_move_anchor_start(bound);
+		on_anchor_end_move();
+	}
+
+	void BezierCurve::end_move_anchor_end(bool bound) noexcept {
+		__super::end_move_anchor_end(bound);
+		on_anchor_end_move();
+	}
+
+	void BezierCurve::begin_move_handle_left(double scale_x, double scale_y, bool bound) noexcept {
 		if (is_locked()) return;
-		const mkaul::Point<double>* p_prev_handle_right = nullptr;
-		auto prev_bezier = prev() ? global::id_manager.get_curve<BezierCurve>(prev()->get_id()) : nullptr;
-		if (prev_bezier and global::config.get_align_handle()) {
-			p_prev_handle_right = &prev_bezier->handle_.right_offset();
+		handle_left_.begin_move(scale_x, scale_y, true);
+		if (bound) {
+			handle_left_.lock_length();
 		}
-		handle_.begin_move_handle_left(scale_x, scale_y, p_prev_handle_right);
+		else if (global::config.get_align_handle()) {
+			auto prev_bezier = prev() ? global::id_manager.get_curve<BezierCurve>(prev()->get_id()) : nullptr;
+			if (prev_bezier) {
+				prev_bezier->begin_move_handle_right(scale_x, scale_y, true);
+			}
+		}
 	}
 
-	void BezierCurve::begin_move_handle_right(double scale_x, double scale_y) noexcept {
+	void BezierCurve::begin_move_handle_right(double scale_x, double scale_y, bool bound) noexcept {
 		if (is_locked()) return;
-		const mkaul::Point<double>* p_next_handle_left = nullptr;
-		auto next_bezier = next() ? global::id_manager.get_curve<BezierCurve>(next()->get_id()) : nullptr;
-		if (next_bezier and global::config.get_align_handle()) {
-			p_next_handle_left = &next_bezier->handle_.left_offset();
+		handle_right_.begin_move(scale_x, scale_y, true);
+		if (bound) {
+			handle_right_.lock_length();
 		}
-		handle_.begin_move_handle_right(scale_x, scale_y, p_next_handle_left);
+		else if (global::config.get_align_handle()) {
+			auto next_bezier = next() ? global::id_manager.get_curve<BezierCurve>(next()->get_id()) : nullptr;
+			if (next_bezier) {
+				next_bezier->begin_move_handle_left(scale_x, scale_y, true);
+			}
+		}
 	}
 
-	void BezierCurve::move_handle_left(const mkaul::Point<double>& pt, bool keep_angle, bool bound) noexcept {
+	void BezierCurve::move_handle_left(const mkaul::Point<double>& pos_abs, bool keep_angle, bool bound, bool moved_symmetrically) noexcept {
 		if (is_locked()) return;		
-		auto prev_bezier = prev() ? global::id_manager.get_curve<BezierCurve>(prev()->get_id()) : nullptr;
-		if (!bound and prev_bezier and global::config.get_align_handle()) {
-			mkaul::Point<double> prev_handle_right;
-			handle_.move_handle_left(pt, anchor_start(), anchor_end(), keep_angle, &prev_handle_right);
-			prev_bezier->handle_.move_handle_right(
-				anchor_start() + prev_handle_right,
-				prev_bezier->anchor_start(),
-				prev_bezier->anchor_end(),
-				true, nullptr
-			);
+		handle_left_.move(pos_abs, keep_angle, !bound);
+		if (!moved_symmetrically) {
+			if (handle_left_.is_key_down_move_symmetrically()) {
+				begin_move_handle_right(handle_left_.scale_x(), handle_left_.scale_y());
+			}
+			if (handle_left_.is_key_pressed_move_symmetrically()) {
+				move_handle_right(anchor_end() - handle_left_.pos_rel(), false, false, true);
+			}
+			if (handle_left_.is_key_up_move_symmetrically()) {
+				end_move_handle_right();
+			}
 		}
-		else {
-			handle_.move_handle_left(pt, anchor_start(), anchor_end(), keep_angle, nullptr);
+		auto prev_bezier = prev() ? global::id_manager.get_curve<BezierCurve>(prev()->get_id()) : nullptr;
+		if (prev_bezier and !bound and global::config.get_align_handle()) {
+			prev_bezier->move_handle_right(anchor_start() - handle_left_.pos_rel(), true, true, true);
 		}
 	}
 
-	void BezierCurve::move_handle_right(const mkaul::Point<double>& pt, bool keep_angle, bool bound) noexcept {
+	void BezierCurve::move_handle_right(const mkaul::Point<double>& pos_abs, bool keep_angle, bool bound, bool moved_symmetrically) noexcept {
 		if (is_locked()) return;
-		auto next_bezier = next() ? global::id_manager.get_curve<BezierCurve>(next()->get_id()) : nullptr;
-		if (!bound and next_bezier and global::config.get_align_handle()) {
-			mkaul::Point<double> next_handle_left;
-			handle_.move_handle_right(pt, anchor_start(), anchor_end(), keep_angle, & next_handle_left);
-			next_bezier->handle_.move_handle_left(
-				anchor_end() + next_handle_left,
-				next_bezier->anchor_start(),
-				next_bezier->anchor_end(),
-				true, nullptr
-			);
+		handle_right_.move(pos_abs, keep_angle, !bound);
+		if (!moved_symmetrically) {
+			if (handle_right_.is_key_down_move_symmetrically()) {
+				begin_move_handle_left(handle_right_.scale_x(), handle_right_.scale_y());
+			}
+			if (handle_right_.is_key_pressed_move_symmetrically()) {
+				move_handle_left(anchor_start() - handle_right_.pos_rel(), false, false, true);
+			}
+			if (handle_right_.is_key_up_move_symmetrically()) {
+				end_move_handle_left();
+			}
 		}
-		else {
-			handle_.move_handle_right(pt, anchor_start(), anchor_end(), keep_angle, nullptr);
+		auto next_bezier = next() ? global::id_manager.get_curve<BezierCurve>(next()->get_id()) : nullptr;
+		if (next_bezier and !bound and global::config.get_align_handle()) {
+			next_bezier->move_handle_left(anchor_end() - handle_right_.pos_rel(), true, true, true);
+		}
+	}
+
+	void BezierCurve::end_move_handle_left(bool bound) noexcept {
+		handle_left_.end_move();
+		auto prev_bezier = prev() ? global::id_manager.get_curve<BezierCurve>(prev()->get_id()) : nullptr;
+		if (!bound and prev_bezier) {
+			prev_bezier->end_move_handle_right(true);
+		}
+	}
+
+	void BezierCurve::end_move_handle_right(bool bound) noexcept {
+		handle_right_.end_move();
+		auto next_bezier = next() ? global::id_manager.get_curve<BezierCurve>(next()->get_id()) : nullptr;
+		if (!bound and next_bezier) {
+			next_bezier->end_move_handle_left(true);
 		}
 	}
 
 	void BezierCurve::clear() noexcept {
-		auto width = anchor_end().x - anchor_start().x;
-		auto height = anchor_end().y - anchor_start().y;
-		handle_.clear(width, height);
+		handle_left_.clear();
+		handle_right_.clear();
 	}
 
 	bool BezierCurve::is_default() const noexcept {
-		auto width = anchor_end().x - anchor_start().x;
-		auto height = anchor_end().y - anchor_start().y;
-		return handle_.is_default(width, height);
+		return handle_left_.is_default() and handle_right_.is_default();
 	}
 
 	void BezierCurve::reverse(bool fix_pt) noexcept {
 		if (is_locked()) return;
-		handle_.reverse();
-		GraphCurve::reverse(fix_pt);
+		auto tmp = handle_left_.pos_rel();
+		handle_left_.move_rel(-handle_right_.pos_rel());
+		handle_right_.move_rel(-tmp);
+		__super::reverse(fix_pt);
 	}
 
 	int32_t BezierCurve::encode() const noexcept {
@@ -245,14 +301,14 @@ namespace cved {
 		const double width = anchor_end().x - anchor_start().x;
 		const double height = anchor_end().y - anchor_start().y;
 
-		x1 = static_cast<float>(handle_.left_offset().x / width);
+		x1 = static_cast<float>(handle_left_.pos_rel().x / width);
 		y1 = mkaul::clamp(
-			static_cast<float>(handle_.left_offset().y / height),
+			static_cast<float>(handle_left_.pos_rel().y / height),
 			MIN_Y, MAX_Y
 		);
-		x2 = static_cast<float>(1. + handle_.right_offset().x / width);
+		x2 = static_cast<float>(1. + handle_right_.pos_rel().x / width);
 		y2 = mkaul::clamp(
-			static_cast<float>(1. + handle_.right_offset().y / height),
+			static_cast<float>(1. + handle_right_.pos_rel().y / height),
 			MIN_Y, MAX_Y
 		);
 
@@ -305,21 +361,8 @@ namespace cved {
 		x2 = (double)ix2 * 0.01;
 		y2 = (double)iy2 * 0.01;
 
-		handle_.move_handle_left(
-			anchor_start() + mkaul::Point{ width * x1, height * y1 },
-			anchor_start(),
-			anchor_end(),
-			false,
-			nullptr
-		);
-
-		handle_.move_handle_right(
-			anchor_end() + mkaul::Point{ width * (x2 - 1.), height * (y2 - 1.) },
-			anchor_start(),
-			anchor_end(),
-			false,
-			nullptr
-		);
+		handle_left_.move_rel(mkaul::Point{ width * x1, height * y1 });
+		handle_right_.move_rel(mkaul::Point{ width * (x2 - 1.), height * (y2 - 1.) });
 
 		return true;
 	}
@@ -328,10 +371,10 @@ namespace cved {
 		const double width = anchor_end().x - anchor_start().x;
 		const double height = anchor_end().y - anchor_start().y;
 
-		auto x1 = handle_.left_offset().x / width;
-		auto y1 = handle_.left_offset().y / height;
-		auto x2 = handle_.right_offset().x / width + 1.;
-		auto y2 = handle_.right_offset().y / height + 1.;
+		auto x1 = handle_left_.pos_rel().x / width;
+		auto y1 = handle_left_.pos_rel().y / height;
+		auto x2 = handle_right_.pos_rel().x / width + 1.;
+		auto y2 = handle_right_.pos_rel().y / height + 1.;
 
 		std::ostringstream oss;
 		oss << std::fixed << std::setprecision(precision) << x1;
@@ -356,36 +399,24 @@ namespace cved {
 			return false;
 		}
 
-		handle_.move_handle_left(
-			anchor_start() + mkaul::Point{ x1 * width, y1 * height },
-			anchor_start(),
-			anchor_end(),
-			false,
-			nullptr
-		);
-		handle_.move_handle_right(
-			anchor_end() + mkaul::Point{ (x2 - 1.) * width, (y2 - 1.) * height },
-			anchor_start(),
-			anchor_end(),
-			false,
-			nullptr
-		);
+		handle_left_.move_rel(mkaul::Point{ x1 * width, y1 * height });
+		handle_right_.move_rel(mkaul::Point{ (x2 - 1.) * width, (y2 - 1.) * height });
 		return true;
 	}
 
 	nlohmann::json BezierCurve::create_json() const noexcept {
-		auto data = GraphCurve::create_json();
+		auto data = __super::create_json();
 		data["handle_left"] = {
-			handle_.left_offset().x, handle_.left_offset().y
+			handle_left_.pos_rel().x, handle_left_.pos_rel().y
 		};
 		data["handle_right"] = {
-			handle_.right_offset().x, handle_.right_offset().y
+			handle_right_.pos_rel().x, handle_right_.pos_rel().y
 		};
 		return data;
 	}
 
 	bool BezierCurve::load_json(const nlohmann::json& data) noexcept {
-		if (!GraphCurve::load_json(data)) {
+		if (!__super::load_json(data)) {
 			return false;
 		}
 		try {
@@ -397,21 +428,8 @@ namespace cved {
 			if (!mkaul::real_in_range(left_x, 0., width) or !mkaul::real_in_range(right_x, -width, 0.)) {
 				return false;
 			}
-			handle_.move_handle_left(
-				anchor_start() + mkaul::Point{ left_x, left_y },
-				anchor_start(),
-				anchor_end(),
-				false,
-				nullptr
-			);
-
-			handle_.move_handle_right(
-				anchor_end() + mkaul::Point{ right_x, right_y },
-				anchor_start(),
-				anchor_end(),
-				false,
-				nullptr
-			);
+			handle_left_.move_rel(mkaul::Point{ left_x, left_y });
+			handle_right_.move_rel(mkaul::Point{ right_x, right_y });
 		}
 		catch (const nlohmann::json::exception&) {
 			return false;

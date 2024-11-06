@@ -57,6 +57,11 @@ namespace cved {
 			dnd.exit();
 			break;
 
+		case WindowMessage::FileClose:
+			global::editor.reset_id_curves();
+			my_webview.send_command(MessageCommand::UpdateEditor);
+			break;
+
 		case WM_SIZE:
 		{
 			mkaul::WindowRectangle bounds;

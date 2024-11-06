@@ -41,6 +41,14 @@ namespace cved {
 		curve->move_handle_left(mkaul::Point{ x, y }, keep_angle);
 	}
 
+	void BezierCurveHostObject::end_move_handle_left(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
+			return;
+		}
+		curve->end_move_handle_left();
+	}
+
 	std::vector<double> BezierCurveHostObject::get_handle_right(uint32_t id) {
 		auto curve = global::id_manager.get_curve<BezierCurve>(id);
 		if (!curve) {
@@ -63,6 +71,22 @@ namespace cved {
 			return;
 		}
 		curve->move_handle_right(mkaul::Point{ x, y }, keep_angle);
+	}
+
+	void BezierCurveHostObject::end_move_handle_right(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
+			return;
+		}
+		curve->end_move_handle_right();
+	}
+
+	bool BezierCurveHostObject::is_moving_symmetrically(uint32_t id) {
+		auto curve = global::id_manager.get_curve<BezierCurve>(id);
+		if (!curve) {
+			return false;
+		}
+		return curve->is_moving_symmetrically();
 	}
 
 	std::string BezierCurveHostObject::get_param(uint32_t id) {

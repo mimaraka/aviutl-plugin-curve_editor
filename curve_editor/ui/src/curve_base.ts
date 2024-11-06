@@ -56,6 +56,10 @@ class Curve {
         editor.graph.graph.moveAnchorStart(this.id, x, y);
     }
 
+    endMoveAnchorStart() {
+        editor.graph.graph.endMoveAnchorStart(this.id);
+    }
+
     getAnchorEnd() {
         let result = editor.graph.graph.getAnchorEnd(this.id);
         if (result.length !== 2) {
@@ -73,6 +77,10 @@ class Curve {
 
     moveAnchorEnd(x: number, y: number) {
         editor.graph.graph.moveAnchorEnd(this.id, x, y);
+    }
+
+    endMoveAnchorEnd() {
+        editor.graph.graph.endMoveAnchorEnd(this.id);
     }
 
     reverse() {

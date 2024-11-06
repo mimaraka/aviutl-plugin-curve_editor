@@ -50,8 +50,11 @@ declare global {
     }
 
     interface EditorHostObject {
+        currentCurveId: number;
         getCurveName: (id: number) => string;
         getCurveDispName: (id: number) => string;
+        isCurveLocked: (id: number) => boolean;
+        setIsCurveLocked: (id: number, isLocked: boolean) => void;
         graph: GraphEditorHostObject;
         script: ScriptEditorHostObject;
     }
@@ -71,9 +74,11 @@ declare global {
         getAnchorStart: (id: number) => number[];
         beginMoveAnchorStart: (id: number) => void;
         moveAnchorStart: (id: number, x: number, y: number) => void;
+        endMoveAnchorStart: (id: number) => void;
         getAnchorEnd: (id: number) => number[];
         beginMoveAnchorEnd: (id: number) => void;
         moveAnchorEnd: (id: number, x: number, y: number) => void;
+        endMoveAnchorEnd: (id: number) => void;
         getPrevCurveId: (id: number) => number;
         getNextCurveId: (id: number) => number;
         reverse: (id: number) => void;
@@ -89,9 +94,12 @@ declare global {
         getHandleLeft: (id: number) => number[];
         beginMoveHandleLeft: (id: number, scaleX: number, scaleY: number) => void;
         moveHandleLeft: (id: number, x: number, y: number, keepAngle: boolean) => void;
+        endMoveHandleLeft: (id: number) => void;
         getHandleRight: (id: number) => number[];
         beginMoveHandleRight: (id: number, scaleX: number, scaleY: number) => void;
         moveHandleRight: (id: number, x: number, y: number, keepAngle: boolean) => void;
+        endMoveHandleRight: (id: number) => void;
+        isMovingSymmetrically: (id: number) => boolean;
         getParam: (id: number) => string;
     }
 

@@ -2,85 +2,101 @@
 
 #include "cereal_mkaul_point.hpp"
 #include "key_state_observer.hpp"
-#include <cereal/cereal.hpp>
+#include "position_converter.hpp"
 #include <mkaul/point.hpp>
 
 
 
 namespace cved {
 	class BezierHandle {
-		mkaul::Point<double> handle_left_;
-		mkaul::Point<double> handle_right_;
-		mkaul::Point<double> handle_left_buffer_;
-		mkaul::Point<double> handle_right_buffer_;
-		double length_buffer_ = 0.;
-		double scale_x_buffer_ = 0.;
-		double scale_y_buffer_ = 0.;
-		KeyStateObserver key_state_ctrl_{ VK_CONTROL };
-		KeyStateObserver key_state_shift_{ VK_SHIFT };
-		KeyStateObserver key_state_alt_{ VK_MENU };
+		static constexpr double DEFAULT_HANDLE_RATIO = 0.3;
+		const mkaul::Point<double>& anchor_origin_;
+		const mkaul::Point<double>& anchor_opposite_;
+		mkaul::Point<double> handle_;
+		double scale_x_ = 1.;
+		double scale_y_ = 1.;
+		XRangeLimitter x_range_limitter_;
+		TangentLocker tangent_locker_;
+		LengthLocker length_locker_;
+		Snapper snapper_;
+		KeyStateObserver ks_snap_{ VK_SHIFT };
+		KeyStateObserver ks_lock_tangent_{ VK_MENU };
+		KeyStateObserver ks_lock_length_{ VK_CONTROL };
+		KeyStateObserver ks_move_symmetrically_{ VK_CONTROL, VK_SHIFT };
 
 	public:
-		static constexpr double DEFAULT_HANDLE_XY = 0.3;
-
 		BezierHandle(
-			const mkaul::Point<double>& handle_left = mkaul::Point{ DEFAULT_HANDLE_XY, DEFAULT_HANDLE_XY },
-			const mkaul::Point<double>& handle_right = mkaul::Point{ -DEFAULT_HANDLE_XY, -DEFAULT_HANDLE_XY }
-		) noexcept : 
-			handle_left_{ handle_left }, handle_right_{ handle_right }
+			const mkaul::Point<double>& anchor_origin,
+			const mkaul::Point<double>& anchor_opposite,
+			const mkaul::Point<double>& handle = { 0., 0. }
+		) :
+			anchor_origin_{ anchor_origin },
+			anchor_opposite_{ anchor_opposite },
+			handle_{ handle },
+			x_range_limitter_{ anchor_origin, anchor_opposite },
+			length_locker_{ anchor_origin, anchor_opposite },
+			snapper_{ anchor_origin, anchor_opposite }
 		{}
 
-		void clear(double curve_width, double curve_height) noexcept {
-			handle_left_ = mkaul::Point{ DEFAULT_HANDLE_XY * curve_width, DEFAULT_HANDLE_XY * curve_height };
-			handle_right_ = mkaul::Point{ -DEFAULT_HANDLE_XY * curve_width, -DEFAULT_HANDLE_XY * curve_height };
+		void clear() noexcept {
+			handle_ = {
+				(anchor_opposite_.x - anchor_origin_.x) * DEFAULT_HANDLE_RATIO,
+				(anchor_opposite_.y - anchor_origin_.y) * DEFAULT_HANDLE_RATIO
+			};
 		}
 
-		[[nodiscard]] bool is_default(double curve_width, double curve_height) const noexcept;
-
-		void reverse() noexcept {
-			std::swap(handle_left_, handle_right_);
-			handle_left_ = -handle_left_;
-			handle_right_ = -handle_right_;
+		[[nodiscard]] bool is_default() const noexcept {
+			return mkaul::real_equal(handle_.x, (anchor_opposite_.x - anchor_origin_.x) * DEFAULT_HANDLE_RATIO) and
+				mkaul::real_equal(handle_.y, (anchor_opposite_.y - anchor_origin_.y) * DEFAULT_HANDLE_RATIO);
 		}
 
-		[[nodiscard]] const auto& left_offset() const noexcept { return handle_left_; }
-		[[nodiscard]] const auto& right_offset() const noexcept { return handle_right_; }
+		auto pos_abs() const noexcept { return anchor_origin_ + handle_; }
+		const auto& pos_rel() const noexcept { return handle_; }
 
-		void on_anchor_begin_move() noexcept;
-		void on_anchor_move(const mkaul::Point<double>& anchor_start, const mkaul::Point<double>& anchor_end) noexcept;
+		// TODO: 良くない
+		auto scale_x() const noexcept { return scale_x_; }
+		auto scale_y() const noexcept { return scale_y_; }
 
-		// ハンドルを移動する
-		void begin_move_handle_left(double scale_x, double scale_y, const mkaul::Point<double>* p_prev_handle_right = nullptr) noexcept;
-		void begin_move_handle_right(double scale_x, double scale_y, const mkaul::Point<double>* p_next_handle_left = nullptr) noexcept;
-		void move_handle_left(
-			const mkaul::Point<double>& pt,
-			const mkaul::Point<double>& anchor_start,
-			const mkaul::Point<double>& anchor_end,
-			bool keep_angle = false,
-			mkaul::Point<double>* p_prev_handle_right = nullptr
-		) noexcept;
-		void move_handle_right(
-			const mkaul::Point<double>& pt,
-			const mkaul::Point<double>& anchor_start,
-			const mkaul::Point<double>& anchor_end,
-			bool keep_angle = false,
-			mkaul::Point<double>* p_next_handle_left = nullptr
-		) noexcept;
+		void update_key_state() noexcept;
+
+		void lock_length() noexcept { length_locker_.lock(handle_); }
+		void unlock_length() noexcept { length_locker_.unlock(); }
+
+		void lock_tangent() noexcept { tangent_locker_.lock(handle_); }
+		void unlock_tangent() noexcept { tangent_locker_.unlock(); }
+
+		auto is_key_down_move_symmetrically() const noexcept { return ks_move_symmetrically_.is_key_down(); }
+		auto is_key_pressed_move_symmetrically() const noexcept { return ks_move_symmetrically_.is_key_pressed(); }
+		auto is_key_up_move_symmetrically() const noexcept { return ks_move_symmetrically_.is_key_up(); }
+
+		void begin_move(double scale_x, double scale_y, bool enable_key = false) noexcept {
+			scale_x_ = scale_x;
+			scale_y_ = scale_y;
+			length_locker_.set_scale(scale_x, scale_y);
+			length_locker_.unlock();
+			tangent_locker_.unlock();
+			snapper_.unsnap();
+			if (enable_key) {
+				update_key_state();
+			}
+		}
+
+		void move(const mkaul::Point<double>& pos_abs_, bool keep_angle = false, bool enable_key = false) noexcept { move_rel(pos_abs_ - anchor_origin_, keep_angle, enable_key); }
+		void move_rel(const mkaul::Point<double>& pos_rel_, bool keep_angle = false, bool enable_key = false) noexcept;
+
+		void end_move() noexcept {
+			tangent_locker_.unlock();
+			length_locker_.unlock();
+		}
 
 		template<class Archive>
 		void save(Archive& archive, const std::uint32_t) const {
-			archive(
-				handle_left_,
-				handle_right_
-			);
+			archive(handle_);
 		}
 
 		template<class Archive>
 		void load(Archive& archive, const std::uint32_t) {
-			archive(
-				handle_left_,
-				handle_right_
-			);
+			archive(handle_);
 		}
 	};
 } // namespace cved

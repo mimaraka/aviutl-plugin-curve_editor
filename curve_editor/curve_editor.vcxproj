@@ -273,6 +273,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClInclude Include="modifier_square_wave.hpp" />
     <ClInclude Include="message_box.hpp" />
     <ClInclude Include="modifier_noise.hpp" />
+    <ClInclude Include="position_converter.hpp" />
     <ClInclude Include="preferences.hpp" />
     <ClInclude Include="preset_manager.hpp" />
     <ClInclude Include="trackbar_button.hpp" />

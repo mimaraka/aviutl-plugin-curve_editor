@@ -63,6 +63,18 @@ namespace cved {
 		}
 	}
 
+	void GraphCurve::end_move_anchor_start(bool bound) noexcept {
+		if (!bound and prev_) {
+			prev_->end_move_anchor_end(true);
+		}
+	}
+
+	void GraphCurve::end_move_anchor_end(bool bound) noexcept {
+		if (!bound and next_) {
+			next_->end_move_anchor_start(true);
+		}
+	}
+
 	Modifier* GraphCurve::get_modifier(size_t idx) const noexcept {
 		if (idx < modifiers_.size()) {
 			return modifiers_[idx].get();
