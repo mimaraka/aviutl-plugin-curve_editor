@@ -4,8 +4,7 @@
 
 
 
-namespace cved {
-	namespace global {
+namespace cved::global {
 		// 文字列テーブルの読み込み
 		StringTable::StringTable() noexcept {
 			// TODO: ロケールの設定
@@ -490,5 +489,4 @@ namespace cved {
 			}
 			return string_data[(size_t)str_id].c_str();
 		}
-	} // namespace global
-} // namespace cved
+} // namespace cved::global

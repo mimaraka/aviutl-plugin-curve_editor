@@ -7,43 +7,41 @@
 
 
 
-namespace cved {
-	namespace global {
-		inline class CurveEditor {
-		private:
-			GraphCurveEditor editor_graph_;
-			ScriptCurveEditor editor_script_;
+namespace cved::global {
+	inline class CurveEditor {
+	private:
+		GraphCurveEditor editor_graph_;
+		ScriptCurveEditor editor_script_;
 
-		public:
-			CurveEditor() {}
+	public:
+		CurveEditor() {}
 
-			int32_t track_param() noexcept;
-			Curve* current_curve() noexcept;
-			size_t current_idx() noexcept;
-			bool set_idx(size_t idx) noexcept;
-			bool advance_idx(int n) noexcept;
-			void jump_to_last_idx() noexcept;
-			bool is_idx_first() noexcept { return current_idx() == 0u; }
-			bool is_idx_last() noexcept;
-			void pop_idx() noexcept;
-			void reset_id_curves() noexcept;
+		int32_t track_param() noexcept;
+		Curve* current_curve() noexcept;
+		size_t current_idx() noexcept;
+		bool set_idx(size_t idx) noexcept;
+		bool advance_idx(int n) noexcept;
+		void jump_to_last_idx() noexcept;
+		bool is_idx_first() noexcept { return current_idx() == 0u; }
+		bool is_idx_last() noexcept;
+		void pop_idx() noexcept;
+		void reset_id_curves() noexcept;
 
-			static EditMode get_mode(const std::string& type_name) noexcept;
+		static EditMode get_mode(const std::string& type_name) noexcept;
 
-			auto& editor_graph() noexcept { return editor_graph_; }
-			auto& editor_script() noexcept { return editor_script_; }
+		auto& editor_graph() noexcept { return editor_graph_; }
+		auto& editor_script() noexcept { return editor_script_; }
 
-			Curve* get_curve(EditMode mode) noexcept;
+		Curve* get_curve(EditMode mode) noexcept;
 
-			template <class Archive>
-			void serialize(Archive& archive, const std::uint32_t) {
-				archive(
-					editor_graph_,
-					editor_script_
-				);
-			}
-		} editor;
-	} // namespace global
-} // namespace cved
+		template <class Archive>
+		void serialize(Archive& archive, const std::uint32_t) {
+			archive(
+				editor_graph_,
+				editor_script_
+			);
+		}
+	} editor;
+} // namespace cved::global
 
 CEREAL_CLASS_VERSION(cved::global::CurveEditor, 0)

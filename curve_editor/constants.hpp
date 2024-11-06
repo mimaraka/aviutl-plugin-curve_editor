@@ -4,8 +4,7 @@
 
 
 
-namespace cved {
-	namespace global {
+namespace cved::global {
 		inline constexpr size_t CURVE_ID_MAX = 524288u;
 
 		inline constexpr auto CURVE_NAME_NORMAL = "normal";
@@ -31,5 +30,4 @@ namespace cved {
 		inline constexpr auto PLUGIN_DEVELOPER = "mimaraka";
 		inline constexpr auto PLUGIN_TRANSLATOR = "Deepdive";
 		inline constexpr auto PLUGIN_GITHUB_URL = "https://github.com/mimaraka/aviutl-plugin-curve_editor";
-	} // namespace global
 } // namespace cved

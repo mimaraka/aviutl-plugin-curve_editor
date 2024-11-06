@@ -5,8 +5,7 @@
 
 
 
-namespace cved {
-	namespace global {
+namespace cved::global {
 		inline class StringTable {
 		public:
 			enum class StringId : size_t {
@@ -136,5 +135,4 @@ namespace cved {
 			
 			const char* operator[] (StringId str_id);
 		} string_table;
-	} // namespace global
-} // namespace cved
+} // namespace cved::global
