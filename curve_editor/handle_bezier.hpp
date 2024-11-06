@@ -83,4 +83,4 @@ namespace cved {
 			);
 		}
 	};
-}
+} // namespace cved

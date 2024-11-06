@@ -242,4 +242,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-}
+} // namespace cved

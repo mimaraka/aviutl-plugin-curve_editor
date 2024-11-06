@@ -6,4 +6,4 @@
 
 namespace cved {
 	BOOL filter_init(AviUtl::FilterPlugin* fp);
-}
+} // namespace cved

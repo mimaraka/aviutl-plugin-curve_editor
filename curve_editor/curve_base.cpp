@@ -27,4 +27,4 @@ namespace cved {
 		data["type"] = get_name();
 		return data;
 	}
-}
+} // namespace cved

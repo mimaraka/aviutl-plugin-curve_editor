@@ -85,7 +85,7 @@ namespace cved {
 			);
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::BezierCurve, 0)
 CEREAL_REGISTER_TYPE(cved::BezierCurve)

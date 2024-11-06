@@ -40,4 +40,4 @@ namespace cved {
 			return p_inst->dialog_proc(hwnd, message, wparam, lparam);
 		}
 	}
-}
+} // namespace cved

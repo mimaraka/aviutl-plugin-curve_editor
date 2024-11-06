@@ -24,4 +24,4 @@ namespace cved {
 		catch (const nlohmann::json::exception&) {}
 		return false;
 	}
-}
+} // namespace cved

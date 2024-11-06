@@ -44,7 +44,7 @@ namespace cved {
 			);
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::LinearCurve, 0)
 CEREAL_REGISTER_TYPE(cved::LinearCurve)

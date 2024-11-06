@@ -149,5 +149,5 @@ namespace cved {
 			bool load_json();
 			bool save_json();
 		} config;
-	}
-}
+	} // namespace global
+} // namespace cved

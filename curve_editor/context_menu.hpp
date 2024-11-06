@@ -25,4 +25,4 @@ namespace cved {
 			const mkaul::Point<LONG>* p_custom_pt_screen = nullptr
 		) noexcept;
 	};
-}
+} // namespace cved

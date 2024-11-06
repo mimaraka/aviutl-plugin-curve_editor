@@ -36,4 +36,4 @@ namespace cved {
 			return ::MessageBoxA(hwnd, text, caption, (UINT)icon_type | (UINT)button_type);
 		}
 	}
-}
+} // namespace cved

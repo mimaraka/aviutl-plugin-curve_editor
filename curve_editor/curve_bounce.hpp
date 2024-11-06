@@ -75,7 +75,7 @@ namespace cved {
 			);
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::BounceCurve, 0)
 CEREAL_REGISTER_TYPE(cved::BounceCurve)

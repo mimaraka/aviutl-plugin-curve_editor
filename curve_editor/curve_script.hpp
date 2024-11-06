@@ -46,7 +46,7 @@ namespace cved {
 			archive(script_);
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::ScriptCurve, 0);
 CEREAL_REGISTER_TYPE(cved::ScriptCurve)

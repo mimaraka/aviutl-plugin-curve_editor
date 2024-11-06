@@ -68,4 +68,4 @@ namespace cved {
 		bool callback(uint32_t id) const noexcept;
 		void get_menu_item_info(MENUITEMINFOA& minfo, uint32_t id) noexcept;
 	};
-}
+} // namespace cved

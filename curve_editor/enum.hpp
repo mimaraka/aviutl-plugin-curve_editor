@@ -80,4 +80,4 @@ namespace cved {
 		English,
 		Korean
 	};
-}
+} // namespace cved

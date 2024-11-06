@@ -490,5 +490,5 @@ namespace cved {
 			}
 			return string_data[(size_t)str_id].c_str();
 		}
-	}
-}
+	} // namespace global
+} // namespace cved

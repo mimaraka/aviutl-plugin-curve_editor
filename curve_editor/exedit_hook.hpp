@@ -20,4 +20,4 @@ namespace cved {
 			bool hook_anm_param_dialog_proc();
 		} exedit_hook;
 	}
-}
+} // namespace cved

@@ -31,5 +31,5 @@ namespace cved {
 		inline constexpr auto PLUGIN_DEVELOPER = "mimaraka";
 		inline constexpr auto PLUGIN_TRANSLATOR = "Deepdive";
 		inline constexpr auto PLUGIN_GITHUB_URL = "https://github.com/mimaraka/aviutl-plugin-curve_editor";
-	}
-}
+	} // namespace global
+} // namespace cved

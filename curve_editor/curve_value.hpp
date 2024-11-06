@@ -34,4 +34,4 @@ namespace cved {
 		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 	};
-}
+} // namespace cved

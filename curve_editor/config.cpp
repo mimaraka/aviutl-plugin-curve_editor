@@ -216,5 +216,5 @@ namespace cved {
 		}
 
 #undef GET_KEY
-	}
-}
+	} // namespace global
+} // namespace cved

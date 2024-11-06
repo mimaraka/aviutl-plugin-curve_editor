@@ -43,7 +43,7 @@ namespace cved {
 				}
 			}
 		};
-	}
-}
+	} // namespace global
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::global::ScriptCurveEditor, 0);

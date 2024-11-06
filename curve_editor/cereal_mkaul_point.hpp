@@ -14,4 +14,4 @@ namespace cereal {
 	void load(Archive& archive, mkaul::Point<double>& pt) {
 		archive(pt.x, pt.y);
 	}
-}
+} // namespace cereal

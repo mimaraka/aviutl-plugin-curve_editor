@@ -163,4 +163,4 @@ namespace cved {
 			}
 		}
 	}
-}
+} // namespace cved

@@ -32,4 +32,4 @@ namespace cved {
 			on_submit_{ on_submit }
 		{}
 	};
-}
+} // namespace cved

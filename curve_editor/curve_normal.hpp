@@ -86,7 +86,7 @@ namespace cved {
 			}
 		}
 	};
-}
+} // namespace cved
 
 CEREAL_CLASS_VERSION(cved::NormalCurve, 0)
 CEREAL_REGISTER_TYPE(cved::NormalCurve)

@@ -41,4 +41,4 @@ namespace cved {
 			return ret;
 		}
 	}
-}
+} // namespace cved

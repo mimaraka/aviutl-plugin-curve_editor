@@ -136,5 +136,5 @@ namespace cved {
 			
 			const char* operator[] (StringId str_id);
 		} string_table;
-	}
-}
+	} // namespace global
+} // namespace cved

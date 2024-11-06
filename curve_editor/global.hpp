@@ -9,5 +9,5 @@
 namespace cved {
 	namespace global {
 		inline mkaul::exedit::Internal exedit_internal;
-	}
-}
+	} // namespace global
+} // namespace cved

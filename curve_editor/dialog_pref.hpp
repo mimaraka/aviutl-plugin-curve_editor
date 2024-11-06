@@ -40,4 +40,4 @@ namespace cved {
 	public:
 		PrefDialog();
 	};
-}
+} // namespace cved

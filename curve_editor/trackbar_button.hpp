@@ -22,4 +22,4 @@ namespace cved {
 		void highlight(ID2D1DCRenderTarget* p_render_target) const noexcept;
 		void unhighlight() const noexcept;
 	};
-}
+} // namespace cved
