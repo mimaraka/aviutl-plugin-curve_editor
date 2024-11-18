@@ -13,6 +13,8 @@ namespace cved {
 		// まずサイズの取得のためにdataがNULLで呼び出される
 		// ここでカーブのデータを作成しておく
 		if (!data) {
+			oss.str("");
+			oss.clear(std::stringstream::goodbit);
 			cereal::BinaryOutputArchive archive(oss);
 			archive(global::editor);
 			*size = static_cast<int32_t>(oss.str().size());
