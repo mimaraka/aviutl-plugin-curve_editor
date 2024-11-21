@@ -3,8 +3,7 @@
 #include "host_object_curve_elastic.hpp"
 
 
-
-namespace cved {
+namespace curve_editor {
 	uint32_t ElasticCurveHostObject::get_id(bool is_select_dialog) {
 		static ElasticCurve curve_tmp{
 			mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}
@@ -82,4 +81,4 @@ namespace cved {
 		}
 		return curve->create_params_str();
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	std::string PresetHostObject::get_presets_as_json() {
 		auto data = nlohmann::json::array();
 		for (const auto& preset_info : global::preset_manager.get_preset_info()) {
@@ -27,4 +27,4 @@ namespace cved {
 		}
 		return ::utf8_to_sjis(data.dump());
 	}
-} // namespace cved
+} // namespace curve_editor

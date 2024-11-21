@@ -9,7 +9,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	PresetManager::PresetManager() noexcept :
 		collection_info_{
 			{COLLECTION_ID_ALL, string_table[StringTable::StringId::LabelCollectionNameAll]},
@@ -329,4 +329,4 @@ namespace cved::global {
 		}
 		return info;
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

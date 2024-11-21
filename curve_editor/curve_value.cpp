@@ -1,7 +1,7 @@
 #include "curve_value.hpp"
 
 
-namespace cved {
+namespace curve_editor {
 	ValueCurve::ValueCurve(
 		const mkaul::Point<double>& anchor_start,
 		const mkaul::Point<double>& anchor_end
@@ -52,4 +52,4 @@ namespace cved {
 	{
 		return GraphCurve::load_json(data);
 	}
-} // namespace cved
+} // namespace curve_editor

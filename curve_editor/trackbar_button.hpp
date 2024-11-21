@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class TrackbarButton {
 		int track_idx_ = 0;
 		HWND hwnd_ = NULL;
@@ -22,4 +22,4 @@ namespace cved {
 		void highlight(ID2D1DCRenderTarget* p_render_target) const noexcept;
 		void unhighlight() const noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

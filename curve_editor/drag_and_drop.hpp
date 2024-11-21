@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class DragAndDrop {
 		ID2D1Factory* p_factory_ = nullptr;
 		ID2D1DCRenderTarget* p_render_target_ = nullptr;
@@ -30,4 +30,4 @@ namespace cved {
 		bool drop() noexcept;
 		void update() noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

@@ -8,7 +8,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int BehaviorPrefDialog::resource_id() const noexcept { return IDD_PREF_BEHAVIOR; }
 
 	void BehaviorPrefDialog::init_controls(HWND hwnd) noexcept {
@@ -54,4 +54,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

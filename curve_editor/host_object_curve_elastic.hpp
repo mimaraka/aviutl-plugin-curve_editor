@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class ElasticCurveHostObject : public GraphCurveHostObject {
 		static std::vector<double> get_handle_amp_left(uint32_t id);
 		static void set_handle_amp_left(uint32_t id, double y);
@@ -29,4 +29,4 @@ namespace cved {
 			register_member(L"getParam", DispatchType::Method, get_param);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

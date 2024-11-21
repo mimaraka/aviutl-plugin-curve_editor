@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	NormalCurve::NormalCurve(
 		const mkaul::Point<double>& anchor_start,
 		const mkaul::Point<double>& anchor_end
@@ -473,4 +473,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

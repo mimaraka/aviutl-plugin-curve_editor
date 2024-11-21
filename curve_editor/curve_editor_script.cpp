@@ -2,7 +2,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	ScriptCurveEditor::ScriptCurveEditor() :
 		curves_script_{ ScriptCurve{} },
 		idx_{ 0u }
@@ -48,4 +48,4 @@ namespace cved::global {
 			}
 		}
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

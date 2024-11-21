@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	HWND Dialog::create(HWND hwnd, LPARAM init_param) noexcept {
 		init_param_ = init_param;
 		return ::CreateDialogParamA(
@@ -40,4 +40,4 @@ namespace cved {
 			return p_inst->dialog_proc(hwnd, message, wparam, lparam);
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

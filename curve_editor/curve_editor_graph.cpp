@@ -4,7 +4,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	GraphCurveEditor::GraphCurveEditor() :
 		curves_normal_{},
 		curves_value_{},
@@ -182,4 +182,4 @@ namespace cved::global {
 		idx_normal_ = 0;
 		return true;
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

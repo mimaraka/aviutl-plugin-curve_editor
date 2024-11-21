@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	bool MenuItem::callback(uint32_t id) const noexcept {
 		// サブメニューを持つ場合
 		if (!sub_menu_items_.empty()) {
@@ -48,4 +48,4 @@ namespace cved {
 			}
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

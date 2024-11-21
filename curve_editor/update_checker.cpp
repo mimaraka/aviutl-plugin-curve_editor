@@ -4,8 +4,7 @@
 #include <strconv2.h>
 
 
-
-namespace cved::global {
+namespace curve_editor::global {
 	bool UpdateChecker::fetch_latest_version() {
 		mkaul::http::Client client;
 		client.open("https://api.github.com/repos/mimaraka/aviutl-plugin-curve_editor/releases/latest");
@@ -34,4 +33,4 @@ namespace cved::global {
 			}
 		} };
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	std::vector<uint32_t> NormalCurveHostObject::get_id_array(uint32_t id) {
 		auto curve = global::id_manager.get_curve<NormalCurve>(id);
 		if (!curve) {
@@ -31,4 +31,4 @@ namespace cved {
 		}
 		curve->delete_curve(segment_id);
 	}
-} // namespace cved
+} // namespace curve_editor

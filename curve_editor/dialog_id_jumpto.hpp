@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class IdJumptoDialog : public Dialog {
 		HWND hwnd_edit_ = NULL;
 		HWND hwnd_list_ = NULL;
@@ -16,4 +16,4 @@ namespace cved {
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd) noexcept override;
 	};
-} // namespace cved
+} // namespace curve_editor

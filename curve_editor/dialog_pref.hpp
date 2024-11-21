@@ -9,7 +9,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class PrefDialog : public Dialog {
 		static constexpr int ID_CATEGORY_GENERAL = 0x8000;
 		static constexpr int ID_CATEGORY_APPEARANCE = 0x8001;
@@ -40,4 +40,4 @@ namespace cved {
 	public:
 		PrefDialog();
 	};
-} // namespace cved
+} // namespace curve_editor

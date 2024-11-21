@@ -16,7 +16,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// AviUtl起動時の処理
 	BOOL filter_init(AviUtl::FilterPlugin* fp) {
 		using StringId = global::StringTable::StringId;
@@ -93,4 +93,4 @@ namespace cved {
 
 		return TRUE;
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -6,8 +6,7 @@
 #include "window_select_curve.hpp"
 
 
-
-namespace cved {
+namespace curve_editor {
 	LRESULT CALLBACK SelectCurveWindow::wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 		using WebViewType = global::MyWebView2Reference::WebViewType;
 		
@@ -100,4 +99,4 @@ namespace cved {
 			const_cast<ModeParamPair*>(mode_param)
 		);
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -7,7 +7,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	Config::Config() noexcept :
 		edit_mode_{ EditMode::Normal },
 		layout_mode_{ LayoutMode::Horizontal },
@@ -215,4 +215,4 @@ namespace cved::global {
 	}
 
 #undef GET_KEY
-} // namespace cved::global
+} // namespace curve_editor::global

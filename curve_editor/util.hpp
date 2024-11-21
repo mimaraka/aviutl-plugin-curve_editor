@@ -6,6 +6,6 @@
 
 
 
-namespace cved::util {
+namespace curve_editor::util {
 	bool copy_to_clipboard(HWND hwnd, const char* str) noexcept;
-} // namespace cved::util
+} // namespace curve_editor::util

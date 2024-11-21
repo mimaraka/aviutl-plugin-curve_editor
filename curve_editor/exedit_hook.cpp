@@ -10,7 +10,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	// アニメーションパラメータダイアログのウィンドウプロシージャのフック
 	bool ExeditHook::hook_anm_param_dialog_proc() {
 		if (global::exedit_internal.base_address()) {
@@ -87,4 +87,4 @@ namespace cved::global {
 		}
 		return anm_param_dialog_proc_orig(hwnd, message, wparam, lparam);
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

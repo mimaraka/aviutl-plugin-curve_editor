@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	const std::string& ScriptEditorHostObject::get_script(uint32_t id) {
 		auto curve = global::id_manager.get_curve<ScriptCurve>(id);
 		if (!curve) {
@@ -20,4 +20,4 @@ namespace cved {
 		}
 		curve->set_script(script);
 	}
-} // namespace cved
+} // namespace curve_editor

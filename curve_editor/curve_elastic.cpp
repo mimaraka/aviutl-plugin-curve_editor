@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// コンストラクタ
 	ElasticCurve::ElasticCurve(
 		const mkaul::Point<double>& anchor_start,
@@ -291,4 +291,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

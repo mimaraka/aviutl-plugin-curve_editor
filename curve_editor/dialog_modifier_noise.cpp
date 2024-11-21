@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int NoiseModifierDialog::resource_id() const noexcept { return IDD_MODIFIER_NOISE; }
 
 
@@ -137,4 +137,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

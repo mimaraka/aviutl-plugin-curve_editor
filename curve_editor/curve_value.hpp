@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(数値指定)
 	class ValueCurve : public GraphCurve {
 		std::vector<std::unique_ptr<GraphCurve>> curve_segments_;
@@ -34,4 +34,4 @@ namespace cved {
 		[[nodiscard]] nlohmann::json create_json() const noexcept override;
 		bool load_json(const nlohmann::json& data) noexcept override;
 	};
-} // namespace cved
+} // namespace curve_editor

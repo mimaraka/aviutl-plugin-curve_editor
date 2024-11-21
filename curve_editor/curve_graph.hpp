@@ -10,7 +10,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(グラフ)
 	class GraphCurve : public Curve {
 		GraphCurve* prev_;
@@ -118,8 +118,8 @@ namespace cved {
 			}
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::GraphCurve, 0)
-CEREAL_REGISTER_TYPE(cved::GraphCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Curve, cved::GraphCurve)
+CEREAL_CLASS_VERSION(curve_editor::GraphCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::GraphCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::Curve, curve_editor::GraphCurve)

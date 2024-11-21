@@ -6,6 +6,6 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline mkaul::exedit::Internal exedit_internal;
-} // namespace cved::global
+} // namespace curve_editor::global

@@ -9,7 +9,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(標準)
 	class NormalCurve : public GraphCurve {
 		std::vector<std::unique_ptr<GraphCurve>> curve_segments_;
@@ -88,8 +88,8 @@ namespace cved {
 			}
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::NormalCurve, 0)
-CEREAL_REGISTER_TYPE(cved::NormalCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::NormalCurve)
+CEREAL_CLASS_VERSION(curve_editor::NormalCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::NormalCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::GraphCurve, curve_editor::NormalCurve)

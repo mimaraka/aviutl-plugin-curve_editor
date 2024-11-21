@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	std::vector<double> GraphEditorHostObject::get_curve_value_array(uint32_t id, double start_x, double start_y, double end_x, double end_y, size_t n) {
 		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) {
@@ -32,4 +32,4 @@ namespace cved {
 		}
 		return result;
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -5,7 +5,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class PresetManager {
 		static constexpr uint32_t COLLECTION_ID_ALL = 0;
 		static constexpr uint32_t COLLECTION_ID_DEFAULT = 1;
@@ -59,4 +59,4 @@ namespace cved::global {
 		bool load_json() noexcept;
 		bool save_json() const noexcept;
 	} preset_manager;
-} // namespace cved::global
+} // namespace curve_editor::global

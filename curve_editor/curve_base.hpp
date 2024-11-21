@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(抽象クラス)
 	class Curve {
 		bool locked_;
@@ -53,6 +53,6 @@ namespace cved {
 			archive(locked_);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::Curve, 0)
+CEREAL_CLASS_VERSION(curve_editor::Curve, 0)

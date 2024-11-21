@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class ConfigHostObject : public mkaul::ole::HostObject {
 		static std::wstring get_curve_color();
 
@@ -40,4 +40,4 @@ namespace cved {
 			register_member(L"presetSize", DispatchType::PropertyPut, +[](int preset_size) { global::config.set_preset_size(preset_size); });
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

@@ -7,8 +7,7 @@
 #include <lua.hpp>
 
 
-
-namespace cved {
+namespace curve_editor {
 	// カーブの値を取得
 	int get_curve(::lua_State* L) {
 		// mode:		編集モード(数値または文字列)
@@ -177,7 +176,7 @@ namespace cved {
 
 
 	int get_version_str(::lua_State* L) {
-		lua_pushstring(L, cved::global::PLUGIN_VERSION.str().c_str());
+		lua_pushstring(L, global::PLUGIN_VERSION.str().c_str());
 		return 1;
 	}
 
@@ -234,18 +233,18 @@ namespace cved {
 		}
 		return 1;
 	}
-} // namespace cved
+} // namespace curve_editor
 
 
 extern "C" __declspec(dllexport) int luaopen_curve_editor(::lua_State* L) {
 	static ::luaL_Reg functions[] = {
-		{ "getcurve", cved::get_curve },
-		{ "geteditmode", cved::get_edit_mode },
-		{ "getversionstr", cved::get_version_str },
-		{ "putselectbutton", cved::put_select_button},
+		{ "getcurve", curve_editor::get_curve },
+		{ "geteditmode", curve_editor::get_edit_mode },
+		{ "getversionstr", curve_editor::get_version_str },
+		{ "putselectbutton", curve_editor::put_select_button},
 		{ nullptr, nullptr }
 	};
 
-	::luaL_register(L, "curve_editor", functions);
+	::luaL_register(L, curve_editor::global::PLUGIN_NAME, functions);
 	return 1;
 }

@@ -3,7 +3,7 @@
 #include <mkaul/point.hpp>
 
 
-namespace cved {
+namespace curve_editor {
 	class PositionConverter {
 	public:
 		virtual void apply(mkaul::Point<double>& pos_rel) const noexcept = 0;
@@ -137,4 +137,4 @@ namespace cved {
 		}
 		void unsnap() noexcept { stap_state_ = SnapState::UnSnapped; }
 	};
-} // namespace cved
+} // namespace curve_editor

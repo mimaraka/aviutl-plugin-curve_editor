@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int AutosaverWarningDialog::resource_id() const noexcept { return IDD_WARNING_AUTOSAVER; }
 
 	void AutosaverWarningDialog::init_controls(HWND hwnd) noexcept {
@@ -50,4 +50,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

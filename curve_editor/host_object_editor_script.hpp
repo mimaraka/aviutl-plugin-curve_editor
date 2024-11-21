@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class ScriptEditorHostObject : public mkaul::ole::HostObject {
 		static const std::string& get_script(uint32_t id);
 		static void set_script(uint32_t id, std::string script);
@@ -25,4 +25,4 @@ namespace cved {
 			register_member(L"isIdxMax", DispatchType::PropertyGet, +[] { return global::editor.editor_script().is_idx_max(); });
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

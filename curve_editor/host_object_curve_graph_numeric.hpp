@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class NumericGraphCurveHostObject : public GraphCurveHostObject {
 		static int32_t encode(uint32_t id);
 		static bool decode(uint32_t id, int32_t code);
@@ -15,4 +15,4 @@ namespace cved {
 			register_member(L"decode", DispatchType::Method, decode);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

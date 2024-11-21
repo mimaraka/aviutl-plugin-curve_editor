@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class EditorHostObject : public mkaul::ole::HostObject {
 		static std::wstring get_curve_name(uint32_t id);
 		static std::wstring get_curve_disp_name(uint32_t id);
@@ -24,4 +24,4 @@ namespace cved {
 			register_member(L"script", DispatchType::PropertyGet, create_host_object<ScriptEditorHostObject>);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

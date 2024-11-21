@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	uint32_t BezierCurveHostObject::get_id(bool is_select_dialog) {
 		static BezierCurve curve_tmp;
 		uint32_t id;
@@ -96,4 +96,4 @@ namespace cved {
 		}
 		return curve->create_params_str();
 	}
-} // namespace cved
+} // namespace curve_editor

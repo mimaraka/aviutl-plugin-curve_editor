@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(直線)
 	class LinearCurve : public GraphCurve {
 	public:
@@ -44,8 +44,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::LinearCurve, 0)
-CEREAL_REGISTER_TYPE(cved::LinearCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::LinearCurve)
+CEREAL_CLASS_VERSION(curve_editor::LinearCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::LinearCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::GraphCurve, curve_editor::LinearCurve)

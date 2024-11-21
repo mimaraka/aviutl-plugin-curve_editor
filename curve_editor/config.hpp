@@ -9,7 +9,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class Config {
 	private:
 		static constexpr char CONFIG_FILE_NAME[] = "config.json";
@@ -148,4 +148,4 @@ namespace cved::global {
 		bool load_json();
 		bool save_json();
 	} config;
-} // namespace cved::global
+} // namespace curve_editor::global

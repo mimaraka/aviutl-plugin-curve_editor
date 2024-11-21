@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class ModifierDialog : public Dialog {
 		HWND hwnd_list_modifier_ = NULL;
 		HWND hwnd_button_add_ = NULL;
@@ -67,4 +67,4 @@ namespace cved {
 			save_prev_modifier<Tail...>(p_modifier, modifiers_prev);
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -9,7 +9,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	using CurveFunction = std::function<double(double, double, double)>;
 	class GraphCurve;
 
@@ -63,6 +63,6 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::Modifier, 0)
+CEREAL_CLASS_VERSION(curve_editor::Modifier, 0)

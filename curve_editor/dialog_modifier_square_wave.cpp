@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int SquareWaveModifierDialog::resource_id() const noexcept { return IDD_MODIFIER_SQUARE_WAVE; }
 
 	void SquareWaveModifierDialog::init_controls(HWND hwnd, const SquareWaveModifier* p_mod_square_wave) noexcept {
@@ -89,4 +89,4 @@ namespace cved {
 
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

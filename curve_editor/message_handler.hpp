@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	enum class MessageCommand {
 		InitComponent,
 		ButtonCopy,
@@ -106,4 +106,4 @@ namespace cved {
 		bool handle_message(const nlohmann::json& message);
 		void send_command(MessageCommand command, const nlohmann::json& options = nlohmann::json::object());
 	};
-} // namespace cved
+} // namespace curve_editor

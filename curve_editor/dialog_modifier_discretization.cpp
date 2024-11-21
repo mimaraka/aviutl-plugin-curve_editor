@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int DiscretizationModifierDialog::resource_id() const noexcept { return IDD_MODIFIER_DISCRETIZATION; }
 
 
@@ -76,4 +76,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

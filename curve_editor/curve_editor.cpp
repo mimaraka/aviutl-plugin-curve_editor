@@ -4,7 +4,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	Curve* CurveEditor::current_curve() noexcept {
 		switch (global::config.get_edit_mode()) {
 		case EditMode::Normal:
@@ -161,4 +161,4 @@ namespace cved::global {
 			return 0;
 		}
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

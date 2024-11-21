@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class Preset {
     private:
 		std::unique_ptr<Curve> p_curve_;
@@ -34,4 +34,4 @@ namespace cved {
 		nlohmann::json create_json() const noexcept;
 		bool load_json(const nlohmann::json& data) noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

@@ -3,7 +3,7 @@
 
 
 
-namespace cved::util {
+namespace curve_editor::util {
 	void input_box(
 		HWND hwnd,
 		const char* prompt,
@@ -14,4 +14,4 @@ namespace cved::util {
 		InputDialog dialog{ prompt, caption, on_submit, default_text };
 		dialog.show(hwnd);
 	}
-} // namespace cved::util
+} // namespace curve_editor::util

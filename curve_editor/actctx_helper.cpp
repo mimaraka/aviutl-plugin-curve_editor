@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	bool ActCtxHelper::init() noexcept {
 		ACTCTXA actctx{
 			.cbSize = sizeof(ACTCTXA),
@@ -39,4 +39,4 @@ namespace cved {
 		if (hactctx_) ::ReleaseActCtx(hactctx_);
 		return ret;
 	}
-} // namespace cved
+} // namespace curve_editor

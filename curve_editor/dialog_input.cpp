@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int InputDialog::resource_id() const noexcept { return IDD_INPUT; }
 
 	INT_PTR InputDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
@@ -48,4 +48,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	BOOL filter_project_save(AviUtl::FilterPlugin*, AviUtl::EditHandle*, void* data, int32_t* size) {		
 		static std::ostringstream oss;
 
@@ -26,4 +26,4 @@ namespace cved {
 
 		return TRUE;
 	}
-} // namespace cved
+} // namespace curve_editor

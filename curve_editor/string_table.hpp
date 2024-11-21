@@ -5,7 +5,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class StringTable {
 	public:
 		enum class StringId : size_t {
@@ -136,4 +136,4 @@ namespace cved::global {
 
 		const char* operator[] (StringId str_id);
 	} string_table;
-} // namespace cved::global
+} // namespace curve_editor::global

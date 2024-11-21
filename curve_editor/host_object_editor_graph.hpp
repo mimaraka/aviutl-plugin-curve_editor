@@ -12,7 +12,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class GraphEditorHostObject : public mkaul::ole::HostObject {
 		static std::vector<double> get_curve_value_array(uint32_t id, double start_x, double start_y, double end_x, double end_y, size_t n);
 		static std::vector<double> get_curve_velocity_array(uint32_t id, double start_x, double start_y, double end_x, double end_y, size_t n);
@@ -36,4 +36,4 @@ namespace cved {
 			register_member(L"normal", DispatchType::PropertyGet, create_host_object<NormalCurveHostObject>);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

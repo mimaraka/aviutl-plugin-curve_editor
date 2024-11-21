@@ -4,14 +4,14 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	double ScriptCurve::curve_function(double t, double st, double ed) const noexcept {
 		auto my_panic = [](sol::optional<std::string> optional_message) {
 			if (optional_message) {
-				std::cout << std::format("\033[31m[{}] An error occurred: {}\033[m", global::PLUGIN_NAME, optional_message.value()) << std::endl;
+				std::cout << std::format("\033[31m[{}] An error occurred: {}\033[m", global::PLUGIN_DISPLAY_NAME, optional_message.value()) << std::endl;
 			}
 			else {
-				std::cout << std::format("\033[31m[{}] An unknown error occurred.\033[m", global::PLUGIN_NAME) << std::endl;
+				std::cout << std::format("\033[31m[{}] An unknown error occurred.\033[m", global::PLUGIN_DISPLAY_NAME) << std::endl;
 			}
 		};
 		sol::state lua{sol::c_call<decltype(+my_panic), +my_panic>};
@@ -66,4 +66,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

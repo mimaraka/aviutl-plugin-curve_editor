@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// コンストラクタ
 	BounceCurve::BounceCurve(
 		const mkaul::Point<double>& anchor_start,
@@ -206,4 +206,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

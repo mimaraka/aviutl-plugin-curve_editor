@@ -8,7 +8,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	class GraphCurveEditor {
 	private:
 		std::vector<NormalCurve> curves_normal_;
@@ -86,6 +86,6 @@ namespace cved::global {
 			}
 		}
 	};
-} // namespace cved::global
+} // namespace curve_editor::global
 
-CEREAL_CLASS_VERSION(cved::global::GraphCurveEditor, 0)
+CEREAL_CLASS_VERSION(curve_editor::global::GraphCurveEditor, 0)

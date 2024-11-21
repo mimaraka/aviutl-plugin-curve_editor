@@ -5,7 +5,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class ExeditHook {
 	private:
 		static constexpr uint32_t OFFSET_ANM_PARAM_DIALOG_PROC = 0x3455;
@@ -18,4 +18,4 @@ namespace cved::global {
 	public:
 		bool hook_anm_param_dialog_proc();
 	} exedit_hook;
-} // namespace cved::global
+} // namespace curve_editor::global

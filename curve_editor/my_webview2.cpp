@@ -12,7 +12,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	bool MyWebView2::init(HWND hwnd, std::function<void(MyWebView2*)> after_callback) {
 		using StringId = global::StringTable::StringId;
 
@@ -188,4 +188,4 @@ namespace cved {
 			profile->put_PreferredColorScheme(color_scheme);
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

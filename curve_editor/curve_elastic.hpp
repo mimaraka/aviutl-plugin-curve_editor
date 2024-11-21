@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(振動)
 	class ElasticCurve : public NumericGraphCurve {
 		static constexpr double DEFAULT_AMP = 1.;
@@ -87,8 +87,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::ElasticCurve, 0)
-CEREAL_REGISTER_TYPE(cved::ElasticCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::NumericGraphCurve, cved::ElasticCurve)
+CEREAL_CLASS_VERSION(curve_editor::ElasticCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::ElasticCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::NumericGraphCurve, curve_editor::ElasticCurve)

@@ -8,7 +8,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int IdJumptoDialog::resource_id() const noexcept { return IDD_ID_JUMPTO; }
 
 
@@ -42,4 +42,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -9,7 +9,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(スクリプト)
 	class ScriptCurve : public Curve {
 		static constexpr auto DEFAULT_SCRIPT = "return (ed - st) * t + st";
@@ -49,8 +49,8 @@ namespace cved {
 			archive(cereal::base_class<Curve>(this), script_);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::ScriptCurve, 0);
-CEREAL_REGISTER_TYPE(cved::ScriptCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Curve, cved::ScriptCurve)
+CEREAL_CLASS_VERSION(curve_editor::ScriptCurve, 0);
+CEREAL_REGISTER_TYPE(curve_editor::ScriptCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::Curve, curve_editor::ScriptCurve)

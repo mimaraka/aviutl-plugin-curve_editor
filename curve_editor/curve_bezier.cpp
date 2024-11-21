@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// コンストラクタ
 	BezierCurve::BezierCurve(
 		const mkaul::Point<double>& _anchor_start,
@@ -436,4 +436,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

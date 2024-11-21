@@ -23,8 +23,7 @@
 #include <string_view>
 
 
-
-namespace cved {
+namespace curve_editor {
 	using StringId = global::StringTable::StringId;
 	constexpr auto EXT_COLLECTION = "cecl";
 
@@ -992,4 +991,4 @@ namespace cved {
 			}
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

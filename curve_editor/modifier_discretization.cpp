@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	DiscretizationModifier::DiscretizationModifier(
 		uint32_t sampling_resolution,
 		uint32_t quantization_resolution
@@ -53,4 +53,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

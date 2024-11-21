@@ -6,7 +6,7 @@
 #include "string_table.hpp"
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(ベジェ)
 	class BezierCurve : public NumericGraphCurve {
 		BezierHandle handle_left_;
@@ -104,8 +104,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::BezierCurve, 0)
-CEREAL_REGISTER_TYPE(cved::BezierCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::NumericGraphCurve, cved::BezierCurve)
+CEREAL_CLASS_VERSION(curve_editor::BezierCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::BezierCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::NumericGraphCurve, curve_editor::BezierCurve)

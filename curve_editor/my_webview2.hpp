@@ -12,7 +12,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class MyWebView2 {
 		wil::com_ptr<ICoreWebView2Environment> env_ = nullptr;
 		wil::com_ptr<ICoreWebView2Controller> controller_ = nullptr;
@@ -51,4 +51,4 @@ namespace cved {
 		}
 		void update_color_scheme() noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

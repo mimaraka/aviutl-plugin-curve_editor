@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(バウンス)
 	class BounceCurve : public NumericGraphCurve {
 		static constexpr double DEFAULT_COR = 0.6;
@@ -75,8 +75,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::BounceCurve, 0)
-CEREAL_REGISTER_TYPE(cved::BounceCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::BounceCurve)
+CEREAL_CLASS_VERSION(curve_editor::BounceCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::BounceCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::GraphCurve, curve_editor::BounceCurve)

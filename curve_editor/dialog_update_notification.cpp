@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int UpdateNotificationDialog::resource_id() const noexcept { return IDD_DIALOG_UPDATE_NOTIFICATION; }
 
 	void UpdateNotificationDialog::init_controls(HWND hwnd) noexcept {
@@ -54,4 +54,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

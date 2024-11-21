@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	void Preferences::reset() noexcept {
 		language = Language::Automatic;
 		theme = ThemeId::Dark;
@@ -74,4 +74,4 @@ namespace cved {
 		};
 #undef MAKE_PAIR
 	}
-} // namespace cved
+} // namespace curve_editor

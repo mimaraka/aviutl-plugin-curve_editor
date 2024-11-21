@@ -2,7 +2,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	void BezierHandle::update_key_state() noexcept {
 		ks_snap_.update();
 		ks_lock_tangent_.update();
@@ -59,4 +59,4 @@ namespace cved {
 			x_range_limitter_.apply(handle_);
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

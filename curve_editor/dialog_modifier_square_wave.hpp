@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class SquareWaveModifierDialog : public Dialog {
 		HWND hwnd_slider_amplitude_ = NULL;
 		HWND hwnd_slider_frequency_ = NULL;
@@ -18,4 +18,4 @@ namespace cved {
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd, const SquareWaveModifier* p_mod_square_wave) noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

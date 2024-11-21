@@ -10,7 +10,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int AppearancePrefDialog::resource_id() const noexcept { return IDD_PREF_APPEARANCE; }
 
 	void AppearancePrefDialog::init_controls(HWND hwnd) noexcept {
@@ -228,4 +228,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class BehaviorPrefDialog : public Dialog {
 		HWND hwnd_check_show_popup_ = NULL;
 		HWND hwnd_check_enable_hotkeys_ = NULL;
@@ -13,4 +13,4 @@ namespace cved {
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd) noexcept override;
 	};
-} // namespace cved
+} // namespace curve_editor

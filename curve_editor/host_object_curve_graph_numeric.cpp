@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int32_t NumericGraphCurveHostObject::encode(uint32_t id) {
 		auto curve = global::id_manager.get_curve<NumericGraphCurve>(id);
 		if (!curve) {
@@ -19,4 +19,4 @@ namespace cved {
 		}
 		return curve->decode(code);
 	}
-} // namespace cved
+} // namespace curve_editor

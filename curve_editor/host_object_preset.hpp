@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class PresetHostObject : public mkaul::ole::HostObject {
 		static std::string get_presets_as_json();
 		static std::string get_collections_as_json();
@@ -20,4 +20,4 @@ namespace cved {
 			register_member(L"currentCollectionId", DispatchType::PropertyPut, +[](uint32_t id) { global::preset_manager.set_current_collection_id(id); });
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

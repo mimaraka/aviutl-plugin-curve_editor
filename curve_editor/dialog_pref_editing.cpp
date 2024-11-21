@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int EditingPrefDialog::resource_id() const noexcept { return IDD_PREF_EDITING; }
 
 	void EditingPrefDialog::init_controls(HWND hwnd) noexcept {
@@ -63,4 +63,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

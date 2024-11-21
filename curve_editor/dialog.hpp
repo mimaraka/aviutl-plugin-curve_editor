@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class Dialog {
 		LPARAM init_param_ = NULL;
 
@@ -17,4 +17,4 @@ namespace cved {
 		HWND create(HWND hwnd, LPARAM init_param = NULL) noexcept;
 		INT_PTR show(HWND hwnd, LPARAM init_param = NULL) noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

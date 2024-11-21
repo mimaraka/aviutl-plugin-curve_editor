@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class BezierHandle {
 		static constexpr double DEFAULT_HANDLE_RATIO = 0.3;
 		const mkaul::Point<double>& anchor_origin_;
@@ -99,4 +99,4 @@ namespace cved {
 			archive(handle_);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

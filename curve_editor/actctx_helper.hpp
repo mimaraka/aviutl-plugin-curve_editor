@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
     class ActCtxHelper {
         ULONG_PTR cookie_ = 0ul;
         HANDLE hactctx_ = NULL;
@@ -13,4 +13,4 @@ namespace cved {
         bool init() noexcept;
         bool exit();
     };
-} // namespace cved
+} // namespace curve_editor

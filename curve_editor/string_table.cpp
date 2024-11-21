@@ -4,7 +4,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	// 文字列テーブルの読み込み
 	StringTable::StringTable() noexcept {
 		// TODO: ロケールの設定
@@ -493,4 +493,4 @@ namespace cved::global {
 		}
 		return string_data[(size_t)str_id].c_str();
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

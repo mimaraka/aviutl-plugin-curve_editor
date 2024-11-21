@@ -5,7 +5,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	class ScriptCurveEditor {
 	private:
 		std::vector<ScriptCurve> curves_script_;
@@ -42,6 +42,6 @@ namespace cved::global {
 			}
 		}
 	};
-} // namespace cved::global
+} // namespace curve_editor::global
 
-CEREAL_CLASS_VERSION(cved::global::ScriptCurveEditor, 0);
+CEREAL_CLASS_VERSION(curve_editor::global::ScriptCurveEditor, 0);
