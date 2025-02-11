@@ -1,8 +1,8 @@
 #include "config.hpp"
-#include "constants.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
 #include "string_table.hpp"
+#include "util.hpp"
 #include <fstream>
 
 
@@ -36,9 +36,9 @@ namespace curve_editor::global {
 		::GetModuleFileNameA(NULL, path_str, MAX_PATH);
 		std::filesystem::path path_aviutl{ path_str };
 		dir_aviutl_ = path_aviutl.parent_path();
-		::GetModuleFileNameA(::GetModuleHandleA(global::PLUGIN_DLL_NAME), path_str, MAX_PATH);
+		::GetModuleFileNameA(util::get_hinst(), path_str, MAX_PATH);
 		std::filesystem::path path_plugin{ path_str };
-		dir_plugin_ = path_plugin.parent_path() / "curve_editor";
+		dir_plugin_ = path_plugin.parent_path() / global::PLUGIN_NAME;
 	}
 
 	bool Config::set_language(Language language) noexcept {

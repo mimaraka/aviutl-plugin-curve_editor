@@ -1,7 +1,7 @@
-#include "constants.hpp"
-#include "resource.h"
 #include "string_table.hpp"
 
+#include "resource.h"
+#include "util.hpp"
 
 
 namespace curve_editor::global {
@@ -479,7 +479,7 @@ namespace curve_editor::global {
 				continue;
 			}
 
-			if (::LoadStringA(::GetModuleHandleA(global::PLUGIN_DLL_NAME), id, tmp, MAX_LEN)) {
+			if (::LoadStringA(util::get_hinst(), id, tmp, MAX_LEN)) {
 				string_data[i] = tmp;
 			}
 		}

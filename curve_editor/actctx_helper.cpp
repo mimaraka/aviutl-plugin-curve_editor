@@ -1,6 +1,6 @@
 #include "actctx_helper.hpp"
-#include "constants.hpp"
 #include "resource.h"
+#include "util.hpp"
 #include <WinBase.h>
 
 
@@ -11,7 +11,7 @@ namespace curve_editor {
 			.cbSize = sizeof(ACTCTXA),
 			.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_HMODULE_VALID,
 			.lpResourceName = MAKEINTRESOURCEA(ID_MANIFEST_VISUALSTYLE),
-			.hModule = ::GetModuleHandleA(global::PLUGIN_DLL_NAME)
+			.hModule = util::get_hinst()
 		};
 		HANDLE tmp = NULL;
 		::GetCurrentActCtx(&tmp);
