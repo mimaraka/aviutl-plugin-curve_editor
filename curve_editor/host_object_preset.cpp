@@ -1,7 +1,8 @@
 #include "host_object_preset.hpp"
-#include "preset_manager.hpp"
+
 #include <strconv2.h>
 
+#include "preset_manager.hpp"
 
 
 namespace curve_editor {

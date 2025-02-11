@@ -1,6 +1,7 @@
+#include "host_object_curve_elastic.hpp"
+
 #include "curve_editor.hpp"
 #include "curve_elastic.hpp"
-#include "host_object_curve_elastic.hpp"
 
 
 namespace curve_editor {

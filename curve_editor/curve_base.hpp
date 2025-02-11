@@ -2,7 +2,6 @@
 
 #include "curve_id_manager.hpp"
 #include <cereal/cereal.hpp>
-#include <mkaul/graphics.hpp>
 #include <nlohmann/json.hpp>
 
 

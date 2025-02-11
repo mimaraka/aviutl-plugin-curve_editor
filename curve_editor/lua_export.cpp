@@ -1,10 +1,11 @@
+#include <lua.hpp>
+
 #include "config.hpp"
 #include "constants.hpp"
 #include "curve_bezier.hpp"
 #include "curve_editor.hpp"
 #include "curve_editor_graph.hpp"
 #include "global.hpp"
-#include <lua.hpp>
 
 
 namespace curve_editor {

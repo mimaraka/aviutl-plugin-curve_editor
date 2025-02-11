@@ -1,4 +1,5 @@
 #include "curve_editor_script.hpp"
+#include <mkaul/util.hpp>
 
 
 

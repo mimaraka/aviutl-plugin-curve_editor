@@ -1,7 +1,6 @@
 #include "config.hpp"
 #include "curve_bezier.hpp"
 #include "util.hpp"
-#include <mkaul/graphics.hpp>
 #include <mkaul/util.hpp>
 
 

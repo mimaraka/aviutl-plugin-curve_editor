@@ -1,6 +1,6 @@
-#include "curve_id_manager.hpp"
 #include "host_object_editor_script.hpp"
 
+#include "curve_id_manager.hpp"
 
 
 namespace curve_editor {

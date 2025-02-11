@@ -1,3 +1,8 @@
+#include "my_webview2.hpp"
+
+#include <strconv2.h>
+#include <WebView2EnvironmentOptions.h>
+
 #include "config.hpp"
 #include "global.hpp"
 #include "host_object_config.hpp"
@@ -5,11 +10,7 @@
 #include "host_object_preset.hpp"
 #include "message_box.hpp"
 #include "message_handler.hpp"
-#include "my_webview2.hpp"
 #include "string_table.hpp"
-#include <strconv2.h>
-#include <WebView2EnvironmentOptions.h>
-
 
 
 namespace curve_editor {

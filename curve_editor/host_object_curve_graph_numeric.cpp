@@ -1,6 +1,6 @@
-#include "curve_graph_numeric.hpp"
 #include "host_object_curve_graph_numeric.hpp"
 
+#include "curve_graph_numeric.hpp"
 
 
 namespace curve_editor {
