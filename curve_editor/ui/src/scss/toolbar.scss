@@ -1,0 +1,19 @@
+@import url('./common.scss');
+
+.menu-top {
+    width: calc(100% - var(--margin) * 2);
+    height: var(--menu-row-height);
+    margin: var(--margin) var(--margin) 0 var(--margin);
+}
+
+.menu-bottom {
+    width: calc(100% - var(--margin) * 2);
+    height: var(--menu-row-height);
+    margin: 0 var(--margin) var(--margin) var(--margin);
+}
+
+.menu-row {
+    display: flex;
+    height: 100%;
+    margin: 0;
+}

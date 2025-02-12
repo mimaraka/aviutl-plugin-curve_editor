@@ -1,69 +1,45 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph.hpp"
 #include "enum.hpp"
+#include "string_table.hpp"
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(数値指定)
 	class ValueCurve : public GraphCurve {
 		std::vector<std::unique_ptr<GraphCurve>> curve_segments_;
 
 	public:
+		// コンストラクタ
 		ValueCurve(
-			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u
+			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. }
 		) noexcept;
 
+		// コピーコンストラクタ
 		ValueCurve(const ValueCurve& curve) noexcept;
 
-		double curve_function(double progress, double start, double end) const noexcept override;
+		// コピー代入演算子
+		ValueCurve& operator=(const ValueCurve& curve) noexcept;
+
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<ValueCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
+
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_VALUE; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeValue]; }
+
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
+		[[nodiscard]] bool is_default() const noexcept override;
 
-		void draw_handle(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float thickness,
-			float root_radius,
-			float tip_radius,
-			float tip_thickness,
-			bool cutoff_line,
-			const mkaul::ColorF& color = mkaul::ColorF{}
-		) const noexcept override;
-
-		bool add_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept;
-		bool delete_curve(const mkaul::Point<double>& pt, const GraphView& view) noexcept;
+		bool add_curve(const mkaul::Point<double>& pt, double scale_x) noexcept;
+		bool delete_curve(GraphCurve* p_segment) noexcept;
 		bool replace_curve(size_t idx, CurveSegmentType segment_type) noexcept;
 
-		bool is_pt_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
-		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
-
-		bool handle_check_hover(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-
-		bool handle_update(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-		void handle_end_control() noexcept override;
-
-		// カーソルがポイントにホバーしているかを判定し、ホバーしていれば移動を開始
-		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		// ポイントの移動を開始
-		bool pt_begin_move(ActivePoint) noexcept override { return false; }
-		// ポイントの位置をアップデート
-		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		// ポイントを強制的に動かす
-		bool pt_move(ActivePoint, const mkaul::Point<double>&) noexcept override { return true; }
-		// ポイントの移動を終了
-		void pt_end_move() noexcept override;
-		void pt_end_control() noexcept override;
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 	};
-}
+} // namespace curve_editor

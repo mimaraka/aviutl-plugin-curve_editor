@@ -1,179 +1,103 @@
 #pragma once
 
-#include "control_point.hpp"
-#include "curve_graph.hpp"
-#include "view_graph.hpp"
+#include "cereal_mkaul_point.hpp"
+#include "key_state_observer.hpp"
+#include "position_converter.hpp"
+#include <mkaul/point.hpp>
 
 
 
-namespace cved {
-	class BezierCurve;
-
-	// ベジェのハンドル
+namespace curve_editor {
 	class BezierHandle {
-	public:
-		enum class Type {
-			Left,
-			Right
-		};
-
-		enum class SnapState {
-			Unsnapped,
-			SnapStart,
-			SnapEnd
-		};
-
-	private:
-		// ポイント (基準点からのオフセット)
-		ControlPoint pt_offset_;
-		// 右か左か
-		const Type type_;
-		// ポイントが固定されているかどうか
-		bool fixed_;
-		// 終点・始点のどちらの辺にスナップしているか
-		SnapState snap_state_ = SnapState::Unsnapped;
-		// 角度固定時に保持する値
-		double buffer_angle_ = 0.;
-		// 長さ固定時に保持する値
-		double buffer_length_ = 0.;
-		// 角度が固定されているか
-		bool locked_angle_ = false;
-		// 長さが固定されているか
-		bool locked_length_ = false;
-		// 過去のフラグ情報
-		bool flag_prev_snap_ = false;
-		bool flag_prev_lock_angle_ = false;
-		bool flag_prev_lock_length_ = false;
-		// 反対側のハンドル(整列対象のハンドル)のポインタ
-		BezierHandle* handle_opposite_;
-		const BezierCurve* const p_curve_;
-
-		// ハンドルの角度を取得
-		double get_handle_angle(const GraphView& view) const noexcept;
-		// ハンドルの長さを取得
-		double get_handle_length(const GraphView& view) const noexcept;
-
-		// 指定したポイントの基準点からの角度を取得
-		double get_cursor_angle(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) const noexcept;
-		// 指定したポイントの基準点からの長さを取得
-		double get_cursor_length(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) const noexcept;
-		// 移動後のハンドルの座標を取得
-		mkaul::Point<double> get_dest_pt(
-			const mkaul::Point<double>& pt,
-			const GraphView& view,
-			bool keep_angle = false
-		) const noexcept;
-		// 座標の範囲制限
-		void limit_range(
-			mkaul::Point<double>& pt_offset,
-			bool keep_angle
-		) const noexcept;
-
-		// キーの押下状態を確認
-		bool key_state_snap() const noexcept;
-		bool key_state_lock_angle() const noexcept;
-		bool key_state_lock_length() const noexcept;
-
-		// フラグの立ち上りを検知
-		bool check_flag_rise_snap() const noexcept;
-		bool check_flag_rise_lock_angle() const noexcept;
-		bool check_flag_rise_lock_length() const noexcept;
-
-		// フラグの立ち下がりを検知
-		bool check_flag_fall_snap() const noexcept;
-		bool check_flag_fall_lock_angle() const noexcept;
-		bool check_flag_fall_lock_length() const noexcept;
-
-		void update_flags(const GraphView& view) noexcept;
+		const mkaul::Point<double>& anchor_origin_;
+		const mkaul::Point<double>& anchor_opposite_;
+		mkaul::Point<double> handle_;
+		double scale_x_ = 1.;
+		double scale_y_ = 1.;
+		XRangeLimitter x_range_limitter_;
+		TangentLocker tangent_locker_;
+		LengthLocker length_locker_;
+		Snapper snapper_;
+		KeyStateObserver ks_snap_{ VK_SHIFT };
+		KeyStateObserver ks_lock_tangent_{ VK_MENU };
+		KeyStateObserver ks_lock_length_{ VK_CONTROL };
+		KeyStateObserver ks_move_symmetrically_{ VK_CONTROL, VK_SHIFT };
 
 	public:
-		// コンストラクタ
+		static constexpr double DEFAULT_HANDLE_RATIO = 0.3;
+
 		BezierHandle(
-			BezierCurve* p_curve,
-			Type type,
-			const mkaul::Point<double>& pt_offset = mkaul::Point<double>{},
-			bool fixed = false,
-			BezierHandle* handle_opposite = nullptr
+			const mkaul::Point<double>& anchor_origin,
+			const mkaul::Point<double>& anchor_opposite,
+			const mkaul::Point<double>& handle = { 0., 0. }
 		) :
-			p_curve_{ p_curve },
-			pt_offset_{ pt_offset },
-			type_{ type },
-			fixed_{ fixed },
-			handle_opposite_{ handle_opposite }
+			anchor_origin_{ anchor_origin },
+			anchor_opposite_{ anchor_opposite },
+			handle_{ handle },
+			x_range_limitter_{ anchor_origin, anchor_opposite },
+			length_locker_{ anchor_origin, anchor_opposite },
+			snapper_{ anchor_origin, anchor_opposite }
 		{}
 
-		auto type() const noexcept { return type_; }
-		auto p_curve() const noexcept { return p_curve_; }
-		auto handle_opposite() const noexcept { return handle_opposite_; }
-		auto is_fixed() const noexcept { return fixed_; }
-		void set_handle_opposite(BezierHandle* p) noexcept { handle_opposite_ = p; }
+		void clear() noexcept {
+			handle_ = {
+				(anchor_opposite_.x - anchor_origin_.x) * DEFAULT_HANDLE_RATIO,
+				(anchor_opposite_.y - anchor_origin_.y) * DEFAULT_HANDLE_RATIO
+			};
+		}
 
-		// 保持されている角度を取得
-		auto buffer_angle() const noexcept { return buffer_angle_; }
-		// 保持されている長さを取得
-		auto buffer_length() const noexcept { return buffer_length_; }
+		[[nodiscard]] bool is_default() const noexcept {
+			return mkaul::real_equal(handle_.x, (anchor_opposite_.x - anchor_origin_.x) * DEFAULT_HANDLE_RATIO) and
+				mkaul::real_equal(handle_.y, (anchor_opposite_.y - anchor_origin_.y) * DEFAULT_HANDLE_RATIO);
+		}
 
-		// ハンドルをスナップ
-		void snap() noexcept;
-		// ハンドルのスナップを解除
-		void unsnap() noexcept;
-		// ハンドルの角度を固定
-		void lock_angle(const GraphView& view) noexcept;
-		// ハンドルの角度の固定を解除
-		void unlock_angle() noexcept;
-		// ハンドルの長さを固定
-		void lock_length(const GraphView& view) noexcept;
-		// ハンドルの長さの固定を解除
-		void unlock_length() noexcept;
+		auto pos_abs() const noexcept { return anchor_origin_ + handle_; }
+		const auto& pos_rel() const noexcept { return handle_; }
 
-		// ハンドルの角度を隣のカーブの傾きに合わせて回転させる
-		void adjust_angle(const GraphCurve* p_curve_neighbor, const GraphView& view) noexcept;
-		// ハンドルを始点に移動する
-		void move_to_root() noexcept;
+		// TODO: 良くない
+		auto scale_x() const noexcept { return scale_x_; }
+		auto scale_y() const noexcept { return scale_y_; }
 
-		// ハンドルのオフセット座標を取得
-		const auto& pt_offset() const noexcept { return pt_offset_.pt(); }
-		void set_pt_offset(const mkaul::Point<double>& pt_offset) noexcept { pt_offset_.move(pt_offset); }
+		void update_key_state() noexcept;
 
-		// カーソルがハンドルにホバーされているかどうか
-		bool is_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
+		void lock_length() noexcept { length_locker_.lock(handle_); }
+		void unlock_length() noexcept { length_locker_.unlock(); }
 
-		// ハンドルの移動を開始
-		bool check_hover(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept;
+		void lock_tangent() noexcept { tangent_locker_.lock(handle_); }
+		void unlock_tangent() noexcept { tangent_locker_.unlock(); }
 
-		void begin_move(
-			const GraphView& view
-		) noexcept;
+		auto is_key_down_move_symmetrically() const noexcept { return ks_move_symmetrically_.is_key_down(); }
+		auto is_key_pressed_move_symmetrically() const noexcept { return ks_move_symmetrically_.is_key_pressed(); }
+		auto is_key_up_move_symmetrically() const noexcept { return ks_move_symmetrically_.is_key_up(); }
 
-		bool update(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept;
+		void begin_move(double scale_x, double scale_y, bool enable_key = false) noexcept {
+			scale_x_ = scale_x;
+			scale_y_ = scale_y;
+			length_locker_.set_scale(scale_x, scale_y);
+			length_locker_.unlock();
+			tangent_locker_.unlock();
+			snapper_.unsnap();
+			if (enable_key) {
+				update_key_state();
+			}
+		}
 
-		// ハンドルを動かす
-		void move(
-			const mkaul::Point<double>& pt,
-			const GraphView& view,
-			bool aligned = false,
-			bool moved_symmetrically = false
-		) noexcept;
+		void move(const mkaul::Point<double>& pos_abs_, bool keep_angle = false, bool enable_key = false) noexcept { move_rel(pos_abs_ - anchor_origin_, keep_angle, enable_key); }
+		void move_rel(const mkaul::Point<double>& pos_rel_, bool keep_angle = false, bool enable_key = false) noexcept;
 
-		// ハンドルを強制的に動かす
-		void set_position(
-			const mkaul::Point<double>& pt
-		) noexcept;
+		void end_move() noexcept {
+			tangent_locker_.unlock();
+			length_locker_.unlock();
+		}
 
-		// ハンドルの移動を終了
-		void end_move() noexcept;
-		void end_control() noexcept;
+		template<class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(handle_);
+		}
+
+		template<class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(handle_);
+		}
 	};
-}
+} // namespace curve_editor

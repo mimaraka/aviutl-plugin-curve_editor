@@ -1,40 +1,52 @@
 #include "curve_editor_script.hpp"
+#include <mkaul/util.hpp>
 
 
 
-namespace cved {
-	namespace global {
-		void ScriptCurveEditor::reset() noexcept {
-			index_ = 0u;
-		}
+namespace curve_editor::global {
+	ScriptCurveEditor::ScriptCurveEditor() :
+		curves_script_{ ScriptCurve{} },
+		idx_{ 0u }
+	{}
 
-		// インデックスを設定する
-		bool ScriptCurveEditor::set_idx(size_t idx) noexcept {
-			if (idx < curves_script_.size()) {
-				index_ = idx;
-				return true;
-			}
-			else if (idx == curves_script_.size()) {
+	void ScriptCurveEditor::reset() noexcept {
+		curves_script_.clear();
+		curves_script_.emplace_back(ScriptCurve{});
+		idx_ = 0u;
+	}
+
+	// インデックスを設定する
+	bool ScriptCurveEditor::set_idx(int idx) noexcept {
+		if (mkaul::in_range(idx, 0, (int)curves_script_.size())) {
+			if ((size_t)idx == curves_script_.size()) {
 				curves_script_.emplace_back(ScriptCurve{});
-				index_ = idx;
-				return true;
 			}
-			else return false;
+			idx_ = idx;
+			return true;
 		}
+		return false;
+	}
 
-		// 最後のインデックスにジャンプする
-		void ScriptCurveEditor::jump_to_last_idx() noexcept {
-			index_ = curves_script_.size() - 1;
+	// スクリプトカーブを取得する
+	ScriptCurve* ScriptCurveEditor::p_curve_script(size_t idx) noexcept {
+		if (idx < curves_script_.size()) {
+			return &curves_script_[idx];
 		}
+		else return nullptr;
+	}
 
-		// 最後のインデックスを削除する
-		void ScriptCurveEditor::delete_last_idx() noexcept {
-			if (1u < curves_script_.size()) {
-				curves_script_.pop_back();
-				if (index_ == curves_script_.size()) {
-					index_ = curves_script_.size() - 1;
-				}
+	// 最後のインデックスにジャンプする
+	void ScriptCurveEditor::jump_to_last_idx() noexcept {
+		idx_ = curves_script_.size() - 1;
+	}
+
+	// 最後のインデックスを削除する
+	void ScriptCurveEditor::pop_idx() noexcept {
+		if (1u < curves_script_.size()) {
+			curves_script_.pop_back();
+			if (idx_ == curves_script_.size()) {
+				idx_ = curves_script_.size() - 1;
 			}
 		}
 	}
-}
+} // namespace curve_editor::global

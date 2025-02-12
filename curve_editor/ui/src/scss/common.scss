@@ -1,0 +1,43 @@
+@import url('./variables.scss');
+
+.dropdown-container {
+    position: relative;
+    &::after {
+        pointer-events: none;
+        content: "";
+        position: absolute;
+        top: 13px;
+        right: 18px;
+        transform: rotate(45deg);
+        width: 5.5px;
+        height: 5.5px;
+        border-right: 2.3px solid var(--color-dropdown-arrow);
+        border-bottom: 2.3px solid var(--color-dropdown-arrow);
+    }
+}
+
+.dropdown {
+    appearance: none;
+    user-select: none;
+    width: 100%;
+    height: calc(100% - 2 * var(--margin));
+    margin: var(--margin);
+    padding-left: 20px;
+    transition: var(--transition);
+    background-color: var(--color-control);
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    font: var(--font);
+    color: var(--color-content);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    
+    &:hover {
+        background-color: var(--color-control-hover);
+    }
+
+    &:focus {
+        outline: none;
+    }
+}

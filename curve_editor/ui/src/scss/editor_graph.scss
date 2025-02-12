@@ -1,0 +1,145 @@
+@import url('./variables.scss');
+
+:root {
+    --color-fit-button: rgb(240, 240, 240);
+    --color-fit-button-hover: rgb(224, 224, 224);
+    --color-axis: rgb(0, 0, 0);
+    --color-velocity-path: rgb(0, 0, 0);
+    --color-rect: rgb(190, 190, 190);
+    --anchor-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-fit-button: rgb(35, 35, 35);
+        --color-fit-button-hover: rgb(52, 52, 52);
+        --color-axis: rgb(255, 255, 255);
+        --color-velocity-path: rgb(255, 255, 255);
+        --color-rect: rgb(17, 17, 17);
+    }
+}
+
+#container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-width: 50px;
+    height: 100%;
+    min-height: 50px;
+}
+
+#canvas {
+    user-select: none;
+    background-color: var(--color-bg-graph);
+}
+
+.grid path,
+.grid line {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: var(--color-axis);
+    stroke-width: 1.5px;
+    opacity: 0.1;
+}
+
+.grid-sub path,
+.grid-sub line {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: var(--color-axis);
+    stroke-dasharray: 4, 4;
+    opacity: 0.1;
+}
+
+.axis-label {
+    path, line {
+        stroke-width: 0;
+    }
+
+    text {
+        fill: var(--color-content);
+        user-select: none;
+        font: 500 11px system-ui,;
+    }
+}
+
+.axis-label-y text {
+    text-anchor: start;
+}
+
+.velocity-path {
+    stroke: var(--color-velocity-path);
+    opacity: 0.3;
+}
+
+.overlay-button {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s ease-out;
+    background-color: var(--color-fit-button);
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--color-content);
+    &:hover {
+        opacity: 0.8;
+        background-color: var(--color-fit-button-hover);
+    }
+
+    &:active {
+        opacity: 0.8;
+        background-color: var(--color-control-active);
+    }
+
+    &:focus {
+        outline: none;
+    }
+}
+
+#fit {
+    top: 15px;
+    right: 15px;
+}
+
+#show-handle {
+    top: 15px;
+    left: 15px;
+}
+
+.visible {
+    visibility: visible;
+    opacity: 0.5;
+    transition: 0.3s;
+}
+
+.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.rect {
+    fill: var(--color-rect);
+    stroke: none;
+    opacity: 0.5;
+}
+
+.anchor {
+    fill: var(--color-handle);
+    stroke: none;
+    cursor: pointer;
+}
+
+.handle {
+    fill: var(--color-handle);
+    stroke: none;
+    cursor: pointer;
+}
+
+.handle-line {
+    fill: none;
+    stroke: var(--color-handle);
+    stroke-width: 2;
+    pointer-events: none;
+}

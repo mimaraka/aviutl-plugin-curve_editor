@@ -4,6 +4,6 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	BOOL filter_init(AviUtl::FilterPlugin* fp);
-}
+} // namespace curve_editor

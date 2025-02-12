@@ -1,31 +1,47 @@
 #pragma once
 
-#include <mkaul/window.hpp>
-#include "curve.hpp"
+#include "curve_base.hpp"
+#include <memory>
+#include <nlohmann/json.hpp>
+#include <optional>
 
 
-namespace cved {
+
+namespace curve_editor {
 	class Preset {
-    private:
-        inline static size_t n_presets = 0u;
-        Curve* p_curve_;
-        mkaul::ui::Window window_;
-        HWND hwnd_parent_;
-        std::unique_ptr<mkaul::graphics::Graphics> p_graphics_;
-        size_t id;
-
-        static size_t register_preset();
-        static LRESULT CALLBACK wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
-        void draw();
+		std::unique_ptr<Curve> p_curve_;
+		std::string name_;
+		std::optional<std::time_t> date_;
+		uint32_t collection_id_;
 
     public:
-        Preset(HWND hwnd, Curve* p_curve) :
-            p_curve_(p_curve),
-            window_(),
-            hwnd_parent_(hwnd),
-            p_graphics_(nullptr)
-        {}
+		Preset(uint32_t collection_id) noexcept :
+			collection_id_{ collection_id }
+		{}
 
-        bool create(const mkaul::WindowRectangle& rect) noexcept;
+		template<class CurveType>
+		void create(const CurveType& curve, const std::string& name) noexcept {
+			name_ = name;
+			p_curve_ = std::make_unique<CurveType>(curve);
+			// TODO: 1(COLLECTION_ID_DEFAULT)がマジックナンバーなので、定数化する
+			if (collection_id_ == 1) {
+				date_ = std::nullopt;
+			}
+			else {
+				date_ = std::time(nullptr);
+			}
+		}
+
+		const Curve* get_curve() const noexcept { return p_curve_.get();}
+		auto get_id() const noexcept { return p_curve_->get_id();}
+		auto get_collection_id() const noexcept { return collection_id_; }
+
+		const auto& get_name() const noexcept { return name_; }
+		void set_name(const std::string& name) noexcept { name_ = name; }
+
+		const auto& get_date() const noexcept { return date_; }
+
+		nlohmann::json create_json(bool omit_date = false) const noexcept;
+		bool load_json(const nlohmann::json& data) noexcept;
 	};
-}
+} // namespace curve_editor

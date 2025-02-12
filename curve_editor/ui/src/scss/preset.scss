@@ -1,0 +1,132 @@
+@import url('./toolbar.scss');
+
+:root {
+    --color-content-searchbar: rgb(70, 70, 70);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-content-searchbar: rgb(180, 180, 180);
+    }
+}
+
+.container-panel-preset {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: calc(100% - var(--margin) * 2);
+    height: calc(100% - var(--margin) * 2);
+    margin: var(--margin);
+    background-color: var(--color-bg);
+}
+
+.container-preset {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    row-gap: 12px;
+    column-gap: 8px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: calc(100% - var(--margin) * 2);
+    height: calc(100% - var(--searchbar-height) - var(--margin) * 4 - 32px);
+    padding: var(--margin);
+    &::-webkit-scrollbar {
+        width: 5px;
+        background-color: var(--color-bg);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar-thumb);
+        border-radius: 5px;
+    }
+}
+
+#searchbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(var(--searchbar-height) - var(--margin) * 4);
+    margin: calc(var(--margin) * 2);
+    padding-right: 20px;
+    padding-left: 32px;
+    background-color: var(--color-bg-editbox);
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--color-content-searchbar);
+    &:focus {
+        outline: none;
+    }
+
+    &::placeholder {
+        user-select: none;
+    }
+}
+
+.searchbar-container {
+    position: relative;
+    width: calc(85% - var(--margin) * 2);
+}
+
+.searchbar-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: var(--color-content-searchbar);
+}
+
+.menu-row {
+    height: 32px;
+    margin: var(--margin);
+}
+
+#collection-container {
+    width: calc(70% - var(--margin));
+    height: 100%;
+}
+
+.index-buttons {
+    display: flex;
+    flex-direction: row;
+    width: 15%;
+    margin-left: calc(var(--margin) * 2);
+}
+
+.collection-buttons {
+    display: flex;
+    flex-direction: row;
+    width: calc(30% - var(--margin));
+    margin-left: calc(var(--margin) * 2);
+}
+
+.presets-count {
+    user-select: none;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 40px;
+    height: 100%;
+    font: var(--font);
+    font-size: 12px;
+    color: var(--color-content-searchbar);
+}
+
+.dropdown {
+    padding-right: 65px;
+}
+
+.no-presets {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: 100%;
+    user-select: none;
+    font: var(--font);
+    font-size: 14px;
+}

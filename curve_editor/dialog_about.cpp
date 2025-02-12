@@ -1,26 +1,31 @@
-#include "dialog_about.hpp"
-#include <format>
-#include <CommCtrl.h>
 #include "constants.hpp"
-#include "string_table.hpp"
+#include "dialog_about.hpp"
 #include "resource.h"
+#include "string_table.hpp"
+#include <CommCtrl.h>
+#include <format>
 
 
 
-namespace cved {
-	int AboutDialog::i_resource() const noexcept { return IDD_ABOUT; }
+namespace curve_editor {
+	int AboutDialog::resource_id() const noexcept { return IDD_ABOUT; }
 
 
 	void AboutDialog::init_controls(HWND hwnd) noexcept {
 		using StringId = global::StringTable::StringId;
 		hwnd_static_info_ = ::GetDlgItem(hwnd, IDC_STATIC_PLUGIN_INFO);
 		::SetWindowTextA(hwnd_static_info_, std::format(
-			"{} : {}\nDeveloped by {}\nTranslated by {}",
+			"{} : {}\n\nDeveloped by {}\nTranslated by {}",
 			global::string_table[StringId::WordVersion],
 			global::PLUGIN_VERSION.str(),
 			global::PLUGIN_DEVELOPER,
 			global::PLUGIN_TRANSLATOR
 		).c_str());
+
+		// TODO: ロゴ画像が容易でき次第削除する
+		HWND hwnd_static_logo = ::GetDlgItem(hwnd, IDC_STATIC_LOGO);
+		font_title_ = ::CreateFontA(48, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Yu Gothic UI");
+		::SendMessageA(hwnd_static_logo, WM_SETFONT, (WPARAM)font_title_, TRUE);
 	}
 
 
@@ -49,6 +54,8 @@ namespace cved {
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
 			case IDOK:
+			case IDCANCEL:
+				::DeleteObject(font_title_);
 				::EndDialog(hwnd, 1);
 				return TRUE;
 			}
@@ -56,4 +63,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-}
+} // namespace curve_editor

@@ -1,17 +1,15 @@
 #pragma once
 
-#include <Windows.h>
-#include <mkaul/point.hpp>
 #include "constants.hpp"
+#include <format>
+#include <mkaul/point.hpp>
+#include <Windows.h>
 
 
 
-namespace cved {
-	namespace util {
-		void get_cutoff_line(mkaul::Point<float>* pt, const mkaul::Point<float>& start, const mkaul::Point<float>& end, float length);
-
-		bool copy_to_clipboard(HWND hwnd, const char* str) noexcept;
-
-		int16_t get_track_script_idx() noexcept;
+namespace curve_editor::util {
+	bool copy_to_clipboard(HWND hwnd, const char* str) noexcept;
+	inline HINSTANCE get_hinst() noexcept {
+		return ::GetModuleHandleA(std::format("{}.{}", global::PLUGIN_NAME, global::PLUGIN_EXT).c_str());
 	}
-}
+} // namespace curve_editor::util

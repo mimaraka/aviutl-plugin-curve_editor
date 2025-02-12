@@ -1,15 +1,15 @@
 #pragma once
 
 #include "dialog.hpp"
-#include <vector>
-#include "dialog_pref_general.hpp"
 #include "dialog_pref_appearance.hpp"
 #include "dialog_pref_behavior.hpp"
 #include "dialog_pref_editing.hpp"
+#include "dialog_pref_general.hpp"
+#include <vector>
 
 
 
-namespace cved {
+namespace curve_editor {
 	class PrefDialog : public Dialog {
 		static constexpr int ID_CATEGORY_GENERAL = 0x8000;
 		static constexpr int ID_CATEGORY_APPEARANCE = 0x8001;
@@ -30,7 +30,7 @@ namespace cved {
 		HWND hwnd_list_categories_ = NULL;
 		std::vector<CategoryInfo> categories_;
 
-		int i_resource() const noexcept override;
+		int resource_id() const noexcept override;
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd) noexcept override;
 		void update() noexcept;
@@ -40,4 +40,4 @@ namespace cved {
 	public:
 		PrefDialog();
 	};
-}
+} // namespace curve_editor

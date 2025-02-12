@@ -1,29 +1,33 @@
-#include "filter_init.hpp"
-#include <CommCtrl.h>
-#include <mkaul/aviutl.hpp>
-#include "actctx_manager.hpp"
+#include "actctx_helper.hpp"
 #include "config.hpp"
 #include "curve_editor.hpp"
 #include "dialog_warning_autosaver.hpp"
 #include "exedit_hook.hpp"
+#include "filter_init.hpp"
 #include "global.hpp"
-#include "string_table.hpp"
-#include "my_messagebox.hpp"
+#include "message_box.hpp"
+#include "preset_manager.hpp"
 #include "resource.h"
+#include "string_table.hpp"
+#include "update_checker.hpp"
+#include <CommCtrl.h>
+#include <mkaul/aviutl.hpp>
+#include <strconv2.h>
 
 
 
-namespace cved {
+namespace curve_editor {
 	// AviUtl起動時の処理
 	BOOL filter_init(AviUtl::FilterPlugin* fp) {
 		using StringId = global::StringTable::StringId;
-		ActCtxManager actctx_manager;
-
-		global::fp = fp;
 
 		// jsonから設定の読み込み
-		global::config.init(fp->dll_hinst);
 		global::config.load_json();
+
+		// アップデートのチェック
+		if (global::config.get_notify_update()) {
+			global::update_checker.check_for_update();
+		}
 
 		// 保存されたカーブの読み込み
 		global::editor.editor_graph().load_codes(
@@ -32,27 +36,25 @@ namespace cved {
 			global::config.get_curve_code_bounce()
 		);
 
-		// TODO: ロケールの設定
-		// ここに書く
-
-		// 文字列テーブルの読み込み
-		global::string_table.load(fp->dll_hinst);
+		// プリセットの読み込み
+		global::preset_manager.load_json();
 
 		// アクティベーションコンテキスト(開始)
-		actctx_manager.init(fp->dll_hinst);
+		ActCtxHelper actctx_helper;
+		actctx_helper.init();
 
 		// exedit.auf(ver.0.92)存在確認
 		if (!global::exedit_internal.init(fp)) {
 			// 拡張編集が存在しませんのエラー
-			my_messagebox(global::string_table[StringId::ErrorExeditNotFound], NULL, MessageBoxIcon::Error);
+			util::message_box(global::string_table[StringId::ErrorExeditNotFound], NULL, util::MessageBoxIcon::Error);
 			return FALSE;
 		}
 
-		// オブジェクト設定ダイアログのフック処理
-		/*if (!global::exedit_hook.hook_objdialog_proc()) {
-			my_messagebox(global::string_table[StringId::ErrorExeditHookFailed], NULL, MessageBoxIcon::Error);
+		// アニメーション効果パラメータ設定ダイアログのフック処理
+		if (!global::exedit_hook.hook_anm_param_dialog_proc()) {
+			util::message_box(global::string_table[StringId::ErrorExeditHookFailed], NULL, util::MessageBoxIcon::Error);
 			return FALSE;
-		}*/
+		}
 
 		// コモンコントロールの初期化
 		INITCOMMONCONTROLSEX icc{
@@ -60,23 +62,24 @@ namespace cved {
 			// SysLinkの有効化
 			.dwICC = ICC_LINK_CLASS
 		};
-		::InitCommonControlsEx(&icc);
-
-		//// スクリプトファイルの存在確認
-		//const char* script_name_lua = "curve_editor.lua";
-		//const char* script_name_tra = "@Curve editor.tra";
-		//if (
-		//	!std::filesystem::exists(global::config.get_aviutl_directory() / script_name_lua)
-		//	and !std::filesystem::exists(global::config.get_aviutl_directory() / )
-		//	) {
-
-		//}
-
-		// 描画環境の初期化
-		if (!mkaul::graphics::Factory::startup(global::config.get_graphic_method())) {
-			my_messagebox(global::string_table[StringId::ErrorGraphicsInitFailed], NULL, MessageBoxIcon::Error);
+		if (!::InitCommonControlsEx(&icc)) {
+			util::message_box(global::string_table[StringId::ErrorCommCtrlInitFailed], NULL, util::MessageBoxIcon::Error);
 			return FALSE;
 		}
+
+		// スクリプトファイルの存在確認
+		//char path_str[MAX_PATH];
+		//::GetModuleFileNameA(global::exedit_internal.fp()->dll_hinst, path_str, MAX_PATH);
+		//std::filesystem::path path_exedit{ path_str };
+		//auto dir_exedit = path_exedit.parent_path();
+		//WIN32_FIND_DATA find_data;
+		//auto find_lua = ::FindFirstFileA((dir_exedit / "curve_editor.lua").string().c_str(), &find_data);
+		//auto find_tra = ::FindFirstFileA((dir_exedit / "script" / "@Curve Editor.tra").string().c_str(), &find_data);
+		//auto find_tra_sub = ::FindFirstFileA((dir_exedit / "script" / "mimaraka" / "*.tra").string().c_str(), &find_data);
+		//if (find_lua == INVALID_HANDLE_VALUE or (find_tra == INVALID_HANDLE_VALUE and find_tra_sub == INVALID_HANDLE_VALUE)) {
+		//	// スクリプトファイルが見つかりませんの警告
+		//	util::message_box(global::string_table[StringId::WarningScriptFileNotFound], NULL, util::MessageBoxIcon::Warning);
+		//}
 
 		// autosaverがインストールされていない場合の警告
 		if (!mkaul::aviutl::get_fp_by_name(fp, "autosaver.auf") and !global::config.get_ignore_autosaver_warning()) {
@@ -86,8 +89,8 @@ namespace cved {
 		}
 
 		// アクティベーションコンテキスト(終了)
-		actctx_manager.exit();
+		actctx_helper.exit();
 
 		return TRUE;
 	}
-}
+} // namespace curve_editor

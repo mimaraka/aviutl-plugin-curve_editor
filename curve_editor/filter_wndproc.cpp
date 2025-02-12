@@ -1,140 +1,106 @@
-#include "filter_wndproc.hpp"
-#include "actctx_manager.hpp"
+#include "actctx_helper.hpp"
 #include "config.hpp"
 #include "constants.hpp"
 #include "curve_editor.hpp"
-#include "global.hpp"
-#include "wndproc_main.hpp"
+#include "drag_and_drop.hpp"
+#include "exedit_hook.hpp"
+#include "filter_wndproc.hpp"
+#include "message_box.hpp"
+#include "my_webview2.hpp"
+#include "my_webview2_reference.hpp"
+#include "resource.h"
+#include "string_table.hpp"
+#include "update_checker.hpp"
+#include <nlohmann/json.hpp>
 
 
 
-namespace cved {
-	// キー押下時の処理
-	void on_keydown(WPARAM wparam) {
-		switch (wparam) {
-			// [R]
-		case 82:
-			global::window_grapheditor.send_command((WPARAM)WindowCommand::Reverse);
-			break;
-
-			// [C]
-		case 67:
-			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000 and global::editor.editor_graph().numeric_curve()) {
-				global::window_toolbar.send_command((WPARAM)WindowCommand::Copy);
-			}
-			break;
-
-			// [S]
-		case 83:
-			if (::GetAsyncKeyState(VK_CONTROL) & 0x8000) {
-				global::window_toolbar.send_command((WPARAM)WindowCommand::Save);
-			}
-			break;
-
-			// [<]
-		case VK_LEFT:
-			if (!global::editor.editor_graph().numeric_curve()) {
-				global::window_toolbar.send_command((WPARAM)WindowCommand::IdBack);
-			}
-			break;
-
-			// [>]
-		case VK_RIGHT:
-			if (!global::editor.editor_graph().numeric_curve()) {
-				global::window_toolbar.send_command((WPARAM)WindowCommand::IdNext);
-			}
-			break;
-
-			// [Home]
-		case VK_HOME:
-			if (global::editor.editor_graph().current_curve()) {
-				global::window_grapheditor.send_command((WPARAM)WindowCommand::Fit);
-			}
-			break;
-
-			// [A]
-		case 65:
-			global::config.set_align_handle(!global::config.get_align_handle());
-			break;
-
-			// [Delete]
-		case VK_DELETE:
-			global::window_toolbar.send_command((WPARAM)WindowCommand::Clear);
-			break;
-		}
-	}
-
-
+namespace curve_editor {
 	// ウィンドウプロシージャ
-	BOOL filter_wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, AviUtl::EditHandle* editp, AviUtl::FilterPlugin* fp)
-	{
+	BOOL filter_wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, AviUtl::EditHandle*, AviUtl::FilterPlugin* fp) {
 		using WindowMessage = AviUtl::FilterPlugin::WindowMessage;
-		static ActCtxManager actctx_manager;
-		RECT rect_wnd;
-		::GetClientRect(hwnd, &rect_wnd);
+		using StringId = global::StringTable::StringId;
+
+		static MyWebView2 my_webview;
+		static ActCtxHelper actctx_helper;
+		static DragAndDrop dnd;
 
 		switch (message) {
 			// ウィンドウ作成時
 		case WindowMessage::Init:
-			global::editp = editp;
-
-			actctx_manager.init(fp->dll_hinst);
-
-			// WS_CLIPCHILDRENを追加
-			::SetWindowLongPtrA(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) | WS_CLIPCHILDREN);
-
+			actctx_helper.init();
+			dnd.init();
+			my_webview.init(hwnd, [](MyWebView2* this_) {
+				mkaul::WindowRectangle bounds;
+				bounds.from_client_rect(this_->get_hwnd());
+				this_->put_bounds(bounds);
+				this_->navigate([](MyWebView2* this_) {
+					this_->send_command(MessageCommand::InitComponent, {
+						{"page", "MainPanel"},
+						{"isUpdateAvailable", global::update_checker.is_update_available()}
+						});
+					});
+				});
+			global::webview.set(global::MyWebView2Reference::WebViewType::Main, my_webview);
 			// Alpha版・Beta版の場合はキャプションを変更
 			if (global::PLUGIN_VERSION.is_preview()) {
 				::SetWindowTextA(
 					hwnd,
-					std::format("{} ({})", global::PLUGIN_NAME, global::PLUGIN_VERSION.preview_type().str(true)).c_str()
+					std::format("{} ({})", global::PLUGIN_DISPLAY_NAME, global::PLUGIN_VERSION.preview_type().str(true)).c_str()
 				);
 			}
-
-			global::window_main.create(
-				global::fp->dll_hinst,
-				hwnd,
-				"WINDOW_MAIN",
-				"WINDOWCLS_MAIN",
-				wndproc_main,
-				WS_CHILD,
-				NULL,
-				rect_wnd
-			);
-			return 0;
+			break;
 
 			// AviUtl終了時
 		case WindowMessage::Exit:
-			global::window_main.close();
-			actctx_manager.exit();
-			return 0;
+			actctx_helper.exit();
+			dnd.exit();
+			break;
+
+		case WindowMessage::FileClose:
+			global::editor.reset_id_curves();
+			my_webview.send_command(MessageCommand::UpdateEditor);
+			break;
 
 		case WM_SIZE:
 		{
-			RECT rect_wnd_main = rect_wnd;
-			rect_wnd_main.right = std::max((int)rect_wnd_main.right, global::MIN_WIDTH);
-			rect_wnd_main.bottom = std::max((int)rect_wnd_main.bottom, global::SEPARATOR_WIDTH * 2 + global::MENU_HEIGHT);
-			global::window_main.move(rect_wnd_main);
-			return 0;
+			mkaul::WindowRectangle bounds;
+			bounds.from_client_rect(hwnd);
+			my_webview.put_bounds(bounds);
+			break;
 		}
 
-		case WM_KEYDOWN:
-			if (global::config.get_enable_hotkeys()) {
-				on_keydown(wparam);
+		case WM_MOVE:
+			my_webview.on_move();
+			break;
+
+		case WM_MOUSEMOVE:
+			if (dnd.is_dragging()) {
+				dnd.update();
 			}
-			return 0;
+			break;
+
+		case WM_LBUTTONUP:
+			if (dnd.is_dragging()) {
+				::ReleaseCapture();
+				dnd.drop();
+				my_webview.send_command(MessageCommand::OnDndEnd);
+			}
+			break;
 
 		case WM_COMMAND:
-			switch (wparam) {
-			case (UINT)WindowCommand::RedrawAviutl:
+			switch ((WindowCommand)wparam) {
+			case WindowCommand::RedrawAviutl:
 				return TRUE;
 
-			case (UINT)WindowCommand::Update:
-				global::window_main.send_command((WPARAM)WindowCommand::Update);
+			case WindowCommand::StartDnd:
+				::SetCapture(hwnd);
+				::SetCursor(::LoadCursorA(fp->dll_hinst, MAKEINTRESOURCEA(IDC_DRAG)));
+				dnd.drag(static_cast<uint32_t>(lparam));
 				break;
 			}
-			return 0;
+			break;
 		}
-		return 0;
+		return FALSE;
 	}
-}
+} // namespace curve_editor

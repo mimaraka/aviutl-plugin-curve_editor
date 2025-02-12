@@ -1,39 +1,67 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph.hpp"
+#include "string_table.hpp"
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(直線)
 	class LinearCurve : public GraphCurve {
 	public:
-		using GraphCurve::GraphCurve;
+		LinearCurve(
+			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. },
+			bool pt_fixed = false,
+			GraphCurve* prev = nullptr,
+			GraphCurve* next = nullptr
+		) noexcept :
+			GraphCurve{ anchor_start, anchor_end, pt_fixed, prev, next }
+		{}
+
+		// コピーコンストラクタ
+		LinearCurve(const LinearCurve& curve) noexcept :
+			GraphCurve{ curve }
+		{}
+
+		// コピー代入演算子
+		LinearCurve& operator=(const LinearCurve& curve) noexcept {
+			if (this != &curve) {
+				GraphCurve::operator=(curve);
+			}
+			return *this;
+		}
+
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<LinearCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
+
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_LINEAR; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelCurveSegmentTypeLinear]; }
 
 		// カーブの値を取得
-		double curve_function(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		// カーブを初期化
 		void clear() noexcept override {}
+		// カーブがデフォルトかどうか
+		[[nodiscard]] bool is_default() const noexcept override { return true; }
 
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
-		// ハンドルを描画
-		void draw_handle(mkaul::graphics::Graphics*, const View&, float, float, float, float, bool, const mkaul::ColorF&) const noexcept override {}
-		
-		bool handle_check_hover(
-			const mkaul::Point<double>&,
-			const GraphView&
-		) noexcept override { return false; }
-		bool handle_update(
-			const mkaul::Point<double>&,
-			const GraphView&
-		) noexcept override { return false; }
-		void handle_end_control() noexcept override {}
-		bool is_handle_hovered(const mkaul::Point<double>&, const GraphView&) const noexcept override { return false; }
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<GraphCurve>(this)
+			);
+		}
 
-		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_begin_move(ActivePoint) noexcept override { return true; }
-		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		void pt_end_control() noexcept override;
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<GraphCurve>(this)
+			);
+		}
 	};
-}
+} // namespace curve_editor
+
+CEREAL_CLASS_VERSION(curve_editor::LinearCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::LinearCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::GraphCurve, curve_editor::LinearCurve)

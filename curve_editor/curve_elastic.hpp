@@ -1,81 +1,100 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph_numeric.hpp"
-#include "handle_elastic_amp.hpp"
-#include "handle_elastic_freq_decay.hpp"
+#include "string_table.hpp"
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(振動)
 	class ElasticCurve : public NumericGraphCurve {
 		static constexpr double DEFAULT_AMP = 1.;
-		static constexpr double DEFAULT_FREQ = 8.;
+		static constexpr double DEFAULT_FREQ = 5.;
 		static constexpr double DEFAULT_DECAY = 6.;
-		ElasticAmpHandle handle_amp_;
-		ElasticFreqDecayHandle handle_freq_decay_;
-		double amp_;
-		double freq_;
+		double amplitude_;
+		double frequency_;
 		double decay_;
+		bool reversed_;
 
 	public:
 		// コンストラクタ
 		ElasticCurve(
-			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u,
+			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. },
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
 			double amp = DEFAULT_AMP,
 			double freq = DEFAULT_FREQ,
-			double decay = DEFAULT_DECAY
+			double decay = DEFAULT_DECAY,
+			bool reversed = false
 		) noexcept;
 
 		// コピーコンストラクタ
 		ElasticCurve(const ElasticCurve& curve) noexcept;
 
-		// カーブの値を取得
-		double curve_function(double progress, double start, double end) const noexcept override;
-		void clear() noexcept override;
-		void reverse(bool fix_pt = false) noexcept override;
+		// コピー代入演算子
+		ElasticCurve& operator=(const ElasticCurve& curve) noexcept;
 
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<ElasticCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
+
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_ELASTIC; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeElastic]; }
+
+		// カーブの値を取得
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
+		void clear() noexcept override;
+		[[nodiscard]] bool is_default() const noexcept override;
+		void reverse(bool fix_pt = false) noexcept override;
+		[[nodiscard]] bool is_reversed() const noexcept { return reversed_; }
+
+		[[nodiscard]] double get_handle_amp_left_x() const noexcept { return anchor_start().x; }
+		[[nodiscard]] double get_handle_amp_left_y() const noexcept;
+		[[nodiscard]] double get_handle_amp_right_x() const noexcept { return anchor_end().x; }
+		[[nodiscard]] double get_handle_amp_right_y() const noexcept { return get_handle_amp_left_y(); }
+		[[nodiscard]] double get_handle_freq_decay_x() const noexcept;
+		[[nodiscard]] double get_handle_freq_decay_y() const noexcept;
+		[[nodiscard]] double get_handle_freq_decay_root_y() const noexcept;
+
+		void set_handle_amp_left(double y) noexcept;
+		void set_handle_amp_right(double y) noexcept { set_handle_amp_left(y); }
+		void set_handle_freq_decay(double x, double y) noexcept;
 
 		// カーブから一意な整数値を生成
-		int32_t encode() const noexcept override;
+		[[nodiscard]] int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
-		void draw_handle(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float thickness,
-			float root_radius,
-			float tip_radius,
-			float tip_thickness,
-			bool cutoff_line,
-			const mkaul::ColorF& color = mkaul::ColorF{}
-		) const noexcept override;
+		[[nodiscard]] std::string create_params_str(size_t precision = 2) const noexcept override;
+		bool read_params(const std::vector<double>& params) noexcept override;
 
-		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 
-		bool handle_check_hover(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				amplitude_,
+				frequency_,
+				decay_
+			);
+		}
 
-		bool handle_update(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-		void handle_end_control() noexcept override;
-
-		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_begin_move(ActivePoint active_pt) noexcept override;
-		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept override;
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				amplitude_,
+				frequency_,
+				decay_
+			);
+		}
 	};
-}
+} // namespace curve_editor
+
+CEREAL_CLASS_VERSION(curve_editor::ElasticCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::ElasticCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::NumericGraphCurve, curve_editor::ElasticCurve)

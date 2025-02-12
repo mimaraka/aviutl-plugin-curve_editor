@@ -1,11 +1,12 @@
-#include "dialog_warning_autosaver.hpp"
 #include "config.hpp"
+#include "dialog_warning_autosaver.hpp"
 #include "resource.h"
+#include <CommCtrl.h>
 
 
 
-namespace cved {
-	int AutosaverWarningDialog::i_resource() const noexcept { return IDD_WARNING_AUTOSAVER; }
+namespace curve_editor {
+	int AutosaverWarningDialog::resource_id() const noexcept { return IDD_WARNING_AUTOSAVER; }
 
 	void AutosaverWarningDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_check_dontshowagain_ = ::GetDlgItem(hwnd, IDC_CHECK_DONTSHOWAGAIN);
@@ -14,19 +15,24 @@ namespace cved {
 
 
 	INT_PTR AutosaverWarningDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-		constexpr char URL_GITHUB_AUTOSAVER[] = "https://github.com/ePi5131/autosaver/releases/latest";
-
 		switch (message) {
-		/*case WM_CLOSE:
-			global::config.set_ignore_autosaver_warning(
-				::SendMessageA(hwnd_check_dontshowagain_, BM_GETCHECK, NULL, NULL)
-			);
-			::EndDialog(hwnd, IDCANCEL);
-			return TRUE;*/
-
 		case WM_INITDIALOG:
 			init_controls(hwnd);
 			return TRUE;
+
+		case WM_NOTIFY:
+			switch (((LPNMHDR)lparam)->code) {
+				// SysLinkクリック時
+			case NM_CLICK:
+			case NM_RETURN:
+			{
+				PNMLINK p_nmlink = (PNMLINK)lparam;
+				LITEM& item = p_nmlink->item;
+				::ShellExecuteW(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOWNORMAL);
+				return TRUE;
+			}
+			}
+			break;
 
 		case WM_COMMAND:
 			switch (LOWORD(wparam)) {
@@ -34,19 +40,14 @@ namespace cved {
 				global::config.set_ignore_autosaver_warning(
 					::SendMessageA(hwnd_check_dontshowagain_, BM_GETCHECK, NULL, NULL)
 				);
-				::ShellExecuteA(NULL, "open", URL_GITHUB_AUTOSAVER, NULL, NULL, SW_SHOWNORMAL);
-				::EndDialog(hwnd, IDOK);
-				return TRUE;
+				[[fallthrough]];
 
 			case IDCANCEL:
-				global::config.set_ignore_autosaver_warning(
-					::SendMessageA(hwnd_check_dontshowagain_, BM_GETCHECK, NULL, NULL)
-				);
-				::EndDialog(hwnd, IDCANCEL);
+				::EndDialog(hwnd, IDOK);
 				return TRUE;
 			}
 			break;
 		}
 		return FALSE;
 	}
-}
+} // namespace curve_editor

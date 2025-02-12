@@ -1,105 +1,116 @@
 #pragma once
 
+#include "constants.hpp"
 #include "curve_graph_numeric.hpp"
 #include "handle_bezier.hpp"
+#include "string_table.hpp"
 
 
-
-namespace cved {
+namespace curve_editor {
 	// カーブ(ベジェ)
 	class BezierCurve : public NumericGraphCurve {
-		// ハンドル (左)
 		BezierHandle handle_left_;
-		// ハンドル (右)
 		BezierHandle handle_right_;
-		// ハンドル (保存用)
-		BezierHandle handle_buffer_left_;
-		BezierHandle handle_buffer_right_;
-		bool flag_prev_move_symmetrically_;
+		mkaul::Point<double> buffer_handle_left_;
+		mkaul::Point<double> buffer_handle_right_;
+
+		void on_anchor_begin_move() noexcept;
+		void on_anchor_end_move() noexcept;
 
 	public:
+		enum class HandleType {
+			Left,
+			Right
+		};
+
 		// コンストラクタ
 		BezierCurve(
-			const mkaul::Point<double>& pt_start = mkaul::Point{ 0., 0. },
-			const mkaul::Point<double>& pt_end = mkaul::Point{ 1., 1. },
-			uint32_t sampling_resolution = 0u,
-			uint32_t quantization_resolution = 0u,
+			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
+			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. },
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
-			const mkaul::Point<double>& handle_left = mkaul::Point<double>{},
-			const mkaul::Point<double>& handle_right = mkaul::Point<double>{}
+			mkaul::Point<double> handle_left = mkaul::Point{ BezierHandle::DEFAULT_HANDLE_RATIO, BezierHandle::DEFAULT_HANDLE_RATIO },
+			mkaul::Point<double> handle_right = mkaul::Point{ -BezierHandle::DEFAULT_HANDLE_RATIO, -BezierHandle::DEFAULT_HANDLE_RATIO }
 		) noexcept;
 
 		// コピーコンストラクタ
 		BezierCurve(const BezierCurve& curve) noexcept;
 
-		void set_prev(GraphCurve* p) noexcept override;
-		void set_next(GraphCurve* p) noexcept override;
+		// コピー代入演算子
+		BezierCurve& operator=(const BezierCurve& curve) noexcept;
+
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<BezierCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
+
+		// カーブの名前を取得する
+		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BEZIER; }
+		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBezier]; }
+
+		// アンカーを移動する
+		void begin_move_anchor_start(bool bound = false) noexcept override;
+		void begin_move_anchor_end(bool bound = false) noexcept override;
+		void move_anchor_start(double x, double y, bool forced = false, bool bound = false) noexcept override;
+		void move_anchor_end(double x, double y, bool forced = false, bool bound = false) noexcept override;
+		void end_move_anchor_start(bool bound = false) noexcept override;
+		void end_move_anchor_end(bool bound = false) noexcept override;
+
+		// ハンドルの座標を取得する
+		[[nodiscard]] auto get_handle_left() const noexcept { return handle_left_.pos_abs(); }
+		[[nodiscard]] auto get_handle_right() const noexcept { return handle_right_.pos_abs(); }
+
+		// ハンドルを移動する
+		void begin_move_handle_left(double scale_x, double scale_y, bool bound = false) noexcept;
+		void begin_move_handle_right(double scale_x, double scale_y, bool bound = false) noexcept;
+		void move_handle_left(const mkaul::Point<double>& pt, bool keep_angle = false, bool bound = false, bool moved_symmetrically = false) noexcept;
+		void move_handle_right(const mkaul::Point<double>& pt, bool keep_angle = false, bool bound = false, bool moved_symmetrically = false) noexcept;
+		void end_move_handle_left(bool bound = false) noexcept;
+		void end_move_handle_right(bool bound = false) noexcept;
+
+		bool is_moving_symmetrically() const noexcept { return handle_left_.is_key_pressed_move_symmetrically() or handle_right_.is_key_pressed_move_symmetrically(); }
+
+		void lock_length_left() noexcept { handle_left_.lock_length(); }
+		void unlock_length_left() noexcept { handle_left_.unlock_length(); }
+		void lock_length_right() noexcept { handle_right_.lock_length(); }
+		void unlock_length_right() noexcept { handle_right_.unlock_length(); }
 
 		// カーブの値を取得する
-		double curve_function(double progress, double start, double end) const noexcept override;
+		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;
+		[[nodiscard]] bool is_default() const noexcept override;
 		void reverse(bool fix_pt = false) noexcept override;
 
 		// カーブから一意な整数値を生成
-		int32_t encode() const noexcept override;
+		[[nodiscard]] int32_t encode() const noexcept override;
 		// 整数値からカーブに変換
 		bool decode(int32_t code) noexcept override;
 
-		void create_data(std::vector<byte>& data) const noexcept override;
-		bool load_data(const byte* data, size_t size) noexcept override;
+		[[nodiscard]] std::string create_params_str(size_t precision = 2) const noexcept override;
+		bool read_params(const std::vector<double>& params) noexcept override;
 
-		std::string make_param() const noexcept;
+		[[nodiscard]] nlohmann::json create_json() const noexcept override;
+		bool load_json(const nlohmann::json& data) noexcept override;
 
-		// ハンドルを描画
-		void draw_handle(
-			mkaul::graphics::Graphics* p_graphics,
-			const View& view,
-			float thickness,
-			float root_radius,
-			float tip_radius,
-			float tip_thickness,
-			bool cutoff_line,
-			const mkaul::ColorF& color = mkaul::ColorF{}
-		) const noexcept override;
+		template <class Archive>
+		void save(Archive& archive, const std::uint32_t) const {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				handle_left_,
+				handle_right_
+			);
+		}
 
-		// ハンドルを取得 (左)
-		auto handle_left() const noexcept { return const_cast<BezierHandle*>(&handle_left_); }
-		// ハンドルを取得 (右)
-		auto handle_right() const noexcept { return const_cast<BezierHandle*>(&handle_right_); }
-
-		// カーソルが左右いずれかのハンドルにホバーしているか
-		bool is_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept override;
-		// 左ハンドルにホバーしているか
-		bool is_left_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
-		// 右ハンドルにホバーしているか
-		bool is_right_handle_hovered(const mkaul::Point<double>& pt, const GraphView& view) const noexcept;
-
-		void adjust_handle_angle(BezierHandle::Type type, const GraphView& view) noexcept;
-
-		// ハンドルの移動を開始
-		bool handle_check_hover(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-		// ハンドルの位置をアップデート
-		bool handle_update(
-			const mkaul::Point<double>& pt,
-			const GraphView& view
-		) noexcept override;
-		// ハンドルの移動を終了
-		void handle_end_control() noexcept override;
-
-		// ポイントの移動を開始
-		ActivePoint pt_check_hover(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		bool pt_begin_move(ActivePoint active_pt) noexcept override;
-		// ポイントの位置をアップデート
-		ActivePoint pt_update(const mkaul::Point<double>& pt, const GraphView& view) noexcept override;
-		// ポイントを強制的に動かす
-		bool pt_move(ActivePoint active_pt, const mkaul::Point<double>& pt) noexcept override;
-		// ポイントの移動を終了
-		void pt_end_move() noexcept override;
-		void pt_end_control() noexcept override;
+		template <class Archive>
+		void load(Archive& archive, const std::uint32_t) {
+			archive(
+				cereal::base_class<NumericGraphCurve>(this),
+				handle_left_,
+				handle_right_
+			);
+		}
 	};
-}
+} // namespace curve_editor
+
+CEREAL_CLASS_VERSION(curve_editor::BezierCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::BezierCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::NumericGraphCurve, curve_editor::BezierCurve)

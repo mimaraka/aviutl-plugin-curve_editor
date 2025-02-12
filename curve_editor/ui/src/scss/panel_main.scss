@@ -1,0 +1,102 @@
+@import url('./variables.scss');
+
+:root {
+    --separator-handle-thickness: 4px;
+}
+
+.container-panel-main {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-bg);
+}
+
+.panel-upside {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+.button-apply {
+    user-select: none;
+    overflow: hidden;
+    width: calc(100% - var(--margin) * 4);
+    height: calc(var(--apply-button-height) - var(--margin) * 4);
+    margin: calc(var(--margin) * 2);
+    transition: all .2s ease-out;
+    background: var(--color-button);
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    font: var(--font);
+    color: rgb(228, 228, 228);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:hover {
+        background: var(--color-button-hover);
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    &:active {
+        background: var(--color-button-active);
+    }
+}
+
+#separator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    transition: var(--transition);
+    background: var(--color-control);
+    border: none;
+    &:hover {
+        background: var(--color-control-hover);
+    }
+
+    &:active {
+        background: var(--color-control-active);
+    }
+}
+
+.separator-vertical {
+    width: 100%;
+    height: var(--separator-height);
+}
+
+.separator-horizontal {
+    width: var(--separator-height);
+    height: 100%;
+}
+
+#separator-handle {
+    background: var(--color-handle);
+    border-radius: var(--separator-handle-thickness);
+}
+
+.separator-handle-vertical {
+    width: min(30%, 150px);
+    height: var(--separator-handle-thickness);
+}
+
+.separator-handle-horizontal {
+    width: var(--separator-handle-thickness);
+    height: min(30%, 150px);
+}
+
+#disabled-overlay {
+    position: absolute;
+    z-index: 2147483647;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0);
+}

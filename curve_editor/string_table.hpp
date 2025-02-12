@@ -1,78 +1,150 @@
 #pragma once
 
-#include <Windows.h>
 #include <string>
+#include <Windows.h>
 
 
 
-namespace cved {
-	namespace global {
-		inline class StringTable {
-		public:
-			enum class StringId : size_t {
-				ErrorLuaDLLNotFound,
-				ErrorExeditNotFound,
-				ErrorExeditHookFailed,
-				ErrorGraphicsInitFailed,
-				ErrorConnectionFailed,
-				ErrorOutOfRange,
-				ErrorInvalidInput,
-				ErrorCodeCopyFailed,
-				ErrorDataLoadFailed,
-				WarningDeleteCurve,
-				WarningDeleteAllCurves,
-				WarningResetPreferences,
-				WarningDeleteId,
-				WarningDeleteAllIds,
-				InfoLatestVersion,
-				InfoUpdateAvailable,
-				InfoRestartAviutl,
-				LabelEditModeNormal,
-				LabelEditModeValue,
-				LabelEditModeBezier,
-				LabelEditModeElastic,
-				LabelEditModeBounce,
-				LabelEditModeScript,
-				LabelCurveSegmentTypeLinear,
-				LabelApplyModeNormal,
-				LabelApplyModeIgnoreMidPoint,
-				LabelApplyModeInterpolate,
-				LabelTooltipCopy,
-				LabelTooltipRead,
-				LabelTooltipSave,
-				LabelTooltipClear,
-				LabelTooltipFit,
-				LabelTooltipMore,
-				LabelTooltipIdBack,
-				LabelTooltipIdNext,
-				LabelTooltipCurrentId,
-				LabelThemeNameDark,
-				LabelThemeNameLight,
-				LabelPreferenceGeneral,
-				LabelPreferenceAppearance,
-				LabelPreferenceBehavior,
-				LabelPreferenceEditing,
-				LabelSelectBackgroundImage,
-				WordVersion,
-				WordEditMode,
-				WordLanguageAutomatic,
-				WordImageFiles,
-				NumStringId
-			};
+namespace curve_editor::global {
+	inline class StringTable {
+	public:
+		enum class StringId : size_t {
+			ErrorLuaDLLNotFound,
+			ErrorExeditNotFound,
+			ErrorExeditHookFailed,
+			ErrorGraphicsInitFailed,
+			ErrorConnectionFailed,
+			ErrorOutOfRange,
+			ErrorInvalidInput,
+			ErrorCodeCopyFailed,
+			ErrorDataLoadFailed,
+			ErrorWebView2InitFailed,
+			ErrorCommCtrlInitFailed,
+			ErrorPageLoadFailed,
+			ErrorPresetCreateFailed,
+			ErrorCollectionImportFailed,
+			WarningDeleteCurve,
+			WarningDeleteAllCurves,
+			WarningResetPreferences,
+			WarningDeleteId,
+			WarningDeleteAllIds,
+			WarningRemoveModifier,
+			WarningRemovePreset,
+			WarningRemoveCollection,
+			WarningScriptFileNotFound,
+			InfoLatestVersion,
+			InfoUpdateAvailable,
+			InfoRestartAviutl,
+			LabelEditModeNormal,
+			LabelEditModeValue,
+			LabelEditModeBezier,
+			LabelEditModeElastic,
+			LabelEditModeBounce,
+			LabelEditModeScript,
+			LabelCurveSegmentTypeLinear,
+			LabelApplyModeNormal,
+			LabelApplyModeIgnoreMidPoint,
+			LabelApplyModeInterpolate,
+			LabelTooltipCopy,
+			LabelTooltipRead,
+			LabelTooltipSave,
+			LabelTooltipClear,
+			LabelTooltipFit,
+			LabelTooltipMore,
+			LabelTooltipIdBack,
+			LabelTooltipIdNext,
+			LabelTooltipCurrentId,
+			LabelThemeNameSystem,
+			LabelThemeNameDark,
+			LabelThemeNameLight,
+			LabelPreferenceGeneral,
+			LabelPreferenceAppearance,
+			LabelPreferenceBehavior,
+			LabelPreferenceEditing,
+			LabelSelectBackgroundImage,
+			LabelSelectCurve,
+			LabelModifierDiscretization,
+			LabelModifierNoise,
+			LabelModifierSineWave,
+			LabelModifierSquareWave,
+			LabelSortByNull,
+			LabelSortByName,
+			LabelSortByDate,
+			LabelSortOrderAsc,
+			LabelSortOrderDesc,
+			LabelCollectionExportOmitDate,
+			LabelCollectionNameAll,
+			LabelCollectionNameDefault,
+			LabelCollectionNameRoot,
+			PromptCreatePreset,
+			PromptCurveCode,
+			PromptCurveParam,
+			PromptRenamePreset,
+			PromptCreateCollection,
+			PromptRenameCollection,
+			CaptionCreatePreset,
+			CaptionCurveCode,
+			CaptionCurveParam,
+			CaptionRenamePreset,
+			CaptionCreateCollection,
+			CaptionRenameCollection,
+			CaptionImportCollection,
+			CaptionExportCollection,
+			WordVersion,
+			WordEditMode,
+			WordLanguageAutomatic,
+			WordImageFiles,
+			WordSelect,
+			WordCollectionFile,
+			MenuGraphApplyMode,
+			MenuGraphAddAnchor,
+			MenuGraphReverseCurve,
+			MenuGraphModifier,
+			MenuGraphCopyCurve,
+			MenuGraphPasteCurve,
+			MenuGraphAlignHandle,
+			MenuGraphShowXLabel,
+			MenuGraphShowYLabel,
+			MenuGraphShowHandle,
+			MenuGraphShowVelocityGraph,
+			MenuCurveSegmentType,
+			MenuCurveSegmentReverse,
+			MenuCurveSegmentModifier,
+			MenuOthersWindowLayout,
+			MenuOthersWindowLayoutVertical,
+			MenuOthersWindowLayoutHorizontal,
+			MenuOthersExtension,
+			MenuOthersExtensionInstall,
+			MenuOthersReloadWindow,
+			MenuOthersPreferences,
+			MenuOthersHelp,
+			MenuOthersAbout,
+			MenuOthersUpdateAvailable,
+			MenuPresetItemRename,
+			MenuPresetItemRemove,
+			MenuCollectionAddNew,
+			MenuCollectionAddImport,
+			MenuCollectionAddImportCecl,
+			MenuCollectionAddImportFlow,
+			MenuCollectionRename,
+			MenuCollectionRemove,
+			MenuCollectionExport,
+			MenuBezierHandleRoot,
+			MenuBezierHandleAdjustAngle,
+			MenuIdxJumpToFirst,
+			MenuIdxJumpToLast,
+			MenuIdxDelete,
+			MenuIdxDeleteAll,
+			NumStringId
+		};
 
-		private:
-			static constexpr size_t MAX_LEN = 0x200;
-			bool loaded_ = false;
+	private:
+		static constexpr size_t MAX_LEN = 0x200;
 
-			std::string string_data[(size_t)StringId::NumStringId];
-		public:
-			StringTable() :
-				string_data()
-			{}
+		std::string string_data[(size_t)StringId::NumStringId];
+	public:
+		StringTable() noexcept;
 
-			bool load(HINSTANCE hinst);
-			bool loaded() const noexcept { return loaded_; }
-			const char* operator[] (StringId str_id);
-		} string_table;
-	}
-}
+		const char* operator[] (StringId str_id);
+	} string_table;
+} // namespace curve_editor::global
