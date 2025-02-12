@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// 離散化モディファイア—
 	class DiscretizationModifier : public Modifier {
 		uint32_t sampling_resolution_;
@@ -60,8 +60,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::DiscretizationModifier, 0)
-CEREAL_REGISTER_TYPE(cved::DiscretizationModifier)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Modifier, cved::DiscretizationModifier)
+CEREAL_CLASS_VERSION(curve_editor::DiscretizationModifier, 0)
+CEREAL_REGISTER_TYPE(curve_editor::DiscretizationModifier)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::Modifier, curve_editor::DiscretizationModifier)

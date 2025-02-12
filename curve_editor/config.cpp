@@ -1,13 +1,14 @@
 #include "config.hpp"
-#include "constants.hpp"
 #include "curve_editor.hpp"
 #include "global.hpp"
+#include "preset_manager.hpp"
 #include "string_table.hpp"
+#include "util.hpp"
 #include <fstream>
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	Config::Config() noexcept :
 		edit_mode_{ EditMode::Normal },
 		layout_mode_{ LayoutMode::Horizontal },
@@ -36,9 +37,9 @@ namespace cved::global {
 		::GetModuleFileNameA(NULL, path_str, MAX_PATH);
 		std::filesystem::path path_aviutl{ path_str };
 		dir_aviutl_ = path_aviutl.parent_path();
-		::GetModuleFileNameA(::GetModuleHandleA(global::PLUGIN_DLL_NAME), path_str, MAX_PATH);
+		::GetModuleFileNameA(util::get_hinst(), path_str, MAX_PATH);
 		std::filesystem::path path_plugin{ path_str };
-		dir_plugin_ = path_plugin.parent_path() / "curve_editor";
+		dir_plugin_ = path_plugin.parent_path() / global::PLUGIN_NAME;
 	}
 
 	bool Config::set_language(Language language) noexcept {
@@ -154,8 +155,11 @@ namespace cved::global {
 			if (data.contains("preferences")) {
 				pref_.from_json(data["preferences"]);
 			}
-			set_from_json(this, data, GET_KEY(edit_mode_), &Config::set_edit_mode);
-			set_from_json(this, data, GET_KEY(layout_mode_), &Config::set_layout_mode);
+			if (data.contains("preset_list_config")) {
+				global::preset_manager.list_config_from_json(data["preset_list_config"]);
+			}
+			util::set_from_json(this, data, GET_KEY(edit_mode_), &Config::set_edit_mode);
+			util::set_from_json(this, data, GET_KEY(layout_mode_), &Config::set_layout_mode);
 			if (data[GET_KEY(apply_mode_)].is_array()) {
 				size_t count = 0u;
 				for (const auto& el : data[GET_KEY(apply_mode_)]) {
@@ -163,19 +167,19 @@ namespace cved::global {
 					set_apply_mode((EditMode)count++, (ApplyMode)el);
 				}
 			}
-			set_from_json(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
-			set_from_json(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
-			set_from_json(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
-			set_from_json(this, data, GET_KEY(show_library_), &Config::set_show_library);
-			set_from_json(this, data, GET_KEY(show_velocity_graph_), &Config::set_show_velocity_graph);
-			set_from_json(this, data, GET_KEY(show_x_label_), &Config::set_show_x_label);
-			set_from_json(this, data, GET_KEY(show_y_label_), &Config::set_show_y_label);
-			set_from_json(this, data, GET_KEY(align_handle_), &Config::set_align_handle);
-			set_from_json(this, data, GET_KEY(ignore_autosaver_warning_), &Config::set_ignore_autosaver_warning);
-			set_from_json(this, data, GET_KEY(separator_pos_), &Config::set_separator_pos);
-			set_from_json(this, data, GET_KEY(preset_size_), &Config::set_preset_size);
-			set_from_json(data, "select_window_width", select_window_size_.width);
-			set_from_json(data, "select_window_height", select_window_size_.height);
+			util::set_from_json(data, GET_KEY(curve_code_bezier_), curve_code_bezier_);
+			util::set_from_json(data, GET_KEY(curve_code_elastic_), curve_code_elastic_);
+			util::set_from_json(data, GET_KEY(curve_code_bounce_), curve_code_bounce_);
+			util::set_from_json(this, data, GET_KEY(show_library_), &Config::set_show_library);
+			util::set_from_json(this, data, GET_KEY(show_velocity_graph_), &Config::set_show_velocity_graph);
+			util::set_from_json(this, data, GET_KEY(show_x_label_), &Config::set_show_x_label);
+			util::set_from_json(this, data, GET_KEY(show_y_label_), &Config::set_show_y_label);
+			util::set_from_json(this, data, GET_KEY(align_handle_), &Config::set_align_handle);
+			util::set_from_json(this, data, GET_KEY(ignore_autosaver_warning_), &Config::set_ignore_autosaver_warning);
+			util::set_from_json(this, data, GET_KEY(separator_pos_), &Config::set_separator_pos);
+			util::set_from_json(this, data, GET_KEY(preset_size_), &Config::set_preset_size);
+			util::set_from_json(data, "select_window_width", select_window_size_.width);
+			util::set_from_json(data, "select_window_height", select_window_size_.height);
 		}
 		catch (const nlohmann::json::exception&) {
 			return false;
@@ -185,17 +189,20 @@ namespace cved::global {
 
 	// jsonファイルを保存
 	bool Config::save_json() {
-		nlohmann::json data_pref;
-		pref_.to_json(&data_pref);
+		nlohmann::json json_pref;
+		pref_.to_json(json_pref);
+		nlohmann::json json_preset_list_config;
+		global::preset_manager.list_config_to_json(json_preset_list_config);
 
-		nlohmann::json data = {
-			{"preferences", data_pref},
+		nlohmann::json json = {
+			{"preferences", json_pref},
+			{"preset_list_config", json_preset_list_config},
 			{GET_KEY(edit_mode_), edit_mode_},
 			{GET_KEY(layout_mode_), layout_mode_},
 			{GET_KEY(apply_mode_), apply_mode_},
-			{"curve_code_bezier", editor.editor_graph().curve_bezier()->encode()},
-			{"curve_code_elastic", editor.editor_graph().curve_elastic()->encode()},
-			{"curve_code_bounce", editor.editor_graph().curve_bounce()->encode()},
+			{"curve_code_bezier", editor.editor_graph().curve_bezier().encode()},
+			{"curve_code_elastic", editor.editor_graph().curve_elastic().encode()},
+			{"curve_code_bounce", editor.editor_graph().curve_bounce().encode()},
 			{GET_KEY(show_library_), show_library_},
 			{GET_KEY(show_x_label_), show_x_label_},
 			{GET_KEY(show_y_label_), show_y_label_},
@@ -210,9 +217,9 @@ namespace cved::global {
 
 		std::ofstream ofs{ dir_plugin_ / CONFIG_FILE_NAME };
 		if (!ofs) return false;
-		ofs << data.dump(2);
+		ofs << json.dump(2);
 		return true;
 	}
 
 #undef GET_KEY
-} // namespace cved::global
+} // namespace curve_editor::global

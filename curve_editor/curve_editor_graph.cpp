@@ -4,7 +4,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	GraphCurveEditor::GraphCurveEditor() :
 		curves_normal_{},
 		curves_value_{},
@@ -82,14 +82,14 @@ namespace cved::global {
 		return result_bezier and result_elastic and result_bounce;
 	}
 
-	NormalCurve* GraphCurveEditor::curve_normal(size_t idx) noexcept {
+	NormalCurve* GraphCurveEditor::p_curve_normal(size_t idx) noexcept {
 		if (idx < curves_normal_.size()) {
 			return &curves_normal_[idx];
 		}
 		else return nullptr;
 	}
 
-	ValueCurve* GraphCurveEditor::curve_value(size_t idx) noexcept {
+	ValueCurve* GraphCurveEditor::p_curve_value(size_t idx) noexcept {
 		if (idx < curves_value_.size()) {
 			return &curves_value_[idx];
 		}
@@ -118,7 +118,7 @@ namespace cved::global {
 		}
 	}
 
-	GraphCurve* GraphCurveEditor::current_curve() noexcept {
+	GraphCurve* GraphCurveEditor::p_current_curve() noexcept {
 		return get_curve(global::config.get_edit_mode());
 	}
 
@@ -182,4 +182,4 @@ namespace cved::global {
 		idx_normal_ = 0;
 		return true;
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

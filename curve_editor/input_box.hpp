@@ -6,7 +6,7 @@
 
 
 
-namespace cved::util {
+namespace curve_editor::util {
 	void input_box(
 		HWND hwnd,
 		const char* prompt,
@@ -14,4 +14,4 @@ namespace cved::util {
 		std::function<bool(HWND, const std::string&)> on_submit,
 		const char* default_text = ""
 	);
-} // namespace cved::util
+} // namespace curve_editor::util

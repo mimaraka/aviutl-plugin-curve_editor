@@ -10,7 +10,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int AppearancePrefDialog::resource_id() const noexcept { return IDD_PREF_APPEARANCE; }
 
 	void AppearancePrefDialog::init_controls(HWND hwnd) noexcept {
@@ -112,7 +112,7 @@ namespace cved {
 				::SendMessageA(
 					hwnd_check_set_bg_image_,
 					BM_SETCHECK,
-					(WPARAM)global::config.get_set_bg_image(),
+					(WPARAM)global::config.get_show_bg_image(),
 					NULL
 				);
 				::SendMessageA(
@@ -121,7 +121,7 @@ namespace cved {
 					(WPARAM)global::config.get_enable_animation(),
 					NULL
 				);
-				if (global::config.get_set_bg_image()) {
+				if (global::config.get_show_bg_image()) {
 					::EnableWindow(hwnd_static_bg_image_1_, TRUE);
 					::EnableWindow(hwnd_edit_bg_image_path_, TRUE);
 					::EnableWindow(hwnd_button_bg_image_path_, TRUE);
@@ -153,7 +153,7 @@ namespace cved {
 			case (UINT)WindowCommand::SaveConfig:
 				global::config.set_theme((ThemeId)::SendMessageA(hwnd_combo_theme_, CB_GETCURSEL, NULL, NULL));
 				global::config.set_show_trace((bool)::SendMessageA(hwnd_check_show_trace_, BM_GETCHECK, NULL, NULL));
-				global::config.set_set_bg_image((bool)::SendMessageA(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL));
+				global::config.set_show_bg_image((bool)::SendMessageA(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL));
 				global::config.set_enable_animation((bool)::SendMessageA(hwnd_check_enable_animation_, BM_GETCHECK, NULL, NULL));
 				global::config.set_curve_color(cc.rgbResult);
 				global::config.set_curve_thickness(
@@ -228,4 +228,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

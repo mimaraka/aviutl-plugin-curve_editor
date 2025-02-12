@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int SineWaveModifierDialog::resource_id() const noexcept { return IDD_MODIFIER_SINE_WAVE; }
 
 	void SineWaveModifierDialog::init_controls(HWND hwnd, const SineWaveModifier* p_mod_sinewave) noexcept {
@@ -89,4 +89,4 @@ namespace cved {
 
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

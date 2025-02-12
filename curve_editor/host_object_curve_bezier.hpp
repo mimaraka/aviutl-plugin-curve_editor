@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class BezierCurveHostObject : public GraphCurveHostObject {
 		static std::vector<double> get_handle_left(uint32_t id);
 		static void begin_move_handle_left(uint32_t id, double scale_x, double scale_y);
@@ -33,4 +33,4 @@ namespace cved {
 			register_member(L"getParam", DispatchType::Method, get_param);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

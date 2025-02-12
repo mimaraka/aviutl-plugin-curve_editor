@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class Curve;
 	namespace global {
 		inline class CurveIdManager {
@@ -40,4 +40,4 @@ namespace cved {
 			}
 		} id_manager;
 	} // namespace global
-} // namespace cved
+} // namespace curve_editor

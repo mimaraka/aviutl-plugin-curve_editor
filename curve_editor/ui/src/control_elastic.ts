@@ -237,6 +237,12 @@ class ElasticControl extends Control {
         this.updateHandleFreqDecay(transition);
     }
 
+    updateHandleOrder(): void {
+        this.handleAmpLeft.raise();
+        this.handleAmpRight.raise();
+        this.handleFreqDecay.raise();
+    }
+
     updateControl(transition?: d3.Transition<any, unknown, any, unknown> | null): void {
         super.updateControl(transition);
         this.updateHandle(transition);

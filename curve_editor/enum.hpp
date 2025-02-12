@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 
-namespace cved {
+namespace curve_editor {
 	enum class EditMode : uint32_t {
 		Normal,
 		Value,
@@ -80,4 +80,4 @@ namespace cved {
 		English,
 		Korean
 	};
-} // namespace cved
+} // namespace curve_editor

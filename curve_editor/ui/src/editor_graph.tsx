@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
 import { config, editor } from './host_object';
 import NormalCurve from './curve_normal';
 import BezierCurve from './curve_bezier';
@@ -462,6 +462,15 @@ class GraphEditor {
         document.querySelectorAll<HTMLElement>('.anchor, .handle, .handle-line').forEach((element) => {
             element.style.visibility = config.showHandle ? 'visible' : 'hidden';
         });
+        const showHandleButton = document.getElementById('show-handle');
+        if (config.showHandle && showHandleButton?.classList.contains('visible')) {
+            showHandleButton.classList.remove('visible');
+            showHandleButton.classList.add('hidden');
+        }
+        else if (!config.showHandle && showHandleButton?.classList.contains('hidden')) {
+            showHandleButton.classList.remove('hidden');
+            showHandleButton.classList.add('visible');
+        }
     }
 
     updateAxisLabelVisibility() {
@@ -480,17 +489,17 @@ class GraphEditor {
     }
 
     onZoom(event: any) {
-        const fit = document.getElementById('fit');
+        const fitButton = document.getElementById('fit');
         if (event.transform.k == 1 && event.transform.x == 0 && event.transform.y == 0) {
-            if (fit?.classList.contains('visible')) {
-                fit?.classList.remove('visible');
-                fit?.classList.add('hidden');
+            if (fitButton?.classList.contains('visible')) {
+                fitButton?.classList.remove('visible');
+                fitButton?.classList.add('hidden');
             }
         }
         else {
-            if (fit?.classList.contains('hidden')) {
-                fit?.classList.remove('hidden');
-                fit?.classList.add('visible');
+            if (fitButton?.classList.contains('hidden')) {
+                fitButton?.classList.remove('hidden');
+                fitButton?.classList.add('visible');
             }
         }
 
@@ -603,6 +612,11 @@ class GraphEditor {
             .attr('height', height);
         this.#control?.rescaleX(this.#currentScaleX);
         this.#control?.rescaleY(this.#currentScaleY);
+    }
+
+    destroy() {
+        this.#control?.remove();
+        this.#svg.remove();
     }
 }
 
@@ -787,14 +801,18 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
             window.chrome.webview.removeEventListener('message', onMessageFromHost);
             window.removeEventListener('keydown', onKeyDown);
             observer.disconnect();
+            editorRef.current?.destroy();
         };
     }, []);
 
     return (
         <div id='container' ref={ref}>
             <svg id='canvas'></svg>
-            <button id='fit' className='hidden' title='ビューをフィット' onClick={() => { editorRef.current?.fit(); }}>
+            <button id='fit' className='overlay-button hidden' title='ビューをフィット' onClick={() => { editorRef.current?.fit(); }}>
                 <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} size='sm' />
+            </button>
+            <button id='show-handle' className='overlay-button hidden' title='ハンドルを表示' onClick={() => { config.showHandle = true; editorRef.current?.updateHandleVisibility(); }}>
+                <FontAwesomeIcon icon={faEye} size='sm' />
             </button>
         </div>
     );

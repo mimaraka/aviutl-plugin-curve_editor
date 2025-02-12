@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class UpdateNotificationDialog : public Dialog {
 		HWND hwnd_static_version_ = NULL;
 		HWND hwnd_edit_release_notes_ = NULL;
@@ -14,4 +14,4 @@ namespace cved {
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd) noexcept override;
 	};
-} // namespace cved
+} // namespace curve_editor

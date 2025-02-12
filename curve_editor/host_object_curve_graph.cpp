@@ -1,9 +1,9 @@
-#include "curve_graph.hpp"
 #include "host_object_curve_graph.hpp"
 
+#include "curve_graph.hpp"
 
 
-namespace cved {
+namespace curve_editor {
 	std::vector<double> GraphCurveHostObject::get_anchor_start(uint32_t id) {
 		auto curve = global::id_manager.get_curve<GraphCurve>(id);
 		if (!curve) return {};
@@ -81,4 +81,4 @@ namespace cved {
 		}
 		return curve->next()->get_id();
 	}
-} // namespace cved
+} // namespace curve_editor

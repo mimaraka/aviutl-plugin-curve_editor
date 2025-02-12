@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class NormalCurveHostObject : public GraphCurveHostObject {
 		static std::vector<uint32_t> get_id_array(uint32_t id);
 		static void add_curve(uint32_t id, double x, double y, double scale_x);
@@ -14,7 +14,7 @@ namespace cved {
 	public:
 		NormalCurveHostObject() {
 			register_member(L"getId", DispatchType::Method, +[](size_t idx) {
-				auto curve = global::editor.editor_graph().curve_normal(idx);
+				auto curve = global::editor.editor_graph().p_curve_normal(idx);
 				return curve ? curve->get_id() : 0;
 			});
 			register_member(L"getIdArray", DispatchType::Method, get_id_array);
@@ -28,4 +28,4 @@ namespace cved {
 			register_member(L"isIdxMax", DispatchType::PropertyGet, +[] { return global::editor.editor_graph().is_idx_max_normal(); });
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

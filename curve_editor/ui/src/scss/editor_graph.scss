@@ -72,10 +72,8 @@
     opacity: 0.3;
 }
 
-#fit {
+.overlay-button {
     position: absolute;
-    top: 15px;
-    right: 15px;
     width: 32px;
     height: 32px;
     transition: all 0.2s ease-out;
@@ -97,6 +95,16 @@
     &:focus {
         outline: none;
     }
+}
+
+#fit {
+    top: 15px;
+    right: 15px;
+}
+
+#show-handle {
+    top: 15px;
+    left: 15px;
 }
 
 .visible {

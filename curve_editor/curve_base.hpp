@@ -2,12 +2,11 @@
 
 #include "curve_id_manager.hpp"
 #include <cereal/cereal.hpp>
-#include <mkaul/graphics.hpp>
 #include <nlohmann/json.hpp>
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(抽象クラス)
 	class Curve {
 		bool locked_;
@@ -21,13 +20,21 @@ namespace cved {
 		{}
 		// コピーコンストラクタ
 		Curve(const Curve& curve) noexcept :
-			id_{global::id_manager.create_id(this)},
+			id_{ global::id_manager.create_id(this) },
 			locked_{ curve.locked_ }
 		{}
 		// 仮想デストラクタ
 		virtual ~Curve() noexcept {
 			global::id_manager.remove_id(id_);
 		}
+
+		// コピー代入演算子
+		Curve& operator=(const Curve& curve) noexcept {
+			locked_ = curve.locked_;
+			return *this;
+		}
+
+		virtual std::unique_ptr<Curve> clone() const noexcept = 0;
 
 		// カーブの値を取得
 		[[nodiscard]] virtual double curve_function(double progress, double start, double end) const noexcept = 0;
@@ -53,6 +60,6 @@ namespace cved {
 			archive(locked_);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::Curve, 0)
+CEREAL_CLASS_VERSION(curve_editor::Curve, 0)

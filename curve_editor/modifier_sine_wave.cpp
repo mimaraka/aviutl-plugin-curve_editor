@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	SineWaveModifier::SineWaveModifier(
 		double amplitude,
 		double frequency,
@@ -44,4 +44,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

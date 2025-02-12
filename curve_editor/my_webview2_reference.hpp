@@ -4,7 +4,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class MyWebView2Reference {
 		MyWebView2* p_webview_main_ = nullptr;
 		MyWebView2* p_webview_select_curve_ = nullptr;
@@ -57,4 +57,4 @@ namespace cved::global {
 			}
 		}
 	} webview;
-} // namespace cved::global
+} // namespace curve_editor::global

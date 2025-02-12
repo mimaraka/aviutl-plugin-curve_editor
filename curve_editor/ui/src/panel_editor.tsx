@@ -77,32 +77,34 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
     const refIntervalBack = React.useRef(0);
     const refTimeOutForward = React.useRef(0);
     const refIntervalForward = React.useRef(0);
+    const tmpIdx = React.useRef(props.idx);
     const holdTime = 500;
     const intervalTime = 60;
 
-    const isIdxFirst = () => {
-        return props.idx <= 0;
+    const isIdxFirst = (idx: number) => {
+        return idx <= 0;
     }
 
-    const isIdxLast = () => {
-        return props.size - 1 <= props.idx;
+    const isIdxLast = (idx: number) => {
+        return props.size - 1 <= idx;
     }
 
     const goBack = () => {
-        props.setIdx(props.idx - 1);
+        props.setIdx(--tmpIdx.current);
     }
 
     const goForward = () => {
-        props.setIdx(props.idx + 1);
+        props.setIdx(++tmpIdx.current);
     }
 
     const onBackButtonHoldStart = (event: React.MouseEvent) => {
         if (event.button == 0) {
+            tmpIdx.current = props.idx;
             goBack();
             refTimeOutBack.current = window.setTimeout(() => {
                 refIntervalBack.current = window.setInterval(() => {
                     goBack();
-                    if (isIdxFirst()) {
+                    if (isIdxFirst(tmpIdx.current)) {
                         clearInterval(refIntervalBack.current);
                     }
                 }, intervalTime);
@@ -131,11 +133,12 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
 
     const onForwardButtonHoldStart = (event: React.MouseEvent) => {
         if (event.button == 0) {
+            tmpIdx.current = props.idx;
             goForward();
             refTimeOutForward.current = window.setTimeout(() => {
                 refIntervalForward.current = window.setInterval(() => {
                     goForward();
-                    if (isIdxLast()) {
+                    if (isIdxLast(tmpIdx.current)) {
                         clearInterval(refIntervalForward.current);
                     }
                 }, intervalTime);
@@ -157,7 +160,7 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
                 onMouseDown={onBackButtonHoldStart}
                 onMouseUp={onBackButtonHoldEnd}
                 onMouseLeave={onBackButtonHoldEnd}
-                disabled={isIdxFirst()}
+                disabled={isIdxFirst(props.idx)}
             />
             <ToolbarButtonText
                 style={{ width: '50%' }}
@@ -168,8 +171,8 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
             />
             <ToolbarButtonIcon
                 style={{ width: '25%' }}
-                icon={isIdxLast() ? faPlus : faAngleRight}
-                title={isIdxLast() ? 'カーブを新規作成' : '次のIDへ進む'}
+                icon={isIdxLast(props.idx) ? faPlus : faAngleRight}
+                title={isIdxLast(props.idx) ? 'カーブを新規作成' : '次のIDへ進む'}
                 onMouseDown={onForwardButtonHoldStart}
                 onMouseUp={onForwardButtonHoldEnd}
                 onMouseLeave={onForwardButtonHoldEnd}

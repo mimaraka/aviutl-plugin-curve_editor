@@ -5,7 +5,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int DiscretizationModifierDialog::resource_id() const noexcept { return IDD_MODIFIER_DISCRETIZATION; }
 
 
@@ -15,8 +15,8 @@ namespace cved {
 		hwnd_static_sampling_ = ::GetDlgItem(hwnd, IDC_STATIC_SAMPLING);
 		hwnd_static_quantization_ = ::GetDlgItem(hwnd, IDC_STATIC_QUANTIZATION);
 		
-		::SendMessageA(hwnd_slider_sampling_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
-		::SendMessageA(hwnd_slider_quantization_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
+		::SendMessageA(hwnd_slider_sampling_, TBM_SETRANGE, TRUE, MAKELPARAM(0, 100));
+		::SendMessageA(hwnd_slider_quantization_, TBM_SETRANGE, TRUE, MAKELPARAM(0, 100));
 		::SendMessageA(hwnd_slider_sampling_, TBM_SETPOS, TRUE, (LPARAM)(p_mod_discretization->sampling_resolution()));
 		::SendMessageA(hwnd_slider_quantization_, TBM_SETPOS, TRUE, (LPARAM)(p_mod_discretization->quantization_resolution()));
 		::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_sampling_);
@@ -76,4 +76,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

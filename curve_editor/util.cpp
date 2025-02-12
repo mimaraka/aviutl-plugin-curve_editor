@@ -5,7 +5,7 @@
 
 
 
-namespace cved::util {
+namespace curve_editor::util {
 	// クリップボードに文字列をコピー
 	bool copy_to_clipboard(HWND hwnd, const char* str) noexcept {
 		// 確保するメモリのハンドル
@@ -39,4 +39,4 @@ namespace cved::util {
 
 		return ret;
 	}
-} // namespace cved::util
+} // namespace curve_editor::util

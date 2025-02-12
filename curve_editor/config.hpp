@@ -9,7 +9,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class Config {
 	private:
 		static constexpr char CONFIG_FILE_NAME[] = "config.json";
@@ -110,8 +110,8 @@ namespace cved::global {
 		auto get_notify_update() const noexcept { return pref_.notify_update; }
 		void set_notify_update(bool notify_update) noexcept { pref_.notify_update = notify_update; }
 
-		auto get_set_bg_image() const noexcept { return pref_.set_bg_image; }
-		void set_set_bg_image(bool set_bg_image) noexcept { pref_.set_bg_image = set_bg_image; }
+		auto get_show_bg_image() const noexcept { return pref_.show_bg_image; }
+		void set_show_bg_image(bool show_bg_image) noexcept { pref_.show_bg_image = show_bg_image; }
 
 		auto get_bg_image_path() const noexcept { return pref_.bg_image_path; }
 		void set_bg_image_path(const std::filesystem::path& bg_image_path) noexcept { pref_.bg_image_path = bg_image_path; }
@@ -148,4 +148,4 @@ namespace cved::global {
 		bool load_json();
 		bool save_json();
 	} config;
-} // namespace cved::global
+} // namespace curve_editor::global

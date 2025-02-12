@@ -1,8 +1,9 @@
 #include "curve_editor_script.hpp"
+#include <mkaul/util.hpp>
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	ScriptCurveEditor::ScriptCurveEditor() :
 		curves_script_{ ScriptCurve{} },
 		idx_{ 0u }
@@ -27,7 +28,7 @@ namespace cved::global {
 	}
 
 	// スクリプトカーブを取得する
-	ScriptCurve* ScriptCurveEditor::curve_script(size_t idx) noexcept {
+	ScriptCurve* ScriptCurveEditor::p_curve_script(size_t idx) noexcept {
 		if (idx < curves_script_.size()) {
 			return &curves_script_[idx];
 		}
@@ -48,4 +49,4 @@ namespace cved::global {
 			}
 		}
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

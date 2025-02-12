@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor::util {
 	template<typename C, typename T, typename Ret>
 	bool set_from_json(C* this_, const nlohmann::json& json, const std::string& key, Ret(C::* setter)(T)) noexcept {
 		try {
@@ -24,4 +24,4 @@ namespace cved {
 		catch (const nlohmann::json::exception&) {}
 		return false;
 	}
-} // namespace cved
+} // namespace curve_editor::util

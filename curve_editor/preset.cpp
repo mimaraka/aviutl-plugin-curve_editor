@@ -13,10 +13,13 @@
 
 
 
-namespace cved {
-	nlohmann::json Preset::create_json() const noexcept {
+namespace curve_editor {
+	nlohmann::json Preset::create_json(bool omit_date) const noexcept {
 		nlohmann::json data;
 		data["name"] = ::sjis_to_utf8(name_);
+		if (!omit_date and date_.has_value()) {
+			data["date"] = date_.value();
+		}
 		data["curve"] = p_curve_->create_json();
 		return data;
 	}
@@ -24,6 +27,9 @@ namespace cved {
 	bool Preset::load_json(const nlohmann::json& data) noexcept {
 		try {
 			name_ = ::utf8_to_sjis(data.at("name").get<std::string>());
+			if (data.contains("date")) {
+				date_ = data.at("date").get<std::time_t>();
+			}
 			auto curve_type = data.at("curve").at("type").get<std::string>();
 			if (curve_type == global::CURVE_NAME_NORMAL) {
 				p_curve_ = std::make_unique<NormalCurve>();
@@ -45,7 +51,7 @@ namespace cved {
 			}
 			else if (curve_type == global::CURVE_NAME_SCRIPT) {
 				p_curve_ = std::make_unique<ScriptCurve>();
-			}		
+			}
 			if (!p_curve_ or !p_curve_->load_json(data.at("curve"))) {
 				return false;
 			}
@@ -55,4 +61,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

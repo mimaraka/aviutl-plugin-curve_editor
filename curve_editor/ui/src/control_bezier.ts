@@ -245,6 +245,11 @@ class BezierControl extends Control {
         this.updateHandleRight(transition, true);
     }
 
+    updateHandleOrder(): void {
+        this.handleLeft.raise();
+        this.handleRight.raise();
+    }
+
     // 左ハンドルのドラッグ開始
     onHandleLeftDragStart(event: DragEvent) {
         (this.curve as BezierCurve).beginMoveHandleLeft(

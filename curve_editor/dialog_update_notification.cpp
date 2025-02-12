@@ -6,8 +6,8 @@
 
 
 
-namespace cved {
-	int UpdateNotificationDialog::resource_id() const noexcept { return IDD_DIALOG_UPDATE_NOTIFICATION; }
+namespace curve_editor {
+	int UpdateNotificationDialog::resource_id() const noexcept { return IDD_UPDATE_NOTIFICATION; }
 
 	void UpdateNotificationDialog::init_controls(HWND hwnd) noexcept {
 		hwnd_static_version_ = ::GetDlgItem(hwnd, IDC_STATIC_VERSION);
@@ -54,4 +54,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

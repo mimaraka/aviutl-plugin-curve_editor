@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	NoiseModifier::NoiseModifier(
 		int32_t seed,
 		double amplitude,
@@ -68,4 +68,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

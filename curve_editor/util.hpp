@@ -1,11 +1,15 @@
 #pragma once
 
 #include "constants.hpp"
+#include <format>
 #include <mkaul/point.hpp>
 #include <Windows.h>
 
 
 
-namespace cved::util {
+namespace curve_editor::util {
 	bool copy_to_clipboard(HWND hwnd, const char* str) noexcept;
-} // namespace cved::util
+	inline HINSTANCE get_hinst() noexcept {
+		return ::GetModuleHandleA(std::format("{}.{}", global::PLUGIN_NAME, global::PLUGIN_EXT).c_str());
+	}
+} // namespace curve_editor::util

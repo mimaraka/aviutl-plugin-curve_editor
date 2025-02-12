@@ -7,7 +7,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class UpdateChecker {
 		bool is_update_available_ = false;
 		std::string release_notes_;
@@ -28,4 +28,4 @@ namespace cved::global {
 		[[nodiscard]] const auto& latest_version() const noexcept { return latest_version_; }
 		[[nodiscard]] const auto& release_notes() const noexcept { return release_notes_; }
 	} update_checker;
-} // namespace cved::global
+} // namespace curve_editor::global

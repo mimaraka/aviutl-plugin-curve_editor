@@ -10,9 +10,9 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int16_t DragAndDrop::get_track_script_idx() noexcept {
-		const std::regex regex_script_name{ std::format(R"(^Type1@{}(\x01.+)?$)", global::PLUGIN_NAME) };
+		const std::regex regex_script_name{ std::format(R"(^Type1@{}(\x01.+)?$)", global::PLUGIN_DISPLAY_NAME) };
 		auto tra_script_names = global::exedit_internal.get<const char*>(0x231488u);
 		int16_t script_idx = 0;
 
@@ -216,4 +216,4 @@ namespace cved {
 		}
 		return false;
 	}
-} // namespace cved
+} // namespace curve_editor

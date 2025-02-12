@@ -15,7 +15,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// ウィンドウプロシージャ
 	BOOL filter_wndproc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam, AviUtl::EditHandle*, AviUtl::FilterPlugin* fp) {
 		using WindowMessage = AviUtl::FilterPlugin::WindowMessage;
@@ -36,7 +36,7 @@ namespace cved {
 				this_->put_bounds(bounds);
 				this_->navigate([](MyWebView2* this_) {
 					this_->send_command(MessageCommand::InitComponent, {
-						{"isSelectDialog", false},
+						{"page", "MainPanel"},
 						{"isUpdateAvailable", global::update_checker.is_update_available()}
 						});
 					});
@@ -46,7 +46,7 @@ namespace cved {
 			if (global::PLUGIN_VERSION.is_preview()) {
 				::SetWindowTextA(
 					hwnd,
-					std::format("{} ({})", global::PLUGIN_NAME, global::PLUGIN_VERSION.preview_type().str(true)).c_str()
+					std::format("{} ({})", global::PLUGIN_DISPLAY_NAME, global::PLUGIN_VERSION.preview_type().str(true)).c_str()
 				);
 			}
 			break;
@@ -103,4 +103,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

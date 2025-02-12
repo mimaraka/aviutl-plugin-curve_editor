@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	nlohmann::json Modifier::create_json() const noexcept {
 		nlohmann::json data;
 		data["name"] = ::sjis_to_utf8(name_);
@@ -11,4 +11,4 @@ namespace cved {
 		data["enabled"] = enabled_;
 		return data;
 	}
-} // namespace cved
+} // namespace curve_editor

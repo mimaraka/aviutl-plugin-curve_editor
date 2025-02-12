@@ -68,6 +68,10 @@ class BounceControl extends Control {
         }
     }
 
+    updateHandleOrder(): void {
+        this.handle.raise();
+    }
+
     updateControl(transition?: d3.Transition<any, unknown, any, unknown> | null): void {
         super.updateControl(transition);
         this.updateHandle(transition);

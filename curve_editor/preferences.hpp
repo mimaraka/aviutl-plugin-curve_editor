@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	struct Preferences {
 		Language language = Language::Automatic;
 		ThemeId theme = ThemeId::System;
@@ -21,13 +21,13 @@ namespace cved {
 		bool auto_apply = false;
 		bool invert_wheel = false;
 		bool notify_update = false;
-		bool set_bg_image = false;
+		bool show_bg_image = false;
 		bool enable_hotkeys = false;
 		bool enable_animation = false;
 		bool word_wrap = false;
 
 		void reset() noexcept;
-		void from_json(const nlohmann::json& data) noexcept;
-		void to_json(nlohmann::json* p_data) const noexcept;
+		void from_json(const nlohmann::json& json) noexcept;
+		void to_json(nlohmann::json& json) const noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

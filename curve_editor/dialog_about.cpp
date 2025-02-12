@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	int AboutDialog::resource_id() const noexcept { return IDD_ABOUT; }
 
 
@@ -63,4 +63,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

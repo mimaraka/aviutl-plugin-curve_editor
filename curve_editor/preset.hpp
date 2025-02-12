@@ -3,14 +3,15 @@
 #include "curve_base.hpp"
 #include <memory>
 #include <nlohmann/json.hpp>
+#include <optional>
 
 
 
-namespace cved {
+namespace curve_editor {
 	class Preset {
-    private:
 		std::unique_ptr<Curve> p_curve_;
 		std::string name_;
+		std::optional<std::time_t> date_;
 		uint32_t collection_id_;
 
     public:
@@ -22,6 +23,13 @@ namespace cved {
 		void create(const CurveType& curve, const std::string& name) noexcept {
 			name_ = name;
 			p_curve_ = std::make_unique<CurveType>(curve);
+			// TODO: 1(COLLECTION_ID_DEFAULT)がマジックナンバーなので、定数化する
+			if (collection_id_ == 1) {
+				date_ = std::nullopt;
+			}
+			else {
+				date_ = std::time(nullptr);
+			}
 		}
 
 		const Curve* get_curve() const noexcept { return p_curve_.get();}
@@ -31,7 +39,9 @@ namespace cved {
 		const auto& get_name() const noexcept { return name_; }
 		void set_name(const std::string& name) noexcept { name_ = name; }
 
-		nlohmann::json create_json() const noexcept;
+		const auto& get_date() const noexcept { return date_; }
+
+		nlohmann::json create_json(bool omit_date = false) const noexcept;
 		bool load_json(const nlohmann::json& data) noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

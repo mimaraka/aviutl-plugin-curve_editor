@@ -1,9 +1,9 @@
 #include "host_object_editor.hpp"
+
 #include <strconv2.h>
 
 
-
-namespace cved {
+namespace curve_editor {
 	std::wstring EditorHostObject::get_curve_name(uint32_t id) {
 		auto curve = global::id_manager.get_curve<Curve>(id);
 		if (!curve) {
@@ -35,4 +35,4 @@ namespace cved {
 		}
 		curve->set_locked(locked);
 	}
-} // namespace cved
+} // namespace curve_editor

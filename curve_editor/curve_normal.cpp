@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	NormalCurve::NormalCurve(
 		const mkaul::Point<double>& anchor_start,
 		const mkaul::Point<double>& anchor_end
@@ -22,22 +22,23 @@ namespace cved {
 		GraphCurve{ curve },
 		curve_segments_{}
 	{
-		// TODO: 分岐処理を消したい
+		clone_segments(curve);
+	}
+
+	// コピー代入演算子
+	NormalCurve& NormalCurve::operator=(const NormalCurve& curve) noexcept {
+		if (this != &curve) {
+			GraphCurve::operator=(curve);
+			curve_segments_.clear();
+			clone_segments(curve);
+		}
+		return *this;
+	}
+
+	// セグメントのクローン
+	void NormalCurve::clone_segments(const NormalCurve& curve) noexcept {
 		for (const auto& p_curve : curve.curve_segments_) {
-			std::unique_ptr<GraphCurve> new_curve;
-			if (typeid(*p_curve.get()) == typeid(BezierCurve)) {
-				new_curve = std::make_unique<BezierCurve>(*dynamic_cast<BezierCurve*>(p_curve.get()));
-			}
-			else if (typeid(*p_curve.get()) == typeid(LinearCurve)) {
-				new_curve = std::make_unique<LinearCurve>(*dynamic_cast<LinearCurve*>(p_curve.get()));
-			}
-			else if (typeid(*p_curve.get()) == typeid(ElasticCurve)) {
-				new_curve = std::make_unique<ElasticCurve>(*dynamic_cast<ElasticCurve*>(p_curve.get()));
-			}
-			else if (typeid(*p_curve.get()) == typeid(BounceCurve)) {
-				new_curve = std::make_unique<BounceCurve>(*dynamic_cast<BounceCurve*>(p_curve.get()));
-			}
-			else continue;
+			auto new_curve = p_curve->clone_graph();
 			if (!curve_segments_.empty()) {
 				new_curve->set_prev(curve_segments_.back().get());
 				curve_segments_.back()->set_next(new_curve.get());
@@ -269,12 +270,12 @@ namespace cved {
 					(*it).get(),
 					(*it)->next(),
 					mkaul::Point{
-						((*it)->anchor_end().x - pt.x) * BezierCurve::DEFAULT_HANDLE_XY,
-						((*it)->anchor_end().y - pt.y) * BezierCurve::DEFAULT_HANDLE_XY,
+						((*it)->anchor_end().x - pt.x) * BezierHandle::DEFAULT_HANDLE_RATIO,
+						((*it)->anchor_end().y - pt.y) * BezierHandle::DEFAULT_HANDLE_RATIO,
 					},
 					mkaul::Point{
-						(pt.x - (*it)->anchor_end().x) * BezierCurve::DEFAULT_HANDLE_XY,
-						(pt.y - (*it)->anchor_end().y) * BezierCurve::DEFAULT_HANDLE_XY,
+						(pt.x - (*it)->anchor_end().x) * BezierHandle::DEFAULT_HANDLE_RATIO,
+						(pt.y - (*it)->anchor_end().y) * BezierHandle::DEFAULT_HANDLE_RATIO,
 					}
 				);
 
@@ -473,4 +474,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

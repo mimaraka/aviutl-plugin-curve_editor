@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class GraphCurveHostObject : public mkaul::ole::HostObject {
 		static std::vector<double> get_anchor_start(uint32_t id);
 		static void begin_move_anchor_start(uint32_t id);
@@ -39,4 +39,4 @@ namespace cved {
 			});
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

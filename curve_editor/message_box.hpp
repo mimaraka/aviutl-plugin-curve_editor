@@ -5,7 +5,7 @@
 
 
 
-namespace cved::util {
+namespace curve_editor::util {
 	enum class MessageBoxIcon : UINT {
 		None = 0x0000L,
 		Error = 0x0010L,
@@ -30,8 +30,8 @@ namespace cved::util {
 		HWND hwnd = NULL,
 		MessageBoxIcon icon_type = MessageBoxIcon::Information,
 		MessageBoxButton button_type = MessageBoxButton::Ok,
-		const char* caption = global::PLUGIN_NAME
+		const char* caption = global::PLUGIN_DISPLAY_NAME
 	) noexcept {
 		return ::MessageBoxA(hwnd, text, caption, (UINT)icon_type | (UINT)button_type);
 	}
-} // namespace cved::util
+} // namespace curve_editor::util

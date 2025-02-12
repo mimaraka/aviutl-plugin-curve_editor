@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	using ModeParamPair = std::pair<EditMode, int>;
 
 	class SelectCurveWindow : public mkaul::ui::Window {
@@ -15,4 +15,4 @@ namespace cved {
 	public:
 		HWND create(HWND hwnd, const ModeParamPair* mode_param = nullptr) noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

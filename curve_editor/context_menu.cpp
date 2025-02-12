@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	void ContextMenu::init() noexcept {
 		menu_ = ::CreatePopupMenu();
 		for (size_t i = 1; auto & item : items_) {
@@ -46,4 +46,4 @@ namespace cved {
 			return false;
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

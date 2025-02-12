@@ -6,7 +6,7 @@
 #include "string_table.hpp"
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(ベジェ)
 	class BezierCurve : public NumericGraphCurve {
 		BezierHandle handle_left_;
@@ -23,7 +23,6 @@ namespace cved {
 			Right
 		};
 
-		static constexpr double DEFAULT_HANDLE_XY = 0.3;
 		// コンストラクタ
 		BezierCurve(
 			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
@@ -31,12 +30,18 @@ namespace cved {
 			bool pt_fixed = false,
 			GraphCurve* prev = nullptr,
 			GraphCurve* next = nullptr,
-			mkaul::Point<double> handle_left = mkaul::Point{ DEFAULT_HANDLE_XY, DEFAULT_HANDLE_XY },
-			mkaul::Point<double> handle_right = mkaul::Point{ -DEFAULT_HANDLE_XY, -DEFAULT_HANDLE_XY }
+			mkaul::Point<double> handle_left = mkaul::Point{ BezierHandle::DEFAULT_HANDLE_RATIO, BezierHandle::DEFAULT_HANDLE_RATIO },
+			mkaul::Point<double> handle_right = mkaul::Point{ -BezierHandle::DEFAULT_HANDLE_RATIO, -BezierHandle::DEFAULT_HANDLE_RATIO }
 		) noexcept;
 
 		// コピーコンストラクタ
 		BezierCurve(const BezierCurve& curve) noexcept;
+
+		// コピー代入演算子
+		BezierCurve& operator=(const BezierCurve& curve) noexcept;
+
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<BezierCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		// カーブの名前を取得する
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BEZIER; }
@@ -104,8 +109,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::BezierCurve, 0)
-CEREAL_REGISTER_TYPE(cved::BezierCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::NumericGraphCurve, cved::BezierCurve)
+CEREAL_CLASS_VERSION(curve_editor::BezierCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::BezierCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::NumericGraphCurve, curve_editor::BezierCurve)

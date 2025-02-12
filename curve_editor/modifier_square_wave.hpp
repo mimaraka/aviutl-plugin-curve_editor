@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class SquareWaveModifier : public Modifier {
 		double amplitude_;
 		double frequency_;
@@ -67,8 +67,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_REGISTER_TYPE(cved::SquareWaveModifier)
-CEREAL_CLASS_VERSION(cved::SquareWaveModifier, 0)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Modifier, cved::SquareWaveModifier)
+CEREAL_REGISTER_TYPE(curve_editor::SquareWaveModifier)
+CEREAL_CLASS_VERSION(curve_editor::SquareWaveModifier, 0)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::Modifier, curve_editor::SquareWaveModifier)

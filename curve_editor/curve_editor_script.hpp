@@ -5,7 +5,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	class ScriptCurveEditor {
 	private:
 		std::vector<ScriptCurve> curves_script_;
@@ -15,8 +15,8 @@ namespace cved::global {
 		ScriptCurveEditor();
 
 		void reset() noexcept;
-		ScriptCurve* curve_script(size_t idx) noexcept;
-		ScriptCurve* curve_script() noexcept { return curve_script(idx_); }
+		ScriptCurve* p_curve_script(size_t idx) noexcept;
+		auto p_curve_script() noexcept { return p_curve_script(idx_); }
 		auto idx() const noexcept { return idx_; }
 		auto size() const noexcept { return curves_script_.size(); }
 		bool set_idx(int idx) noexcept;
@@ -42,6 +42,6 @@ namespace cved::global {
 			}
 		}
 	};
-} // namespace cved::global
+} // namespace curve_editor::global
 
-CEREAL_CLASS_VERSION(cved::global::ScriptCurveEditor, 0);
+CEREAL_CLASS_VERSION(curve_editor::global::ScriptCurveEditor, 0);

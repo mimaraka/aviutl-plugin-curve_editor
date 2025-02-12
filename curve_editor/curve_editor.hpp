@@ -7,7 +7,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class CurveEditor {
 	private:
 		GraphCurveEditor editor_graph_;
@@ -17,7 +17,7 @@ namespace cved::global {
 		CurveEditor() {}
 
 		int32_t track_param() noexcept;
-		Curve* current_curve() noexcept;
+		Curve* p_current_curve() noexcept;
 		size_t current_idx() noexcept;
 		bool set_idx(size_t idx) noexcept;
 		bool advance_idx(int n) noexcept;
@@ -42,6 +42,6 @@ namespace cved::global {
 			);
 		}
 	} editor;
-} // namespace cved::global
+} // namespace curve_editor::global
 
-CEREAL_CLASS_VERSION(cved::global::CurveEditor, 0)
+CEREAL_CLASS_VERSION(curve_editor::global::CurveEditor, 0)

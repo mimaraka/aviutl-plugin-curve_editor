@@ -1,10 +1,10 @@
-#include "curve_editor.hpp"
-#include "curve_elastic.hpp"
 #include "host_object_curve_elastic.hpp"
 
+#include "curve_editor.hpp"
+#include "curve_elastic.hpp"
 
 
-namespace cved {
+namespace curve_editor {
 	uint32_t ElasticCurveHostObject::get_id(bool is_select_dialog) {
 		static ElasticCurve curve_tmp{
 			mkaul::Point{0., 0.}, mkaul::Point{1., 0.5}
@@ -14,7 +14,7 @@ namespace cved {
 			id = curve_tmp.get_id();
 		}
 		else {
-			id = global::editor.editor_graph().curve_elastic()->get_id();
+			id = global::editor.editor_graph().curve_elastic().get_id();
 		}
 		return id;
 	}
@@ -82,4 +82,4 @@ namespace cved {
 		}
 		return curve->create_params_str();
 	}
-} // namespace cved
+} // namespace curve_editor

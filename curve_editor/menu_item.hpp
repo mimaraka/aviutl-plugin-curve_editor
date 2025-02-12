@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class MenuItem {
 	public:
 		static constexpr size_t MAX_SUB_MENU_ITEMS = 128;
@@ -68,4 +68,4 @@ namespace cved {
 		bool callback(uint32_t id) const noexcept;
 		void get_menu_item_info(MENUITEMINFOA& minfo, uint32_t id) noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

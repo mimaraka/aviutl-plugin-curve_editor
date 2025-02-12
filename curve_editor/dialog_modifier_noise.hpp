@@ -4,7 +4,7 @@
 #include "modifier_noise.hpp"
 
 
-namespace cved {
+namespace curve_editor {
 	class NoiseModifierDialog : public Dialog {
 		HWND hwnd_edit_seed_ = NULL;
 		HWND hwnd_slider_amplitude_ = NULL;
@@ -22,4 +22,4 @@ namespace cved {
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd, const NoiseModifier* p_mod_noise) noexcept;
 	};
-} // namespace cved
+} // namespace curve_editor

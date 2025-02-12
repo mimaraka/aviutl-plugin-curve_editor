@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	SquareWaveModifier::SquareWaveModifier(
 		double amplitude,
 		double frequency,
@@ -43,4 +43,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

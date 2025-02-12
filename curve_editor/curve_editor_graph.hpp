@@ -8,7 +8,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	class GraphCurveEditor {
 	private:
 		std::vector<NormalCurve> curves_normal_;
@@ -20,7 +20,7 @@ namespace cved::global {
 		size_t idx_normal_ = 0u;
 		size_t idx_value_ = 0u;
 
-		std::unique_ptr<GraphCurve> copied_curve_ = nullptr;
+		std::unique_ptr<NormalCurve> copied_curve_normal_;
 
 	public:
 		GraphCurveEditor();
@@ -52,18 +52,27 @@ namespace cved::global {
 		bool is_idx_max_value() const noexcept { return idx_value_ == global::CURVE_ID_MAX; }
 
 		GraphCurve* get_curve(EditMode mode) noexcept;
-		GraphCurve* current_curve() noexcept;
+		GraphCurve* p_current_curve() noexcept;
 		NumericGraphCurve* numeric_curve() noexcept;
-		NormalCurve* curve_normal(size_t idx) noexcept;
-		NormalCurve* curve_normal() noexcept { return curve_normal(idx_normal_); }
-		ValueCurve* curve_value(size_t idx) noexcept;
-		ValueCurve* curve_value() noexcept { return curve_value(idx_value_); }
-		BezierCurve* curve_bezier() noexcept { return &curve_bezier_; }
-		ElasticCurve* curve_elastic() noexcept { return &curve_elastic_; }
-		BounceCurve* curve_bounce() noexcept { return &curve_bounce_; }
+		NormalCurve* p_curve_normal(size_t idx) noexcept;
+		auto p_curve_normal() noexcept { return p_curve_normal(idx_normal_); }
+		ValueCurve* p_curve_value(size_t idx) noexcept;
+		auto p_curve_value() noexcept { return p_curve_value(idx_value_); }
+		auto& curve_bezier() noexcept { return curve_bezier_; }
+		auto& curve_elastic() noexcept { return curve_elastic_; }
+		auto& curve_bounce() noexcept { return curve_bounce_; }
 
-		const auto& copied_curve() const noexcept { return copied_curve_; }
-		bool is_copying() const noexcept { return copied_curve_.get() != nullptr; }
+		void copy_curve_normal(const NormalCurve& curve) noexcept {
+			copied_curve_normal_ = std::make_unique<NormalCurve>(curve);
+		}
+		bool paste_curve_normal(NormalCurve& curve) noexcept {
+			if (is_copying_normal()) {
+				curve = *copied_curve_normal_;
+				return true;
+			}
+			return false;
+		}
+		bool is_copying_normal() const noexcept { return copied_curve_normal_.get() != nullptr; }
 
 		// v1.xのデータはNormalCurveに適用される
 		bool load_v1_data(const byte* data) noexcept;
@@ -86,6 +95,6 @@ namespace cved::global {
 			}
 		}
 	};
-} // namespace cved::global
+} // namespace curve_editor::global
 
-CEREAL_CLASS_VERSION(cved::global::GraphCurveEditor, 0)
+CEREAL_CLASS_VERSION(curve_editor::global::GraphCurveEditor, 0)

@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// コンストラクタ
 	ElasticCurve::ElasticCurve(
 		const mkaul::Point<double>& anchor_start,
@@ -33,6 +33,18 @@ namespace cved {
 		decay_{ curve.decay_ },
 		reversed_{ curve.reversed_ }
 	{}
+
+	// コピー代入演算子
+	ElasticCurve& ElasticCurve::operator=(const ElasticCurve& curve) noexcept {
+		if (this != &curve) {
+			NumericGraphCurve::operator=(curve);
+			amplitude_ = curve.amplitude_;
+			frequency_ = curve.frequency_;
+			decay_ = curve.decay_;
+			reversed_ = curve.reversed_;
+		}
+		return *this;
+	}
 
 
 	// カーブの値を取得
@@ -291,4 +303,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

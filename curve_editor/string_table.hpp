@@ -5,7 +5,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	inline class StringTable {
 	public:
 		enum class StringId : size_t {
@@ -22,6 +22,7 @@ namespace cved::global {
 			ErrorCommCtrlInitFailed,
 			ErrorPageLoadFailed,
 			ErrorPresetCreateFailed,
+			ErrorCollectionImportFailed,
 			WarningDeleteCurve,
 			WarningDeleteAllCurves,
 			WarningResetPreferences,
@@ -66,6 +67,12 @@ namespace cved::global {
 			LabelModifierNoise,
 			LabelModifierSineWave,
 			LabelModifierSquareWave,
+			LabelSortByNull,
+			LabelSortByName,
+			LabelSortByDate,
+			LabelSortOrderAsc,
+			LabelSortOrderDesc,
+			LabelCollectionExportOmitDate,
 			LabelCollectionNameAll,
 			LabelCollectionNameDefault,
 			LabelCollectionNameRoot,
@@ -93,6 +100,8 @@ namespace cved::global {
 			MenuGraphAddAnchor,
 			MenuGraphReverseCurve,
 			MenuGraphModifier,
+			MenuGraphCopyCurve,
+			MenuGraphPasteCurve,
 			MenuGraphAlignHandle,
 			MenuGraphShowXLabel,
 			MenuGraphShowYLabel,
@@ -115,6 +124,8 @@ namespace cved::global {
 			MenuPresetItemRemove,
 			MenuCollectionAddNew,
 			MenuCollectionAddImport,
+			MenuCollectionAddImportCecl,
+			MenuCollectionAddImportFlow,
 			MenuCollectionRename,
 			MenuCollectionRemove,
 			MenuCollectionExport,
@@ -136,4 +147,4 @@ namespace cved::global {
 
 		const char* operator[] (StringId str_id);
 	} string_table;
-} // namespace cved::global
+} // namespace curve_editor::global

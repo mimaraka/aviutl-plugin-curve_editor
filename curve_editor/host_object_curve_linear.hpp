@@ -4,10 +4,10 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class LinearCurveHostObject : public GraphCurveHostObject {
 	public:
 		LinearCurveHostObject() {
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

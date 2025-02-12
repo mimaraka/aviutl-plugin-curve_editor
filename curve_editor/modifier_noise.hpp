@@ -8,7 +8,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// ノイズモディファイア—
 	class NoiseModifier : public Modifier {
 		int32_t seed_;
@@ -98,8 +98,8 @@ namespace cved {
 			update();
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::NoiseModifier, 0)
-CEREAL_REGISTER_TYPE(cved::NoiseModifier)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Modifier, cved::NoiseModifier)
+CEREAL_CLASS_VERSION(curve_editor::NoiseModifier, 0)
+CEREAL_REGISTER_TYPE(curve_editor::NoiseModifier)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::Modifier, curve_editor::NoiseModifier)

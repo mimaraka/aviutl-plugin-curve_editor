@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	// カーブ(直線)
 	class LinearCurve : public GraphCurve {
 	public:
@@ -19,6 +19,22 @@ namespace cved {
 		) noexcept :
 			GraphCurve{ anchor_start, anchor_end, pt_fixed, prev, next }
 		{}
+
+		// コピーコンストラクタ
+		LinearCurve(const LinearCurve& curve) noexcept :
+			GraphCurve{ curve }
+		{}
+
+		// コピー代入演算子
+		LinearCurve& operator=(const LinearCurve& curve) noexcept {
+			if (this != &curve) {
+				GraphCurve::operator=(curve);
+			}
+			return *this;
+		}
+
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<LinearCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_LINEAR; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelCurveSegmentTypeLinear]; }
@@ -44,8 +60,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::LinearCurve, 0)
-CEREAL_REGISTER_TYPE(cved::LinearCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::LinearCurve)
+CEREAL_CLASS_VERSION(curve_editor::LinearCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::LinearCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::GraphCurve, curve_editor::LinearCurve)

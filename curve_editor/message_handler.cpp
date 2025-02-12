@@ -1,3 +1,15 @@
+#include "message_handler.hpp"
+
+#include <regex>
+#include <string_view>
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <commdlg.h>
+#include <magic_enum/magic_enum.hpp>
+#include <strconv2.h>
+#include <ShObjIdl.h>
+
 #include "config.hpp"
 #include "context_menu.hpp"
 #include "curve_editor.hpp"
@@ -5,28 +17,22 @@
 #include "dialog_id_jumpto.hpp"
 #include "dialog_modifier.hpp"
 #include "dialog_pref.hpp"
+#include "dialog_preset_list_setting.hpp"
 #include "dialog_update_notification.hpp"
 #include "global.hpp"
 #include "input_box.hpp"
 #include "message_box.hpp"
-#include "message_handler.hpp"
 #include "my_webview2.hpp"
 #include "preset_manager.hpp"
+#include "resource.h"
 #include "string_table.hpp"
-#include "util.hpp"
 #include "update_checker.hpp"
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <magic_enum/magic_enum.hpp>
-#include <regex>
-#include <strconv2.h>
-#include <string_view>
+#include "util.hpp"
 
 
-
-namespace cved {
+namespace curve_editor {
 	using StringId = global::StringTable::StringId;
-	constexpr auto EXT_COLLECTION = "cecl";
+	constexpr auto EXT_COLLECTION = L"cecl";
 
 	/// <summary>
 	/// WebView2からのメッセージを処理する関数
@@ -127,7 +133,7 @@ namespace cved {
 					return false;
 				}
 
-				auto curve = global::editor.current_curve();
+				auto curve = global::editor.p_current_curve();
 				if (curve) {
 					if (curve->get_name() == global::CURVE_NAME_NORMAL) {
 						global::preset_manager.create_preset(*dynamic_cast<NormalCurve*>(curve), text);
@@ -158,10 +164,6 @@ namespace cved {
 		);
 	}
 
-	void MessageHandler::button_lock(const nlohmann::json& options) {
-		bool sw = options.at("switch").get<bool>();
-	}
-
 
 	/// <summary>
 	/// 「カーブを削除」ボタンが押されたときに呼び出される関数
@@ -178,7 +180,7 @@ namespace cved {
 		}
 
 		if (response == IDOK) {
-			auto curve = global::editor.current_curve();
+			auto curve = global::editor.p_current_curve();
 			if (curve) {
 				curve->clear();
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateControl);
@@ -227,9 +229,9 @@ namespace cved {
 					MenuItem{
 						global::string_table[StringId::MenuOthersExtensionInstall],
 						MenuItem::Type::String,
-						MenuItem::State::Null,
+						MenuItem::State::Disabled,
 						[this]() {
-
+							// TODO: 拡張機能のインストール処理を実装
 						}
 					}
 				}
@@ -287,9 +289,10 @@ namespace cved {
 		ContextMenu{ menu_items }.show(hwnd_);
 	}
 
+	/// <summary>
+	/// インデックス移動ボタンが押されたときに呼び出される関数
+	/// </summary>
 	void MessageHandler::button_idx() {
-		IdJumptoDialog dialog;
-		dialog.show(hwnd_);
 	}
 
 
@@ -342,6 +345,7 @@ namespace cved {
 	void MessageHandler::context_menu_graph(const nlohmann::json& options) {
 		auto mode = options.at("mode").get<EditMode>();
 		auto curve_id = options.at("curveId").get<uint32_t>();
+		auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
 
 		ContextMenu{
 			MenuItem{
@@ -377,18 +381,46 @@ namespace cved {
 				}
 			},
 			MenuItem{"", MenuItem::Type::Separator},
-			MenuItem{global::string_table[StringId::MenuGraphAddAnchor]},
-			MenuItem{global::string_table[StringId::MenuGraphReverseCurve], MenuItem::Type::String, MenuItem::State::Null, [curve_id, this]() {
-				auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
+			//MenuItem{global::string_table[StringId::MenuGraphAddAnchor]},
+			MenuItem{global::string_table[StringId::MenuGraphReverseCurve],
+			MenuItem::Type::String,
+			(curve and curve->is_locked()) ? MenuItem::State::Disabled : MenuItem::State::Null,
+			[curve, this]() {
 				if (curve) {
 					curve->reverse();
 					if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
 				}
 			}},
-			MenuItem{global::string_table[StringId::MenuGraphModifier], MenuItem::Type::String, MenuItem::State::Null, [curve_id, this]() {
+			MenuItem{global::string_table[StringId::MenuGraphModifier],
+			MenuItem::Type::String,
+			(curve and curve->is_locked()) ? MenuItem::State::Disabled : MenuItem::State::Null,
+			[curve_id, this]() {
 				ModifierDialog dialog;
 				dialog.show(hwnd_, static_cast<LPARAM>(curve_id));
 			}},
+			MenuItem{
+				global::string_table[StringId::MenuGraphCopyCurve],
+				MenuItem::Type::String,
+				mode == EditMode::Normal ? MenuItem::State::Null : MenuItem::State::Disabled,
+				[curve_id]() {
+					auto curve = global::id_manager.get_curve<NormalCurve>(curve_id);
+					if (curve) {
+						global::editor.editor_graph().copy_curve_normal(*curve);
+					}
+				}
+			},
+			MenuItem{
+				global::string_table[StringId::MenuGraphPasteCurve],
+				MenuItem::Type::String,
+				(mode == EditMode::Normal and global::editor.editor_graph().is_copying_normal()) ? MenuItem::State::Null : MenuItem::State::Disabled,
+				[curve_id, this]() {
+					auto curve = global::id_manager.get_curve<NormalCurve>(curve_id);
+					if (curve) {
+						global::editor.editor_graph().paste_curve_normal(*curve);
+						if (p_webview_) p_webview_->send_command(MessageCommand::UpdateControl);
+					}
+				}
+			},
 			MenuItem{"", MenuItem::Type::Separator},
 			MenuItem{
 				global::string_table[StringId::MenuGraphAlignHandle],
@@ -727,26 +759,57 @@ namespace cved {
 				global::string_table[StringId::MenuCollectionAddImport],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
-				[this]() {
-					using namespace std::literals::string_view_literals;
-					std::string str_filter = std::format(
-						"{0} (*.{1})\0*.{1}\0"sv,
-						global::string_table[StringId::WordCollectionFile],
-						EXT_COLLECTION
-					);
-					char buffer[MAX_PATH + 1]{};
-					OPENFILENAMEA ofn{
-						.lStructSize = sizeof(OPENFILENAMEA),
-						.hwndOwner = hwnd_,
-						.lpstrFilter = str_filter.c_str(),
-						.lpstrFile = buffer,
-						.nMaxFile = MAX_PATH + 1,
-						.lpstrTitle = global::string_table[StringId::CaptionImportCollection],
-						.Flags = OFN_FILEMUSTEXIST
-					};
-					if (::GetOpenFileNameA(&ofn)) {
-						global::preset_manager.import_collection(buffer);
-						if (p_webview_) p_webview_->send_command(MessageCommand::UpdatePresets);
+				nullptr,
+				{
+					MenuItem{
+						global::string_table[StringId::MenuCollectionAddImportCecl],
+						MenuItem::Type::String,
+						MenuItem::State::Null,
+						[this]() {
+							IFileDialog* pfd;
+							HRESULT hr = ::CoInitialize(NULL);
+							hr = ::CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+							if (FAILED(hr)) {
+								::CoUninitialize();
+								return;
+							}
+							std::wstring filter_name = ::sjis_to_wide(global::string_table[StringId::WordCollectionFile]);
+							std::wstring filter_spec = std::format(L"*.{0}", EXT_COLLECTION);
+							COMDLG_FILTERSPEC filter = {
+								.pszName = filter_name.c_str(),
+								.pszSpec = filter_spec.c_str()
+							};
+							pfd->SetOptions(FOS_FILEMUSTEXIST);
+							pfd->SetFileTypes(1, &filter);
+							pfd->SetFileTypeIndex(1);
+							pfd->SetTitle(::sjis_to_wide(global::string_table[StringId::CaptionImportCollection]).c_str());
+							hr = pfd->Show(hwnd_);
+							if (SUCCEEDED(hr)) {
+								IShellItem* psi;
+								hr = pfd->GetResult(&psi);
+								if (SUCCEEDED(hr)) {
+									PWSTR path;
+									hr = psi->GetDisplayName(SIGDN_FILESYSPATH, &path);
+									if (SUCCEEDED(hr)) {
+										if (!global::preset_manager.import_collection(::wide_to_sjis(path)) and global::config.get_show_popup()) {
+											util::message_box(global::string_table[StringId::ErrorCollectionImportFailed], hwnd_, util::MessageBoxIcon::Error);
+										}
+										if (p_webview_) p_webview_->send_command(MessageCommand::UpdatePresets);
+										::CoTaskMemFree(path);
+									}
+									psi->Release();
+								}
+							}
+							pfd->Release();
+							::CoUninitialize();
+						}
+					},
+					MenuItem{
+						global::string_table[StringId::MenuCollectionAddImportFlow],
+						MenuItem::Type::String,
+						MenuItem::State::Disabled,
+						// TODO: Flowファイルのインポートを実装
+						nullptr
 					}
 				}
 			}
@@ -807,26 +870,51 @@ namespace cved {
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this]() {
-					using namespace std::literals::string_view_literals;
-					std::string str_filter = std::format(
-						"{0} (*.{1})\0*.{1}\0"sv,
-						global::string_table[StringId::WordCollectionFile],
-						EXT_COLLECTION
-					);
-					char buffer[MAX_PATH + 1]{};
-					OPENFILENAMEA ofn{
-						.lStructSize = sizeof(OPENFILENAMEA),
-						.hwndOwner = hwnd_,
-						.lpstrFilter = str_filter.c_str(),
-						.lpstrFile = buffer,
-						.nMaxFile = MAX_PATH + 1,
-						.lpstrTitle = global::string_table[StringId::CaptionExportCollection],
-						.Flags = OFN_OVERWRITEPROMPT,
-						.lpstrDefExt = EXT_COLLECTION
-					};
-					if (::GetSaveFileNameA(&ofn)) {
-						global::preset_manager.export_collection(global::preset_manager.get_current_collection_id(), buffer);
+					IFileDialog* pfd;
+					IFileDialogCustomize* pfc;
+					HRESULT hr = ::CoInitialize(NULL);
+					hr = ::CoCreateInstance(CLSID_FileSaveDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd));
+					if (FAILED(hr)) {
+						::CoUninitialize();
+						return;
 					}
+					std::wstring filter_name = ::sjis_to_wide(global::string_table[StringId::WordCollectionFile]);
+					std::wstring filter_spec = std::format(L"*.{0}", EXT_COLLECTION);
+					COMDLG_FILTERSPEC filter = {
+						.pszName = filter_name.c_str(),
+						.pszSpec = filter_spec.c_str()
+					};
+					pfd->SetOptions(FOS_OVERWRITEPROMPT);
+					pfd->SetDefaultExtension(EXT_COLLECTION);
+					pfd->SetFileTypes(1, &filter);
+					pfd->SetFileTypeIndex(1);
+					pfd->SetTitle(::sjis_to_wide(global::string_table[StringId::CaptionExportCollection]).c_str());
+					pfd->QueryInterface(IID_PPV_ARGS(&pfc));
+					if (pfc) {
+						pfc->AddCheckButton(0, ::sjis_to_wide(global::string_table[StringId::LabelCollectionExportOmitDate]).c_str(), FALSE);
+					}
+					hr = pfd->Show(hwnd_);
+					if (SUCCEEDED(hr)) {
+						IShellItem* psi;
+						hr = pfd->GetResult(&psi);
+						if (SUCCEEDED(hr)) {
+							BOOL omit_date = FALSE;
+							if (pfc) {
+								pfc->GetCheckButtonState(0, &omit_date);
+							}
+							PWSTR path;
+							hr = psi->GetDisplayName(SIGDN_FILESYSPATH, &path);
+							if (SUCCEEDED(hr)) {
+								global::preset_manager.export_collection(
+									global::preset_manager.get_current_collection_id(), ::wide_to_sjis(path), omit_date
+								);
+								::CoTaskMemFree(path);
+							}
+							psi->Release();
+						}
+					}
+					pfd->Release();
+					::CoUninitialize();
 				}
 			}
 		}.show(hwnd_);
@@ -834,20 +922,13 @@ namespace cved {
 
 
 	/// <summary>
-	/// フィルタボタンが押されたときに呼び出される関数
+	/// リスト設定ボタンが押されたときに呼び出される関数
 	/// </summary>
 	/// <param name="options"></param>
-	void MessageHandler::button_preset_filter(const nlohmann::json& options) {
-		
-	}
-
-
-	/// <summary>
-	/// 並び替えボタンが押されたときに呼び出される関数
-	/// </summary>
-	/// <param name="options"></param>
-	void MessageHandler::button_preset_sort(const nlohmann::json& options) {
-		
+	void MessageHandler::button_preset_list_setting() {
+		PresetListSettingDialog dialog;
+		dialog.show(hwnd_);
+		if (p_webview_) p_webview_->send_command(MessageCommand::UpdatePresets);
 	}
 
 
@@ -976,13 +1057,13 @@ namespace cved {
 		case EditMode::Bounce:
 			// TODO: コードを渡しているから若干劣化してしまう
 			if (curve_bezier) {
-				global::editor.editor_graph().curve_bezier()->decode(curve_bezier->encode());
+				global::editor.editor_graph().curve_bezier().decode(curve_bezier->encode());
 			}
 			else if (curve_elastic) {
-				global::editor.editor_graph().curve_elastic()->decode(curve_elastic->encode());
+				global::editor.editor_graph().curve_elastic().decode(curve_elastic->encode());
 			}
 			else if (curve_bounce) {
-				global::editor.editor_graph().curve_bounce()->decode(curve_bounce->encode());
+				global::editor.editor_graph().curve_bounce().decode(curve_bounce->encode());
 			}
 			if (animate) {
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
@@ -992,4 +1073,4 @@ namespace cved {
 			}
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

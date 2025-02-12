@@ -8,7 +8,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	PrefDialog::PrefDialog() {
 		using StringId = global::StringTable::StringId;
 
@@ -152,4 +152,4 @@ namespace cved {
 		}
 		return FALSE;
 	}
-} // namespace cved
+} // namespace curve_editor

@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class KeyStateObserver {
 		const std::vector<int32_t> key_codes_;
 		bool current_pressed_ = false;
@@ -31,4 +31,4 @@ namespace cved {
 		bool is_key_down() const noexcept { return !last_pressed_ and current_pressed_; }
 		bool is_key_up() const noexcept { return last_pressed_ and !current_pressed_; }
 	};
-} // namespace cved
+} // namespace curve_editor

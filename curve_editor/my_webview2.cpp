@@ -1,3 +1,8 @@
+#include "my_webview2.hpp"
+
+#include <strconv2.h>
+#include <WebView2EnvironmentOptions.h>
+
 #include "config.hpp"
 #include "global.hpp"
 #include "host_object_config.hpp"
@@ -5,14 +10,10 @@
 #include "host_object_preset.hpp"
 #include "message_box.hpp"
 #include "message_handler.hpp"
-#include "my_webview2.hpp"
 #include "string_table.hpp"
-#include <strconv2.h>
-#include <WebView2EnvironmentOptions.h>
 
 
-
-namespace cved {
+namespace curve_editor {
 	bool MyWebView2::init(HWND hwnd, std::function<void(MyWebView2*)> after_callback) {
 		using StringId = global::StringTable::StringId;
 
@@ -188,4 +189,4 @@ namespace cved {
 			profile->put_PreferredColorScheme(color_scheme);
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

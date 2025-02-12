@@ -9,7 +9,7 @@
 
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	PresetManager::PresetManager() noexcept :
 		collection_info_{
 			{COLLECTION_ID_ALL, string_table[StringTable::StringId::LabelCollectionNameAll]},
@@ -124,7 +124,7 @@ namespace cved::global {
 		}
 	}
 
-	bool PresetManager::export_collection(uint32_t collection_id, const std::filesystem::path& path) const noexcept {
+	bool PresetManager::export_collection(uint32_t collection_id, const std::filesystem::path& path, bool omit_date) const noexcept {
 		nlohmann::json data = nlohmann::json::object();
 		data["presets"] = nlohmann::json::array();
 		std::string name;
@@ -137,7 +137,7 @@ namespace cved::global {
 		data["name"] = ::sjis_to_utf8(name);
 		for (const auto& preset : presets_) {
 			if (collection_id == COLLECTION_ID_ALL or collection_id == preset.get_collection_id()) {
-				data["presets"].push_back(preset.create_json());
+				data["presets"].push_back(preset.create_json(omit_date));
 			}
 		}
 		std::ofstream ofs{ path };
@@ -239,7 +239,7 @@ namespace cved::global {
 		return "";
 	}
 
-	bool PresetManager::save_json() const noexcept {
+	bool PresetManager::save_json(bool omit_date) const noexcept {
 		nlohmann::json data = nlohmann::json::object();
 		data["collections"] = nlohmann::json::array();
 
@@ -265,7 +265,7 @@ namespace cved::global {
 				continue;
 			}
 			else if (collection_id == COLLECTION_ID_ROOT) {
-				data["collections"][0]["presets"].push_back(preset.create_json());
+				data["collections"][0]["presets"].push_back(preset.create_json(omit_date));
 				continue;
 			}
 			auto iter = std::find(custom_collection_ids.begin(), custom_collection_ids.end(), collection_id);
@@ -273,7 +273,7 @@ namespace cved::global {
 				continue;
 			}
 			auto idx = std::distance(custom_collection_ids.begin(), iter) + 1;
-			data["collections"][idx]["presets"].push_back(preset.create_json());
+			data["collections"][idx]["presets"].push_back(preset.create_json(omit_date));
 		}
 
 		std::ofstream ofs{ config.get_dir_plugin() / PRESET_FILE_NAME };
@@ -324,9 +324,47 @@ namespace cved::global {
 			info.push_back({
 				preset.get_id(),
 				preset.get_collection_id(),
-				preset.get_name()
+				preset.get_name(),
+				preset.get_date()
 				});
 		}
 		return info;
 	}
-} // namespace cved::global
+
+	bool PresetManager::list_config_from_json(const nlohmann::json& data) noexcept {
+		try {
+			auto sort_by = data.at("sort_by").get<SortBy>();
+			auto sort_order = data.at("sort_order").get<SortOrder>();
+			auto filter_info = data.at("filter_info");
+			set_sort_by(sort_by);
+			set_sort_order(sort_order);
+			set_filter_info({
+				filter_info.at("typeNormal").get<bool>(),
+				filter_info.at("typeValue").get<bool>(),
+				filter_info.at("typeBezier").get<bool>(),
+				filter_info.at("typeElastic").get<bool>(),
+				filter_info.at("typeBounce").get<bool>(),
+				filter_info.at("typeScript").get<bool>()
+			});
+		}
+		catch (const nlohmann::json::exception&) {
+			return false;
+		}
+		return true;
+	}
+
+	void PresetManager::list_config_to_json(nlohmann::json& data) const noexcept {
+		data = {
+			{ "sort_by", get_sort_by() },
+			{ "sort_order", get_sort_order() },
+			{ "filter_info", {
+				{ "typeNormal", get_filter_info().type_normal },
+				{ "typeValue", get_filter_info().type_value },
+				{ "typeBezier", get_filter_info().type_bezier },
+				{ "typeElastic", get_filter_info().type_elastic },
+				{ "typeBounce", get_filter_info().type_bounce },
+				{ "typeScript", get_filter_info().type_script }
+			}}
+		};
+	}
+} // namespace curve_editor::global

@@ -1,14 +1,14 @@
-#include "constants.hpp"
 #include "dialog.hpp"
+#include "util.hpp"
 #include <bit>
 
 
 
-namespace cved {
+namespace curve_editor {
 	HWND Dialog::create(HWND hwnd, LPARAM init_param) noexcept {
 		init_param_ = init_param;
 		return ::CreateDialogParamA(
-			::GetModuleHandleA(global::PLUGIN_DLL_NAME),
+			util::get_hinst(),
 			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,
@@ -19,7 +19,7 @@ namespace cved {
 	INT_PTR Dialog::show(HWND hwnd, LPARAM init_param) noexcept {
 		init_param_ = init_param;
 		return ::DialogBoxParamA(
-			::GetModuleHandleA(global::PLUGIN_DLL_NAME),
+			util::get_hinst(),
 			MAKEINTRESOURCEA(resource_id()),
 			hwnd,
 			message_router,
@@ -40,4 +40,4 @@ namespace cved {
 			return p_inst->dialog_proc(hwnd, message, wparam, lparam);
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

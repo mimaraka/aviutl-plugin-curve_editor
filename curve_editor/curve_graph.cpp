@@ -2,7 +2,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	double GraphCurve::get_value(double progress, double start, double end) const noexcept {
 		CurveFunction func_ret = [this](double prog, double st, double ed) {return curve_function(prog, st, ed); };
 		for (const auto& modifier : modifiers_) {
@@ -140,4 +140,4 @@ namespace cved {
 			return false;
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

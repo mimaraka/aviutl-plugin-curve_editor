@@ -1,14 +1,14 @@
+#include <lua.hpp>
+
 #include "config.hpp"
 #include "constants.hpp"
 #include "curve_bezier.hpp"
 #include "curve_editor.hpp"
 #include "curve_editor_graph.hpp"
 #include "global.hpp"
-#include <lua.hpp>
 
 
-
-namespace cved {
+namespace curve_editor {
 	// カーブの値を取得
 	int get_curve(::lua_State* L) {
 		// mode:		編集モード(数値または文字列)
@@ -102,7 +102,7 @@ namespace cved {
 				::lua_pushnil(L);
 				return 1;
 			}
-			auto p_curve_normal = global::editor.editor_graph().curve_normal(static_cast<size_t>(idx));
+			auto p_curve_normal = global::editor.editor_graph().p_curve_normal(static_cast<size_t>(idx));
 			if (p_curve_normal) {
 				ret = p_curve_normal->get_value(progress, start, end);
 			}
@@ -149,7 +149,7 @@ namespace cved {
 				::lua_pushnil(L);
 				return 1;
 			}
-			auto p_curve_script = global::editor.editor_script().curve_script(static_cast<size_t>(idx));
+			auto p_curve_script = global::editor.editor_script().p_curve_script(static_cast<size_t>(idx));
 			if (p_curve_script) {
 				ret = p_curve_script->get_value(progress, start, end);
 			}
@@ -177,7 +177,7 @@ namespace cved {
 
 
 	int get_version_str(::lua_State* L) {
-		lua_pushstring(L, cved::global::PLUGIN_VERSION.str().c_str());
+		lua_pushstring(L, global::PLUGIN_VERSION.str().c_str());
 		return 1;
 	}
 
@@ -234,18 +234,18 @@ namespace cved {
 		}
 		return 1;
 	}
-} // namespace cved
+} // namespace curve_editor
 
 
 extern "C" __declspec(dllexport) int luaopen_curve_editor(::lua_State* L) {
 	static ::luaL_Reg functions[] = {
-		{ "getcurve", cved::get_curve },
-		{ "geteditmode", cved::get_edit_mode },
-		{ "getversionstr", cved::get_version_str },
-		{ "putselectbutton", cved::put_select_button},
+		{ "getcurve", curve_editor::get_curve },
+		//{ "geteditmode", curve_editor::get_edit_mode },
+		{ "getversionstr", curve_editor::get_version_str },
+		{ "putselectbutton", curve_editor::put_select_button},
 		{ nullptr, nullptr }
 	};
 
-	::luaL_register(L, "curve_editor", functions);
+	::luaL_register(L, curve_editor::global::PLUGIN_NAME, functions);
 	return 1;
 }

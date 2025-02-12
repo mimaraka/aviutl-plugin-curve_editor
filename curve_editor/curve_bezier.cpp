@@ -1,12 +1,11 @@
 #include "config.hpp"
 #include "curve_bezier.hpp"
 #include "util.hpp"
-#include <mkaul/graphics.hpp>
 #include <mkaul/util.hpp>
 
 
 
-namespace cved {
+namespace curve_editor {
 	// コンストラクタ
 	BezierCurve::BezierCurve(
 		const mkaul::Point<double>& _anchor_start,
@@ -28,6 +27,16 @@ namespace cved {
 		handle_left_{ anchor_start(), anchor_end(), curve.handle_left_.pos_rel() },
 		handle_right_{ anchor_end(), anchor_start(), curve.handle_right_.pos_rel() }
 	{}
+
+	// コピー代入演算子
+	BezierCurve& BezierCurve::operator=(const BezierCurve& curve) noexcept {
+		if (this != &curve) {
+			NumericGraphCurve::operator=(curve);
+			handle_left_.move_rel(curve.handle_left_.pos_rel());
+			handle_right_.move_rel(curve.handle_right_.pos_rel());
+		}
+		return *this;
+	}
 
 	// カーブの値を取得
 	double BezierCurve::curve_function(double progress, double start, double end) const noexcept {
@@ -436,4 +445,4 @@ namespace cved {
 		}
 		return true;
 	}
-} // namespace cved
+} // namespace curve_editor

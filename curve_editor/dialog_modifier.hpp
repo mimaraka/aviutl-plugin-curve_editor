@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class ModifierDialog : public Dialog {
 		HWND hwnd_list_modifier_ = NULL;
 		HWND hwnd_button_add_ = NULL;
@@ -20,9 +20,9 @@ namespace cved {
 
 		int resource_id() const noexcept override;
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
-		void init_controls(HWND hwnd, const GraphCurve* curve) noexcept;
-		void update_list(const GraphCurve* curve) noexcept;
-		void update_buttons(const GraphCurve* curve) noexcept;
+		void init_controls(HWND hwnd, const GraphCurve& curve) noexcept;
+		void update_list(const GraphCurve& curve) noexcept;
+		void update_buttons(const GraphCurve& curve) noexcept;
 
 		template<uint32_t N>
 		std::unique_ptr<Modifier> create_modifier(uint32_t) { return nullptr; }
@@ -52,9 +52,9 @@ namespace cved {
 		}
 	};
 
-	template<int N = 0> void save_prev_modifier(const std::unique_ptr<Modifier>&, std::vector<std::unique_ptr<Modifier>>&) {}
+	template<int dummy = 0> void save_prev_modifier(const std::unique_ptr<Modifier>&, std::vector<std::unique_ptr<Modifier>>&) {}
 
-	template<typename ModifierType, typename... Tail, int N = 0>
+	template<typename ModifierType, typename... Tail, int dummy = 0>
 	void save_prev_modifier(const std::unique_ptr<Modifier>& p_modifier, std::vector<std::unique_ptr<Modifier>>& modifiers_prev) {
 		if (typeid(*p_modifier) == typeid(ModifierType)) {
 			modifiers_prev.emplace_back(
@@ -67,4 +67,4 @@ namespace cved {
 			save_prev_modifier<Tail...>(p_modifier, modifiers_prev);
 		}
 	}
-} // namespace cved
+} // namespace curve_editor

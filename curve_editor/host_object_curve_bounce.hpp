@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class BounceCurveHostObject : public GraphCurveHostObject {
 		static std::vector<double> get_handle(uint32_t id);
 		static void set_handle(uint32_t id, double x, double y);
@@ -19,4 +19,4 @@ namespace cved {
 			register_member(L"getParam", DispatchType::Method, get_param);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor

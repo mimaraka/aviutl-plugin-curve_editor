@@ -1,10 +1,10 @@
-#include "constants.hpp"
-#include "resource.h"
 #include "string_table.hpp"
 
+#include "resource.h"
+#include "util.hpp"
 
 
-namespace cved::global {
+namespace curve_editor::global {
 	// 文字列テーブルの読み込み
 	StringTable::StringTable() noexcept {
 		// TODO: ロケールの設定
@@ -65,6 +65,10 @@ namespace cved::global {
 
 			case StringId::ErrorPresetCreateFailed:
 				id = IDS_ERROR_PRESET_CREATE_FAILED;
+				break;
+
+			case StringId::ErrorCollectionImportFailed:
+				id = IDS_ERROR_COLLECTION_IMPORT_FAILED;
 				break;
 
 			case StringId::WarningDeleteCurve:
@@ -243,6 +247,30 @@ namespace cved::global {
 				id = IDS_LABEL_MODIFIER_SQUARE_WAVE;
 				break;
 
+			case StringId::LabelSortByNull:
+				id = IDS_LABEL_SORT_BY_NULL;
+				break;
+
+			case StringId::LabelSortByName:
+				id = IDS_LABEL_SORT_BY_NAME;
+				break;
+
+			case StringId::LabelSortByDate:
+				id = IDS_LABEL_SORT_BY_DATE;
+				break;
+
+			case StringId::LabelSortOrderAsc:
+				id = IDS_LABEL_SORT_ORDER_ASC;
+				break;
+
+			case StringId::LabelSortOrderDesc:
+				id = IDS_LABEL_SORT_ORDER_DESC;
+				break;
+
+			case StringId::LabelCollectionExportOmitDate:
+				id = IDS_LABEL_COLLECTION_EXPORT_OMIT_DATE;
+				break;
+
 			case StringId::LabelCollectionNameAll:
 				id = IDS_LABEL_COLLECTION_NAME_ALL;
 				break;
@@ -351,6 +379,14 @@ namespace cved::global {
 				id = IDS_MENU_GRAPH_MODIFIER;
 				break;
 
+			case StringId::MenuGraphCopyCurve:
+				id = IDS_MENU_GRAPH_COPY_CURVE;
+				break;
+
+			case StringId::MenuGraphPasteCurve:
+				id = IDS_MENU_GRAPH_PASTE_CURVE;
+				break;
+
 			case StringId::MenuGraphAlignHandle:
 				id = IDS_MENU_GRAPH_ALIGN_HANDLE;
 				break;
@@ -439,6 +475,14 @@ namespace cved::global {
 				id = IDS_MENU_COLLECTION_ADD_IMPORT;
 				break;
 
+			case StringId::MenuCollectionAddImportCecl:
+				id = IDS_MENU_COLLECTION_ADD_IMPORT_CECL;
+				break;
+
+			case StringId::MenuCollectionAddImportFlow:
+				id = IDS_MENU_COLLECTION_ADD_IMPORT_FLOW;
+				break;
+
 			case StringId::MenuCollectionRename:
 				id = IDS_MENU_COLLECTION_RENAME;
 				break;
@@ -479,7 +523,7 @@ namespace cved::global {
 				continue;
 			}
 
-			if (::LoadStringA(::GetModuleHandleA(global::PLUGIN_DLL_NAME), id, tmp, MAX_LEN)) {
+			if (::LoadStringA(util::get_hinst(), id, tmp, MAX_LEN)) {
 				string_data[i] = tmp;
 			}
 		}
@@ -493,4 +537,4 @@ namespace cved::global {
 		}
 		return string_data[(size_t)str_id].c_str();
 	}
-} // namespace cved::global
+} // namespace curve_editor::global

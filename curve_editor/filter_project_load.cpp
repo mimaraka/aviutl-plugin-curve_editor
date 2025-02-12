@@ -10,7 +10,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	BOOL filter_project_load(AviUtl::FilterPlugin* fp, AviUtl::EditHandle*, void* data, int32_t size) {
 		using StringId = global::StringTable::StringId;
 		constexpr size_t DATA_SIZE_V1 = 1839104u;
@@ -50,4 +50,4 @@ namespace cved {
 		}
 		return ret;
 	}
-} // namespace cved
+} // namespace curve_editor

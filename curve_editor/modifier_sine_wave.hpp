@@ -7,7 +7,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class SineWaveModifier : public Modifier {
 		double amplitude_;
 		double frequency_;
@@ -67,8 +67,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::SineWaveModifier, 0)
-CEREAL_REGISTER_TYPE(cved::SineWaveModifier)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::Modifier, cved::SineWaveModifier)
+CEREAL_CLASS_VERSION(curve_editor::SineWaveModifier, 0)
+CEREAL_REGISTER_TYPE(curve_editor::SineWaveModifier)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::Modifier, curve_editor::SineWaveModifier)

@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	uint32_t BounceCurveHostObject::get_id(bool is_select_dialog) {
 		static BounceCurve curve_tmp;
 		uint32_t id;
@@ -12,7 +12,7 @@ namespace cved {
 			id = curve_tmp.get_id();
 		}
 		else {
-			id = global::editor.editor_graph().curve_bounce()->get_id();
+			id = global::editor.editor_graph().curve_bounce().get_id();
 		}
 		return id;
 	}
@@ -40,4 +40,4 @@ namespace cved {
 		}
 		return curve->create_params_str();
 	}
-} // namespace cved
+} // namespace curve_editor

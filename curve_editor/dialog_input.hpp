@@ -6,7 +6,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class InputDialog : public Dialog {
 		static constexpr size_t MAX_TEXT = 1024u;
 
@@ -32,4 +32,4 @@ namespace cved {
 			on_submit_{ on_submit }
 		{}
 	};
-} // namespace cved
+} // namespace curve_editor

@@ -4,7 +4,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	class NumericGraphCurve : public GraphCurve {
 	public:
 		using GraphCurve::GraphCurve;
@@ -31,8 +31,8 @@ namespace cved {
 			);
 		}
 	};
-} // namespace cved
+} // namespace curve_editor
 
-CEREAL_CLASS_VERSION(cved::NumericGraphCurve, 0)
-CEREAL_REGISTER_TYPE(cved::NumericGraphCurve)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(cved::GraphCurve, cved::NumericGraphCurve)
+CEREAL_CLASS_VERSION(curve_editor::NumericGraphCurve, 0)
+CEREAL_REGISTER_TYPE(curve_editor::NumericGraphCurve)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(curve_editor::GraphCurve, curve_editor::NumericGraphCurve)

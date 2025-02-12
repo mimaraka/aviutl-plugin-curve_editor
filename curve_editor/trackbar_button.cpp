@@ -3,7 +3,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	bool TrackbarButton::init(HWND hwnd_obj_dialog, int id) noexcept {
 		hwnd_ = ::GetDlgItem(hwnd_obj_dialog, 4000 + id);
 		if (hwnd_) {
@@ -109,4 +109,4 @@ namespace cved {
 		::InvalidateRect(hwnd_obj_dialog_, &rect, FALSE);
 		::UpdateWindow(hwnd_obj_dialog_);
 	}
-} // namespace cved
+} // namespace curve_editor

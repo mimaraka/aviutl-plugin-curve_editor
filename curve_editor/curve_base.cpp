@@ -2,7 +2,7 @@
 
 
 
-namespace cved {
+namespace curve_editor {
 	double Curve::get_value(double progress, double start, double end) const noexcept {
 		return curve_function(progress, start, end);
 	}
@@ -27,4 +27,4 @@ namespace cved {
 		data["type"] = get_name();
 		return data;
 	}
-} // namespace cved
+} // namespace curve_editor
