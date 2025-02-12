@@ -149,7 +149,10 @@ declare global {
         getPresetsAsJson: () => string;
         getCollectionsAsJson: () => string;
         getCollectionName: (id: number) => string;
+        getFilterInfoAsJson: () => string;
         currentCollectionId: number;
+        sortBy: string;
+        sortOrder: string;
     }
 }
 

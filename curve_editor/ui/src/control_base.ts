@@ -56,6 +56,7 @@ class Control {
             .attr('width', this.anchorRadius * 2)
             .attr('height', this.anchorRadius * 2)
             .attr('class', 'anchor')
+            //.attr('pointer-events', 'none')
             .on('mousedown', event => {
                 // TODO: 値指定モードに対応
                 if (event.button === 2) {
@@ -163,6 +164,8 @@ class Control {
     }
 
     updateHandle(transition: d3.Transition<any, unknown, any, unknown> | null = null) {}
+
+    updateHandleOrder() {}
 
     updateCurvePath() {
         window.postMessage({command: 'UpdateCurvePath'});

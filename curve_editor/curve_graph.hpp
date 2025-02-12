@@ -20,6 +20,13 @@ namespace curve_editor {
 		mkaul::Point<double> anchor_end_;
 		bool anchor_fixed_;
 
+		void clone_modifiers(const GraphCurve& curve) noexcept {
+			for (const auto& modifier : curve.modifiers_) {
+				modifiers_.emplace_back(modifier->clone());
+				modifiers_.back()->set_curve(this);
+			}
+		}
+
 	public:
 		enum class ActivePoint {
 			Null,
@@ -52,11 +59,25 @@ namespace curve_editor {
 			next_{ nullptr },
 			modifiers_{}
 		{
-			for (const auto& modifier : curve.modifiers_) {
-				modifiers_.emplace_back(modifier->clone());
-				modifiers_.back()->set_curve(this);
-			}
+			clone_modifiers(curve);
 		}
+
+		// コピー代入演算子
+		GraphCurve& operator=(const GraphCurve& curve) noexcept {
+			if (this != &curve) {
+				Curve::operator=(curve);
+				anchor_start_ = curve.anchor_start_;
+				anchor_end_ = curve.anchor_end_;
+				anchor_fixed_ = curve.anchor_fixed_;
+				prev_ = nullptr;
+				next_ = nullptr;
+				modifiers_.clear();
+				clone_modifiers(curve);
+			}
+			return *this;
+		}
+
+		virtual std::unique_ptr<GraphCurve> clone_graph() const noexcept = 0;
 
 		[[nodiscard]] auto prev() const noexcept { return prev_; }
 		[[nodiscard]] auto next() const noexcept { return next_; }

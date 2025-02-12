@@ -36,7 +36,7 @@ namespace curve_editor {
 				this_->put_bounds(bounds);
 				this_->navigate([](MyWebView2* this_) {
 					this_->send_command(MessageCommand::InitComponent, {
-						{"isSelectDialog", false},
+						{"page", "MainPanel"},
 						{"isUpdateAvailable", global::update_checker.is_update_available()}
 						});
 					});

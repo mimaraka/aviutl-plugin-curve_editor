@@ -4,7 +4,6 @@
 #include "message_box.hpp"
 #include "resource.h"
 #include "string_table.hpp"
-#include <mkaul/graphics.hpp>
 
 
 

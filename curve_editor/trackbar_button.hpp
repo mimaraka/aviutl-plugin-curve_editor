@@ -2,7 +2,6 @@
 
 #include "exedit_hook.hpp"
 #include <d2d1.h>
-#include <mkaul/graphics.hpp>
 #include <mkaul/rectangle.hpp>
 
 

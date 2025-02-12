@@ -2,13 +2,11 @@
 
 :root {
     --preset-item-text-height: 16px;
-    --color-curve-preset: rgb(100, 100, 100);
     --color-preset-item-text: rgb(70, 70, 70);
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --color-curve-preset: rgb(170, 170, 170);
         --color-preset-item-text: rgb(200, 200, 200);
     }
 }
@@ -35,14 +33,6 @@
     }
 }
 
-.thumbnail {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
 .preset-item-text {
     user-select: none;
     overflow: hidden;
@@ -54,10 +44,4 @@
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.curve-preset {
-    fill: none;
-    stroke: var(--color-curve-preset);
-    stroke-width: 1px;
 }

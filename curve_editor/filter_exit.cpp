@@ -1,7 +1,6 @@
 #include "config.hpp"
 #include "filter_exit.hpp"
 #include "preset_manager.hpp"
-#include <mkaul/graphics.hpp>
 
 
 

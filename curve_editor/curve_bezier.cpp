@@ -28,6 +28,16 @@ namespace curve_editor {
 		handle_right_{ anchor_end(), anchor_start(), curve.handle_right_.pos_rel() }
 	{}
 
+	// コピー代入演算子
+	BezierCurve& BezierCurve::operator=(const BezierCurve& curve) noexcept {
+		if (this != &curve) {
+			NumericGraphCurve::operator=(curve);
+			handle_left_.move_rel(curve.handle_left_.pos_rel());
+			handle_right_.move_rel(curve.handle_right_.pos_rel());
+		}
+		return *this;
+	}
+
 	// カーブの値を取得
 	double BezierCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp(progress, anchor_start().x, anchor_end().x);

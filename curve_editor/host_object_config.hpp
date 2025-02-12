@@ -27,7 +27,7 @@ namespace curve_editor {
 			register_member(L"enableAnimation", DispatchType::PropertyGet, +[] { return global::config.get_enable_animation(); });
 			register_member(L"wordWrap", DispatchType::PropertyGet, +[] { return global::config.get_word_wrap(); });
 			register_member(L"invertWheel", DispatchType::PropertyGet, +[] { return global::config.get_invert_wheel(); });
-			register_member(L"setBackgroundImage", DispatchType::PropertyGet, +[] { return global::config.get_set_bg_image(); });
+			register_member(L"setBackgroundImage", DispatchType::PropertyGet, +[] { return global::config.get_show_bg_image(); });
 			register_member(L"backgroundImagePath", DispatchType::PropertyGet, +[] { return global::config.get_bg_image_path().wstring(); });
 			register_member(L"backgroundImageOpacity", DispatchType::PropertyGet, +[]() { return global::config.get_bg_image_opacity(); });
 			register_member(L"curveResolution", DispatchType::PropertyGet, +[] { return global::config.get_curve_resolution(); });

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import EditorPanel from './panel_editor';
 import { editor } from './host_object';
 import './scss/select_dialog.scss';
@@ -114,7 +114,7 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
         });
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         window.postMessage({
             command: 'SetCurve',
             mode: editMode,

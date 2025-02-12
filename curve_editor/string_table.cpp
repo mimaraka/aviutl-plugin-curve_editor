@@ -67,6 +67,10 @@ namespace curve_editor::global {
 				id = IDS_ERROR_PRESET_CREATE_FAILED;
 				break;
 
+			case StringId::ErrorCollectionImportFailed:
+				id = IDS_ERROR_COLLECTION_IMPORT_FAILED;
+				break;
+
 			case StringId::WarningDeleteCurve:
 				id = IDS_WARNING_DELETE_CURVE;
 				break;
@@ -243,6 +247,30 @@ namespace curve_editor::global {
 				id = IDS_LABEL_MODIFIER_SQUARE_WAVE;
 				break;
 
+			case StringId::LabelSortByNull:
+				id = IDS_LABEL_SORT_BY_NULL;
+				break;
+
+			case StringId::LabelSortByName:
+				id = IDS_LABEL_SORT_BY_NAME;
+				break;
+
+			case StringId::LabelSortByDate:
+				id = IDS_LABEL_SORT_BY_DATE;
+				break;
+
+			case StringId::LabelSortOrderAsc:
+				id = IDS_LABEL_SORT_ORDER_ASC;
+				break;
+
+			case StringId::LabelSortOrderDesc:
+				id = IDS_LABEL_SORT_ORDER_DESC;
+				break;
+
+			case StringId::LabelCollectionExportOmitDate:
+				id = IDS_LABEL_COLLECTION_EXPORT_OMIT_DATE;
+				break;
+
 			case StringId::LabelCollectionNameAll:
 				id = IDS_LABEL_COLLECTION_NAME_ALL;
 				break;
@@ -351,6 +379,14 @@ namespace curve_editor::global {
 				id = IDS_MENU_GRAPH_MODIFIER;
 				break;
 
+			case StringId::MenuGraphCopyCurve:
+				id = IDS_MENU_GRAPH_COPY_CURVE;
+				break;
+
+			case StringId::MenuGraphPasteCurve:
+				id = IDS_MENU_GRAPH_PASTE_CURVE;
+				break;
+
 			case StringId::MenuGraphAlignHandle:
 				id = IDS_MENU_GRAPH_ALIGN_HANDLE;
 				break;
@@ -437,6 +473,14 @@ namespace curve_editor::global {
 
 			case StringId::MenuCollectionAddImport:
 				id = IDS_MENU_COLLECTION_ADD_IMPORT;
+				break;
+
+			case StringId::MenuCollectionAddImportCecl:
+				id = IDS_MENU_COLLECTION_ADD_IMPORT_CECL;
+				break;
+
+			case StringId::MenuCollectionAddImportFlow:
+				id = IDS_MENU_COLLECTION_ADD_IMPORT_FLOW;
 				break;
 
 			case StringId::MenuCollectionRename:

@@ -5,18 +5,18 @@
 
 
 namespace curve_editor::global {
-	Curve* CurveEditor::current_curve() noexcept {
+	Curve* CurveEditor::p_current_curve() noexcept {
 		switch (global::config.get_edit_mode()) {
 		case EditMode::Normal:
 		case EditMode::Value:
 		case EditMode::Bezier:
 		case EditMode::Elastic:
 		case EditMode::Bounce:
-			return editor_graph_.current_curve();
+			return editor_graph_.p_current_curve();
 
 		case EditMode::Script:
 		default:
-			return editor_script_.curve_script();
+			return editor_script_.p_curve_script();
 		}
 	}
 
@@ -127,7 +127,7 @@ namespace curve_editor::global {
 
 		case EditMode::Script:
 		default:
-			return editor_script_.curve_script();
+			return editor_script_.p_curve_script();
 		}
 	}
 

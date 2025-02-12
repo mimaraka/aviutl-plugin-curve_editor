@@ -16,13 +16,26 @@ namespace curve_editor {
 		std::string script_;
 
 	public:
+		// コンストラクタ
 		ScriptCurve() : script_{ DEFAULT_SCRIPT }
 		{}
 
+		// コピーコンストラクタ
 		ScriptCurve(const ScriptCurve& curve) :
 			Curve{ curve },
 			script_{ curve.script_ }
 		{}
+
+		// コピー代入演算子
+		ScriptCurve& operator=(const ScriptCurve& curve) {
+			if (this != &curve) {
+				Curve::operator=(curve);
+				script_ = curve.script_;
+			}
+			return *this;
+		}
+
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return std::make_unique<ScriptCurve>(*this); }
 
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_SCRIPT; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeScript]; }

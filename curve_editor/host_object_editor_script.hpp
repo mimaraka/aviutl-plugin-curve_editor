@@ -13,7 +13,7 @@ namespace curve_editor {
 	public:
 		ScriptEditorHostObject() {
 			register_member(L"getId", DispatchType::Method, +[](size_t idx) {
-				return global::editor.editor_script().curve_script(idx)->get_id();
+				return global::editor.editor_script().p_curve_script(idx)->get_id();
 			});
 			register_member(L"getScript", DispatchType::Method, get_script);
 			register_member(L"setScript", DispatchType::Method, set_script);

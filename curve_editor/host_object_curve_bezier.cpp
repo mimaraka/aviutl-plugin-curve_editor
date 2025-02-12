@@ -12,7 +12,7 @@ namespace curve_editor {
 			id = curve_tmp.get_id();
 		}
 		else {
-			id = global::editor.editor_graph().curve_bezier()->get_id();
+			id = global::editor.editor_graph().curve_bezier().get_id();
 		}
 		return id;
 	}

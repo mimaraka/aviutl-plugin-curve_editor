@@ -14,6 +14,8 @@ namespace curve_editor {
 	class NormalCurve : public GraphCurve {
 		std::vector<std::unique_ptr<GraphCurve>> curve_segments_;
 
+		void clone_segments(const NormalCurve& curve) noexcept;
+
 	public:
 		// コンストラクタ
 		NormalCurve(
@@ -23,6 +25,12 @@ namespace curve_editor {
 
 		// コピーコンストラクタ
 		NormalCurve(const NormalCurve& curve) noexcept;
+
+		// コピー代入演算子
+		NormalCurve& operator=(const NormalCurve& curve) noexcept;
+
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<NormalCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_NORMAL; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeNormal]; }

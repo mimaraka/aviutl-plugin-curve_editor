@@ -52,6 +52,7 @@ class NormalControl extends Control {
         for (let i = 0; i < segments.length; i++) {
             this.segmentControlArray[i] = createSegmentControl(segments[i], g, scaleX, scaleY);
         }
+        this.segmentControlArray.forEach((control) => { control?.updateHandleOrder(); });
         for (let i = 0; i < segments.length; i++) {
             const prevHandleFunc: PrevHandleFunc | null = (i > 0) ? {
                 updateAnchorEnd: this.segmentControlArray[i - 1]?.updateAnchorEnd.bind(this.segmentControlArray[i - 1]) ?? null,
@@ -60,7 +61,7 @@ class NormalControl extends Control {
             } : null;
             const nextHandleFunc: NextHandleFunc | null = (i < segments.length - 1) ? {
                 updateAnchorStart: this.segmentControlArray[i + 1]?.updateAnchorStart.bind(this.segmentControlArray[i + 1]) ?? null,
-                updateHandle: this.segmentControlArray[i + 1]?.updateHandle.bind(this.segmentControlArray[i - 1]) ?? null,
+                updateHandle: this.segmentControlArray[i + 1]?.updateHandle.bind(this.segmentControlArray[i + 1]) ?? null,
                 updateHandleLeft: (this.segmentControlArray[i + 1] instanceof BezierControl) ? (this.segmentControlArray[i + 1] as BezierControl)?.updateHandleLeft.bind(this.segmentControlArray[i + 1]) : null
             } : null;
             this.segmentControlArray[i]?.setPrevHandleFunc(prevHandleFunc);

@@ -29,6 +29,17 @@ namespace curve_editor {
 		reversed_{ curve.reversed_ }
 	{}
 
+	// コピー代入演算子
+	BounceCurve& BounceCurve::operator=(const BounceCurve& curve) noexcept {
+		if (this != &curve) {
+			NumericGraphCurve::operator=(curve);
+			cor_ = curve.cor_;
+			period_ = curve.period_;
+			reversed_ = curve.reversed_;
+		}
+		return *this;
+	}
+
 	// カーブの関数
 	double BounceCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - anchor_start().x) / (anchor_end().x - anchor_start().x), 0., 1.);

@@ -17,7 +17,7 @@ namespace curve_editor::global {
 		CurveEditor() {}
 
 		int32_t track_param() noexcept;
-		Curve* current_curve() noexcept;
+		Curve* p_current_curve() noexcept;
 		size_t current_idx() noexcept;
 		bool set_idx(size_t idx) noexcept;
 		bool advance_idx(int n) noexcept;

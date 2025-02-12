@@ -13,12 +13,20 @@ namespace curve_editor {
 		std::vector<std::unique_ptr<GraphCurve>> curve_segments_;
 
 	public:
+		// コンストラクタ
 		ValueCurve(
 			const mkaul::Point<double>& anchor_start = mkaul::Point{ 0., 0. },
 			const mkaul::Point<double>& anchor_end = mkaul::Point{ 1., 1. }
 		) noexcept;
 
+		// コピーコンストラクタ
 		ValueCurve(const ValueCurve& curve) noexcept;
+
+		// コピー代入演算子
+		ValueCurve& operator=(const ValueCurve& curve) noexcept;
+
+		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<ValueCurve>(*this); }
+		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_VALUE; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeValue]; }

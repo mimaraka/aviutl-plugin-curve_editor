@@ -93,6 +93,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,6 +131,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
       <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -234,6 +236,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClInclude Include="dialog_pref_behavior.hpp" />
     <ClInclude Include="dialog_pref_editing.hpp" />
     <ClInclude Include="dialog_pref_general.hpp" />
+    <ClInclude Include="dialog_preset_list_setting.hpp" />
     <ClInclude Include="dialog_update_notification.hpp" />
     <ClInclude Include="dialog_warning_autosaver.hpp" />
     <ClInclude Include="handle_bezier.hpp" />
@@ -286,6 +289,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClInclude Include="util_json.hpp" />
     <ClInclude Include="my_webview2_reference.hpp" />
     <ClInclude Include="window_select_curve.hpp" />
+    <ClInclude Include="window_select_idx.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actctx_helper.cpp" />
@@ -320,6 +324,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClCompile Include="dialog_pref_behavior.cpp" />
     <ClCompile Include="dialog_pref_editing.cpp" />
     <ClCompile Include="dialog_pref_general.cpp" />
+    <ClCompile Include="dialog_preset_list_setting.cpp" />
     <ClCompile Include="dialog_update_notification.cpp" />
     <ClCompile Include="dialog_warning_autosaver.cpp" />
     <ClCompile Include="handle_bezier.cpp" />
@@ -343,6 +348,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClCompile Include="preset_manager.cpp" />
     <ClCompile Include="update_checker.cpp" />
     <ClCompile Include="window_select_curve.cpp" />
+    <ClCompile Include="window_select_idx.cpp" />
     <ClInclude Include="host_object_curve_elastic.hpp" />
     <ClCompile Include="host_object_curve_bezier.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -357,12 +363,6 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
       </ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="host_object_curve_elastic.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="host_object_curve_linear.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -1,9 +1,9 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faFilter, faArrowDownWideShort, faFileCirclePlus, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faList, faMagnifyingGlass, faFileCirclePlus, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon } from './button';
 import PresetItem from './preset_item';
-import { config, preset } from './host_object';
+import { config, editor, preset } from './host_object';
 import './scss/preset.scss';
 
 
@@ -16,6 +16,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
         id: number;
         collectionId: number;
         name: string;
+        date: number | null;
     }
 
     const [presetSize, setPresetSize] = React.useState(config.presetSize);
@@ -33,26 +34,55 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
         }
     }
 
-    const filterPresets = () => {
+    const filterPresets = (presets: PresetInfo[]) => {
         const searchText = (document.getElementById('searchbar')! as HTMLInputElement).value;
-        setPresetsInfo(
-            originalPresetsInfo.current.filter(
-                (info: PresetInfo) => {
-                    const includesSearchText = info.name.toLowerCase().includes(searchText.toLowerCase());
-                    const isCollectionIdSame = info.collectionId === preset.currentCollectionId;
-                    return includesSearchText && (preset.currentCollectionId == 0 ? true : isCollectionIdSame);
-                }
-            )
+        const filterInfo = JSON.parse(preset.getFilterInfoAsJson());
+        return presets.filter(
+            (info: PresetInfo) => {
+                const includesSearchText = info.name.toLowerCase().includes(searchText.toLowerCase());
+                const isCollectionIdSame = info.collectionId === preset.currentCollectionId;
+                const curveName = editor.getCurveName(info.id);
+                const filterTypeNormal = !filterInfo.typeNormal && curveName === 'normal';
+                const filterTypeValue = !filterInfo.typeValue && curveName === 'value';
+                const filterTypeBezier = !filterInfo.typeBezier && curveName === 'bezier';
+                const filterTypeElastic = !filterInfo.typeElastic && curveName === 'elastic';
+                const filterTypeBounce = !filterInfo.typeBounce && curveName === 'bounce';
+                const filterTypeScript = !filterInfo.typeScript && curveName === 'script';
+                return (
+                    includesSearchText
+                    && (preset.currentCollectionId == 0 ? true : isCollectionIdSame)
+                    && !(filterTypeNormal || filterTypeValue || filterTypeBezier || filterTypeElastic || filterTypeBounce || filterTypeScript)
+                );
+            }
         );
     }
 
+    const sortPresets = (presets: PresetInfo[]) => {
+        return presets.sort((a: PresetInfo, b: PresetInfo) => {
+            let result = 0;
+            if (preset.sortBy === 'Date') {
+                result = (a.date || 0) - (b.date || 0);
+            }
+            if (preset.sortBy !== 'Null' && result === 0) {
+                const nameA = a.name.toLowerCase();
+                const nameB = b.name.toLowerCase();
+                result = nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+            }
+            return preset.sortOrder === 'Asc' ? result : -result;
+        });
+    }
+
+    const updatePresets = () => {
+        setPresetsInfo(sortPresets(filterPresets(originalPresetsInfo.current)));
+    }
+
     const onSearchbarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        filterPresets();
+        updatePresets();
     }
 
     const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         preset.currentCollectionId = parseInt(event.target.value);
-        filterPresets();
+        updatePresets();
     }
 
     const onMessageFromHost = (event: MessageEvent) => {
@@ -60,14 +90,14 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
             case 'UpdatePresets':
                 setCollectionInfo(JSON.parse(preset.getCollectionsAsJson()));
                 originalPresetsInfo.current = JSON.parse(preset.getPresetsAsJson());
-                filterPresets();
+                updatePresets();
                 break;
         }
     }
 
     React.useEffect(() => {
         window.chrome.webview.addEventListener('message', onMessageFromHost);
-        filterPresets();
+        updatePresets();
 
         presetContainer.current?.addEventListener('wheel', onWheel, { passive: false });
 
@@ -87,14 +117,9 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                     <input type='text' id='searchbar' name='searchbar' autoComplete='off' placeholder='プリセットを検索...' onChange={onSearchbarChange}></input>
                 </div>
                 <div className='index-buttons'>
-                    <ToolbarButtonIcon icon={faFilter} title='フィルター' onClick={() => {
+                    <ToolbarButtonIcon icon={faList} title='リストの設定' onClick={() => {
                         window.chrome.webview.postMessage({
-                            command: 'ButtonPresetFilter'
-                        });
-                    }}/>
-                    <ToolbarButtonIcon icon={faArrowDownWideShort} title='並び替え' onClick={() => {
-                        window.chrome.webview.postMessage({
-                            command: 'ButtonPresetSort'
+                            command: 'ButtonPresetListSetting'
                         });
                     }}/>
                 </div>
@@ -129,9 +154,13 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                 </div>
             </div>
             <div className='container-preset' ref={presetContainer}>
-                {presetsInfo.map((info: PresetInfo) => {
-                    return <PresetItem key={info.id} curveId={info.id} collectionId={info.collectionId} name={info.name} width={presetSize}/>
-                })}
+                {
+                    presetsInfo.length > 0 ? (
+                        presetsInfo.map((info: PresetInfo) => (
+                            <PresetItem key={info.id} curveId={info.id} collectionId={info.collectionId} name={info.name} date={info.date} width={presetSize} />
+                        ))
+                    ) : (<div className='no-presets'>プリセットがありません</div>)
+                }
             </div>
         </div>
     );

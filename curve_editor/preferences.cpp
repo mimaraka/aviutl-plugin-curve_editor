@@ -20,18 +20,18 @@ namespace curve_editor {
 		auto_apply = true;
 		invert_wheel = false;
 		notify_update = true;
-		set_bg_image = false;
+		show_bg_image = false;
 		enable_hotkeys = true;
 		enable_animation = true;
 		word_wrap = false;
 	}
 
-	void Preferences::from_json(const nlohmann::json& data) noexcept {
-#define GET_VALUE(v) set_from_json(data, #v, v)
+	void Preferences::from_json(const nlohmann::json& json) noexcept {
+#define GET_VALUE(v) util::set_from_json(json, #v, v)
 		GET_VALUE(language);
 		GET_VALUE(theme);
 		COLORREF tmp;
-		if (set_from_json(data, "curve_color", tmp)) curve_color = tmp;
+		if (util::set_from_json(json, "curve_color", tmp)) curve_color = tmp;
 		GET_VALUE(curve_thickness);
 		GET_VALUE(curve_resolution);
 		GET_VALUE(show_popup);
@@ -40,9 +40,9 @@ namespace curve_editor {
 		GET_VALUE(auto_apply);
 		GET_VALUE(invert_wheel);
 		GET_VALUE(notify_update);
-		GET_VALUE(set_bg_image);
+		GET_VALUE(show_bg_image);
 		std::string str_tmp;
-		if (set_from_json(data, "bg_image_path", str_tmp)) bg_image_path = utf8_to_sjis(str_tmp);
+		if (util::set_from_json(json, "bg_image_path", str_tmp)) bg_image_path = utf8_to_sjis(str_tmp);
 		GET_VALUE(bg_image_opacity);
 		GET_VALUE(enable_hotkeys);
 		GET_VALUE(enable_animation);
@@ -50,10 +50,9 @@ namespace curve_editor {
 #undef GET_VALUE
 	}
 
-	void Preferences::to_json(nlohmann::json* p_json) const noexcept {
-		using json = nlohmann::json;
+	void Preferences::to_json(nlohmann::json& json) const noexcept {
 #define MAKE_PAIR(v) {#v, v}
-		*p_json = {
+		json = {
 			MAKE_PAIR(language),
 			MAKE_PAIR(theme),
 			{"curve_color", curve_color.colorref()},
@@ -65,7 +64,7 @@ namespace curve_editor {
 			MAKE_PAIR(auto_apply),
 			MAKE_PAIR(invert_wheel),
 			MAKE_PAIR(notify_update),
-			MAKE_PAIR(set_bg_image),
+			MAKE_PAIR(show_bg_image),
 			{"bg_image_path", sjis_to_utf8(bg_image_path.string())},
 			MAKE_PAIR(bg_image_opacity),
 			MAKE_PAIR(enable_hotkeys),

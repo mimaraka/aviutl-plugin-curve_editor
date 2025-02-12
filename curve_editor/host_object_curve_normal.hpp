@@ -14,7 +14,7 @@ namespace curve_editor {
 	public:
 		NormalCurveHostObject() {
 			register_member(L"getId", DispatchType::Method, +[](size_t idx) {
-				auto curve = global::editor.editor_graph().curve_normal(idx);
+				auto curve = global::editor.editor_graph().p_curve_normal(idx);
 				return curve ? curve->get_id() : 0;
 			});
 			register_member(L"getIdArray", DispatchType::Method, get_id_array);

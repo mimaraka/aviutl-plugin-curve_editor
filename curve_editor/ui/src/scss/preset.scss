@@ -68,7 +68,7 @@
 
 .searchbar-container {
     position: relative;
-    width: calc(70% - var(--margin) * 2);
+    width: calc(85% - var(--margin) * 2);
 }
 
 .searchbar-icon {
@@ -92,7 +92,7 @@
 .index-buttons {
     display: flex;
     flex-direction: row;
-    width: 30%;
+    width: 15%;
     margin-left: calc(var(--margin) * 2);
 }
 
@@ -118,4 +118,15 @@
 
 .dropdown {
     padding-right: 65px;
+}
+
+.no-presets {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: 100%;
+    user-select: none;
+    font: var(--font);
+    font-size: 14px;
 }

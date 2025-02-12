@@ -1,0 +1,26 @@
+@import url('./variables.scss');
+
+:root {
+    --preset-item-text-height: 16px;
+    --color-curve-preset: rgb(100, 100, 100);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-curve-preset: rgb(170, 170, 170);
+    }
+}
+
+.thumbnail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.curve-preset {
+    fill: none;
+    stroke: var(--color-curve-preset);
+    stroke-width: 1px;
+}

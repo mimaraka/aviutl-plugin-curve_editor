@@ -15,7 +15,10 @@ namespace curve_editor {
 
 	public:
 		EditorHostObject() {
-			register_member(L"currentCurveId", DispatchType::PropertyGet, +[]() { return global::editor.current_curve()->get_id(); });
+			register_member(L"currentCurveId", DispatchType::PropertyGet, +[]() {
+				auto curve = global::editor.p_current_curve();
+				return curve ? curve->get_id() : 0u;
+			});
 			register_member(L"getCurveName", DispatchType::Method, get_curve_name);
 			register_member(L"getCurveDispName", DispatchType::Method, get_curve_disp_name);
 			register_member(L"isCurveLocked", DispatchType::Method, is_curve_locked);

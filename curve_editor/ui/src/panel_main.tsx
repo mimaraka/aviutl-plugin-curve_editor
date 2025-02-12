@@ -107,8 +107,16 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
         return 0;
     }
 
-    const onMessageFromHost = (e: MessageEvent) => {
-        switch (e.data.command) {
+    const onMessage = (event: MessageEvent) => {
+        switch (event.data.command) {
+            case 'ChangeIdx':
+                changeIdx(event.data.idx);
+                break;
+        }
+    }
+
+    const onMessageFromHost = (event: MessageEvent) => {
+        switch (event.data.command) {
             case 'OnDndEnd':
                 onDrop();
                 break;
@@ -147,6 +155,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     }, [isDraggingSeparator]);
 
     React.useEffect(() => {
+        window.addEventListener('message', onMessage);
         window.chrome.webview.addEventListener('message', onMessageFromHost);
 
         const observer = new ResizeObserver((entries) => {
@@ -158,6 +167,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
         observer.observe(ref.current!);
 
         return () => {
+            window.removeEventListener('message', onMessage);
             window.chrome.webview.removeEventListener('message', onMessageFromHost);
             observer.disconnect();
         };

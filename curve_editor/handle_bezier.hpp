@@ -9,7 +9,6 @@
 
 namespace curve_editor {
 	class BezierHandle {
-		static constexpr double DEFAULT_HANDLE_RATIO = 0.3;
 		const mkaul::Point<double>& anchor_origin_;
 		const mkaul::Point<double>& anchor_opposite_;
 		mkaul::Point<double> handle_;
@@ -25,6 +24,8 @@ namespace curve_editor {
 		KeyStateObserver ks_move_symmetrically_{ VK_CONTROL, VK_SHIFT };
 
 	public:
+		static constexpr double DEFAULT_HANDLE_RATIO = 0.3;
+
 		BezierHandle(
 			const mkaul::Point<double>& anchor_origin,
 			const mkaul::Point<double>& anchor_opposite,

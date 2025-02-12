@@ -354,6 +354,12 @@
     <ClInclude Include="handle_bezier.hpp">
       <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
+    <ClInclude Include="window_select_idx.hpp">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog_preset_list_setting.hpp">
+      <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="curve_base.cpp">
@@ -494,9 +500,6 @@
     <ClCompile Include="host_object_curve_bounce.cpp">
       <Filter>Source Files\WebView2\Host Object</Filter>
     </ClCompile>
-    <ClCompile Include="host_object_curve_linear.cpp">
-      <Filter>Source Files\WebView2\Host Object</Filter>
-    </ClCompile>
     <ClCompile Include="host_object_curve_graph.cpp">
       <Filter>Source Files\WebView2\Host Object</Filter>
     </ClCompile>
@@ -565,6 +568,12 @@
     </ClCompile>
     <ClCompile Include="handle_bezier.cpp">
       <Filter>Source Files\Curve\Handle</Filter>
+    </ClCompile>
+    <ClCompile Include="window_select_idx.cpp">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_preset_list_setting.cpp">
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

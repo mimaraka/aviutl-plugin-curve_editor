@@ -34,6 +34,18 @@ namespace curve_editor {
 		reversed_{ curve.reversed_ }
 	{}
 
+	// コピー代入演算子
+	ElasticCurve& ElasticCurve::operator=(const ElasticCurve& curve) noexcept {
+		if (this != &curve) {
+			NumericGraphCurve::operator=(curve);
+			amplitude_ = curve.amplitude_;
+			frequency_ = curve.frequency_;
+			decay_ = curve.decay_;
+			reversed_ = curve.reversed_;
+		}
+		return *this;
+	}
+
 
 	// カーブの値を取得
 	double ElasticCurve::curve_function(double progress, double start, double end) const noexcept {

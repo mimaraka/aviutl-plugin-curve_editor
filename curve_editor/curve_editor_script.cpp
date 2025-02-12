@@ -28,7 +28,7 @@ namespace curve_editor::global {
 	}
 
 	// スクリプトカーブを取得する
-	ScriptCurve* ScriptCurveEditor::curve_script(size_t idx) noexcept {
+	ScriptCurve* ScriptCurveEditor::p_curve_script(size_t idx) noexcept {
 		if (idx < curves_script_.size()) {
 			return &curves_script_[idx];
 		}
