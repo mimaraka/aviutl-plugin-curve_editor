@@ -38,6 +38,7 @@ namespace curve_editor {
 		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<BounceCurve>(*this); }
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
+		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Bounce; }
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BOUNCE; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBounce]; }
 

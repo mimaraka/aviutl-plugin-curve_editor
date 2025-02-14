@@ -37,6 +37,7 @@ namespace curve_editor {
 
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return std::make_unique<ScriptCurve>(*this); }
 
+		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Script; }
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_SCRIPT; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeScript]; }
 		[[nodiscard]] double curve_function(double, double start, double) const noexcept override;
