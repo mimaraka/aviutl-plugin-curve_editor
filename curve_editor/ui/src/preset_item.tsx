@@ -1,7 +1,7 @@
 import React from 'react';
 import CurveThumbnail from './curve_thumbnail';
 import { editor, preset } from './host_object';
-import './scss/preset_item.scss';
+import './style/preset_item.scss';
 
 
 interface PresetItemProps {

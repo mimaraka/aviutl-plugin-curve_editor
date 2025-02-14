@@ -3,7 +3,7 @@ import PresetPanel from './preset';
 import Toolbar from './toolbar';
 import EditorPanel from './panel_editor';
 import { config, editor } from './host_object';
-import './scss/panel_main.scss';
+import './style/panel_main.scss';
 
 
 // const disablePanel = () => {

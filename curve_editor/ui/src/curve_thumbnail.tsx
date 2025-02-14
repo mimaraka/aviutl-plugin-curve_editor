@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { editor } from './host_object';
-import './scss/curve_thumbnail.scss';
+import './style/curve_thumbnail.scss';
 
 
 interface GraphThumbnailProps {

@@ -4,7 +4,7 @@ import { faList, faMagnifyingGlass, faFileCirclePlus, faEllipsisVertical } from 
 import { ToolbarButtonIcon } from './button';
 import PresetItem from './preset_item';
 import { config, editor, preset } from './host_object';
-import './scss/preset.scss';
+import './style/preset.scss';
 
 
 interface PresetProps {
