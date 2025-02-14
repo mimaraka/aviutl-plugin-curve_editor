@@ -1,7 +1,7 @@
 import React from 'react';
 import * as monaco from 'monaco-editor';
 import { config, editor } from './host_object';
-import './scss/editor_text.scss';
+import './style/editor_text.scss';
 
 
 interface TextEditorPanelProps {

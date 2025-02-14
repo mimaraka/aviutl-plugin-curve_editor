@@ -1,7 +1,14 @@
 @import url('./variables.scss');
 
 :root {
-    --separator-handle-thickness: 4px;
+    --color-separator-handle: rgb(67, 67, 67);
+    --separator-handle-thickness: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-separator-handle: rgb(200, 200, 200);
+    }
 }
 
 .container-panel-main {
@@ -61,6 +68,10 @@
         background: var(--color-control-hover);
     }
 
+    &:hover #separator-handle {
+        opacity: 1;
+    }
+
     &:active {
         background: var(--color-control-active);
     }
@@ -77,18 +88,20 @@
 }
 
 #separator-handle {
-    background: var(--color-handle);
+    background: var(--color-separator-handle);
+    transition: var(--transition);
+    opacity: 0;
     border-radius: var(--separator-handle-thickness);
 }
 
 .separator-handle-vertical {
-    width: min(30%, 150px);
+    width: min(25%, 120px);
     height: var(--separator-handle-thickness);
 }
 
 .separator-handle-horizontal {
     width: var(--separator-handle-thickness);
-    height: min(30%, 150px);
+    height: min(25%, 120px);
 }
 
 #disabled-overlay {

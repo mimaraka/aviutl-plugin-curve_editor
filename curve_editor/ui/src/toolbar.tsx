@@ -2,7 +2,7 @@ import React from 'react';
 import { faClone, faSquareUpRight, faStar, faLock, faLockOpen, faTrash, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon, ToolbarButtonIconProps } from './button';
 import { editor } from './host_object';
-import './scss/toolbar.scss';
+import './style/toolbar.scss';
 
 
 interface ToolbarProps {

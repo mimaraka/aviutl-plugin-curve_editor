@@ -52,16 +52,7 @@ namespace curve_editor {
 
 		auto curve = global::id_manager.get_curve<NumericGraphCurve>(curve_id_);
 		if (curve) {
-			// TODO: get_type()を実装し次第変更
-			if (curve->get_name() == global::CURVE_NAME_BEZIER) {
-				mode = EditMode::Bezier;
-			}
-			else if (curve->get_name() == global::CURVE_NAME_ELASTIC) {
-				mode = EditMode::Elastic;
-			}
-			else if (curve->get_name() == global::CURVE_NAME_BOUNCE) {
-				mode = EditMode::Bounce;
-			}
+			mode = curve->get_type();
 			param = curve->encode();
 		}
 		else {
@@ -165,7 +156,7 @@ namespace curve_editor {
 								buttons_[idx].unhighlight();
 							}
 							for (const auto idx : track_idcs) {
-								buttons_[idx].highlight(p_render_target_);
+								buttons_[idx].highlight(p_render_target_, curve_id_);
 							}
 							track_idcs_buffer_ = track_idcs;
 						}

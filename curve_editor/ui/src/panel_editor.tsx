@@ -4,7 +4,7 @@ import { config, editor } from './host_object';
 import { ToolbarButtonIcon, ToolbarButtonText } from './button';
 import GraphEditorPanel from './editor_graph';
 import TextEditorPanel from './editor_text';
-import './scss/panel_editor.scss';
+import './style/panel_editor.scss';
 
 
 interface ParamButtonProps {

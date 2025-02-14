@@ -14,7 +14,7 @@ import ElasticControl from './control_elastic';
 import BounceControl from './control_bounce';
 import NormalControl from './control_normal';
 import createControl from './control';
-import './scss/editor_graph.scss';
+import './style/editor_graph.scss';
 
 
 class ImageObject {

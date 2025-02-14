@@ -3,7 +3,7 @@ import PresetPanel from './preset';
 import Toolbar from './toolbar';
 import EditorPanel from './panel_editor';
 import { config, editor } from './host_object';
-import './scss/panel_main.scss';
+import './style/panel_main.scss';
 
 
 // const disablePanel = () => {
@@ -25,7 +25,7 @@ interface MainPanelProps {
 }
 
 const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
-    const [isDraggingSeparator, setIsDraggingSeparator] = React.useState(false);
+    const [isSeparatorDragging, setIsDraggingSeparator] = React.useState(false);
     const [isDragging, setIsDragging] = React.useState(false);
     const [separatorPos, setSeparatorPos] = React.useState(config.separatorPos);
     const [width, setWidth] = React.useState(document.documentElement.clientWidth);
@@ -137,7 +137,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     }
 
     React.useEffect(() => {
-        if (isDraggingSeparator) {
+        if (isSeparatorDragging) {
         // マウス移動とマウスアップのイベントをwindowに追加
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
@@ -152,7 +152,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDraggingSeparator]);
+    }, [isSeparatorDragging]);
 
     React.useEffect(() => {
         window.addEventListener('message', onMessage);
@@ -210,8 +210,8 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     };
 
     const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorHeight;
-    const pointerEvents = isDraggingSeparator ? 'none' : 'auto';
-    const userSelect = isDraggingSeparator ? 'none' : 'auto';
+    const pointerEvents = isSeparatorDragging ? 'none' : 'auto';
+    const userSelect = isSeparatorDragging ? 'none' : 'auto';
 
     return (
         <div className='container-panel-main' ref={ref} style={{ flexDirection: layoutMode ? 'row' : 'column' }}>
@@ -246,7 +246,12 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                 onMouseDown={handleMouseDown}
                 style={{ cursor: layoutMode ? 'col-resize' : 'row-resize'}}
             >
-                <div id='separator-handle' className={layoutMode ? 'separator-handle-horizontal' : 'separator-handle-vertical'}></div>
+                <div
+                    id='separator-handle'
+                    className={layoutMode ? 'separator-handle-horizontal' : 'separator-handle-vertical'}
+                    style={isSeparatorDragging ? { opacity: 1} : {}}
+                >
+                </div>
             </div>
             <PresetPanel style={{
                 width: layoutMode ? width * (1 - separatorPos) - separatorHeight * 0.5 : '100%',

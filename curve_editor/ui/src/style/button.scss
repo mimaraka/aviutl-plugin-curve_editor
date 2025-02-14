@@ -14,8 +14,7 @@
     border-radius: var(--border-radius);
     font: var(--font);
     color: var(--color-content);
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    
     &:hover {
         background: var(--color-control-hover);
     }
@@ -67,4 +66,9 @@
         background: #2d8ceb;
         border-radius: 100%;
     }
+}
+
+.button-toolbar-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
