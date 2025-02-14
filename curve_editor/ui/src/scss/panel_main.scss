@@ -1,7 +1,14 @@
 @import url('./variables.scss');
 
 :root {
+    --color-separator-handle: rgb(67, 67, 67);
     --separator-handle-thickness: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-separator-handle: rgb(214, 214, 214);
+    }
 }
 
 .container-panel-main {
@@ -61,6 +68,10 @@
         background: var(--color-control-hover);
     }
 
+    &:hover #separator-handle {
+        opacity: 1;
+    }
+
     &:active {
         background: var(--color-control-active);
     }
@@ -77,7 +88,9 @@
 }
 
 #separator-handle {
-    background: var(--color-handle);
+    background: var(--color-separator-handle);
+    transition: var(--transition);
+    opacity: 0;
     border-radius: var(--separator-handle-thickness);
 }
 
