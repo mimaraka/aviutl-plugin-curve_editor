@@ -2,12 +2,12 @@
 
 :root {
     --color-separator-handle: rgb(67, 67, 67);
-    --separator-handle-thickness: 4px;
+    --separator-handle-thickness: 3px;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --color-separator-handle: rgb(214, 214, 214);
+        --color-separator-handle: rgb(200, 200, 200);
     }
 }
 
@@ -95,13 +95,13 @@
 }
 
 .separator-handle-vertical {
-    width: min(30%, 150px);
+    width: min(25%, 120px);
     height: var(--separator-handle-thickness);
 }
 
 .separator-handle-horizontal {
     width: var(--separator-handle-thickness);
-    height: min(30%, 150px);
+    height: min(25%, 120px);
 }
 
 #disabled-overlay {
