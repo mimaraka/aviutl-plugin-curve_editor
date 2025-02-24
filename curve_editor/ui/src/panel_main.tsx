@@ -177,7 +177,8 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
         if (event.button === 0) {
             setIsDragging(true);
             window.chrome.webview.postMessage({
-                command: 'OnDndStart'
+                command: 'OnDndStart',
+                curveId: editor.currentCurveId
             });
         }
     }

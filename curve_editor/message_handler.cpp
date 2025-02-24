@@ -416,7 +416,7 @@ namespace curve_editor {
 					mode == EditMode::Normal
 					and global::editor.editor_graph().is_copying_normal()
 					and curve
-					and curve->is_locked()
+					and !curve->is_locked()
 				) ? MenuItem::State::Null : MenuItem::State::Disabled,
 				[curve_id, this]() {
 					auto curve = global::id_manager.get_curve<NormalCurve>(curve_id);

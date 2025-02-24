@@ -230,7 +230,7 @@ const EditorPanel: React.FC<EditorPanelProps> = (props: EditorPanelProps) => {
             <div className='menu-bottom'>
                 <div className='menu-row'>
                     <div className='menu-button dropdown-container' id='edit-mode-container'>
-                        <select className='dropdown' name='edit-mode' id='edit-mode' title='編集モード' value={props.editMode} onChange={onSelectChange} onWheel={onWheel}>
+                        <select className='dropdown' name='edit-mode' id='edit-mode' title={`編集モード (${config.getEditModeName(props.editMode)})`} value={props.editMode} onChange={onSelectChange} onWheel={onWheel}>
                             {editModeOptions}
                         </select>
                     </div>
