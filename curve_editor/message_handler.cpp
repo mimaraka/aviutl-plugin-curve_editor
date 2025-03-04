@@ -864,6 +864,7 @@ namespace curve_editor {
 					pfd->QueryInterface(IID_PPV_ARGS(&pfc));
 					if (pfc) {
 						pfc->AddCheckButton(0, ::sjis_to_wide(global::string_table[StringId::LabelCollectionExportOmitDate]).c_str(), FALSE);
+						pfc->AddCheckButton(1, ::sjis_to_wide(global::string_table[StringId::LabelCollectionExportSetIndent]).c_str(), TRUE);
 					}
 					hr = pfd->Show(hwnd_);
 					if (SUCCEEDED(hr)) {
@@ -871,14 +872,16 @@ namespace curve_editor {
 						hr = pfd->GetResult(&psi);
 						if (SUCCEEDED(hr)) {
 							BOOL omit_date = FALSE;
+							BOOL set_indent = TRUE;
 							if (pfc) {
 								pfc->GetCheckButtonState(0, &omit_date);
+								pfc->GetCheckButtonState(1, &set_indent);
 							}
 							PWSTR path;
 							hr = psi->GetDisplayName(SIGDN_FILESYSPATH, &path);
 							if (SUCCEEDED(hr)) {
 								global::preset_manager.export_collection(
-									global::preset_manager.get_current_collection_id(), ::wide_to_sjis(path), omit_date
+									global::preset_manager.get_current_collection_id(), ::wide_to_sjis(path), omit_date, set_indent
 								);
 								::CoTaskMemFree(path);
 							}
