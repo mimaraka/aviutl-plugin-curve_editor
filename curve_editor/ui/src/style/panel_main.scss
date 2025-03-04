@@ -3,6 +3,7 @@
 :root {
     --color-separator-handle: rgb(67, 67, 67);
     --separator-handle-thickness: 3px;
+    --apply-button-height: 40px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,16 +29,21 @@
 }
 
 .button-apply {
+    position: absolute;
+    left: 0;
+    bottom: 0;
     user-select: none;
     overflow: hidden;
-    width: calc(100% - var(--margin) * 4);
-    height: calc(var(--apply-button-height) - var(--margin) * 4);
+    width: calc(100% - var(--margin) * 4 - 34px);
+    height: calc(100% - var(--margin) * 4);
     margin: calc(var(--margin) * 2);
     transition: all .2s ease-out;
     background: var(--color-button);
     cursor: pointer;
     border: none;
-    border-radius: var(--border-radius);
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+    border-right: solid 1px #324d78;
     font: var(--font);
     color: rgb(228, 228, 228);
     text-overflow: ellipsis;
@@ -48,6 +54,28 @@
 
     &:focus {
         outline: none;
+    }
+
+    &:active {
+        background: var(--color-button-active);
+    }
+}
+
+#select-apply-mode {
+    &::after {
+        border-right-color: rgb(228, 228, 228);
+        border-bottom-color: rgb(228, 228, 228);;
+    }
+}
+
+#apply-mode {
+    margin: calc(var(--margin) * 2);
+    width: calc(100% - 4 * var(--margin));
+    height: calc(100% - 4 * var(--margin));
+    background: var(--color-button);
+
+    &:hover {
+        background: var(--color-button-hover);
     }
 
     &:active {

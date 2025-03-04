@@ -51,7 +51,7 @@ namespace curve_editor::global {
 		bool set_edit_mode(EditMode edit_mode) noexcept;
 
 		const char* get_edit_mode_dispname(EditMode edit_mode) const noexcept;
-		const char* get_edit_mode_dispname() const noexcept;
+		const char* get_edit_mode_dispname() const noexcept { return get_edit_mode_dispname(edit_mode_); };
 
 		auto get_layout_mode() const noexcept { return layout_mode_; }
 		bool set_layout_mode(LayoutMode layout_mode) noexcept;
@@ -60,6 +60,9 @@ namespace curve_editor::global {
 		auto get_apply_mode() const noexcept { return get_apply_mode(get_edit_mode()); }
 		bool set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept;
 		bool set_apply_mode(ApplyMode apply_mode) noexcept { return set_apply_mode(get_edit_mode(), apply_mode); }
+
+		const char* get_apply_mode_dispname(ApplyMode apply_mode) const noexcept;
+		const char* get_apply_mode_dispname() const noexcept { return get_apply_mode_dispname(get_apply_mode()); }
 
 		const auto& get_curve_color() const noexcept { return pref_.curve_color; }
 		void set_curve_color(mkaul::ColorF curve_color) noexcept { pref_.curve_color = curve_color; }
@@ -119,6 +122,9 @@ namespace curve_editor::global {
 		auto get_bg_image_opacity() const noexcept { return pref_.bg_image_opacity; }
 		void set_bg_image_opacity(float bg_image_opacity) noexcept { pref_.bg_image_opacity = mkaul::clamp(bg_image_opacity, 0.f, 1.f); }
 
+		auto get_apply_button_height() const noexcept { return pref_.apply_button_height; }
+		void set_apply_button_height(uint32_t apply_button_height) noexcept { pref_.apply_button_height = mkaul::clamp(apply_button_height, 30u, 200u); }
+
 		auto get_enable_hotkeys() const noexcept { return pref_.enable_hotkeys; }
 		void set_enable_hotkeys(bool enable_hotkeys) noexcept { pref_.enable_hotkeys = enable_hotkeys; }
 
@@ -132,10 +138,10 @@ namespace curve_editor::global {
 		void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 
 		auto get_separator_pos() const noexcept { return separator_pos_; }
-		void set_separator_pos(double separator_pos) noexcept;
+		void set_separator_pos(double separator_pos) noexcept { separator_pos_ = mkaul::clamp(separator_pos, 0., 1.); }
 
 		auto get_preset_size() const noexcept { return preset_size_; }
-		void set_preset_size(int preset_size) noexcept;
+		void set_preset_size(int preset_size) noexcept { preset_size_ = mkaul::clamp(preset_size, 20, 200); }
 
 		const auto& get_select_window_size() const noexcept { return select_window_size_; }
 		void set_select_window_size(const mkaul::Size<uint32_t>& select_window_size) noexcept { select_window_size_ = select_window_size; }

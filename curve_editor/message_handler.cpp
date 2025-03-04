@@ -348,39 +348,6 @@ namespace curve_editor {
 		auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
 
 		ContextMenu{
-			MenuItem{
-				global::string_table[StringId::MenuGraphApplyMode],
-				MenuItem::Type::String,
-				MenuItem::State::Null,
-				nullptr,
-				{
-					MenuItem{
-						global::string_table[StringId::LabelApplyModeNormal],
-						MenuItem::Type::RadioCheck,
-						global::config.get_apply_mode(mode) == ApplyMode::Normal ? MenuItem::State::Checked : MenuItem::State::Null,
-						[mode]() {
-							global::config.set_apply_mode(mode, ApplyMode::Normal);
-						}
-					},
-					MenuItem{
-						global::string_table[StringId::LabelApplyModeIgnoreMidPoint],
-						MenuItem::Type::RadioCheck,
-						global::config.get_apply_mode(mode) == ApplyMode::IgnoreMidPoint ? MenuItem::State::Checked : MenuItem::State::Null,
-						[mode]() {
-							global::config.set_apply_mode(mode, ApplyMode::IgnoreMidPoint);
-						}
-					},
-					MenuItem{
-						global::string_table[StringId::LabelApplyModeInterpolate],
-						MenuItem::Type::RadioCheck,
-						global::config.get_apply_mode(mode) == ApplyMode::Interpolate ? MenuItem::State::Checked : MenuItem::State::Null,
-						[mode]() {
-							global::config.set_apply_mode(mode, ApplyMode::Interpolate);
-						}
-					},
-				}
-			},
-			MenuItem{"", MenuItem::Type::Separator},
 			//MenuItem{global::string_table[StringId::MenuGraphAddAnchor]},
 			MenuItem{global::string_table[StringId::MenuGraphReverseCurve],
 			MenuItem::Type::String,
