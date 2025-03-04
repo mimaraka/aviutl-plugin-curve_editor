@@ -7,18 +7,18 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/mimaraka/aviutl-plugin-curve_editor/total)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/mimaraka/aviutl-plugin-curve_editor)
 
-![graph3 1](https://github.com/user-attachments/assets/74930f51-99d3-4ce9-bafb-778a3476e864)
+![thumbnail](https://github.com/user-attachments/assets/fa8243c9-3b7b-4b86-aa59-c266e6101fb7)
 
-様々なイージングを作成・管理することができる AviUtl 用のプラグイン・スクリプトです。
+様々なイージングを作成・管理することができる AviUtl のプラグイン・スクリプトです。
 
 ## ダウンロード
 
-下のリンクから最新バージョンの zip ファイル(`curve_editor-v*.zip`)をダウンロードしてください。  
+下のリンクから最新バージョンの ZIP ファイル(`curve_editor-v*.zip`)をダウンロードしてください。  
 [**ダウンロード**](https://github.com/mimaraka/aviutl-plugin-curve_editor/releases/latest)
 
 ## インストール
 
-ダウンロードした`curve_editor-v*.zip`を解凍し、以下の内容物をそれぞれ適切な場所に配置します。
+ダウンロードしたZIPファイルを展開し、以下の内容物をそれぞれ適切な場所に配置します。
 
 |                     内容物                     |                                                                 移動先                                                                  |
 | :--------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------: |
@@ -81,7 +81,7 @@ AviUtl を起動後、メインウィンドウの「表示」メニューから�
 
 ### グラフビュー
 
-マウスホイールを回転させて、でビューを拡大縮小することができます。
+マウスホイールを回転させて、ビューを拡大縮小することができます。
 
 マウスホイールをドラッグする、または、 `Alt` キーを押しながら左ボタンでドラッグすることで、ビューの位置を変更することができます。
 
@@ -98,24 +98,9 @@ AviUtl を起動後、メインウィンドウの「表示」メニューから�
 > [!TIP]
 > Shift キーを押しながらドラッグ&ドロップすることで、XYZ 座標など、イージングが一度に設定されるトラックバーについても、各座標ごとに個別にイージングを設定することができます。
 
-### その他
+## その他
 
-詳細な使用方法については [Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki) を参照してください。。
-
-## プロジェクトファイルへのカーブの保存機能について
-
-一部のモードのカーブは、プロジェクトファイル(`.aup`)への埋め込みが可能となっており、プロジェクト保存時に同時に保存されるようになっています。  
-しかし、仕様上、**拡張編集標準のバックアップ機能では、これらのカーブを保存することはできません。**
-
-そのため、カーブのデータを保持した状態でバックアップを行いたい場合は、以下のいずれかのプラグインを導入してください。
-
-- [autosaver (オリジナル)](https://github.com/epi5131/autosaver)
-- [autosaver (Garech フォーク版)](https://github.com/Garech-mas/autosaver)
-
-## スクリプトから使用する(スクリプト開発者向け)
-
-スクリプト制御や、`.anm`、`.obj`、`.tra`などのスクリプトファイル上で、Curve Editor のカーブを呼び出して使用することができます。  
-詳しくは、[API リファレンス (Lua スクリプト)](<https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/API%E3%83%AA%E3%83%95%E3%82%A1%E3%83%AC%E3%83%B3%E3%82%B9-(Lua%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%97%E3%83%88)>)を参照してください。
+詳細な使用方法やよくある問題の解決方法については、 [Wiki](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki) を参照してください。
 
 ## 動作環境
 
@@ -129,13 +114,9 @@ AviUtl を起動後、メインウィンドウの「表示」メニューから�
 > - [Visual C++ 2015/2017/2019/2022 再頒布可能パッケージ (x86)](https://aka.ms/vs/17/release/vc_redist.x86.exe)
 > - [Microsoft Edge WebView2 ランタイム (x86)](https://developer.microsoft.com/ja-jp/microsoft-edge/webview2/?form=MA13LH)
 
-## Q&A
-
-Wiki の[トラブルシューティング](https://github.com/mimaraka/aviutl-plugin-curve_editor/wiki/%E3%83%88%E3%83%A9%E3%83%96%E3%83%AB%E3%82%B7%E3%83%A5%E3%83%BC%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0)を参照してください。
-
 ## バグ報告
 
-バグ報告は [Issues](https://github.com/mimaraka/aviutl-plugin-curve_editor/issues) または [Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8) (匿名回答可)からお願いします。
+バグ報告は Issues または [Google Form](https://forms.gle/mhv96DSYVhhKPkYQ8) (匿名回答可)からお願いします。
 
 ## 免責事項
 
