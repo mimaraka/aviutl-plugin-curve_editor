@@ -21,6 +21,7 @@
 #define IDD_DIALOG_UPDATE_NOTIFICATION  166
 #define IDD_UPDATE_NOTIFICATION         166
 #define IDD_PRESET_LIST_SETTING         168
+#define IDD_SCRIPT_HELP                 172
 #define IDC_DRAG                        512
 #define IDC_BUTTON_APPLY                768
 #define IDC_BUTTON_RESET                769
@@ -82,6 +83,7 @@
 #define IDC_RADIO_SORT_ASC              1076
 #define IDC_SYSLINK_DONATE              1077
 #define IDC_RADIO_SORT_DESC             1077
+#define IDC_LIST1                       1078
 #define IDC_COMBO_LANGUAGE              1280
 #define IDC_COMBO_THEME                 1281
 #define IDC_EDIT_BACKGROUND_IMAGE       1410
@@ -175,6 +177,7 @@
 #define IDS_LABEL_SORT_BY_NAME          8259
 #define IDS_LABEL_SORT_BY_DATE          8260
 #define IDS_LABEL_COLLECTION_EXPORT_OMIT_DATE 8320
+#define IDS_LABEL_COLLECTION_EXPORT_SET_INDENT 8321
 #define IDS_LABEL_COLLECTION_NAME_ALL   8448
 #define IDS_LABEL_COLLECTION_NAME_DEFAULT 8449
 #define IDS_LABEL_COLLECTION_NAME_ROOT  8450
@@ -257,9 +260,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        172
+#define _APS_NEXT_RESOURCE_VALUE        174
 #define _APS_NEXT_COMMAND_VALUE         40200
-#define _APS_NEXT_CONTROL_VALUE         1078
+#define _APS_NEXT_CONTROL_VALUE         1080
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
