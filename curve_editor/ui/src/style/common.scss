@@ -6,7 +6,7 @@
         pointer-events: none;
         content: "";
         position: absolute;
-        top: 13px;
+        top: calc(50% - 5px);
         right: 18px;
         transform: rotate(45deg);
         width: 5.5px;

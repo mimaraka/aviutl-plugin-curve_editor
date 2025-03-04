@@ -73,6 +73,7 @@ namespace curve_editor::global {
 			LabelSortOrderAsc,
 			LabelSortOrderDesc,
 			LabelCollectionExportOmitDate,
+			LabelCollectionExportSetIndent,
 			LabelCollectionNameAll,
 			LabelCollectionNameDefault,
 			LabelCollectionNameRoot,

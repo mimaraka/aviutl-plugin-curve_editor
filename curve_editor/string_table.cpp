@@ -271,6 +271,10 @@ namespace curve_editor::global {
 				id = IDS_LABEL_COLLECTION_EXPORT_OMIT_DATE;
 				break;
 
+			case StringId::LabelCollectionExportSetIndent:
+				id = IDS_LABEL_COLLECTION_EXPORT_SET_INDENT;
+				break;
+
 			case StringId::LabelCollectionNameAll:
 				id = IDS_LABEL_COLLECTION_NAME_ALL;
 				break;

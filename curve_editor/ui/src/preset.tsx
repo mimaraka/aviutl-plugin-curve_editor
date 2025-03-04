@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faList, faMagnifyingGlass, faFolderPlus, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faList, faMagnifyingGlass, faFolderPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon } from './button';
 import PresetItem from './preset_item';
 import { config, editor, preset } from './host_object';
@@ -146,7 +146,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                             command: 'ButtonCollectionAdd'
                         });
                     }}/>
-                    <ToolbarButtonIcon icon={faEllipsisVertical} title='コレクションの操作' onClick={() => {
+                    <ToolbarButtonIcon icon={faPenToSquare} title='コレクションの操作' onClick={() => {
                         window.chrome.webview.postMessage({
                             command: 'ButtonCollection'
                         });

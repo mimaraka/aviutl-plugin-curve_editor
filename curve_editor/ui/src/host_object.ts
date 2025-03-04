@@ -28,6 +28,9 @@ declare global {
         editMode: number;
         editModeNum: number;
         getEditModeName: (editMode: number) => string;
+        applyMode: number;
+        applyModeNum: number;
+        getApplyModeName: (applyMode: number) => string;
         layoutMode: number;
         showXLabel: boolean;
         showYLabel: boolean;
@@ -47,6 +50,7 @@ declare global {
         notifyUpdate: boolean;
         separatorPos: number;
         presetSize: number;
+        applyButtonHeight: number;
     }
 
     interface EditorHostObject {

@@ -29,6 +29,8 @@ namespace curve_editor {
 		hwnd_button_bg_image_path_ = ::GetDlgItem(hwnd, IDC_BUTTON_BACKGROUND_IMAGE);
 		hwnd_slider_bg_image_opacity_ = ::GetDlgItem(hwnd, IDC_SLIDER_IMAGE_OPACITY);
 		hwnd_static_bg_image_opacity_ = ::GetDlgItem(hwnd, IDC_STATIC_IMAGE_OPACITY);
+		hwnd_static_apply_button_height_ = ::GetDlgItem(hwnd, IDC_STATIC_APPLY_BUTTON_HEIGHT);
+		hwnd_slider_apply_button_height_ = ::GetDlgItem(hwnd, IDC_SLIDER_APPLY_BUTTON_HEIGHT);
 		hwnd_check_show_trace_ = ::GetDlgItem(hwnd, IDC_CHECK_SHOW_TRACE);
 		hwnd_check_enable_animation_ = ::GetDlgItem(hwnd, IDC_CHECK_ENABLE_ANIMATION);
 
@@ -44,6 +46,7 @@ namespace curve_editor {
 		::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
 		::SendMessageA(hwnd_slider_curve_quality_, TBM_SETRANGE, TRUE, MAKELPARAM(100, 1000));
 		::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETRANGE, TRUE, MAKELPARAM(0, 100));
+		::SendMessageA(hwnd_slider_apply_button_height_, TBM_SETRANGE, TRUE, MAKELPARAM(30, 200));
 	}
 
 
@@ -77,6 +80,10 @@ namespace curve_editor {
 			else if (lparam == (LPARAM)hwnd_slider_bg_image_opacity_) {
 				int value_int = ::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL);
 				::SetWindowTextA(hwnd_static_bg_image_opacity_, std::format("{}%", value_int).c_str());
+			}
+			else if (lparam == (LPARAM)hwnd_slider_apply_button_height_) {
+				int value_int = ::SendMessageA(hwnd_slider_apply_button_height_, TBM_GETPOS, NULL, NULL);
+				::SetWindowTextA(hwnd_static_apply_button_height_, std::format("{}", value_int).c_str());
 			}
 			return TRUE;
 
@@ -143,10 +150,12 @@ namespace curve_editor {
 				::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_thickness() * 10.f));
 				::SendMessageA(hwnd_slider_curve_quality_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_resolution()));
 				::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETPOS, TRUE, (LPARAM)round(global::config.get_bg_image_opacity() * 100.f));
+				::SendMessageA(hwnd_slider_apply_button_height_, TBM_SETPOS, TRUE, (LPARAM)global::config.get_apply_button_height());
 
 				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_thickness_);
 				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_quality_);
 				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_bg_image_opacity_);
+				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_apply_button_height_);
 
 				return TRUE;
 
@@ -162,9 +171,11 @@ namespace curve_editor {
 				global::config.set_curve_resolution(
 					(uint32_t)::SendMessageA(hwnd_slider_curve_quality_, TBM_GETPOS, NULL, NULL)
 				);
-
 				global::config.set_bg_image_opacity(
 					(float)::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL) * 0.01f
+				);
+				global::config.set_apply_button_height(
+					(uint32_t)::SendMessageA(hwnd_slider_apply_button_height_, TBM_GETPOS, NULL, NULL)
 				);
 				{
 					char buffer[MAX_PATH];

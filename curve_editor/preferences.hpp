@@ -15,6 +15,7 @@ namespace curve_editor {
 		uint32_t curve_resolution = 0u;
 		std::filesystem::path bg_image_path = "";
 		float bg_image_opacity = 0.f;
+		uint32_t apply_button_height = 0u;
 		bool show_popup = false;
 		bool show_trace = false;
 		bool auto_copy = false;
