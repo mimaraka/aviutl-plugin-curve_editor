@@ -95,8 +95,18 @@ namespace curve_editor::global {
 		}
 	}
 
-	const char* Config::get_edit_mode_dispname() const noexcept {
-		return get_edit_mode_dispname(edit_mode_);
+	const char* Config::get_apply_mode_dispname(ApplyMode apply_mode) const noexcept {
+		using StringId = StringTable::StringId;
+		switch (apply_mode) {
+		case ApplyMode::Normal:
+			return string_table[StringId::LabelApplyModeNormal];
+		case ApplyMode::IgnoreMidPoint:
+			return string_table[StringId::LabelApplyModeIgnoreMidPoint];
+		case ApplyMode::Interpolate:
+			return string_table[StringId::LabelApplyModeInterpolate];
+		default:
+			return nullptr;
+		}
 	}
 
 	bool Config::set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept {
@@ -133,14 +143,6 @@ namespace curve_editor::global {
 			return true;
 		}
 		else return false;
-	}
-
-	void Config::set_separator_pos(double separator_pos) noexcept {
-		separator_pos_ = mkaul::clamp(separator_pos, 0., 1.);
-	}
-
-	void Config::set_preset_size(int preset_size) noexcept {
-		preset_size_ = mkaul::clamp(preset_size, 20, 200);
 	}
 
 #define GET_KEY(var) std::string{ #var, 0u, strlen(#var) - 1u}.c_str()

@@ -91,7 +91,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(UserProfile)\source\lib\lua5_1_4_Win32_dll8_lib\include\;$(UserProfile)\source\lib\boost_1_87_0\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -99,7 +99,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
-      <AdditionalDependencies>$(ProjectDir)external\aviutl-mkaul\mkaul\$(Configuration)\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)external\aviutl-mkaul\mkaul\$(Configuration)\mkaul.lib;$(UserProfile)\source\lib\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
@@ -128,7 +128,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\include\;C:\cpplibs\boost_1_69_0\include\boost-1_83\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(UserProfile)\source\lib\lua5_1_4_Win32_dll8_lib\include\;$(UserProfile)\source\lib\boost_1_87_0\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -140,7 +140,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ModuleDefinitionFile>curve_editor.def</ModuleDefinitionFile>
       <DelayLoadDLLs>lua51.dll</DelayLoadDLLs>
-      <AdditionalDependencies>$(ProjectDir)external\aviutl-mkaul\mkaul\$(Configuration)\mkaul.lib;C:\aviutl_libs\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)external\aviutl-mkaul\mkaul\$(Configuration)\mkaul.lib;$(UserProfile)\source\lib\lua5_1_4_Win32_dll8_lib\lua51.lib;comctl32.lib;d2d1.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
       <AdditionalManifestDependencies>type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'</AdditionalManifestDependencies>
     </Link>
     <PostBuildEvent>

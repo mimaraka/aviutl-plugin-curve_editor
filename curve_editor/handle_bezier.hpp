@@ -88,6 +88,7 @@ namespace curve_editor {
 		void end_move() noexcept {
 			tangent_locker_.unlock();
 			length_locker_.unlock();
+			snapper_.unsnap();
 		}
 
 		template<class Archive>

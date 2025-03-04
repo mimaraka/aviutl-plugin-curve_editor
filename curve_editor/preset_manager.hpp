@@ -71,7 +71,7 @@ namespace curve_editor::global {
 
 		uint32_t create_collection(const std::string& name, bool change_current_id = true) noexcept;
 		bool import_collection(const std::filesystem::path& path) noexcept;
-		bool export_collection(uint32_t collection_id, const std::filesystem::path& path, bool omit_date = false) const noexcept;
+		bool export_collection(uint32_t collection_id, const std::filesystem::path& path, bool omit_date = false, bool set_indent = true) const noexcept;
 		bool remove_collection(uint32_t collection_id) noexcept;
 		bool rename_collection(uint32_t collection_id, const std::string& name) noexcept;
 		bool is_collection_custom(uint32_t collection_id) const noexcept {

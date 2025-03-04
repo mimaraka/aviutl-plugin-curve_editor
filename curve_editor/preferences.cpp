@@ -14,6 +14,7 @@ namespace curve_editor {
 		curve_resolution = 400u;
 		bg_image_path = "";
 		bg_image_opacity = 0.3f;
+		apply_button_height = 48u;
 		show_popup = true;
 		show_trace = true;
 		auto_copy = false;
@@ -44,6 +45,7 @@ namespace curve_editor {
 		std::string str_tmp;
 		if (util::set_from_json(json, "bg_image_path", str_tmp)) bg_image_path = utf8_to_sjis(str_tmp);
 		GET_VALUE(bg_image_opacity);
+		GET_VALUE(apply_button_height);
 		GET_VALUE(enable_hotkeys);
 		GET_VALUE(enable_animation);
 		GET_VALUE(word_wrap);
@@ -67,6 +69,7 @@ namespace curve_editor {
 			MAKE_PAIR(show_bg_image),
 			{"bg_image_path", sjis_to_utf8(bg_image_path.string())},
 			MAKE_PAIR(bg_image_opacity),
+			MAKE_PAIR(apply_button_height),
 			MAKE_PAIR(enable_hotkeys),
 			MAKE_PAIR(enable_animation),
 			MAKE_PAIR(word_wrap)

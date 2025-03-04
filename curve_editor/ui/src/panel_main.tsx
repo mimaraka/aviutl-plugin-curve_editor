@@ -3,7 +3,7 @@ import PresetPanel from './preset';
 import Toolbar from './toolbar';
 import EditorPanel from './panel_editor';
 import { config, editor } from './host_object';
-import './scss/panel_main.scss';
+import './style/panel_main.scss';
 
 
 // const disablePanel = () => {
@@ -25,24 +25,32 @@ interface MainPanelProps {
 }
 
 const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
-    const [isDraggingSeparator, setIsDraggingSeparator] = React.useState(false);
+    const [isSeparatorDragging, setIsDraggingSeparator] = React.useState(false);
     const [isDragging, setIsDragging] = React.useState(false);
     const [separatorPos, setSeparatorPos] = React.useState(config.separatorPos);
     const [width, setWidth] = React.useState(document.documentElement.clientWidth);
     const [height, setHeight] = React.useState(document.documentElement.clientHeight);
     const [editMode, setEditMode] = React.useState(config.editMode);
     const [layoutMode, setLayoutMode] = React.useState(config.layoutMode);
+    // TODO: 8がマジックナンバー
+    const [applyButtonHeight, setApplyButtonHeight] = React.useState(config.applyButtonHeight - 8);
     const [idx, setIdx] = React.useState(0);
     const ref = React.useRef<HTMLDivElement | null>(null);
     const separatorPosRef = React.useRef<number>(separatorPos);
+    const [applyModeOptions, setApplyModeOptions] = React.useState([] as React.JSX.Element[]);
 
     const toolbarHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--menu-row-height'));
     const separatorHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--separator-height'));
-    const applyButtonHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--apply-button-height'));
 
     const changeEditMode = (editMode: number) => {
         setEditMode(editMode);
         config.editMode = editMode;
+    }
+
+    const createApplyModeOptions = () => {
+        return [...Array(config.applyModeNum)].map((_, i) => {
+            return <option className='dropdown-option' value={i} key={i}>{`${i == config.applyMode ? '☑ ' : ''}${config.getApplyModeName(i)}`}</option>;
+        });
     }
 
     const getIdx = () => {
@@ -125,6 +133,10 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                 setLayoutMode(config.layoutMode);
                 break;
 
+            case 'ApplyPreferences':
+                // TODO: 8がマジックナンバー
+                setApplyButtonHeight(config.applyButtonHeight - 8);
+
             case 'ChangeEditMode':
                 setEditMode(config.editMode);
                 break;
@@ -137,7 +149,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     }
 
     React.useEffect(() => {
-        if (isDraggingSeparator) {
+        if (isSeparatorDragging) {
         // マウス移動とマウスアップのイベントをwindowに追加
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
@@ -152,7 +164,11 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDraggingSeparator]);
+    }, [isSeparatorDragging]);
+
+    React.useEffect(() => {
+        setApplyModeOptions(createApplyModeOptions());
+    }, [config.applyMode]);
 
     React.useEffect(() => {
         window.addEventListener('message', onMessage);
@@ -173,12 +189,19 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
         };
     }, []);
 
-    const onMouseDown = (event: React.MouseEvent) => {
+    const onApplyButtonMouseDown = (event: React.MouseEvent) => {
         if (event.button === 0) {
             setIsDragging(true);
             window.chrome.webview.postMessage({
-                command: 'OnDndStart'
+                command: 'OnDndStart',
+                curveId: editor.currentCurveId
             });
+        }
+    }
+
+    const onApplyButtonKeyDown = (event: React.KeyboardEvent) => {
+        if (event.code === 'Space') {
+            event.preventDefault();
         }
     }
 
@@ -187,8 +210,10 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     }
 
     // ドラッグ開始時のイベントハンドラ
-    const handleMouseDown = () => {
+    const handleMouseDown = (event: React.MouseEvent) => {
         setIsDraggingSeparator(true);
+        event.preventDefault();
+        event.stopPropagation();
     };
 
     // ドラッグ中のイベントハンドラ
@@ -209,9 +234,14 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
         config.separatorPos = separatorPosRef.current;
     };
 
+    const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        config.applyMode = parseInt(event.target.value);
+        setApplyModeOptions(createApplyModeOptions());
+    }
+
     const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorHeight;
-    const pointerEvents = isDraggingSeparator ? 'none' : 'auto';
-    const userSelect = isDraggingSeparator ? 'none' : 'auto';
+    const pointerEvents = isSeparatorDragging ? 'none' : 'auto';
+    const userSelect = isSeparatorDragging ? 'none' : 'auto';
 
     return (
         <div className='container-panel-main' ref={ref} style={{ flexDirection: layoutMode ? 'row' : 'column' }}>
@@ -230,15 +260,21 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                     idx={getIdx()}
                     size={getSize()}
                     setIdx={changeIdx}
+                    // TODO: 28がマジックナンバー
                     style={{
-                        height: layoutMode ? '100%' : `${toolbarHeight + editorPresetHeight * separatorPos}px`,
+                        height: layoutMode ? `calc(100% - ${applyButtonHeight + 36}px)` : `${toolbarHeight + editorPresetHeight * separatorPos}px`,
                         pointerEvents: pointerEvents,
                         userSelect: userSelect
                     }}
                 />
-                <button className='button-apply' id='button-apply' onMouseDown={onMouseDown}>
-                    {isDragging? 'トラックバーにドラッグ&ドロップして適用' : '適用'}
-                </button>
+                <div className='dropdown-container' id='select-apply-mode' style={{height: applyButtonHeight}}>
+                    <select className='dropdown' name='apply-mode' id='apply-mode' value={config.applyMode} onChange={onSelectChange}>
+                        {applyModeOptions}
+                    </select>
+                        <button className='button-apply' id='button-apply' title={`カーブを適用 (${config.getApplyModeName(config.applyMode)})`} onMouseDown={onApplyButtonMouseDown} onKeyDown={onApplyButtonKeyDown}>
+                        {isDragging? 'トラックバーにドラッグ&ドロップして適用' : '適用'}
+                    </button>
+                </div>
             </div>
             <div
                 id='separator'
@@ -246,7 +282,12 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                 onMouseDown={handleMouseDown}
                 style={{ cursor: layoutMode ? 'col-resize' : 'row-resize'}}
             >
-                <div id='separator-handle' className={layoutMode ? 'separator-handle-horizontal' : 'separator-handle-vertical'}></div>
+                <div
+                    id='separator-handle'
+                    className={layoutMode ? 'separator-handle-horizontal' : 'separator-handle-vertical'}
+                    style={isSeparatorDragging ? { opacity: 1} : {}}
+                >
+                </div>
             </div>
             <PresetPanel style={{
                 width: layoutMode ? width * (1 - separatorPos) - separatorHeight * 0.5 : '100%',

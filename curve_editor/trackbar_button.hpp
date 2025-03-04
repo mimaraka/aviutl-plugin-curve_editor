@@ -18,7 +18,7 @@ namespace curve_editor {
 		auto track_idx() const noexcept { return track_idx_; }
 		bool is_hovered() const noexcept;
 		bool is_visible() const noexcept { return ::IsWindowVisible(hwnd_); }
-		void highlight(ID2D1DCRenderTarget* p_render_target) const noexcept;
+		void highlight(ID2D1DCRenderTarget* p_render_target, uint32_t curve_id) const noexcept;
 		void unhighlight() const noexcept;
 	};
 } // namespace curve_editor

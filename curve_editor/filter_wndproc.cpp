@@ -24,12 +24,12 @@ namespace curve_editor {
 		static MyWebView2 my_webview;
 		static ActCtxHelper actctx_helper;
 		static DragAndDrop dnd;
+		static bool dnd_init_done = false;
 
 		switch (message) {
 			// ウィンドウ作成時
 		case WindowMessage::Init:
 			actctx_helper.init();
-			dnd.init();
 			my_webview.init(hwnd, [](MyWebView2* this_) {
 				mkaul::WindowRectangle bounds;
 				bounds.from_client_rect(this_->get_hwnd());
@@ -55,6 +55,15 @@ namespace curve_editor {
 		case WindowMessage::Exit:
 			actctx_helper.exit();
 			dnd.exit();
+			break;
+
+			// 拡張編集フックに関する初期化処理
+			// curve_editor.aufの配置場所によっては、WindowMessage::Init時点ではexedit.aufが読み込まれていない可能性がある
+		case WindowMessage::ChangeWindow:
+			if (!dnd_init_done) {
+				dnd.init();
+				dnd_init_done = true;
+			}
 			break;
 
 		case WindowMessage::FileClose:

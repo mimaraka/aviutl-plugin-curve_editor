@@ -43,7 +43,7 @@ namespace curve_editor {
 		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<BezierCurve>(*this); }
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
-		// カーブの名前を取得する
+		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Bezier; }
 		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BEZIER; }
 		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBezier]; }
 

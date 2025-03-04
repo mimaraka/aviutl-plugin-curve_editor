@@ -124,7 +124,7 @@ namespace curve_editor::global {
 		}
 	}
 
-	bool PresetManager::export_collection(uint32_t collection_id, const std::filesystem::path& path, bool omit_date) const noexcept {
+	bool PresetManager::export_collection(uint32_t collection_id, const std::filesystem::path& path, bool omit_date, bool set_indent) const noexcept {
 		nlohmann::json data = nlohmann::json::object();
 		data["presets"] = nlohmann::json::array();
 		std::string name;
@@ -142,7 +142,7 @@ namespace curve_editor::global {
 		}
 		std::ofstream ofs{ path };
 		if (!ofs) return false;
-		ofs << data.dump(2);
+		ofs << data.dump(set_indent? 2 : -1);
 		return true;
 	}
 
@@ -333,9 +333,12 @@ namespace curve_editor::global {
 
 	bool PresetManager::list_config_from_json(const nlohmann::json& data) noexcept {
 		try {
+			auto collection_id = data.at("collection_id").get<uint32_t>();
 			auto sort_by = data.at("sort_by").get<SortBy>();
 			auto sort_order = data.at("sort_order").get<SortOrder>();
 			auto filter_info = data.at("filter_info");
+			// TODO: この段階ではまだカスタムコレクションが作成されていない
+			set_current_collection_id(collection_id);
 			set_sort_by(sort_by);
 			set_sort_order(sort_order);
 			set_filter_info({
@@ -355,6 +358,7 @@ namespace curve_editor::global {
 
 	void PresetManager::list_config_to_json(nlohmann::json& data) const noexcept {
 		data = {
+			{ "collection_id", get_current_collection_id() },
 			{ "sort_by", get_sort_by() },
 			{ "sort_order", get_sort_order() },
 			{ "filter_info", {

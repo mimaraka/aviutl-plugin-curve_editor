@@ -19,6 +19,8 @@ namespace curve_editor {
 		HWND hwnd_button_bg_image_path_ = NULL;
 		HWND hwnd_static_bg_image_opacity_ = NULL;
 		HWND hwnd_slider_bg_image_opacity_ = NULL;
+		HWND hwnd_static_apply_button_height_ = NULL;
+		HWND hwnd_slider_apply_button_height_ = NULL;
 		HWND hwnd_check_show_trace_ = NULL;
 		HWND hwnd_check_enable_animation_ = NULL;
 

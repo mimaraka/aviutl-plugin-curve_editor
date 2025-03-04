@@ -4,7 +4,7 @@ import { config, editor } from './host_object';
 import { ToolbarButtonIcon, ToolbarButtonText } from './button';
 import GraphEditorPanel from './editor_graph';
 import TextEditorPanel from './editor_text';
-import './scss/panel_editor.scss';
+import './style/panel_editor.scss';
 
 
 interface ParamButtonProps {
@@ -181,11 +181,6 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
     );
 }
 
-const editModeOptions = [...Array(config.editModeNum)].map((_, i) => {
-    // TODO: disabled~の部分は値指定モードを実装したら削除
-    return <option className='dropdown-option' value={i} key={i} disabled={i == 1}>{config.getEditModeName(i)}</option>;
-});
-
 interface EditorPanelProps {
     style: React.CSSProperties;
     isSelectDialog: boolean;
@@ -197,8 +192,13 @@ interface EditorPanelProps {
 }
 
 const EditorPanel: React.FC<EditorPanelProps> = (props: EditorPanelProps) => {
+    const editModeOptions = React.useMemo(() => [...Array(config.editModeNum)].map((_, i) => {
+        // TODO: disabled~の部分は値指定モードを実装したら削除
+        return <option className='dropdown-option' value={i} key={i} disabled={i == 1}>{config.getEditModeName(i)}</option>;
+    }), [config.editModeNum]);
+
     const onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newMode = Number(event.target.value);
+        const newMode = parseInt(event.target.value);
         props.setEditMode(newMode);
     }
 
@@ -229,8 +229,8 @@ const EditorPanel: React.FC<EditorPanelProps> = (props: EditorPanelProps) => {
         <div className='container-panel-editor' style={props.style}>
             <div className='menu-bottom'>
                 <div className='menu-row'>
-                    <div className='menu-button dropdown-container' id='edit-mode-container'>
-                        <select className='dropdown' name='edit-mode' id='edit-mode' title='編集モード' value={props.editMode} onChange={onSelectChange} onWheel={onWheel}>
+                    <div className='dropdown-container' id='edit-mode-container'>
+                        <select className='dropdown' name='edit-mode' id='edit-mode' title={`編集モード (${config.getEditModeName(props.editMode)})`} value={props.editMode} onChange={onSelectChange} onWheel={onWheel}>
                             {editModeOptions}
                         </select>
                     </div>

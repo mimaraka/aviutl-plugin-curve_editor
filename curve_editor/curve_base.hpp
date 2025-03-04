@@ -1,6 +1,7 @@
 #pragma once
 
 #include "curve_id_manager.hpp"
+#include "enum.hpp"
 #include <cereal/cereal.hpp>
 #include <nlohmann/json.hpp>
 
@@ -45,6 +46,8 @@ namespace curve_editor {
 		virtual void set_locked(bool locked) noexcept { locked_ = locked; }
 		[[nodiscard]] virtual bool is_default() const noexcept = 0;
 		[[nodiscard]] auto get_id() const noexcept { return id_; }
+		// TODO: CurveTypeというenumにする
+		[[nodiscard]] constexpr virtual EditMode get_type() const noexcept = 0;
 		[[nodiscard]] constexpr virtual std::string get_name() const noexcept = 0;
 		[[nodiscard]] virtual std::string get_disp_name() const noexcept = 0;
 		[[nodiscard]] virtual nlohmann::json create_json() const noexcept;

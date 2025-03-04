@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "curve.hpp"
 #include "trackbar_button.hpp"
 
 
@@ -37,7 +38,7 @@ namespace curve_editor {
 		return false;
 	}
 
-	void TrackbarButton::highlight(ID2D1DCRenderTarget* p_render_target) const noexcept {
+	void TrackbarButton::highlight(ID2D1DCRenderTarget* p_render_target, uint32_t curve_id) const noexcept {
 		constexpr float ROUND_RADIUS = 1.5f;
 		constexpr mkaul::ColorF COLOR_NORMAL{ 45, 140, 235 };
 		constexpr mkaul::ColorF COLOR_IGNORE_MID_POINT = { 243, 123, 52 };
@@ -52,8 +53,11 @@ namespace curve_editor {
 			static ID2D1SolidColorBrush* p_brush = nullptr;
 			RECT rect_wnd;
 
+			auto curve = global::id_manager.get_curve<Curve>(curve_id);
+			if (!curve) return;
+
 			// ApplyModeに応じた色の設定
-			switch (global::config.get_apply_mode(global::config.get_edit_mode())) {
+			switch (global::config.get_apply_mode(curve->get_type())) {
 			case ApplyMode::Normal:
 				color = COLOR_NORMAL;
 				break;

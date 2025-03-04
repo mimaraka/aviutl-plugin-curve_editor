@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import './scss/button.scss';
+import './style/button.scss';
 
 
 interface ToolbarButtonProps {

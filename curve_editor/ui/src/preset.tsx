@@ -1,10 +1,10 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faList, faMagnifyingGlass, faFileCirclePlus, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faList, faMagnifyingGlass, faFolderPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon } from './button';
 import PresetItem from './preset_item';
 import { config, editor, preset } from './host_object';
-import './scss/preset.scss';
+import './style/preset.scss';
 
 
 interface PresetProps {
@@ -132,7 +132,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                         name='collection'
                         id='collection'
                         value={preset.currentCollectionId}
-                        title={`コレクション(${preset.getCollectionName(preset.currentCollectionId)})`}
+                        title={`コレクション (${preset.getCollectionName(preset.currentCollectionId)})`}
                         onChange={onSelectChange}
                     >
                         {collectionInfo.map(({ id, name }: {id: number, name: string}, index: number) => {
@@ -141,12 +141,12 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                     </select>
                 </div>
                 <div className='collection-buttons'>
-                    <ToolbarButtonIcon icon={faFileCirclePlus} title='コレクションの作成・追加' onClick={() => {
+                    <ToolbarButtonIcon icon={faFolderPlus} title='コレクションの作成・追加' onClick={() => {
                         window.chrome.webview.postMessage({
                             command: 'ButtonCollectionAdd'
                         });
                     }}/>
-                    <ToolbarButtonIcon icon={faEllipsisVertical} title='コレクションの操作' onClick={() => {
+                    <ToolbarButtonIcon icon={faPenToSquare} title='コレクションの操作' onClick={() => {
                         window.chrome.webview.postMessage({
                             command: 'ButtonCollection'
                         });
