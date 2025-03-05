@@ -25,6 +25,9 @@ namespace curve_editor {
 		// コピー代入演算子
 		ValueCurve& operator=(const ValueCurve& curve) noexcept;
 
+		// 等価演算子
+		[[nodiscard]] bool operator==(const ValueCurve& curve) const noexcept;
+
 		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<ValueCurve>(*this); }
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 

@@ -35,6 +35,11 @@ namespace curve_editor {
 			return *this;
 		}
 
+		// 等価演算子
+		[[nodiscard]] bool operator==(const ScriptCurve& curve) const noexcept {
+			return script_ == curve.script_;
+		}
+
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return std::make_unique<ScriptCurve>(*this); }
 
 		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Script; }

@@ -59,6 +59,7 @@ namespace curve_editor {
 		catch (const nlohmann::json::exception&) {
 			return false;
 		}
+		p_curve_->set_locked(true);
 		return true;
 	}
 } // namespace curve_editor

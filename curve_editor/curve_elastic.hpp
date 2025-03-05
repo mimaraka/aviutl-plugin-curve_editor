@@ -37,6 +37,9 @@ namespace curve_editor {
 		// コピー代入演算子
 		ElasticCurve& operator=(const ElasticCurve& curve) noexcept;
 
+		// 等価演算子
+		[[nodiscard]] bool operator==(const ElasticCurve& curve) const noexcept;
+
 		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<ElasticCurve>(*this); }
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 

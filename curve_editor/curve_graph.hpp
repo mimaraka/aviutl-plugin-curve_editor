@@ -77,6 +77,14 @@ namespace curve_editor {
 			return *this;
 		}
 
+		// 等価演算子
+		bool operator==(const GraphCurve& curve) const noexcept {
+			return anchor_start_ == curve.anchor_start_ &&
+				anchor_end_ == curve.anchor_end_ &&
+				//anchor_fixed_ == curve.anchor_fixed_ &&
+				modifiers_ == curve.modifiers_;
+		}
+
 		virtual std::unique_ptr<GraphCurve> clone_graph() const noexcept = 0;
 
 		[[nodiscard]] auto prev() const noexcept { return prev_; }

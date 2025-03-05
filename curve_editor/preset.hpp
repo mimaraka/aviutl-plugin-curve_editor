@@ -23,6 +23,7 @@ namespace curve_editor {
 		void create(const CurveType& curve, const std::string& name) noexcept {
 			name_ = name;
 			p_curve_ = std::make_unique<CurveType>(curve);
+			p_curve_->set_locked(true);
 			// TODO: 1(COLLECTION_ID_DEFAULT)がマジックナンバーなので、定数化する
 			if (collection_id_ == 1) {
 				date_ = std::nullopt;

@@ -15,6 +15,7 @@ namespace curve_editor {
 		std::vector<int32_t> track_idcs_buffer_;
 		uint32_t curve_id_ = 0;
 
+		static int32_t get_track_param(uint32_t id) noexcept;
 		static int16_t get_track_script_idx() noexcept;
 		static void get_applied_track_idcs(int32_t obj_idx, int32_t track_idx, std::vector<int32_t>& ret) noexcept;
 		void apply_easing_to_track(int32_t obj_idx, int32_t track_idx) noexcept;

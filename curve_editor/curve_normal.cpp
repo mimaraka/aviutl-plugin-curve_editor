@@ -35,6 +35,19 @@ namespace curve_editor {
 		return *this;
 	}
 
+	// 等価演算子
+	bool NormalCurve::operator==(const NormalCurve& curve) const noexcept {
+		if (curve_segments_.size() != curve.curve_segments_.size()) {
+			return false;
+		}
+		for (size_t i = 0; i < curve_segments_.size(); i++) {
+			if (*curve_segments_[i] != *curve.curve_segments_[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	// セグメントのクローン
 	void NormalCurve::clone_segments(const NormalCurve& curve) noexcept {
 		for (const auto& p_curve : curve.curve_segments_) {

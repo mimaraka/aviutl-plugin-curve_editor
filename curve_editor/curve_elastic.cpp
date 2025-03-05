@@ -46,6 +46,14 @@ namespace curve_editor {
 		return *this;
 	}
 
+	// 等価演算子
+	bool ElasticCurve::operator==(const ElasticCurve& curve) const noexcept {
+		return NumericGraphCurve::operator==(curve) and
+			amplitude_ == curve.amplitude_ and
+			frequency_ == curve.frequency_ and
+			decay_ == curve.decay_ and
+			reversed_ == curve.reversed_;
+	}
 
 	// カーブの値を取得
 	double ElasticCurve::curve_function(double progress, double start, double end) const noexcept {

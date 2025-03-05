@@ -41,13 +41,10 @@ const PresetItem: React.FC<PresetItemProps> = React.memo((props: PresetItemProps
 
     const onMouseLeave = (event: React.MouseEvent) => {
         if (isDragging) {
-            const type = editor.getCurveName(props.curveId);
-            if (type === 'bezier' || type === 'elastic' || type === 'bounce') {
-                window.chrome.webview.postMessage({
+            window.chrome.webview.postMessage({
                 command: 'OnDndStart',
                 curveId: props.curveId
             });
-            }
         }
     }
 

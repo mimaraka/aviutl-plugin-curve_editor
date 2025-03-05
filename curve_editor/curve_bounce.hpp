@@ -35,6 +35,9 @@ namespace curve_editor {
 		// コピー代入演算子
 		BounceCurve& operator=(const BounceCurve& curve) noexcept;
 
+		// 等価演算子
+		[[nodiscard]] bool operator==(const BounceCurve& curve) const noexcept;
+
 		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<BounceCurve>(*this); }
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
