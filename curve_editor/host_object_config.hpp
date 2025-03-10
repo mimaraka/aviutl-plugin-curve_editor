@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config.hpp"
+#include <magic_enum/magic_enum.hpp>
 #include <mkaul/host_object.hpp>
 
 

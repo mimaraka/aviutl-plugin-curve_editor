@@ -6,7 +6,7 @@
 
 
 namespace curve_editor {
-	std::string PresetHostObject::get_presets_as_json() {
+	std::wstring PresetHostObject::get_presets_as_json() {
 		auto data = nlohmann::json::array();
 		for (const auto& preset_info : global::preset_manager.get_preset_info()) {
 			nlohmann::json date;
@@ -19,27 +19,27 @@ namespace curve_editor {
 			data.push_back({
 				{ "id", preset_info.id },
 				{ "collectionId", preset_info.collection_id },
-				{ "name", ::sjis_to_utf8(preset_info.name) },
+				{ "name", ::wide_to_utf8(preset_info.name) },
 				{ "date", date }
 			});
 		}
-		return ::utf8_to_sjis(data.dump());
+		return ::utf8_to_wide(data.dump());
 	}
 
-	std::string PresetHostObject::get_collections_as_json() {
+	std::wstring PresetHostObject::get_collections_as_json() {
 		auto data = nlohmann::json::array();
 		for (const auto& [id, name] : global::preset_manager.get_collection_info()) {
 			data.push_back({
 				{ "id", id },
-				{ "name", ::sjis_to_utf8(name) }
+				{ "name", ::wide_to_utf8(name) }
 			});
 		}
-		return ::utf8_to_sjis(data.dump());
+		return ::utf8_to_wide(data.dump());
 	}
 
-	std::string PresetHostObject::get_filter_info_as_json() {
+	std::wstring PresetHostObject::get_filter_info_as_json() {
 		auto filter_info = global::preset_manager.get_filter_info();
-		return ::utf8_to_sjis(nlohmann::json{
+		return ::utf8_to_wide(nlohmann::json{
 			{ "typeNormal", filter_info.type_normal },
 			{ "typeValue", filter_info.type_value },
 			{ "typeBezier", filter_info.type_bezier },

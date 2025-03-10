@@ -7,13 +7,14 @@
 
 namespace curve_editor {
 	class ScriptEditorHostObject : public mkaul::ole::HostObject {
-		static const std::string& get_script(uint32_t id);
-		static void set_script(uint32_t id, std::string script);
+		static const std::wstring& get_script(uint32_t id);
+		static void set_script(uint32_t id, std::wstring script);
 
 	public:
 		ScriptEditorHostObject() {
 			register_member(L"getId", DispatchType::Method, +[](size_t idx) {
-				return global::editor.editor_script().p_curve_script(idx)->get_id();
+				auto curve = global::editor.editor_script().p_curve_script(idx);
+				return curve ? curve->get_id() : 0;
 			});
 			register_member(L"getScript", DispatchType::Method, get_script);
 			register_member(L"setScript", DispatchType::Method, set_script);

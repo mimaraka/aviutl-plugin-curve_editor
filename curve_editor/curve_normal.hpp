@@ -36,8 +36,8 @@ namespace curve_editor {
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Normal; }
-		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_NORMAL; }
-		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeNormal]; }
+		[[nodiscard]] constexpr const std::string_view& get_name() const noexcept override { return global::CURVE_NAME_NORMAL; }
+		[[nodiscard]] std::wstring_view get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::CurveTypeNormal]; }
 
 		void set_locked(bool locked) noexcept override;
 

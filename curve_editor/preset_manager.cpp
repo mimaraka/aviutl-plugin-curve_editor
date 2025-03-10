@@ -12,49 +12,49 @@
 namespace curve_editor::global {
 	PresetManager::PresetManager() noexcept :
 		collection_info_{
-			{COLLECTION_ID_ALL, string_table[StringTable::StringId::LabelCollectionNameAll]},
-			{COLLECTION_ID_DEFAULT, string_table[StringTable::StringId::LabelCollectionNameDefault]},
-			{COLLECTION_ID_ROOT, string_table[StringTable::StringId::LabelCollectionNameRoot]}
+			{COLLECTION_ID_ALL, string_table[StringTable::StringId::CollectionNameAll]},
+			{COLLECTION_ID_DEFAULT, string_table[StringTable::StringId::CollectionNameDefault]},
+			{COLLECTION_ID_ROOT, string_table[StringTable::StringId::CollectionNameUser]}
 	}
 	{
-		constexpr std::tuple<const char*, EditMode, int32_t> default_curves[] = {
-			{"linear", EditMode::Bezier, 345633042},
-			{"easeInSine", EditMode::Bezier, -343094698},
-			{"easeOutSine", EditMode::Bezier, 344859039},
-			{"easeInOutSine", EditMode::Bezier, 343215240},
-			{"easeOutInSine", EditMode::Bezier, -343215241},
-			{"easeInQuad", EditMode::Bezier, -342375882},
-			{"easeOutQuad", EditMode::Bezier, 344924375},
-			{"easeInOutQuad", EditMode::Bezier, 342692472},
-			{"easeOutInQuad", EditMode::Bezier, -342692473},
-			{"easeInCubic", EditMode::Bezier, -341264962},
-			{"easeOutCubic", EditMode::Bezier, 343552071},
-			{"easeInOutCubic", EditMode::Bezier, 341385552},
-			{"easeOutInCubic", EditMode::Bezier, -341385553},
-			{"easeInQuart", EditMode::Bezier, -340742168},
-			{"easeOutQuart", EditMode::Bezier, 342375817},
-			{"easeInOutQuart", EditMode::Bezier, 340666746},
-			{"easeOutInQuart", EditMode::Bezier, -340666747},
-			{"easeInQuint", EditMode::Bezier, -340546113},
-			{"easeOutQuint", EditMode::Bezier, 341460956},
-			{"easeInOutQuint", EditMode::Bezier, 340209324},
-			{"easeOutInQuint", EditMode::Bezier, -340209325},
-			{"easeInExpo", EditMode::Bezier, -340154025},
-			{"easeOutExpo", EditMode::Bezier, 341068868},
-			{"easeInOutExpo", EditMode::Bezier, 339947940},
-			{"easeOutInExpo", EditMode::Bezier, -339947941},
-			{"easeInCirc", EditMode::Bezier, -42106373},
-			{"easeOutCirc", EditMode::Bezier, 342044512},
-			{"easeInOutCirc", EditMode::Bezier, 340078632},
-			{"easeOutInCirc", EditMode::Bezier, -340078633},
-			{"easeInBack", EditMode::Bezier, -710932937},
-			{"easeOutBack", EditMode::Bezier, 343296340},
-			{"easeInOutBack", EditMode::Bezier, 737186274},
-			{"easeOutInBack", EditMode::Bezier, -737186275},
-			{"easeInElastic", EditMode::Elastic, -1544896},
-			{"easeOutElastic", EditMode::Elastic, 1544896},
-			{"easeInBounce", EditMode::Bounce, -10758499},
-			{"easeOutBounce", EditMode::Bounce, 10758499}
+		constexpr std::tuple<const wchar_t*, EditMode, int32_t> default_curves[] = {
+			{L"linear", EditMode::Bezier, 345633042},
+			{L"easeInSine", EditMode::Bezier, -343094698},
+			{L"easeOutSine", EditMode::Bezier, 344859039},
+			{L"easeInOutSine", EditMode::Bezier, 343215240},
+			{L"easeOutInSine", EditMode::Bezier, -343215241},
+			{L"easeInQuad", EditMode::Bezier, -342375882},
+			{L"easeOutQuad", EditMode::Bezier, 344924375},
+			{L"easeInOutQuad", EditMode::Bezier, 342692472},
+			{L"easeOutInQuad", EditMode::Bezier, -342692473},
+			{L"easeInCubic", EditMode::Bezier, -341264962},
+			{L"easeOutCubic", EditMode::Bezier, 343552071},
+			{L"easeInOutCubic", EditMode::Bezier, 341385552},
+			{L"easeOutInCubic", EditMode::Bezier, -341385553},
+			{L"easeInQuart", EditMode::Bezier, -340742168},
+			{L"easeOutQuart", EditMode::Bezier, 342375817},
+			{L"easeInOutQuart", EditMode::Bezier, 340666746},
+			{L"easeOutInQuart", EditMode::Bezier, -340666747},
+			{L"easeInQuint", EditMode::Bezier, -340546113},
+			{L"easeOutQuint", EditMode::Bezier, 341460956},
+			{L"easeInOutQuint", EditMode::Bezier, 340209324},
+			{L"easeOutInQuint", EditMode::Bezier, -340209325},
+			{L"easeInExpo", EditMode::Bezier, -340154025},
+			{L"easeOutExpo", EditMode::Bezier, 341068868},
+			{L"easeInOutExpo", EditMode::Bezier, 339947940},
+			{L"easeOutInExpo", EditMode::Bezier, -339947941},
+			{L"easeInCirc", EditMode::Bezier, -42106373},
+			{L"easeOutCirc", EditMode::Bezier, 342044512},
+			{L"easeInOutCirc", EditMode::Bezier, 340078632},
+			{L"easeOutInCirc", EditMode::Bezier, -340078633},
+			{L"easeInBack", EditMode::Bezier, -710932937},
+			{L"easeOutBack", EditMode::Bezier, 343296340},
+			{L"easeInOutBack", EditMode::Bezier, 737186274},
+			{L"easeOutInBack", EditMode::Bezier, -737186275},
+			{L"easeInElastic", EditMode::Elastic, -1544896},
+			{L"easeOutElastic", EditMode::Elastic, 1544896},
+			{L"easeInBounce", EditMode::Bounce, -10758499},
+			{L"easeOutBounce", EditMode::Bounce, 10758499}
 		};
 
 		for (const auto& [name, mode, code] : default_curves) {
@@ -92,7 +92,7 @@ namespace curve_editor::global {
 		}
 	}
 
-	uint32_t PresetManager::create_collection(const std::string& name, bool change_current_id) noexcept {
+	uint32_t PresetManager::create_collection(const std::wstring& name, bool change_current_id) noexcept {
 		auto new_collection_id = collection_id_counter_++;
 		collection_info_.emplace_back(new_collection_id, name);
 		if (change_current_id) {
@@ -107,7 +107,7 @@ namespace curve_editor::global {
 		nlohmann::json data;
 		try {
 			data = nlohmann::json::parse(ifs);
-			auto name = data.at("name").get<std::string>();
+			auto name = ::utf8_to_wide(data.at("name").get<std::string>());
 			create_collection(name);
 			auto presets = data.at("presets");
 			for (const auto& preset_data : presets) {
@@ -127,14 +127,14 @@ namespace curve_editor::global {
 	bool PresetManager::export_collection(uint32_t collection_id, const std::filesystem::path& path, bool omit_date, bool set_indent) const noexcept {
 		nlohmann::json data = nlohmann::json::object();
 		data["presets"] = nlohmann::json::array();
-		std::string name;
+		std::wstring name;
 		if (collection_id == COLLECTION_ID_ALL) {
-			name = path.stem().string();
+			name = path.stem().wstring();
 		}
 		else {
 			name = get_collection_name(collection_id);
 		}
-		data["name"] = ::sjis_to_utf8(name);
+		data["name"] = ::wide_to_utf8(name);
 		for (const auto& preset : presets_) {
 			if (collection_id == COLLECTION_ID_ALL or collection_id == preset.get_collection_id()) {
 				data["presets"].push_back(preset.create_json(omit_date));
@@ -156,7 +156,7 @@ namespace curve_editor::global {
 		return false;
 	}
 
-	void PresetManager::rename_preset(uint32_t id, const std::string& name) noexcept {
+	void PresetManager::rename_preset(uint32_t id, const std::wstring& name) noexcept {
 		for (auto& preset : presets_) {
 			if (id == preset.get_id()) {
 				preset.set_name(name);
@@ -165,13 +165,13 @@ namespace curve_editor::global {
 		}
 	}
 
-	std::string PresetManager::get_preset_name(uint32_t id) const noexcept {
+	std::wstring PresetManager::get_preset_name(uint32_t id) const noexcept {
 		for (const auto& preset : presets_) {
 			if (id == preset.get_id()) {
 				return preset.get_name();
 			}
 		}
-		return "";
+		return L"";
 	}
 
 	bool PresetManager::is_preset_default(uint32_t id) const noexcept {
@@ -208,7 +208,7 @@ namespace curve_editor::global {
 		return true;
 	}
 
-	bool PresetManager::rename_collection(uint32_t collection_id, const std::string& name) noexcept {
+	bool PresetManager::rename_collection(uint32_t collection_id, const std::wstring& name) noexcept {
 		if (!is_collection_custom(collection_id)) {
 			return false;
 		}
@@ -230,13 +230,13 @@ namespace curve_editor::global {
 		}
 	}
 
-	std::string PresetManager::get_collection_name(uint32_t collection_id) const noexcept {
+	std::wstring PresetManager::get_collection_name(uint32_t collection_id) const noexcept {
 		for (const auto& [id, name] : collection_info_) {
 			if (id == collection_id) {
 				return name;
 			}
 		}
-		return "";
+		return L"";
 	}
 
 	bool PresetManager::save_json(bool omit_date) const noexcept {
@@ -252,7 +252,7 @@ namespace curve_editor::global {
 			if (is_collection_custom(id)) {
 				data["collections"].push_back({
 					{ "type", "custom" },
-					{ "name", ::sjis_to_utf8(name)},
+					{ "name", ::wide_to_utf8(name)},
 					{ "presets", nlohmann::json::array() }
 					});
 				custom_collection_ids.emplace_back(id);
@@ -296,7 +296,7 @@ namespace curve_editor::global {
 					collection_id = COLLECTION_ID_ROOT;
 				}
 				else if (type == "custom") {
-					auto name = ::utf8_to_sjis(collection.at("name").get<std::string>());
+					auto name = ::utf8_to_wide(collection.at("name").get<std::string>());
 					collection_id = create_collection(name, false);
 				}
 				else {

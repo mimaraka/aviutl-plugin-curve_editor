@@ -7,9 +7,9 @@ namespace curve_editor {
 	void ContextMenu::init() noexcept {
 		menu_ = ::CreatePopupMenu();
 		for (size_t i = 1; auto & item : items_) {
-			MENUITEMINFOA minfo;
+			MENUITEMINFOW minfo;
 			item.get_menu_item_info(minfo, i);
-			::InsertMenuItemA(menu_, minfo.wID, TRUE, &minfo);
+			::InsertMenuItemW(menu_, minfo.wID, TRUE, &minfo);
 			i++;
 		}
 	}

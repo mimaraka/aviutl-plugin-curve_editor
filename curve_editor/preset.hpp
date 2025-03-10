@@ -10,7 +10,7 @@
 namespace curve_editor {
 	class Preset {
 		std::unique_ptr<Curve> p_curve_;
-		std::string name_;
+		std::wstring name_;
 		std::optional<std::time_t> date_;
 		uint32_t collection_id_;
 
@@ -20,7 +20,7 @@ namespace curve_editor {
 		{}
 
 		template<class CurveType>
-		void create(const CurveType& curve, const std::string& name) noexcept {
+		void create(const CurveType& curve, const std::wstring& name) noexcept {
 			name_ = name;
 			p_curve_ = std::make_unique<CurveType>(curve);
 			p_curve_->set_locked(true);
@@ -38,7 +38,7 @@ namespace curve_editor {
 		auto get_collection_id() const noexcept { return collection_id_; }
 
 		const auto& get_name() const noexcept { return name_; }
-		void set_name(const std::string& name) noexcept { name_ = name; }
+		void set_name(const std::wstring& name) noexcept { name_ = name; }
 
 		const auto& get_date() const noexcept { return date_; }
 

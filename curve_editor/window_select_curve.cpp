@@ -90,14 +90,14 @@ namespace curve_editor {
 		return mkaul::ui::Window::create(
 			global::exedit_internal.fp()->dll_hinst,
 			hwnd,
-			global::string_table[StringId::LabelSelectCurve],
-			"SelectCurveWindow",
+			global::string_table[StringId::CaptionSelectCurve],
+			L"SelectCurveWindow",
 			&wndproc,
 			WS_POPUPWINDOW | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME,
 			NULL,
 			rect,
 			mkaul::WindowRectangle{},
-			::LoadCursorA(NULL, IDC_ARROW),
+			::LoadCursor(NULL, IDC_ARROW),
 			const_cast<ModeParamPair*>(mode_param)
 		);
 	}

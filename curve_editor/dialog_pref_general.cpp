@@ -1,6 +1,7 @@
 #include "config.hpp"
 #include "dialog_pref_general.hpp"
 #include "enum.hpp"
+#include "message_box.hpp"
 #include "resource.h"
 #include "string_table.hpp"
 
@@ -15,10 +16,13 @@ namespace curve_editor {
 		hwnd_combo_language_ = ::GetDlgItem(hwnd, IDC_COMBO_LANGUAGE);
 		hwnd_check_notify_update_ = ::GetDlgItem(hwnd, IDC_CHECK_NOTIFY_UPDATE);
 
-		::SendMessageA(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::WordLanguageAutomatic]);
-		::SendMessageA(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)"日本語 (Japanese)");
-		::SendMessageA(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)"English");
-		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"한국어 (Korean)");
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::WordAutomatic]);
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"日本語");
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"English");
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"Deutsch");
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"Bahasa Indonesia");
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"한국어");
+		::SendMessageW(hwnd_combo_language_, CB_ADDSTRING, NULL, (LPARAM)L"简体中文");
 	}
 
 	INT_PTR GeneralPrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
@@ -30,6 +34,11 @@ namespace curve_editor {
 			return TRUE;
 
 		case WM_COMMAND:
+			switch (HIWORD(wparam)) {
+			case CBN_SELCHANGE:
+				util::message_box(global::string_table[StringId::InfoRestartAviutl], hwnd, util::MessageBoxIcon::Information);
+				return TRUE;
+			}
 			switch (LOWORD(wparam)) {
 			case (WPARAM)WindowCommand::LoadConfig:
 				::SendMessageA(hwnd_combo_language_, CB_SETCURSEL, (WPARAM)global::config.get_language(), NULL);

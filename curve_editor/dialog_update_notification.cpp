@@ -1,3 +1,5 @@
+#include <strconv2.h>
+
 #include "config.hpp"
 #include "dialog_update_notification.hpp"
 #include "string_table.hpp"
@@ -13,16 +15,16 @@ namespace curve_editor {
 		hwnd_static_version_ = ::GetDlgItem(hwnd, IDC_STATIC_VERSION);
 		hwnd_edit_release_notes_ = ::GetDlgItem(hwnd, IDC_EDIT_RELEASE_NOTES);
 		hwnd_check_dontshowagain_ = ::GetDlgItem(hwnd, IDC_CHECK_DONTSHOWAGAIN);
-		::SetWindowTextA(
+		::SetWindowTextW(
 			hwnd_static_version_,
 			std::format(
-				"{}:\t{}  →  {}",
+				L"{}:\t{}  →  {}",
 				global::string_table[global::StringTable::StringId::WordVersion],
-				global::PLUGIN_VERSION.str(),
-				global::update_checker.latest_version().str()
+				::sjis_to_wide(global::PLUGIN_VERSION.str()),
+				::sjis_to_wide(global::update_checker.latest_version().str())
 			).c_str()
 		);
-		::SetWindowTextA(hwnd_edit_release_notes_, global::update_checker.release_notes().c_str());
+		::SetWindowTextW(hwnd_edit_release_notes_, global::update_checker.release_notes().c_str());
 		::SendMessageA(hwnd_check_dontshowagain_, BM_SETCHECK, !global::config.get_notify_update(), NULL);
 	}
 
@@ -39,7 +41,7 @@ namespace curve_editor {
 				global::config.set_notify_update(
 					!static_cast<bool>(::SendMessageA(hwnd_check_dontshowagain_, BM_GETCHECK, NULL, NULL))
 				);
-				::ShellExecuteA(nullptr, "open", std::format("{}/releases/latest", global::PLUGIN_GITHUB_URL).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+				::ShellExecuteW(nullptr, L"open", std::format(L"{}/releases/latest", global::PLUGIN_GITHUB_URL).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 				::EndDialog(hwnd, IDOK);
 				return TRUE;
 

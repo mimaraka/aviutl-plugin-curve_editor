@@ -78,6 +78,10 @@ namespace curve_editor {
 		Automatic,
 		Japanese,
 		English,
-		Korean
+		German,
+		Indonesian,
+		Korean,
+		ChineseSimplified,
+		NumLanguage
 	};
 } // namespace curve_editor

@@ -11,20 +11,20 @@ namespace curve_editor {
 		static constexpr size_t MAX_TEXT = 1024u;
 
 		HWND hwnd_edit_ = NULL;
-		const std::string prompt_;
-		const std::string caption_;
-		const std::string default_text_;
-		std::function<bool(HWND, const std::string&)> on_submit_ = nullptr;
+		const std::wstring prompt_;
+		const std::wstring caption_;
+		const std::wstring default_text_;
+		std::function<bool(HWND, const std::wstring&)> on_submit_ = nullptr;
 
 		int resource_id() const noexcept override;
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 
 	public:
 		InputDialog(
-			const std::string& prompt,
-			const std::string& caption,
-			std::function<bool(HWND, const std::string&)> on_submit,
-			const std::string& default_text = ""
+			const std::wstring_view& prompt,
+			const std::wstring_view& caption,
+			std::function<bool(HWND, const std::wstring&)> on_submit,
+			const std::wstring_view& default_text = L""
 		) noexcept :
 			prompt_{ prompt },
 			caption_{ caption },

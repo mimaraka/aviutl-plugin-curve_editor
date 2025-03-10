@@ -1,7 +1,7 @@
 import React from 'react';
 import { faClone, faSquareUpRight, faStar, faLock, faLockOpen, faTrash, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { ToolbarButtonIcon, ToolbarButtonIconProps } from './button';
-import { editor } from './host_object';
+import { editor } from './interface';
 import './style/toolbar.scss';
 
 
@@ -33,7 +33,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
     const buttonsProps: ToolbarButtonIconProps[] = [
         {
             icon: faClone,
-            title: 'カーブのコード/IDをコピー',
+            title: window.stringTable['TooltipButtonCopy'],
             onClick: () => {
                 window.chrome.webview.postMessage({
                     command: 'ButtonCopy'
@@ -42,7 +42,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
         },
         {
             icon: faSquareUpRight,
-            title: 'カーブのコードを読み取り',
+            title: window.stringTable['TooltipButtonRead'],
             onClick: () => {
                 window.chrome.webview.postMessage({
                     command: 'ButtonCurveCode'
@@ -54,7 +54,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
         },
         {
             icon: faStar,
-            title: 'プリセットに保存',
+            title: window.stringTable['TooltipButtonSave'],
             onClick: () => {
                 window.chrome.webview.postMessage({
                     command: 'ButtonSave'
@@ -63,7 +63,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
         },
         {
             icon: editor.isCurveLocked(props.curveId)? faLock : faLockOpen,
-            title: editor.isCurveLocked(props.curveId) ? 'カーブの編集はロックされています' : 'カーブは編集可能です',
+            title: editor.isCurveLocked(props.curveId) ? window.stringTable['TooltipButtonLocked'] : window.stringTable['TooltipButtonUnlocked'],
             onClick: () => {
                 setIsLocked(!editor.isCurveLocked(props.curveId));
                 editor.setIsCurveLocked(editor.currentCurveId, !editor.isCurveLocked(props.curveId));
@@ -74,7 +74,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
         },
         {
             icon: faTrash,
-            title: 'カーブを削除',
+            title: window.stringTable['TooltipButtonReset'],
             onClick: () => {
                 window.chrome.webview.postMessage({
                     command: 'ButtonClear'
@@ -84,7 +84,7 @@ const Toolbar: React.FC<ToolbarProps> = (props: ToolbarProps) => {
         },
         {
             icon: faEllipsisVertical,
-            title: 'その他',
+            title: window.stringTable['TooltipButtonOthers'],
             onMouseDown: (event: React.MouseEvent) => {
                 if (event.button === 0) {
                     window.chrome.webview.postMessage({

@@ -6,7 +6,7 @@
 namespace curve_editor {
 	nlohmann::json Modifier::create_json() const noexcept {
 		nlohmann::json data;
-		data["name"] = ::sjis_to_utf8(name_);
+		data["name"] = ::wide_to_utf8(name_);
 		data["type"] = get_type();
 		data["enabled"] = enabled_;
 		return data;

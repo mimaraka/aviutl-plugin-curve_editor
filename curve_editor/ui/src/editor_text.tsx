@@ -1,10 +1,15 @@
 import React from 'react';
 import * as monaco from 'monaco-editor';
-import { config, editor } from './host_object';
+import { config, editor } from './interface';
 import './style/editor_text.scss';
 
 
+let initialized = false;
 const initMonacoEditor = () => {
+    if (initialized) {
+        return;
+    }
+    initialized = true;
     const identifiers = [
         {name: 'function', insertText: 'function ${1:name}(${2:args})\n\t${0}\nend', type: 'keyword'},
         {name: 'local', insertText: 'local ${1:name} = ${0}', type: 'keyword'},
@@ -203,8 +208,10 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
         editorRef.current?.updateOptions({ wordWrap: config.wordWrap ? 'on' : 'off' });
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             monaco.editor.setTheme('customThemeDark');
+            console.log('dark');
         } else {
             monaco.editor.setTheme('customThemeLight');
+            console.log('light');
         }
     }
 

@@ -38,6 +38,8 @@ namespace curve_editor::global {
 		std::filesystem::path dir_aviutl_;
 		std::filesystem::path dir_plugin_;
 
+		bool load_json();
+
 	public:
 		Config() noexcept;
 
@@ -50,8 +52,8 @@ namespace curve_editor::global {
 		auto get_edit_mode() const noexcept { return edit_mode_; }
 		bool set_edit_mode(EditMode edit_mode) noexcept;
 
-		const char* get_edit_mode_dispname(EditMode edit_mode) const noexcept;
-		const char* get_edit_mode_dispname() const noexcept { return get_edit_mode_dispname(edit_mode_); };
+		std::wstring_view get_edit_mode_dispname(EditMode edit_mode) const noexcept;
+		std::wstring_view get_edit_mode_dispname() const noexcept { return get_edit_mode_dispname(edit_mode_); };
 
 		auto get_layout_mode() const noexcept { return layout_mode_; }
 		bool set_layout_mode(LayoutMode layout_mode) noexcept;
@@ -61,8 +63,8 @@ namespace curve_editor::global {
 		bool set_apply_mode(EditMode edit_mode, ApplyMode apply_mode) noexcept;
 		bool set_apply_mode(ApplyMode apply_mode) noexcept { return set_apply_mode(get_edit_mode(), apply_mode); }
 
-		const char* get_apply_mode_dispname(ApplyMode apply_mode) const noexcept;
-		const char* get_apply_mode_dispname() const noexcept { return get_apply_mode_dispname(get_apply_mode()); }
+		std::wstring_view get_apply_mode_dispname(ApplyMode apply_mode) const noexcept;
+		std::wstring_view get_apply_mode_dispname() const noexcept { return get_apply_mode_dispname(get_apply_mode()); }
 
 		const auto& get_curve_color() const noexcept { return pref_.curve_color; }
 		void set_curve_color(mkaul::ColorF curve_color) noexcept { pref_.curve_color = curve_color; }
@@ -151,7 +153,6 @@ namespace curve_editor::global {
 
 		void reset_pref() noexcept { pref_.reset(); }
 
-		bool load_json();
 		bool save_json();
 	} config;
 } // namespace curve_editor::global

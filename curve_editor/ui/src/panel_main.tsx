@@ -2,7 +2,7 @@ import React from 'react';
 import PresetPanel from './preset';
 import Toolbar from './toolbar';
 import EditorPanel from './panel_editor';
-import { config, editor } from './host_object';
+import { config, editor } from './interface';
 import './style/panel_main.scss';
 
 
@@ -270,8 +270,8 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                     <select className='dropdown' name='apply-mode' id='apply-mode' value={config.applyMode} onChange={onSelectChange}>
                         {applyModeOptions}
                     </select>
-                        <button className='button-apply' id='button-apply' title={`カーブを適用 (${config.getApplyModeName(config.applyMode)})`} onMouseDown={onApplyButtonMouseDown} onKeyDown={onApplyButtonKeyDown}>
-                        {isDragging? 'トラックバーにドラッグ&ドロップして適用' : '適用'}
+                        <button className='button-apply' id='button-apply' title={`${window.stringTable['TooltipButtonApply']} (${config.getApplyModeName(config.applyMode)})`} onMouseDown={onApplyButtonMouseDown} onKeyDown={onApplyButtonKeyDown}>
+                        {isDragging? window.stringTable['LabelApplyDnD'] : window.stringTable['WordApply']}
                     </button>
                 </div>
             </div>

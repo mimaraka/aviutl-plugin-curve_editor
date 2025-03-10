@@ -21,9 +21,9 @@ namespace curve_editor {
 		hwnd_check_filter_type_bounce_ = ::GetDlgItem(hwnd, IDC_CHECK_FILTER_TYPE_BOUNCE);
 		hwnd_check_filter_type_script_ = ::GetDlgItem(hwnd, IDC_CHECK_FILTER_TYPE_SCRIPT);
 
-		::SendMessageA(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::LabelSortByNull]);
-		::SendMessageA(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::LabelSortByName]);
-		::SendMessageA(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::LabelSortByDate]);
+		::SendMessageW(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::SortByNone]);
+		::SendMessageW(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::SortByName]);
+		::SendMessageW(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::SortByDate]);
 
 		::SendMessageA(hwnd_combo_sort_by_, CB_SETCURSEL, (WPARAM)global::preset_manager.get_sort_by(), NULL);
 
@@ -41,6 +41,19 @@ namespace curve_editor {
 		::SendMessageA(hwnd_check_filter_type_elastic_, BM_SETCHECK, filter_info.type_elastic ? BST_CHECKED : BST_UNCHECKED, NULL);
 		::SendMessageA(hwnd_check_filter_type_bounce_, BM_SETCHECK, filter_info.type_bounce ? BST_CHECKED : BST_UNCHECKED, NULL);
 		::SendMessageA(hwnd_check_filter_type_script_, BM_SETCHECK, filter_info.type_script ? BST_CHECKED : BST_UNCHECKED, NULL);
+
+		::SetWindowTextW(hwnd_check_filter_type_normal_, global::string_table[StringId::CurveTypeNormal]);
+		::SetWindowTextW(hwnd_check_filter_type_value_, global::string_table[StringId::CurveTypeValue]);
+		::SetWindowTextW(hwnd_check_filter_type_bezier_, global::string_table[StringId::CurveTypeBezier]);
+		::SetWindowTextW(hwnd_check_filter_type_elastic_, global::string_table[StringId::CurveTypeElastic]);
+		::SetWindowTextW(hwnd_check_filter_type_bounce_, global::string_table[StringId::CurveTypeBounce]);
+		::SetWindowTextW(hwnd_check_filter_type_script_, global::string_table[StringId::CurveTypeScript]);
+
+		::SetWindowTextW(hwnd_radio_sort_asc_, global::string_table[StringId::SortOrderAsc]);
+		::SetWindowTextW(hwnd_radio_sort_desc_, global::string_table[StringId::SortOrderDesc]);
+
+		::SetDlgItemTextW(hwnd, IDOK, global::string_table[StringId::WordOK]);
+		::SetDlgItemTextW(hwnd, IDCANCEL, global::string_table[StringId::WordCancel]);
 	}
 
 	INT_PTR PresetListSettingDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {

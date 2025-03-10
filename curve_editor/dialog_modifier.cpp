@@ -31,11 +31,11 @@ namespace curve_editor {
 		menu_modifier_ = ::CreatePopupMenu();
 
 		for (size_t i = 0; i < (size_t)ModifierType::NumModifierType; i++) {
-			::AppendMenuA(
+			::AppendMenuW(
 				menu_modifier_,
 				MF_STRING,
 				i + 1u,
-				global::string_table[(StringId)((size_t)StringId::LabelModifierDiscretization + i)]
+				global::string_table[(StringId)((size_t)StringId::ModifierTypeDiscretization + i)]
 			);
 		}
 
@@ -56,7 +56,7 @@ namespace curve_editor {
 		::SendMessageA(hwnd_list_modifier_, WM_SETFONT, (WPARAM)font, MAKELPARAM(TRUE, 0));
 		::SendMessageA(hwnd_list_modifier_, LB_SETITEMHEIGHT, 0, 16);
 		for (const auto& modifier : curve.modifiers()) {
-			::SendMessageA(hwnd_list_modifier_, LB_ADDSTRING, NULL, (LPARAM)modifier->name().c_str());
+			::SendMessageW(hwnd_list_modifier_, LB_ADDSTRING, NULL, (LPARAM)modifier->name().c_str());
 		}
 	}
 
@@ -92,7 +92,7 @@ namespace curve_editor {
 	void ModifierDialog::update_list(const GraphCurve& curve) noexcept {
 		::SendMessageA(hwnd_list_modifier_, LB_RESETCONTENT, NULL, NULL);
 		for (const auto& modifier : curve.modifiers()) {
-			::SendMessageA(hwnd_list_modifier_, LB_ADDSTRING, NULL, (LPARAM)modifier->name().c_str());
+			::SendMessageW(hwnd_list_modifier_, LB_ADDSTRING, NULL, (LPARAM)modifier->name().c_str());
 		}
 	}
 

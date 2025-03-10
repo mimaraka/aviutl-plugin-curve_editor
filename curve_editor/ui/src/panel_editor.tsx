@@ -1,6 +1,6 @@
 import React from 'react';
 import { faPlus, faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { config, editor } from './host_object';
+import { config, editor } from './interface';
 import { ToolbarButtonIcon, ToolbarButtonText } from './button';
 import GraphEditorPanel from './editor_graph';
 import TextEditorPanel from './editor_text';
@@ -156,7 +156,7 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
             <ToolbarButtonIcon
                 style={{ width: '25%' }}
                 icon={faAngleLeft}
-                title='前のIDに戻る'
+                title={window.stringTable['TooltipButtonIdBack']}
                 onMouseDown={onBackButtonHoldStart}
                 onMouseUp={onBackButtonHoldEnd}
                 onMouseLeave={onBackButtonHoldEnd}
@@ -164,7 +164,7 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
             />
             <ToolbarButtonText
                 style={{ width: '50%' }}
-                title='編集中のID'
+                title={window.stringTable['TooltipButtonCurrentId']}
                 label={String(props.idx + 1)}
                 onClick={onIdxButtonClick}
                 onMouseDown={onIdxButtonMouseDown}
@@ -172,7 +172,7 @@ const IdButtons: React.FC<IdButtonsProps> = (props: IdButtonsProps) => {
             <ToolbarButtonIcon
                 style={{ width: '25%' }}
                 icon={isIdxLast(props.idx) ? faPlus : faAngleRight}
-                title={isIdxLast(props.idx) ? 'カーブを新規作成' : '次のIDへ進む'}
+                title={isIdxLast(props.idx) ? window.stringTable['TooltipButtonIdNew'] : window.stringTable['TooltipButtonIdNext']}
                 onMouseDown={onForwardButtonHoldStart}
                 onMouseUp={onForwardButtonHoldEnd}
                 onMouseLeave={onForwardButtonHoldEnd}
@@ -230,7 +230,7 @@ const EditorPanel: React.FC<EditorPanelProps> = (props: EditorPanelProps) => {
             <div className='menu-bottom'>
                 <div className='menu-row'>
                     <div className='dropdown-container' id='edit-mode-container'>
-                        <select className='dropdown' name='edit-mode' id='edit-mode' title={`編集モード (${config.getEditModeName(props.editMode)})`} value={props.editMode} onChange={onSelectChange} onWheel={onWheel}>
+                        <select className='dropdown' name='edit-mode' id='edit-mode' title={`${window.stringTable['WordEditMode']} (${config.getEditModeName(props.editMode)})`} value={props.editMode} onChange={onSelectChange} onWheel={onWheel}>
                             {editModeOptions}
                         </select>
                     </div>

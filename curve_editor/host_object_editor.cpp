@@ -9,7 +9,7 @@ namespace curve_editor {
 		if (!curve) {
 			return std::wstring();
 		}
-		return ::sjis_to_wide(curve->get_name());
+		return ::sjis_to_wide(curve->get_name().data());
 	}
 
 	std::wstring EditorHostObject::get_curve_disp_name(uint32_t id) {
@@ -17,7 +17,7 @@ namespace curve_editor {
 		if (!curve) {
 			return std::wstring();
 		}
-		return ::sjis_to_wide(curve->get_disp_name());
+		return curve->get_disp_name().data();
 	}
 
 	bool EditorHostObject::is_curve_locked(uint32_t id) {

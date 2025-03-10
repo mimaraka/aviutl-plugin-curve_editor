@@ -8,7 +8,7 @@ import ElasticCurve from './curve_elastic';
 import BounceCurve from './curve_bounce';
 import LinearCurve from './curve_linear';
 import NormalCurve from './curve_normal';
-import { editor } from './host_object';
+import { editor } from './interface';
 
 
 // ハンドルを作成

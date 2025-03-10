@@ -10,9 +10,9 @@
 
 namespace curve_editor {
 	class PresetHostObject : public mkaul::ole::HostObject {
-		static std::string get_presets_as_json();
-		static std::string get_collections_as_json();
-		static std::string get_filter_info_as_json();
+		static std::wstring get_presets_as_json();
+		static std::wstring get_collections_as_json();
+		static std::wstring get_filter_info_as_json();
 
 	public:
 		PresetHostObject() {

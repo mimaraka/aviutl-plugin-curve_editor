@@ -1,5 +1,9 @@
 #include "string_table.hpp"
 
+#include <magic_enum/magic_enum.hpp>
+#include <strconv2.h>
+
+#include "config.hpp"
 #include "resource.h"
 #include "util.hpp"
 
@@ -7,22 +11,25 @@
 namespace curve_editor::global {
 	// 文字列テーブルの読み込み
 	StringTable::StringTable() noexcept {
-		// TODO: ロケールの設定
-		// ここに書く
+		constexpr std::array<LANGID, static_cast<size_t>(Language::NumLanguage)> lang_ids = {
+			MAKELANGID(LANG_SYSTEM_DEFAULT, SUBLANG_SYS_DEFAULT),
+			MAKELANGID(LANG_JAPANESE, SUBLANG_JAPANESE_JAPAN),
+			MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US),
+			MAKELANGID(LANG_GERMAN, SUBLANG_GERMAN),
+			MAKELANGID(LANG_INDONESIAN, SUBLANG_INDONESIAN_INDONESIA),
+			MAKELANGID(LANG_KOREAN, SUBLANG_KOREAN),
+			MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED),
+		};
+
+		// TODO: config, string_tableの初期化順序が怪しい(Debugで確認したら一応config->string_tableだったが...)
+		::SetThreadLocale(MAKELCID(lang_ids[static_cast<size_t>(config.get_language())], SORT_DEFAULT));
+		::SetThreadUILanguage(lang_ids[static_cast<size_t>(config.get_language())]);
 
 		for (size_t i = 0; i < (size_t)StringId::NumStringId; i++) {
-			char tmp[MAX_LEN];
+			wchar_t tmp[MAX_LEN];
 			UINT id;
 
 			switch ((StringId)i) {
-			case StringId::ErrorConnectionFailed:
-				id = IDS_ERROR_CONNECTION_FAILED;
-				break;
-
-			case StringId::ErrorGraphicsInitFailed:
-				id = IDS_ERROR_GRAPHICS_INIT_FAILED;
-				break;
-
 			case StringId::ErrorExeditNotFound:
 				id = IDS_ERROR_EXEDIT_NOT_FOUND;
 				break;
@@ -59,8 +66,8 @@ namespace curve_editor::global {
 				id = IDS_ERROR_COMMCTRL_INIT_FAILED;
 				break;
 
-			case StringId::ErrorPageLoadFailed:
-				id = IDS_ERROR_PAGE_LOAD_FAILED;
+			case StringId::ErrorUILoadFailed:
+				id = IDS_ERROR_UI_LOAD_FAILED;
 				break;
 
 			case StringId::ErrorPresetCreateFailed:
@@ -71,12 +78,12 @@ namespace curve_editor::global {
 				id = IDS_ERROR_COLLECTION_IMPORT_FAILED;
 				break;
 
-			case StringId::WarningDeleteCurve:
-				id = IDS_WARNING_DELETE_CURVE;
+			case StringId::WarningResetCurve:
+				id = IDS_WARNING_RESET_CURVE;
 				break;
 
-			case StringId::WarningDeleteAllCurves:
-				id = IDS_WARNING_DELETE_ALL_CURVES;
+			case StringId::WarningResetAllCurves:
+				id = IDS_WARNING_RESET_ALL_CURVES;
 				break;
 
 			case StringId::WarningResetPreferences:
@@ -103,192 +110,220 @@ namespace curve_editor::global {
 				id = IDS_WARNING_REMOVE_COLLECTION;
 				break;
 
-			case StringId::WarningScriptFileNotFound:
-				id = IDS_WARNING_SCRIPT_FILE_NOT_FOUND;
-				break;
-
-			case StringId::InfoLatestVersion:
-				id = IDS_INFO_LATEST_VERSION;
-				break;
-
-			case StringId::InfoUpdateAvailable:
-				id = IDS_INFO_UPDATE_AVAILABLE;
-				break;
-
 			case StringId::InfoRestartAviutl:
 				id = IDS_INFO_RESTART_AVIUTL;
 				break;
 
-			case StringId::LabelEditModeNormal:
-				id = IDS_LABEL_EDIT_MODE_NORMAL;
+			case StringId::CurveTypeNormal:
+				id = IDS_CURVE_TYPE_NORMAL;
 				break;
 
-			case StringId::LabelEditModeValue:
-				id = IDS_LABEL_EDIT_MODE_VALUE;
+			case StringId::CurveTypeValue:
+				id = IDS_CURVE_TYPE_VALUE;
 				break;
 
-			case StringId::LabelEditModeBezier:
-				id = IDS_LABEL_EDIT_MODE_BEZIER;
+			case StringId::CurveTypeBezier:
+				id = IDS_CURVE_TYPE_BEZIER;
 				break;
 
-			case StringId::LabelEditModeElastic:
-				id = IDS_LABEL_EDIT_MODE_ELASTIC;
+			case StringId::CurveTypeElastic:
+				id = IDS_CURVE_TYPE_ELASTIC;
 				break;
 
-			case StringId::LabelEditModeBounce:
-				id = IDS_LABEL_EDIT_MODE_BOUNCE;
+			case StringId::CurveTypeBounce:
+				id = IDS_CURVE_TYPE_BOUNCE;
 				break;
 
-			case StringId::LabelEditModeScript:
-				id = IDS_LABEL_EDIT_MODE_SCRIPT;
+			case StringId::CurveTypeScript:
+				id = IDS_CURVE_TYPE_SCRIPT;
 				break;
 
-			case StringId::LabelCurveSegmentTypeLinear:
-				id = IDS_LABEL_CURVE_SEGMENT_TYPE_LINEAR;
+			case StringId::CurveTypeLinear:
+				id = IDS_CURVE_TYPE_LINEAR;
 				break;
 
-			case StringId::LabelApplyModeNormal:
-				id = IDS_LABEL_APPLY_MODE_NORMAL;
+			case StringId::ApplyModeNormal:
+				id = IDS_APPLY_MODE_NORMAL;
 				break;
 
-			case StringId::LabelApplyModeIgnoreMidPoint:
-				id = IDS_LABEL_APPLY_MODE_IGNORE_MIDPOINT;
+			case StringId::ApplyModeIgnoreMidPoint:
+				id = IDS_APPLY_MODE_IGNORE_MID_POINT;
 				break;
 
-			case StringId::LabelApplyModeInterpolate:
-				id = IDS_LABEL_APPLY_MODE_INTERPOLATE;
+			case StringId::ApplyModeInterpolate:
+				id = IDS_APPLY_MODE_INTERPOLATE;
 				break;
 
-			case StringId::LabelTooltipCopy:
-				id = IDS_LABEL_TOOLTIP_COPY;
+			case StringId::TooltipButtonApply:
+				id = IDS_TOOLTIP_BUTTON_APPLY;
 				break;
 
-			case StringId::LabelTooltipRead:
-				id = IDS_LABEL_TOOLTIP_READ;
+			case StringId::TooltipButtonCopy:
+				id = IDS_TOOLTIP_BUTTON_COPY;
 				break;
 
-			case StringId::LabelTooltipSave:
-				id = IDS_LABEL_TOOLTIP_SAVE;
+			case StringId::TooltipButtonRead:
+				id = IDS_TOOLTIP_BUTTON_READ;
 				break;
 
-			case StringId::LabelTooltipClear:
-				id = IDS_LABEL_TOOLTIP_CLEAR;
+			case StringId::TooltipButtonSave:
+				id = IDS_TOOLTIP_BUTTON_SAVE;
 				break;
 
-			case StringId::LabelTooltipFit:
-				id = IDS_LABEL_TOOLTIP_FIT;
+			case StringId::TooltipButtonUnlocked:
+				id = IDS_TOOLTIP_BUTTON_UNLOCKED;
 				break;
 
-			case StringId::LabelTooltipMore:
-				id = IDS_LABEL_TOOLTIP_MORE;
+			case StringId::TooltipButtonLocked:
+				id = IDS_TOOLTIP_BUTTON_LOCKED;
 				break;
 
-			case StringId::LabelTooltipIdBack:
-				id = IDS_LABEL_TOOLTIP_ID_BACK;
+			case StringId::TooltipButtonReset:
+				id = IDS_TOOLTIP_BUTTON_RESET;
 				break;
 
-			case StringId::LabelTooltipIdNext:
-				id = IDS_LABEL_TOOLTIP_ID_NEXT;
+			case StringId::TooltipButtonOthers:
+				id = IDS_TOOLTIP_BUTTON_OTHERS;
 				break;
 
-			case StringId::LabelTooltipCurrentId:
-				id = IDS_LABEL_TOOLTIP_CURRENT_ID;
+			case StringId::TooltipButtonIdBack:
+				id = IDS_TOOLTIP_BUTTON_ID_BACK;
 				break;
 
-			case StringId::LabelThemeNameSystem:
-				id = IDS_LABEL_THEME_NAME_SYSTEM;
+			case StringId::TooltipButtonIdNext:
+				id = IDS_TOOLTIP_BUTTON_ID_NEXT;
 				break;
 
-			case StringId::LabelThemeNameDark:
-				id = IDS_LABEL_THEME_NAME_DARK;
+			case StringId::TooltipButtonIdNew:
+				id = IDS_TOOLTIP_BUTTON_ID_NEW;
 				break;
 
-			case StringId::LabelThemeNameLight:
-				id = IDS_LABEL_THEME_NAME_LIGHT;
+			case StringId::TooltipButtonCurrentId:
+				id = IDS_TOOLTIP_BUTTON_CURRENT_ID;
 				break;
 
-			case StringId::LabelPreferenceGeneral:
-				id = IDS_LABEL_PREFERENCE_GENERAL;
+			case StringId::TooltipButtonListConfig:
+				id = IDS_TOOLTIP_BUTTON_LIST_CONFIG;
 				break;
 
-			case StringId::LabelPreferenceAppearance:
-				id = IDS_LABEL_PREFERENCE_APPEARANCE;
+			case StringId::TooltipButtonCollectionAdd:
+				id = IDS_TOOLTIP_BUTTON_COLLECTION_ADD;
 				break;
 
-			case StringId::LabelPreferenceBehavior:
-				id = IDS_LABEL_PREFERENCE_BEHAVIOR;
+			case StringId::TooltipButtonCollectionEdit:
+				id = IDS_TOOLTIP_BUTTON_COLLECTION_EDIT;
 				break;
 
-			case StringId::LabelPreferenceEditing:
-				id = IDS_LABEL_PREFERENCE_EDITING;
+			case StringId::ThemeSystem:
+				id = IDS_THEME_SYSTEM;
 				break;
 
-			case StringId::LabelSelectBackgroundImage:
-				id = IDS_LABEL_SELECT_BG_IMAGE;
+			case StringId::ThemeDark:
+				id = IDS_THEME_DARK;
 				break;
 
-			case StringId::LabelSelectCurve:
-				id = IDS_LABEL_SELECT_CURVE;
+			case StringId::ThemeLight:
+				id = IDS_THEME_LIGHT;
 				break;
 
-			case StringId::LabelModifierDiscretization:
-				id = IDS_LABEL_MODIFIER_DISCRETIZATION;
+			case StringId::PreferencesCategoryGeneral:
+				id = IDS_PREFERENCES_CATEGORY_GENERAL;
 				break;
 
-			case StringId::LabelModifierNoise:
-				id = IDS_LABEL_MODIFIER_NOISE;
+			case StringId::PreferencesCategoryAppearance:
+				id = IDS_PREFERENCES_CATEGORY_APPEARANCE;
 				break;
 
-			case StringId::LabelModifierSineWave:
-				id = IDS_LABEL_MODIFIER_SINE_WAVE;
+			case StringId::PreferencesCategoryBehavior:
+				id = IDS_PREFERENCES_CATEGORY_BEHAVIOR;
 				break;
 
-			case StringId::LabelModifierSquareWave:
-				id = IDS_LABEL_MODIFIER_SQUARE_WAVE;
+			case StringId::PreferencesCategoryEditing:
+				id = IDS_PREFERENCES_CATEGORY_EDITING;
 				break;
 
-			case StringId::LabelSortByNull:
-				id = IDS_LABEL_SORT_BY_NULL;
+			case StringId::CaptionSelectBackgroundImage:
+				id = IDS_CAPTION_SELECT_BG_IMAGE;
 				break;
 
-			case StringId::LabelSortByName:
-				id = IDS_LABEL_SORT_BY_NAME;
+			case StringId::CaptionSelectCurve:
+				id = IDS_CAPTION_SELECT_CURVE;
 				break;
 
-			case StringId::LabelSortByDate:
-				id = IDS_LABEL_SORT_BY_DATE;
+			case StringId::ModifierTypeDiscretization:
+				id = IDS_MODIFIER_TYPE_DISCRETIZATION;
 				break;
 
-			case StringId::LabelSortOrderAsc:
-				id = IDS_LABEL_SORT_ORDER_ASC;
+			case StringId::ModifierTypeNoise:
+				id = IDS_MODIFIER_TYPE_NOISE;
 				break;
 
-			case StringId::LabelSortOrderDesc:
-				id = IDS_LABEL_SORT_ORDER_DESC;
+			case StringId::ModifierTypeSineWave:
+				id = IDS_MODIFIER_TYPE_SINE_WAVE;
 				break;
 
-			case StringId::LabelCollectionExportOmitDate:
-				id = IDS_LABEL_COLLECTION_EXPORT_OMIT_DATE;
+			case StringId::ModifierTypeSquareWave:
+				id = IDS_MODIFIER_TYPE_SQUARE_WAVE;
 				break;
 
-			case StringId::LabelCollectionExportSetIndent:
-				id = IDS_LABEL_COLLECTION_EXPORT_SET_INDENT;
+			case StringId::SortByNone:
+				id = IDS_SORT_BY_NONE;
 				break;
 
-			case StringId::LabelCollectionNameAll:
-				id = IDS_LABEL_COLLECTION_NAME_ALL;
+			case StringId::SortByName:
+				id = IDS_SORT_BY_NAME;
 				break;
 
-			case StringId::LabelCollectionNameDefault:
-				id = IDS_LABEL_COLLECTION_NAME_DEFAULT;
+			case StringId::SortByDate:
+				id = IDS_SORT_BY_DATE;
 				break;
 
-			case StringId::LabelCollectionNameRoot:
-				id = IDS_LABEL_COLLECTION_NAME_ROOT;
+			case StringId::SortOrderAsc:
+				id = IDS_SORT_ORDER_ASC;
 				break;
 
-			case StringId::PromptCreatePreset:
-				id = IDS_PROMPT_CREATE_PRESET;
+			case StringId::SortOrderDesc:
+				id = IDS_SORT_ORDER_DESC;
+				break;
+
+			case StringId::LabelCollectionOmitDate:
+				id = IDS_LABEL_COLLECTION_OMIT_DATE;
+				break;
+
+			case StringId::LabelCollectionSetIndent:
+				id = IDS_LABEL_COLLECTION_SET_INDENT;
+				break;
+
+			case StringId::LabelLoading:
+				id = IDS_LABEL_LOADING;
+				break;
+
+			case StringId::LabelSearchPresets:
+				id = IDS_LABEL_SEARCH_PRESETS;
+				break;
+
+			case StringId::LabelApplyDnD:
+				id = IDS_LABEL_APPLY_DND;
+				break;
+
+			case StringId::LabelReset:
+				id = IDS_LABEL_RESET;
+				break;
+
+			case StringId::CollectionNameAll:
+				id = IDS_COLLECTION_NAME_ALL;
+				break;
+
+			case StringId::CollectionNameDefault:
+				id = IDS_COLLECTION_NAME_DEFAULT;
+				break;
+
+			case StringId::CollectionNameUser:
+				id = IDS_COLLECTION_NAME_USER;
+				break;
+
+			case StringId::PromptPresetName:
+				id = IDS_PROMPT_PRESET_NAME;
 				break;
 
 			case StringId::PromptCurveCode:
@@ -299,20 +334,12 @@ namespace curve_editor::global {
 				id = IDS_PROMPT_CURVE_PARAM;
 				break;
 
-			case StringId::PromptRenamePreset:
-				id = IDS_PROMPT_RENAME_PRESET;
+			case StringId::PromptCollectionName:
+				id = IDS_PROMPT_COLLECTION_NAME;
 				break;
 
-			case StringId::PromptCreateCollection:
-				id = IDS_PROMPT_CREATE_COLLECTION;
-				break;
-
-			case StringId::PromptRenameCollection:
-				id = IDS_PROMPT_RENAME_COLLECTION;
-				break;
-
-			case StringId::CaptionCreatePreset:
-				id = IDS_CAPTION_CREATE_PRESET;
+			case StringId::CaptionPresetCreate:
+				id = IDS_CAPTION_PRESET_CREATE;
 				break;
 
 			case StringId::CaptionCurveCode:
@@ -323,24 +350,24 @@ namespace curve_editor::global {
 				id = IDS_CAPTION_CURVE_PARAM;
 				break;
 
-			case StringId::CaptionRenamePreset:
-				id = IDS_CAPTION_RENAME_PRESET;
+			case StringId::CaptionPresetRename:
+				id = IDS_CAPTION_PRESET_RENAME;
 				break;
 
-			case StringId::CaptionCreateCollection:
-				id = IDS_CAPTION_CREATE_COLLECTION;
+			case StringId::CaptionCollectionCreate:
+				id = IDS_CAPTION_COLLECTION_CREATE;
 				break;
 
-			case StringId::CaptionRenameCollection:
-				id = IDS_CAPTION_RENAME_COLLECTION;
+			case StringId::CaptionCollectionRename:
+				id = IDS_CAPTION_COLLECTION_RENAME;
 				break;
 
-			case StringId::CaptionImportCollection:
-				id = IDS_CAPTION_IMPORT_COLLECTION;
+			case StringId::CaptionCollectionImport:
+				id = IDS_CAPTION_COLLECTION_IMPORT;
 				break;
 
-			case StringId::CaptionExportCollection:
-				id = IDS_CAPTION_EXPORT_COLLECTION;
+			case StringId::CaptionCollectionExport:
+				id = IDS_CAPTION_COLLECTION_EXPORT;
 				break;
 
 			case StringId::WordVersion:
@@ -351,100 +378,116 @@ namespace curve_editor::global {
 				id = IDS_WORD_EDIT_MODE;
 				break;
 
-			case StringId::WordLanguageAutomatic:
-				id = IDS_WORD_LANGUAGE_AUTOMATIC;
+			case StringId::WordAutomatic:
+				id = IDS_WORD_AUTOMATIC;
 				break;
 
-			case StringId::WordImageFiles:
-				id = IDS_WORD_IMAGE_FILES;
+			case StringId::WordImageFile:
+				id = IDS_WORD_IMAGE_FILE;
 				break;
 
 			case StringId::WordSelect:
 				id = IDS_WORD_SELECT;
 				break;
 
+			case StringId::WordCollection:
+				id = IDS_WORD_COLLECTION;
+				break;
+
 			case StringId::WordCollectionFile:
 				id = IDS_WORD_COLLECTION_FILE;
 				break;
 
-			case StringId::MenuGraphApplyMode:
-				id = IDS_MENU_GRAPH_APPLY_MODE;
+			case StringId::WordType:
+				id = IDS_WORD_TYPE;
 				break;
 
-			case StringId::MenuGraphAddAnchor:
-				id = IDS_MENU_GRAPH_ADD_ANCHOR;
+			case StringId::WordApply:
+				id = IDS_WORD_APPLY;
 				break;
 
-			case StringId::MenuGraphReverseCurve:
-				id = IDS_MENU_GRAPH_REVERSE_CURVE;
+			case StringId::WordOK:
+				id = IDS_WORD_OK;
 				break;
 
-			case StringId::MenuGraphModifier:
-				id = IDS_MENU_GRAPH_MODIFIER;
+			case StringId::WordCancel:
+				id = IDS_WORD_CANCEL;
 				break;
 
-			case StringId::MenuGraphCopyCurve:
-				id = IDS_MENU_GRAPH_COPY_CURVE;
+			case StringId::MenuEditorCurveAddAnchor:
+				id = IDS_MENU_EDITOR_CURVE_ADD_ANCHOR;
 				break;
 
-			case StringId::MenuGraphPasteCurve:
-				id = IDS_MENU_GRAPH_PASTE_CURVE;
+			case StringId::MenuEditorCurveReverse:
+				id = IDS_MENU_EDITOR_CURVE_REVERSE;
 				break;
 
-			case StringId::MenuGraphAlignHandle:
-				id = IDS_MENU_GRAPH_ALIGN_HANDLE;
+			case StringId::MenuEditorCurveModifier:
+				id = IDS_MENU_EDITOR_CURVE_MODIFIER;
 				break;
 
-			case StringId::MenuGraphShowXLabel:
-				id = IDS_MENU_GRAPH_SHOW_X_LABEL;
+			case StringId::MenuEditorCurveCopy:
+				id = IDS_MENU_EDITOR_CURVE_COPY;
 				break;
 
-			case StringId::MenuGraphShowYLabel:
-				id = IDS_MENU_GRAPH_SHOW_Y_LABEL;
+			case StringId::MenuEditorCurvePaste:
+				id = IDS_MENU_EDITOR_CURVE_PASTE;
 				break;
 
-			case StringId::MenuGraphShowHandle:
-				id = IDS_MENU_GRAPH_SHOW_HANDLE;
+			case StringId::MenuEditorCurveAlignHandle:
+				id = IDS_MENU_EDITOR_CURVE_ALIGN_HANDLE;
 				break;
 
-			case StringId::MenuGraphShowVelocityGraph:
-				id = IDS_MENU_GRAPH_SHOW_VELOCITY_GRAPH;
+			case StringId::MenuEditorCurveShowScaleX:
+				id = IDS_MENU_EDITOR_CURVE_SHOW_SCALE_X;
 				break;
 
-			case StringId::MenuCurveSegmentType:
-				id = IDS_MENU_CURVE_SEGMENT_TYPE;
+			case StringId::MenuEditorCurveShowScaleY:
+				id = IDS_MENU_EDITOR_CURVE_SHOW_SCALE_Y;
 				break;
 
-			case StringId::MenuCurveSegmentReverse:
-				id = IDS_MENU_CURVE_SEGMENT_REVERSE;
+			case StringId::MenuEditorCurveShowHandle:
+				id = IDS_MENU_EDITOR_CURVE_SHOW_HANDLE;
 				break;
 
-			case StringId::MenuCurveSegmentModifier:
-				id = IDS_MENU_CURVE_SEGMENT_MODIFIER;
+			case StringId::MenuEditorCurveShowVelocityGraph:
+				id = IDS_MENU_EDITOR_CURVE_SHOW_VELOCITY_GRAPH;
 				break;
 
-			case StringId::MenuOthersWindowLayout:
-				id = IDS_MENU_OTHERS_WINDOW_LAYOUT;
+			case StringId::MenuEditorSegmentType:
+				id = IDS_MENU_EDITOR_SEGMENT_TYPE;
 				break;
 
-			case StringId::MenuOthersWindowLayoutVertical:
-				id = IDS_MENU_OTHERS_WINDOW_LAYOUT_VERTICAL;
+			case StringId::MenuEditorSegmentReverse:
+				id = IDS_MENU_EDITOR_SEGMENT_REVERSE;
 				break;
 
-			case StringId::MenuOthersWindowLayoutHorizontal:
-				id = IDS_MENU_OTHERS_WINDOW_LAYOUT_HORIZONTAL;
+			case StringId::MenuEditorSegmentModifier:
+				id = IDS_MENU_EDITOR_SEGMENT_MODIFIER;
+				break;
+
+			case StringId::MenuOthersPanelLayout:
+				id = IDS_MENU_OTHERS_PANEL_LAYOUT;
+				break;
+
+			case StringId::MenuOthersPanelLayoutVertical:
+				id = IDS_MENU_OTHERS_PANEL_LAYOUT_VERTICAL;
+				break;
+
+			case StringId::MenuOthersPanelLayoutHorizontal:
+				id = IDS_MENU_OTHERS_PANEL_LAYOUT_HORIZONTAL;
 				break;
 
 			case StringId::MenuOthersExtension:
 				id = IDS_MENU_OTHERS_EXTENSION;
 				break;
 
-			case StringId::MenuOthersExtensionInstall:
-				id = IDS_MENU_OTHERS_EXTENSION_INSTALL;
+			case StringId::MenuOthersExtensionManage:
+				id = IDS_MENU_OTHERS_EXTENSION_MANAGE;
 				break;
 
-			case StringId::MenuOthersReloadWindow:
-				id = IDS_MENU_OTHERS_RELOAD_WINDOW;
+			case StringId::MenuOthersReloadUI:
+				id = IDS_MENU_OTHERS_RELOAD_UI;
 				break;
 
 			case StringId::MenuOthersPreferences:
@@ -459,8 +502,8 @@ namespace curve_editor::global {
 				id = IDS_MENU_OTHERS_ABOUT;
 				break;
 
-			case StringId::MenuOthersUpdateAvailable:
-				id = IDS_MENU_OTHERS_UPDATE_AVAILABLE;
+			case StringId::MenuOthersNotificationUpdateAvailable:
+				id = IDS_MENU_OTHERS_NOTIFICATION_UPDATE_AVAILABLE;
 				break;
 
 			case StringId::MenuPresetItemRename:
@@ -499,46 +542,56 @@ namespace curve_editor::global {
 				id = IDS_MENU_COLLECTION_EXPORT;
 				break;
 
-			case StringId::MenuBezierHandleRoot:
-				id = IDS_MENU_BEZIER_HANDLE_ROOT;
+			case StringId::MenuEditorHandleBezierRoot:
+				id = IDS_MENU_EDITOR_HANDLE_BEZIER_ROOT;
 				break;
 
-			case StringId::MenuBezierHandleAdjustAngle:
-				id = IDS_MENU_BEZIER_HANDLE_ADJUST_ANGLE;
+			case StringId::MenuEditorHandleBezierMatchAngle:
+				id = IDS_MENU_EDITOR_HANDLE_BEZIER_MATCH_ANGLE;
 				break;
 
-			case StringId::MenuIdxJumpToFirst:
-				id = IDS_MENU_IDX_JUMP_TO_FIRST;
+			case StringId::MenuIDJumpToFirst:
+				id = IDS_MENU_ID_JUMP_TO_FIRST;
 				break;
 
-			case StringId::MenuIdxJumpToLast:
-				id = IDS_MENU_IDX_JUMP_TO_LAST;
+			case StringId::MenuIDJumpToLast:
+				id = IDS_MENU_ID_JUMP_TO_LAST;
 				break;
 
-			case StringId::MenuIdxDelete:
-				id = IDS_MENU_IDX_DELETE;
+			case StringId::MenuIDDelete:
+				id = IDS_MENU_ID_DELETE;
 				break;
 
-			case StringId::MenuIdxDeleteAll:
-				id = IDS_MENU_IDX_DELETE_ALL;
+			case StringId::MenuIDDeleteAll:
+				id = IDS_MENU_ID_DELETE_ALL;
 				break;
 
 			default:
 				continue;
 			}
 
-			if (::LoadStringA(util::get_hinst(), id, tmp, MAX_LEN)) {
+			if (::LoadStringW(util::get_hinst(), id, tmp, MAX_LEN)) {
 				string_data[i] = tmp;
 			}
 		}
 	}
 
 
-	const char* StringTable::operator[] (StringTable::StringId str_id)
-	{
+	const wchar_t* StringTable::operator[] (StringTable::StringId str_id) {
 		if ((uint32_t)StringId::NumStringId <= (uint32_t)str_id) {
 			return nullptr;
 		}
 		return string_data[(size_t)str_id].c_str();
+	}
+
+
+	nlohmann::json StringTable::create_json() const {
+		nlohmann::json json;
+		for (size_t i = 0; i < (size_t)StringId::NumStringId; i++) {
+			const auto string_id = static_cast<StringId>(i);
+			const auto key = magic_enum::enum_name(string_id);
+			json[key] = ::wide_to_utf8(string_data[i]);
+		}
+		return json;
 	}
 } // namespace curve_editor::global

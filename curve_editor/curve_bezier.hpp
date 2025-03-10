@@ -47,8 +47,8 @@ namespace curve_editor {
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Bezier; }
-		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BEZIER; }
-		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBezier]; }
+		[[nodiscard]] constexpr const std::string_view& get_name() const noexcept override { return global::CURVE_NAME_BEZIER; }
+		[[nodiscard]] std::wstring_view get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::CurveTypeBezier]; }
 
 		// アンカーを移動する
 		void begin_move_anchor_start(bool bound = false) noexcept override;

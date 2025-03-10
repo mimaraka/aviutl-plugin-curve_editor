@@ -72,7 +72,7 @@ namespace curve_editor {
 	/// 「カーブのコード/IDをコピー」ボタンが押されたときに呼び出される関数
 	/// </summary>
 	void MessageHandler::button_copy() {
-		auto tmp = std::to_string(global::editor.track_param());
+		auto tmp = std::to_wstring(global::editor.track_param());
 		if (!util::copy_to_clipboard(hwnd_, tmp.c_str()) and global::config.get_show_popup()) {
 			util::message_box(global::string_table[StringId::ErrorCodeCopyFailed], hwnd_, util::MessageBoxIcon::Error);
 		}
@@ -86,8 +86,8 @@ namespace curve_editor {
 			hwnd_,
 			global::string_table[StringId::PromptCurveCode],
 			global::string_table[StringId::CaptionCurveCode],
-			[this](HWND hwnd, const std::string& text) {
-				const std::regex regex_code{ R"(^-?\d+$)" };
+			[this](HWND hwnd, const std::wstring& text) {
+				const std::wregex regex_code{ LR"(^-?\d+$)" };
 				auto p_curve = global::editor.editor_graph().numeric_curve();
 				if (p_curve) {
 					if (std::regex_match(text, regex_code)) {
@@ -125,9 +125,9 @@ namespace curve_editor {
 	void MessageHandler::button_save() {
 		util::input_box(
 			hwnd_,
-			global::string_table[StringId::PromptCreatePreset],
-			global::string_table[StringId::CaptionCreatePreset],
-			[this](HWND hwnd, const std::string& text) -> bool {
+			global::string_table[StringId::PromptPresetName],
+			global::string_table[StringId::CaptionPresetCreate],
+			[this](HWND hwnd, const std::wstring& text) -> bool {
 				if (text.empty()) {
 					util::message_box(global::string_table[StringId::ErrorInvalidInput], hwnd, util::MessageBoxIcon::Error);
 					return false;
@@ -172,7 +172,7 @@ namespace curve_editor {
 		int response = IDOK;
 		if (global::config.get_show_popup()) {
 			response = util::message_box(
-				global::string_table[StringId::WarningDeleteCurve],
+				global::string_table[StringId::WarningResetCurve],
 				hwnd_,
 				util::MessageBoxIcon::Warning,
 				util::MessageBoxButton::OkCancel
@@ -183,7 +183,11 @@ namespace curve_editor {
 			auto curve = global::editor.p_current_curve();
 			if (curve) {
 				curve->clear();
-				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateControl);
+				if (p_webview_) {
+					// TODO: 応急処置
+					p_webview_->send_command(MessageCommand::UpdateControl);
+					p_webview_->send_command(MessageCommand::UpdateEditor);
+				}
 			}
 		}
 	}
@@ -195,13 +199,13 @@ namespace curve_editor {
 	void MessageHandler::button_others() {
 		std::vector<MenuItem> menu_items = {
 			MenuItem{
-				global::string_table[StringId::MenuOthersWindowLayout],
+				global::string_table[StringId::MenuOthersPanelLayout],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				nullptr,
 				{
 					MenuItem{
-						global::string_table[StringId::MenuOthersWindowLayoutVertical],
+						global::string_table[StringId::MenuOthersPanelLayoutVertical],
 						MenuItem::Type::RadioCheck,
 						global::config.get_layout_mode() == LayoutMode::Vertical ? MenuItem::State::Checked : MenuItem::State::Null,
 						[this]() {
@@ -210,7 +214,7 @@ namespace curve_editor {
 						}
 					},
 					MenuItem{
-						global::string_table[StringId::MenuOthersWindowLayoutHorizontal],
+						global::string_table[StringId::MenuOthersPanelLayoutHorizontal],
 						MenuItem::Type::RadioCheck,
 						global::config.get_layout_mode() == LayoutMode::Horizontal ? MenuItem::State::Checked : MenuItem::State::Null,
 						[this]() {
@@ -227,7 +231,7 @@ namespace curve_editor {
 				nullptr,
 				{
 					MenuItem{
-						global::string_table[StringId::MenuOthersExtensionInstall],
+						global::string_table[StringId::MenuOthersExtensionManage],
 						MenuItem::Type::String,
 						MenuItem::State::Disabled,
 						[this]() {
@@ -237,12 +241,12 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuOthersReloadWindow],
+				global::string_table[StringId::MenuOthersReloadUI],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this]() { if (p_webview_) p_webview_->reload(); }
 			},
-			MenuItem{"", MenuItem::Type::Separator},
+			MenuItem{L"", MenuItem::Type::Separator},
 			MenuItem{
 				global::string_table[StringId::MenuOthersPreferences],
 				MenuItem::Type::String,
@@ -252,13 +256,13 @@ namespace curve_editor {
 					dialog.show(hwnd_);
 				}
 			},
-			MenuItem{"", MenuItem::Type::Separator},
+			MenuItem{L"", MenuItem::Type::Separator},
 			MenuItem{
 				global::string_table[StringId::MenuOthersHelp],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this]() {
-					::ShellExecuteA(nullptr, "open", std::format("{}/wiki", global::PLUGIN_GITHUB_URL).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+					::ShellExecuteW(nullptr, L"open", std::format(L"{}/wiki", global::PLUGIN_GITHUB_URL).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 				}
 			},
 			MenuItem{
@@ -274,7 +278,7 @@ namespace curve_editor {
 		if (global::update_checker.is_update_available()) {
 			std::vector<MenuItem> menu_items_update = {
 				MenuItem{
-					global::string_table[StringId::MenuOthersUpdateAvailable],
+					global::string_table[StringId::MenuOthersNotificationUpdateAvailable],
 					MenuItem::Type::String,
 					MenuItem::State::Null,
 					[this]() {
@@ -282,7 +286,7 @@ namespace curve_editor {
 						dialog.show(hwnd_);
 					}
 				},
-				MenuItem{"", MenuItem::Type::Separator}
+				MenuItem{L"", MenuItem::Type::Separator}
 			};
 			menu_items.insert(menu_items.begin(), menu_items_update.begin(), menu_items_update.end());
 		}
@@ -309,10 +313,10 @@ namespace curve_editor {
 			hwnd_,
 			global::string_table[StringId::PromptCurveParam],
 			global::string_table[StringId::CaptionCurveParam],
-			[this, curve](HWND hwnd, const std::string& text) -> bool {
+			[this, curve](HWND hwnd, const std::wstring& text) -> bool {
 				std::vector<std::string> params_str;
 				std::vector<double> params;
-				boost::algorithm::split(params_str, text, boost::is_any_of(","));
+				boost::algorithm::split(params_str, ::wide_to_sjis(text), boost::is_any_of(","));
 				for (const auto& param_str : params_str) {
 					try {
 						params.emplace_back(std::stod(param_str));
@@ -333,7 +337,7 @@ namespace curve_editor {
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
 				return true;
 			},
-			curve->create_params_str(4).c_str()
+			::sjis_to_wide(curve->create_params_str(4).c_str())
 		);
 	}
 
@@ -348,8 +352,8 @@ namespace curve_editor {
 		auto curve = global::id_manager.get_curve<GraphCurve>(curve_id);
 
 		ContextMenu{
-			//MenuItem{global::string_table[StringId::MenuGraphAddAnchor]},
-			MenuItem{global::string_table[StringId::MenuGraphReverseCurve],
+			//MenuItem{global::string_table[StringId::MenuEditorCurveAddAnchor]},
+			MenuItem{global::string_table[StringId::MenuEditorCurveReverse],
 			MenuItem::Type::String,
 			(curve and curve->is_locked()) ? MenuItem::State::Disabled : MenuItem::State::Null,
 			[curve, this]() {
@@ -358,7 +362,7 @@ namespace curve_editor {
 					if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
 				}
 			}},
-			MenuItem{global::string_table[StringId::MenuGraphModifier],
+			MenuItem{global::string_table[StringId::MenuEditorCurveModifier],
 			MenuItem::Type::String,
 			(curve and curve->is_locked()) ? MenuItem::State::Disabled : MenuItem::State::Null,
 			[curve_id, this]() {
@@ -366,7 +370,7 @@ namespace curve_editor {
 				dialog.show(hwnd_, static_cast<LPARAM>(curve_id));
 			}},
 			MenuItem{
-				global::string_table[StringId::MenuGraphCopyCurve],
+				global::string_table[StringId::MenuEditorCurveCopy],
 				MenuItem::Type::String,
 				mode == EditMode::Normal ? MenuItem::State::Null : MenuItem::State::Disabled,
 				[curve_id]() {
@@ -377,7 +381,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuGraphPasteCurve],
+				global::string_table[StringId::MenuEditorCurvePaste],
 				MenuItem::Type::String,
 				(
 					mode == EditMode::Normal
@@ -393,9 +397,9 @@ namespace curve_editor {
 					}
 				}
 			},
-			MenuItem{"", MenuItem::Type::Separator},
+			MenuItem{L"", MenuItem::Type::Separator},
 			MenuItem{
-				global::string_table[StringId::MenuGraphAlignHandle],
+				global::string_table[StringId::MenuEditorCurveAlignHandle],
 				MenuItem::Type::String,
 				global::config.get_align_handle() ? MenuItem::State::Checked : MenuItem::State::Null,
 				[]() {
@@ -403,7 +407,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuGraphShowXLabel],
+				global::string_table[StringId::MenuEditorCurveShowScaleX],
 				MenuItem::Type::String,
 				global::config.get_show_x_label() ? MenuItem::State::Checked : MenuItem::State::Null,
 				[this]() {
@@ -412,7 +416,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuGraphShowYLabel],
+				global::string_table[StringId::MenuEditorCurveShowScaleY],
 				MenuItem::Type::String,
 				global::config.get_show_y_label() ? MenuItem::State::Checked : MenuItem::State::Null,
 				[this]() {
@@ -421,7 +425,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuGraphShowHandle],
+				global::string_table[StringId::MenuEditorCurveShowHandle],
 				MenuItem::Type::String,
 				global::config.get_show_handle() ? MenuItem::State::Checked : MenuItem::State::Null,
 				[this]() {
@@ -430,7 +434,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuGraphShowVelocityGraph],
+				global::string_table[StringId::MenuEditorCurveShowVelocityGraph],
 				MenuItem::Type::String,
 				global::config.get_show_velocity_graph() ? MenuItem::State::Checked : MenuItem::State::Null,
 				[this]() {
@@ -458,13 +462,13 @@ namespace curve_editor {
 
 		ContextMenu{
 			MenuItem{
-				global::string_table[StringId::MenuCurveSegmentType],
+				global::string_table[StringId::MenuEditorSegmentType],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				nullptr,
 				{
 					MenuItem{
-						global::string_table[StringId::LabelCurveSegmentTypeLinear],
+						global::string_table[StringId::CurveTypeLinear],
 						MenuItem::Type::RadioCheck,
 						segment->get_name() == global::CURVE_NAME_LINEAR ? MenuItem::State::Checked : MenuItem::State::Null,
 						[this, curve, segment_id]() {
@@ -473,7 +477,7 @@ namespace curve_editor {
 						}
 					},
 					MenuItem{
-						global::string_table[StringId::LabelEditModeBezier],
+						global::string_table[StringId::CurveTypeBezier],
 						MenuItem::Type::RadioCheck,
 						segment->get_name() == global::CURVE_NAME_BEZIER ? MenuItem::State::Checked : MenuItem::State::Null,
 						[this, curve, segment_id]() {
@@ -482,7 +486,7 @@ namespace curve_editor {
 						}
 					},
 					MenuItem{
-						global::string_table[StringId::LabelEditModeElastic],
+						global::string_table[StringId::CurveTypeElastic],
 						MenuItem::Type::RadioCheck,
 						segment->get_name() == global::CURVE_NAME_ELASTIC ? MenuItem::State::Checked : MenuItem::State::Null,
 						[this, curve, segment_id]() {
@@ -491,7 +495,7 @@ namespace curve_editor {
 						}
 					},
 					MenuItem{
-						global::string_table[StringId::LabelEditModeBounce],
+						global::string_table[StringId::CurveTypeBounce],
 						MenuItem::Type::RadioCheck,
 						segment->get_name() == global::CURVE_NAME_BOUNCE ? MenuItem::State::Checked : MenuItem::State::Null,
 						[this, curve, segment_id]() {
@@ -502,7 +506,7 @@ namespace curve_editor {
 				},
 			},
 			MenuItem{
-				global::string_table[StringId::MenuCurveSegmentReverse],
+				global::string_table[StringId::MenuEditorSegmentReverse],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this, curve, segment_id]() {
@@ -511,7 +515,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuCurveSegmentModifier],
+				global::string_table[StringId::MenuEditorSegmentModifier],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this, segment_id]() {
@@ -548,7 +552,7 @@ namespace curve_editor {
 
 		ContextMenu{
 			MenuItem{
-				global::string_table[StringId::MenuBezierHandleRoot],
+				global::string_table[StringId::MenuEditorHandleBezierRoot],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this, curve, handle_type]() {
@@ -562,7 +566,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuBezierHandleAdjustAngle],
+				global::string_table[StringId::MenuEditorHandleBezierMatchAngle],
 				MenuItem::Type::String,
 				has_adjacent ? MenuItem::State::Null : MenuItem::State::Disabled,
 				[this, id, parent_curve, handle_type, scale_x, scale_y]() {
@@ -591,9 +595,9 @@ namespace curve_editor {
 				[this, curve_id]() {
 					util::input_box(
 						hwnd_,
-						global::string_table[StringId::PromptRenamePreset],
-						global::string_table[StringId::CaptionRenamePreset],
-						[this, curve_id](HWND hwnd, const std::string& text) -> bool {
+						global::string_table[StringId::PromptPresetName],
+						global::string_table[StringId::CaptionPresetRename],
+						[this, curve_id](HWND hwnd, const std::wstring& text) -> bool {
 							if (text.empty()) {
 								util::message_box(global::string_table[StringId::ErrorInvalidInput], hwnd, util::MessageBoxIcon::Error);
 								return false;
@@ -637,7 +641,7 @@ namespace curve_editor {
 	void MessageHandler::context_menu_idx() {
 		ContextMenu{
 			MenuItem{
-				global::string_table[StringId::MenuIdxJumpToFirst],
+				global::string_table[StringId::MenuIDJumpToFirst],
 				MenuItem::Type::String,
 				global::editor.is_idx_first() ? MenuItem::State::Disabled : MenuItem::State::Null,
 				[this]() {
@@ -646,7 +650,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuIdxJumpToLast],
+				global::string_table[StringId::MenuIDJumpToLast],
 				MenuItem::Type::String,
 				global::editor.is_idx_last() ? MenuItem::State::Disabled : MenuItem::State::Null,
 				[this]() {
@@ -654,9 +658,9 @@ namespace curve_editor {
 					if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 				}
 			},
-			MenuItem{"", MenuItem::Type::Separator},
+			MenuItem{L"", MenuItem::Type::Separator},
 			MenuItem{
-				global::string_table[StringId::MenuIdxDelete],
+				global::string_table[StringId::MenuIDDelete],
 				MenuItem::Type::String,
 				global::editor.is_idx_last() and !global::editor.is_idx_first() ? MenuItem::State::Null : MenuItem::State::Disabled,
 				[this]() {
@@ -677,7 +681,7 @@ namespace curve_editor {
 				}
 			},
 			MenuItem{
-				global::string_table[StringId::MenuIdxDeleteAll],
+				global::string_table[StringId::MenuIDDeleteAll],
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this]() {
@@ -713,9 +717,9 @@ namespace curve_editor {
 				[this]() {
 					util::input_box(
 						hwnd_,
-						global::string_table[StringId::PromptCreateCollection],
-						global::string_table[StringId::CaptionCreateCollection],
-						[this](HWND hwnd, const std::string& text) -> bool {
+						global::string_table[StringId::PromptCollectionName],
+						global::string_table[StringId::CaptionCollectionCreate],
+						[this](HWND hwnd, const std::wstring& text) -> bool {
 							if (text.empty()) {
 								util::message_box(global::string_table[StringId::ErrorInvalidInput], hwnd, util::MessageBoxIcon::Error);
 								return false;
@@ -745,16 +749,15 @@ namespace curve_editor {
 								::CoUninitialize();
 								return;
 							}
-							std::wstring filter_name = ::sjis_to_wide(global::string_table[StringId::WordCollectionFile]);
 							std::wstring filter_spec = std::format(L"*.{0}", EXT_COLLECTION);
 							COMDLG_FILTERSPEC filter = {
-								.pszName = filter_name.c_str(),
+								.pszName = global::string_table[StringId::WordCollectionFile],
 								.pszSpec = filter_spec.c_str()
 							};
 							pfd->SetOptions(FOS_FILEMUSTEXIST);
 							pfd->SetFileTypes(1, &filter);
 							pfd->SetFileTypeIndex(1);
-							pfd->SetTitle(::sjis_to_wide(global::string_table[StringId::CaptionImportCollection]).c_str());
+							pfd->SetTitle(global::string_table[StringId::CaptionCollectionImport]);
 							hr = pfd->Show(hwnd_);
 							if (SUCCEEDED(hr)) {
 								IShellItem* psi;
@@ -801,9 +804,9 @@ namespace curve_editor {
 				[this]() {
 					util::input_box(
 						hwnd_,
-						global::string_table[StringId::PromptRenameCollection],
-						global::string_table[StringId::CaptionRenameCollection],
-						[this](HWND hwnd, const std::string& text) -> bool {
+						global::string_table[StringId::PromptCollectionName],
+						global::string_table[StringId::CaptionCollectionRename],
+						[this](HWND hwnd, const std::wstring& text) -> bool {
 							if (text.empty()) {
 								util::message_box(global::string_table[StringId::ErrorInvalidInput], hwnd, util::MessageBoxIcon::Error);
 								return false;
@@ -850,21 +853,20 @@ namespace curve_editor {
 						::CoUninitialize();
 						return;
 					}
-					std::wstring filter_name = ::sjis_to_wide(global::string_table[StringId::WordCollectionFile]);
 					std::wstring filter_spec = std::format(L"*.{0}", EXT_COLLECTION);
 					COMDLG_FILTERSPEC filter = {
-						.pszName = filter_name.c_str(),
+						.pszName = global::string_table[StringId::WordCollectionFile],
 						.pszSpec = filter_spec.c_str()
 					};
 					pfd->SetOptions(FOS_OVERWRITEPROMPT);
 					pfd->SetDefaultExtension(EXT_COLLECTION);
 					pfd->SetFileTypes(1, &filter);
 					pfd->SetFileTypeIndex(1);
-					pfd->SetTitle(::sjis_to_wide(global::string_table[StringId::CaptionExportCollection]).c_str());
+					pfd->SetTitle(global::string_table[StringId::CaptionCollectionExport]);
 					pfd->QueryInterface(IID_PPV_ARGS(&pfc));
 					if (pfc) {
-						pfc->AddCheckButton(0, ::sjis_to_wide(global::string_table[StringId::LabelCollectionExportOmitDate]).c_str(), FALSE);
-						pfc->AddCheckButton(1, ::sjis_to_wide(global::string_table[StringId::LabelCollectionExportSetIndent]).c_str(), TRUE);
+						pfc->AddCheckButton(0, global::string_table[StringId::LabelCollectionOmitDate], FALSE);
+						pfc->AddCheckButton(1, global::string_table[StringId::LabelCollectionSetIndent], TRUE);
 					}
 					hr = pfd->Show(hwnd_);
 					if (SUCCEEDED(hr)) {
@@ -914,7 +916,7 @@ namespace curve_editor {
 	void MessageHandler::select_curve_ok(const nlohmann::json& options) {
 		auto mode = options.at("mode").get<EditMode>();
 		auto param = options.at("param").get<int32_t>();
-		std::pair<std::string, int> ret = std::make_pair(global::editor.get_curve(mode)->get_name(), param);
+		std::pair<std::string, int> ret = std::make_pair(std::string(global::editor.get_curve(mode)->get_name()), param);
 		::SendMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectCurveOk, std::bit_cast<LPARAM>(&ret));
 	}
 
@@ -949,7 +951,7 @@ namespace curve_editor {
 		auto curve_numeric = global::id_manager.get_curve<NumericGraphCurve>(curve_id);
 		if (curve_numeric) {
 			if (global::config.get_auto_copy()) {
-				auto code = std::to_string(curve_numeric->encode());
+				auto code = std::to_wstring(curve_numeric->encode());
 				if (!util::copy_to_clipboard(hwnd_, code.c_str()) and global::config.get_show_popup()) {
 					util::message_box(global::string_table[StringId::ErrorCodeCopyFailed], hwnd_, util::MessageBoxIcon::Error);
 				}

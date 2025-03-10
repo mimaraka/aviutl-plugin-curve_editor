@@ -42,8 +42,8 @@ namespace curve_editor {
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Bounce; }
-		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_BOUNCE; }
-		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeBounce]; }
+		[[nodiscard]] constexpr const std::string_view& get_name() const noexcept override { return global::CURVE_NAME_BOUNCE; }
+		[[nodiscard]] std::wstring_view get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::CurveTypeBounce]; }
 
 		// カーブの値を生成
 		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
