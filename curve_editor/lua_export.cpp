@@ -171,7 +171,7 @@ namespace curve_editor {
 
 
 	int get_edit_mode(::lua_State* L) {
-		lua_pushstring(L, global::config.get_edit_mode_dispname());
+		lua_pushstring(L, ::wide_to_utf8(global::config.get_edit_mode_dispname().data()).c_str());
 		return 1;
 	}
 
@@ -216,10 +216,10 @@ namespace curve_editor {
 
 			::MoveWindow(hwnd_edit, tmp.x, tmp.y, edit_width - BUTTON_WIDTH, edit_height, TRUE);
 
-			hwnd_button = ::CreateWindowExA(
+			hwnd_button = ::CreateWindowExW(
 				NULL,
-				"BUTTON",
-				"選択",
+				L"BUTTON",
+				global::string_table[global::StringTable::StringId::WordSelect],
 				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 				tmp.x + edit_width - BUTTON_WIDTH,
 				tmp.y,
@@ -246,6 +246,6 @@ extern "C" __declspec(dllexport) int luaopen_curve_editor(::lua_State* L) {
 		{ nullptr, nullptr }
 	};
 
-	::luaL_register(L, curve_editor::global::PLUGIN_NAME, functions);
+	::luaL_register(L, curve_editor::global::PLUGIN_NAME.data(), functions);
 	return 1;
 }

@@ -25,12 +25,15 @@ namespace curve_editor {
 		// コピー代入演算子
 		ValueCurve& operator=(const ValueCurve& curve) noexcept;
 
+		// 等価演算子
+		[[nodiscard]] bool operator==(const ValueCurve& curve) const noexcept;
+
 		[[nodiscard]] std::unique_ptr<GraphCurve> clone_graph() const noexcept override { return std::make_unique<ValueCurve>(*this); }
 		[[nodiscard]] std::unique_ptr<Curve> clone() const noexcept override { return clone_graph(); }
 
 		[[nodiscard]] constexpr EditMode get_type() const noexcept override { return EditMode::Value; }
-		[[nodiscard]] constexpr std::string get_name() const noexcept override { return global::CURVE_NAME_VALUE; }
-		[[nodiscard]] std::string get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::LabelEditModeValue]; }
+		[[nodiscard]] constexpr const std::string_view& get_name() const noexcept override { return global::CURVE_NAME_VALUE; }
+		[[nodiscard]] std::wstring_view get_disp_name() const noexcept override { return global::string_table[global::StringTable::StringId::CurveTypeValue]; }
 
 		[[nodiscard]] double curve_function(double progress, double start, double end) const noexcept override;
 		void clear() noexcept override;

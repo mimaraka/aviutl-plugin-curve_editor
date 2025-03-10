@@ -10,7 +10,7 @@ namespace curve_editor {
 		double frequency,
 		double phase
 	) noexcept :
-		Modifier{ global::string_table[global::StringTable::StringId::LabelModifierSquareWave] },
+		Modifier{ global::string_table[global::StringTable::StringId::ModifierTypeSquareWave] },
 		amplitude_{ amplitude },
 		frequency_{ frequency },
 		phase_{ phase }

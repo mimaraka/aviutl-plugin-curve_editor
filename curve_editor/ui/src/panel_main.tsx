@@ -2,7 +2,7 @@ import React from 'react';
 import PresetPanel from './preset';
 import Toolbar from './toolbar';
 import EditorPanel from './panel_editor';
-import { config, editor } from './host_object';
+import { config, editor } from './interface';
 import './style/panel_main.scss';
 
 
@@ -36,11 +36,10 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     const [applyButtonHeight, setApplyButtonHeight] = React.useState(config.applyButtonHeight - 8);
     const [idx, setIdx] = React.useState(0);
     const ref = React.useRef<HTMLDivElement | null>(null);
-    const separatorPosRef = React.useRef<number>(separatorPos);
     const [applyModeOptions, setApplyModeOptions] = React.useState([] as React.JSX.Element[]);
-
+    const separatorPosRef = React.useRef<number>(separatorPos);
     const toolbarHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--menu-row-height'));
-    const separatorHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--separator-height'));
+    const separatorThickness = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--separator-height'));
 
     const changeEditMode = (editMode: number) => {
         setEditMode(editMode);
@@ -219,10 +218,10 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
     // ドラッグ中のイベントハンドラ
     const handleMouseMove = (e: MouseEvent) => {
         if (config.layoutMode == 1) {
-            separatorPosRef.current = Math.max(Math.min(e.clientX / width, 1), 0);
+            separatorPosRef.current = Math.max(Math.min((e.clientX - separatorThickness * 0.5) / (width - separatorThickness), 1), 0);
         } else {
-            const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorHeight;
-            const tmp = (e.clientY - toolbarHeight * 2 - applyButtonHeight - separatorHeight * 0.5) / editorPresetHeight;
+            const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorThickness;
+            const tmp = (e.clientY - toolbarHeight * 2 - applyButtonHeight - separatorThickness * 0.5) / editorPresetHeight;
             separatorPosRef.current = Math.max(Math.min(tmp, 1), 0);
         }
         setSeparatorPos(separatorPosRef.current);
@@ -239,7 +238,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
         setApplyModeOptions(createApplyModeOptions());
     }
 
-    const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorHeight;
+    const editorPresetHeight = height - toolbarHeight * 2 - applyButtonHeight - separatorThickness;
     const pointerEvents = isSeparatorDragging ? 'none' : 'auto';
     const userSelect = isSeparatorDragging ? 'none' : 'auto';
 
@@ -248,7 +247,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
             <div
                 className='panel-upside'
                 style={{
-                    width: layoutMode ? width * separatorPos - separatorHeight * 0.5 : '100%',
+                    width: layoutMode ? (width - separatorThickness) * separatorPos : '100%',
                     height: layoutMode ? '100%' : `${toolbarHeight * 2 + editorPresetHeight * separatorPos + applyButtonHeight}px`
                 }}
             >
@@ -271,8 +270,8 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                     <select className='dropdown' name='apply-mode' id='apply-mode' value={config.applyMode} onChange={onSelectChange}>
                         {applyModeOptions}
                     </select>
-                        <button className='button-apply' id='button-apply' title={`カーブを適用 (${config.getApplyModeName(config.applyMode)})`} onMouseDown={onApplyButtonMouseDown} onKeyDown={onApplyButtonKeyDown}>
-                        {isDragging? 'トラックバーにドラッグ&ドロップして適用' : '適用'}
+                        <button className='button-apply' id='button-apply' title={`${window.stringTable['TooltipButtonApply']} (${config.getApplyModeName(config.applyMode)})`} onMouseDown={onApplyButtonMouseDown} onKeyDown={onApplyButtonKeyDown}>
+                        {isDragging? window.stringTable['LabelApplyDnD'] : window.stringTable['WordApply']}
                     </button>
                 </div>
             </div>
@@ -290,7 +289,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                 </div>
             </div>
             <PresetPanel style={{
-                width: layoutMode ? width * (1 - separatorPos) - separatorHeight * 0.5 : '100%',
+                width: layoutMode ? (width - separatorThickness) * (1 - separatorPos) : '100%',
                 height: layoutMode ? '100%' : `${editorPresetHeight * (1 - separatorPos)}px`,
                 pointerEvents: pointerEvents,
                 userSelect: userSelect

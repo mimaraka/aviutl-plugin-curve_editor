@@ -29,7 +29,7 @@ namespace curve_editor {
 			return std::make_unique<DiscretizationModifier>(*this);
 		}
 
-		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_DISCRETIZATION; }
+		constexpr const std::string_view& get_type() const noexcept override { return global::MODIFIER_NAME_DISCRETIZATION; }
 
 		auto sampling_resolution() const noexcept { return sampling_resolution_; }
 		void set_sampling_resolution(uint32_t sampling_resolution) noexcept { sampling_resolution_ = sampling_resolution; }

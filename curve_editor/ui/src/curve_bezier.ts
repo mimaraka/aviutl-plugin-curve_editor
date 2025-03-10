@@ -1,5 +1,5 @@
 import NumericCurve from './curve_numeric';
-import { editor } from './host_object';
+import { editor } from './interface';
 
 
 class BezierCurve extends NumericCurve {

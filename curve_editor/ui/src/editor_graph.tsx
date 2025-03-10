@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
-import { config, editor } from './host_object';
+import { config, editor } from './interface';
 import NormalCurve from './curve_normal';
 import BezierCurve from './curve_bezier';
 import ElasticCurve from './curve_elastic';

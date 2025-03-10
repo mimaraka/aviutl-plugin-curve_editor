@@ -44,7 +44,7 @@ namespace curve_editor {
 			return std::make_unique<NoiseModifier>(*this);
 		}
 
-		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_NOISE; }
+		constexpr const std::string_view& get_type() const noexcept override { return global::MODIFIER_NAME_NOISE; }
 
 		auto seed() const noexcept { return seed_; }
 		void set_seed(int32_t seed) noexcept { seed_ = seed; }

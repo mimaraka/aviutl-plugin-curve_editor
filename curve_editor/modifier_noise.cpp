@@ -13,7 +13,7 @@ namespace curve_editor {
 		int32_t octaves,
 		double decay_hardness
 	) noexcept
-		: Modifier{ global::string_table[global::StringTable::StringId::LabelModifierNoise] },
+		: Modifier{ global::string_table[global::StringTable::StringId::ModifierTypeNoise] },
 		seed_{ seed },
 		amplitude_{ amplitude },
 		frequency_{ frequency },

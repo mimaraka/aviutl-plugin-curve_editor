@@ -1,6 +1,11 @@
 declare global {
     interface Window {
+        stringTable: StringTable;
         chrome: Chrome;
+    }
+
+    interface StringTable {
+        [key: string]: string
     }
 
     interface Chrome {

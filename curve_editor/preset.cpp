@@ -16,7 +16,7 @@
 namespace curve_editor {
 	nlohmann::json Preset::create_json(bool omit_date) const noexcept {
 		nlohmann::json data;
-		data["name"] = ::sjis_to_utf8(name_);
+		data["name"] = ::wide_to_utf8(name_);
 		if (!omit_date and date_.has_value()) {
 			data["date"] = date_.value();
 		}
@@ -26,7 +26,7 @@ namespace curve_editor {
 
 	bool Preset::load_json(const nlohmann::json& data) noexcept {
 		try {
-			name_ = ::utf8_to_sjis(data.at("name").get<std::string>());
+			name_ = ::utf8_to_wide(data.at("name").get<std::string>());
 			if (data.contains("date")) {
 				date_ = data.at("date").get<std::time_t>();
 			}
@@ -59,6 +59,7 @@ namespace curve_editor {
 		catch (const nlohmann::json::exception&) {
 			return false;
 		}
+		p_curve_->set_locked(true);
 		return true;
 	}
 } // namespace curve_editor

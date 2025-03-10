@@ -8,6 +8,7 @@
 
 namespace curve_editor {
 	enum class MessageCommand {
+		LoadStringTable,
 		InitComponent,
 		ButtonCopy,
 		ButtonCurveCode,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
+#include <strconv2.h>
 #include <Windows.h>
 
 
@@ -26,12 +27,12 @@ namespace curve_editor::util {
 	};
 
 	inline int message_box(
-		const char* text,
+		const std::wstring_view& text,
 		HWND hwnd = NULL,
 		MessageBoxIcon icon_type = MessageBoxIcon::Information,
 		MessageBoxButton button_type = MessageBoxButton::Ok,
-		const char* caption = global::PLUGIN_DISPLAY_NAME
+		const std::wstring_view& caption = global::PLUGIN_DISPLAY_NAME
 	) noexcept {
-		return ::MessageBoxA(hwnd, text, caption, (UINT)icon_type | (UINT)button_type);
+		return ::MessageBoxW(hwnd, text.data(), caption.data(), (UINT)icon_type | (UINT)button_type);
 	}
 } // namespace curve_editor::util

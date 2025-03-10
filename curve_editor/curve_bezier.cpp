@@ -38,6 +38,13 @@ namespace curve_editor {
 		return *this;
 	}
 
+	// 等価演算子
+	bool BezierCurve::operator==(const BezierCurve& curve) const noexcept {
+		return NumericGraphCurve::operator==(curve) and
+			handle_left_.pos_rel() == curve.handle_left_.pos_rel() and
+			handle_right_.pos_rel() == curve.handle_right_.pos_rel();
+	}
+
 	// カーブの値を取得
 	double BezierCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp(progress, anchor_start().x, anchor_end().x);

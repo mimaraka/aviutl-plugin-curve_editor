@@ -1,6 +1,6 @@
 import React from 'react';
 import CurveThumbnail from './curve_thumbnail';
-import { editor, preset } from './host_object';
+import { editor, preset } from './interface';
 import './style/preset_item.scss';
 
 
@@ -19,7 +19,7 @@ const PresetItem: React.FC<PresetItemProps> = React.memo((props: PresetItemProps
         const name = props.name;
         const typeName = editor.getCurveDispName(props.curveId);
         const collectionName = preset.getCollectionName(props.collectionId);
-        let result = `${name}\nタイプ: ${typeName}\nコレクション: ${collectionName}`;
+        let result = `${name}\n${window.stringTable['WordType']}: ${typeName}\n${window.stringTable['WordCollection']}: ${collectionName}`;
         if (props.date) {
             const date = new Date(props.date * 1000);
             result += `\n作成日時: ${date.toLocaleString()}`;
@@ -41,13 +41,10 @@ const PresetItem: React.FC<PresetItemProps> = React.memo((props: PresetItemProps
 
     const onMouseLeave = (event: React.MouseEvent) => {
         if (isDragging) {
-            const type = editor.getCurveName(props.curveId);
-            if (type === 'bezier' || type === 'elastic' || type === 'bounce') {
-                window.chrome.webview.postMessage({
+            window.chrome.webview.postMessage({
                 command: 'OnDndStart',
                 curveId: props.curveId
             });
-            }
         }
     }
 

@@ -4,6 +4,7 @@
 #include "string_table.hpp"
 #include <CommCtrl.h>
 #include <format>
+#include <strconv2.h>
 
 
 
@@ -14,10 +15,10 @@ namespace curve_editor {
 	void AboutDialog::init_controls(HWND hwnd) noexcept {
 		using StringId = global::StringTable::StringId;
 		hwnd_static_info_ = ::GetDlgItem(hwnd, IDC_STATIC_PLUGIN_INFO);
-		::SetWindowTextA(hwnd_static_info_, std::format(
-			"{} : {}\n\nDeveloped by {}\nTranslated by {}",
+		::SetWindowTextW(hwnd_static_info_, std::format(
+			L"{} : {}\n\nDeveloped by {}\nTranslated by {}",
 			global::string_table[StringId::WordVersion],
-			global::PLUGIN_VERSION.str(),
+			::ansi_to_wide(global::PLUGIN_VERSION.str()),
 			global::PLUGIN_DEVELOPER,
 			global::PLUGIN_TRANSLATOR
 		).c_str());

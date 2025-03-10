@@ -14,22 +14,22 @@ namespace curve_editor {
 
 		categories_.emplace_back(CategoryInfo{
 			.id = ID_CATEGORY_GENERAL,
-			.name =global::string_table[StringId::LabelPreferenceGeneral],
+			.name =global::string_table[StringId::PreferencesCategoryGeneral],
 			.p_dialog = &dialog_general_ 
 		});
 		categories_.emplace_back(CategoryInfo{
 			.id = ID_CATEGORY_APPEARANCE,
-			.name = global::string_table[StringId::LabelPreferenceAppearance],
+			.name = global::string_table[StringId::PreferencesCategoryAppearance],
 			.p_dialog = &dialog_appearance_
 		});
 		categories_.emplace_back(CategoryInfo{
 			.id = ID_CATEGORY_BEHAVIOR,
-			.name = global::string_table[StringId::LabelPreferenceBehavior],
+			.name = global::string_table[StringId::PreferencesCategoryBehavior],
 			.p_dialog = &dialog_behavior_
 		});
 		categories_.emplace_back(CategoryInfo{
 			.id = ID_CATEGORY_EDITING,
-			.name = global::string_table[StringId::LabelPreferenceEditing],
+			.name = global::string_table[StringId::PreferencesCategoryEditing],
 			.p_dialog = &dialog_editing_
 		});
 	}
@@ -39,6 +39,8 @@ namespace curve_editor {
 
 
 	void PrefDialog::init_controls(HWND hwnd) noexcept {
+		using StringId = global::StringTable::StringId;
+
 		hwnd_list_categories_ = ::GetDlgItem(hwnd, IDC_LIST_CATEGORY);
 		RECT rect_child = { 100, 7, 400, 207 };
 		::MapDialogRect(hwnd, &rect_child);
@@ -46,7 +48,7 @@ namespace curve_editor {
 		::SendMessageA(hwnd_list_categories_, WM_SETREDRAW, FALSE, NULL);
 		for (auto& category : categories_) {
 			// リストに項目を追加
-			::SendMessageA(hwnd_list_categories_, LB_ADDSTRING, NULL, (LPARAM)category.name);
+			::SendMessageW(hwnd_list_categories_, LB_ADDSTRING, NULL, (LPARAM)category.name.data());
 			// 項目へのIDの紐づけ
 			::SendMessageA(
 				hwnd_list_categories_,
@@ -67,6 +69,11 @@ namespace curve_editor {
 		}
 		::SendMessageA(hwnd_list_categories_, WM_SETREDRAW, TRUE, NULL);
 		::SendMessageA(hwnd_list_categories_, LB_SETCURSEL, 0, NULL);
+
+		::SetDlgItemTextW(hwnd, IDC_BUTTON_APPLY, global::string_table[StringId::WordApply]);
+		::SetDlgItemTextW(hwnd, IDOK, global::string_table[StringId::WordOK]);
+		::SetDlgItemTextW(hwnd, IDCANCEL, global::string_table[StringId::WordCancel]);
+		::SetDlgItemTextW(hwnd, IDC_BUTTON_RESET, global::string_table[StringId::LabelReset]);
 	}
 
 

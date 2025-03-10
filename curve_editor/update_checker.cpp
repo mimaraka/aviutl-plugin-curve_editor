@@ -18,7 +18,7 @@ namespace curve_editor::global {
 		try {
 			auto json = nlohmann::json::parse(json_str);
 			std::string tag_name = json.at("tag_name");
-			release_notes_ = ::utf8_to_sjis(json.at("body").get<std::string>());
+			release_notes_ = ::utf8_to_wide(json.at("body").get<std::string>());
 			return latest_version_.from_str(tag_name);
 		}
 		catch (const std::exception&) {

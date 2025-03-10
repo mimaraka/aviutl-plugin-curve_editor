@@ -40,6 +40,14 @@ namespace curve_editor {
 		return *this;
 	}
 
+	// 等価演算子
+	bool BounceCurve::operator==(const BounceCurve& curve) const noexcept {
+		return NumericGraphCurve::operator==(curve) and
+			cor_ == curve.cor_ and
+			period_ == curve.period_ and
+			reversed_ == curve.reversed_;
+	}
+
 	// カーブの関数
 	double BounceCurve::curve_function(double progress, double start, double end) const noexcept {
 		progress = mkaul::clamp((progress - anchor_start().x) / (anchor_end().x - anchor_start().x), 0., 1.);

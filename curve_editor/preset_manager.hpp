@@ -36,7 +36,7 @@ namespace curve_editor::global {
 		static constexpr auto PRESET_FILE_NAME = "presets.json";
 
 		std::vector<Preset> presets_;
-		std::vector<std::pair<uint32_t, std::string>> collection_info_;
+		std::vector<std::pair<uint32_t, std::wstring>> collection_info_;
 		inline static uint32_t collection_id_counter_ = COLLECTION_ID_ROOT + 1;
 		uint32_t current_collection_id_ = COLLECTION_ID_ALL;
 		SortBy sort_by_ = SortBy::Null;
@@ -49,12 +49,12 @@ namespace curve_editor::global {
 		struct PresetInfo {
 			uint32_t id;
 			uint32_t collection_id;
-			std::string name;
+			std::wstring name;
 			std::optional<std::time_t> date;
 		};
 
 		template<class CurveClass>
-		void create_preset(const CurveClass& curve, const std::string& name) noexcept {
+		void create_preset(const CurveClass& curve, const std::wstring& name) noexcept {
 			auto collection_id = current_collection_id_;
 			if (collection_id == COLLECTION_ID_ALL or collection_id == COLLECTION_ID_DEFAULT) {
 				collection_id = COLLECTION_ID_ROOT;
@@ -64,16 +64,16 @@ namespace curve_editor::global {
 			presets_.emplace_back(std::move(preset));
 		}
 		bool remove_preset(uint32_t id) noexcept;
-		void rename_preset(uint32_t id, const std::string& name) noexcept;
-		std::string get_preset_name(uint32_t id) const noexcept;
+		void rename_preset(uint32_t id, const std::wstring& name) noexcept;
+		std::wstring get_preset_name(uint32_t id) const noexcept;
 		bool is_preset_default(uint32_t id) const noexcept;
 		std::vector<PresetInfo> get_preset_info() const noexcept;
 
-		uint32_t create_collection(const std::string& name, bool change_current_id = true) noexcept;
+		uint32_t create_collection(const std::wstring& name, bool change_current_id = true) noexcept;
 		bool import_collection(const std::filesystem::path& path) noexcept;
 		bool export_collection(uint32_t collection_id, const std::filesystem::path& path, bool omit_date = false, bool set_indent = true) const noexcept;
 		bool remove_collection(uint32_t collection_id) noexcept;
-		bool rename_collection(uint32_t collection_id, const std::string& name) noexcept;
+		bool rename_collection(uint32_t collection_id, const std::wstring& name) noexcept;
 		bool is_collection_custom(uint32_t collection_id) const noexcept {
 			return collection_id != COLLECTION_ID_ALL and collection_id != COLLECTION_ID_DEFAULT and collection_id != COLLECTION_ID_ROOT;
 		}
@@ -81,7 +81,7 @@ namespace curve_editor::global {
 		auto get_current_collection_id() const noexcept { return current_collection_id_; }
 		void set_current_collection_id(uint32_t collection_id) noexcept;
 		const auto& get_collection_info() const noexcept { return collection_info_; }
-		std::string get_collection_name(uint32_t collection_id) const noexcept;
+		std::wstring get_collection_name(uint32_t collection_id) const noexcept;
 
 		auto get_sort_by() const noexcept { return sort_by_; }
 		auto get_sort_order() const noexcept { return sort_order_; }

@@ -40,20 +40,16 @@ namespace curve_editor::global {
 		::GetModuleFileNameA(util::get_hinst(), path_str, MAX_PATH);
 		std::filesystem::path path_plugin{ path_str };
 		dir_plugin_ = path_plugin.parent_path() / global::PLUGIN_NAME;
+
+		load_json();
 	}
 
 	bool Config::set_language(Language language) noexcept {
-		switch (language) {
-		case Language::Automatic:
-		case Language::Japanese:
-		case Language::English:
-		case Language::Korean:
+		if (mkaul::in_range(static_cast<uint32_t>(language), 0u, static_cast<uint32_t>(Language::NumLanguage) - 1u)) {
 			pref_.language = language;
 			return true;
-
-		default:
-			return false;
 		}
+		else return false;
 	}
 
 	bool Config::set_theme(ThemeId theme) noexcept {
@@ -69,43 +65,43 @@ namespace curve_editor::global {
 		}
 	}
 
-	const char* Config::get_edit_mode_dispname(EditMode edit_mode) const noexcept {
+	std::wstring_view Config::get_edit_mode_dispname(EditMode edit_mode) const noexcept {
 		using StringId = StringTable::StringId;
 		switch (edit_mode) {
 		case EditMode::Normal:
-			return string_table[StringId::LabelEditModeNormal];
+			return string_table[StringId::CurveTypeNormal];
 
 		case EditMode::Value:
-			return string_table[StringId::LabelEditModeValue];
+			return string_table[StringId::CurveTypeValue];
 
 		case EditMode::Bezier:
-			return string_table[StringId::LabelEditModeBezier];
+			return string_table[StringId::CurveTypeBezier];
 
 		case EditMode::Elastic:
-			return string_table[StringId::LabelEditModeElastic];
+			return string_table[StringId::CurveTypeElastic];
 
 		case EditMode::Bounce:
-			return string_table[StringId::LabelEditModeBounce];
+			return string_table[StringId::CurveTypeBounce];
 
 		case EditMode::Script:
-			return string_table[StringId::LabelEditModeScript];
+			return string_table[StringId::CurveTypeScript];
 
 		default:
-			return nullptr;
+			return L"";
 		}
 	}
 
-	const char* Config::get_apply_mode_dispname(ApplyMode apply_mode) const noexcept {
+	std::wstring_view Config::get_apply_mode_dispname(ApplyMode apply_mode) const noexcept {
 		using StringId = StringTable::StringId;
 		switch (apply_mode) {
 		case ApplyMode::Normal:
-			return string_table[StringId::LabelApplyModeNormal];
+			return string_table[StringId::ApplyModeNormal];
 		case ApplyMode::IgnoreMidPoint:
-			return string_table[StringId::LabelApplyModeIgnoreMidPoint];
+			return string_table[StringId::ApplyModeIgnoreMidPoint];
 		case ApplyMode::Interpolate:
-			return string_table[StringId::LabelApplyModeInterpolate];
+			return string_table[StringId::ApplyModeInterpolate];
 		default:
-			return nullptr;
+			return L"";
 		}
 	}
 

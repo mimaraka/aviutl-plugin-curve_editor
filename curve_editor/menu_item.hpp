@@ -31,7 +31,7 @@ namespace curve_editor {
 		};
 
 	private:
-		std::string label_;
+		std::wstring label_;
 		Type type_;
 		State state_;
 		std::function<void()> callback_;
@@ -41,7 +41,7 @@ namespace curve_editor {
 
 	public:
 		MenuItem(
-			const std::string& label,
+			const std::wstring& label,
 			Type type = Type::String,
 			State state = State::Null,
 			std::function<void()> callback = nullptr,
@@ -64,8 +64,8 @@ namespace curve_editor {
 		auto type() const noexcept { return type_; }
 		auto state() const noexcept { return state_; }
 		void set_state(State state) noexcept { state_ = state; }
-		void set_label(const std::string& label) noexcept { label_ = label; }
+		void set_label(const std::wstring& label) noexcept { label_ = label; }
 		bool callback(uint32_t id) const noexcept;
-		void get_menu_item_info(MENUITEMINFOA& minfo, uint32_t id) noexcept;
+		void get_menu_item_info(MENUITEMINFOW& minfo, uint32_t id) noexcept;
 	};
 } // namespace curve_editor

@@ -10,7 +10,7 @@
 namespace curve_editor::global {
 	inline class UpdateChecker {
 		bool is_update_available_ = false;
-		std::string release_notes_;
+		std::wstring release_notes_;
 		mkaul::Version latest_version_;
 		std::thread th_;
 

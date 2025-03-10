@@ -120,11 +120,12 @@ namespace curve_editor {
 						BOOL success;
 						args->get_IsSuccess(&success);
 						if (success) {
+							send_command(MessageCommand::LoadStringTable, { {"stringTable", global::string_table.create_json()} });
 							if (after_callback) {
 								after_callback(this);
 							}
 						} else {
-							util::message_box(global::string_table[StringId::ErrorPageLoadFailed], hwnd_, util::MessageBoxIcon::Error);
+							util::message_box(global::string_table[StringId::ErrorUILoadFailed], hwnd_, util::MessageBoxIcon::Error);
 						}
 						return S_OK;
 					}

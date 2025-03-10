@@ -35,6 +35,19 @@ namespace curve_editor {
 		return *this;
 	}
 
+	// 等価演算子
+	bool NormalCurve::operator==(const NormalCurve& curve) const noexcept {
+		if (curve_segments_.size() != curve.curve_segments_.size()) {
+			return false;
+		}
+		for (size_t i = 0; i < curve_segments_.size(); i++) {
+			if (*curve_segments_[i] != *curve.curve_segments_[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	// セグメントのクローン
 	void NormalCurve::clone_segments(const NormalCurve& curve) noexcept {
 		for (const auto& p_curve : curve.curve_segments_) {
@@ -434,16 +447,16 @@ namespace curve_editor {
 			std::vector<std::unique_ptr<GraphCurve>> vec_tmp;
 			for (const auto& segment : data.at("segments")) {
 				std::unique_ptr<GraphCurve> new_curve;
-				if (segment.at("type") == global::CURVE_NAME_BEZIER) {
+				if (segment.at("type") == global::CURVE_NAME_BEZIER.data()) {
 					new_curve = std::make_unique<BezierCurve>();
 				}
-				else if (segment.at("type") == global::CURVE_NAME_LINEAR) {
+				else if (segment.at("type") == global::CURVE_NAME_LINEAR.data()) {
 					new_curve = std::make_unique<LinearCurve>();
 				}
-				else if (segment.at("type") == global::CURVE_NAME_ELASTIC) {
+				else if (segment.at("type") == global::CURVE_NAME_ELASTIC.data()) {
 					new_curve = std::make_unique<ElasticCurve>();
 				}
-				else if (segment.at("type") == global::CURVE_NAME_BOUNCE) {
+				else if (segment.at("type") == global::CURVE_NAME_BOUNCE.data()) {
 					new_curve = std::make_unique<BounceCurve>();
 				}
 				if (!new_curve or !new_curve->load_json(segment)) {

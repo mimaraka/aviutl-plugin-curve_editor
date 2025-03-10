@@ -1,5 +1,5 @@
 import Curve from './curve_base';
-import { editor } from './host_object';
+import { editor } from './interface';
 
 
 class NumericCurve extends Curve {

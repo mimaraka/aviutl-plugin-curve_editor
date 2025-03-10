@@ -11,14 +11,64 @@
 
 
 namespace curve_editor {
+	int32_t DragAndDrop::get_track_param(uint32_t id) noexcept {
+		auto curve_numeric = global::id_manager.get_curve<NumericGraphCurve>(id);
+		if (curve_numeric) {
+			return curve_numeric->encode();
+		}
+		auto curve_normal = global::id_manager.get_curve<NormalCurve>(id);
+		if (curve_normal) {
+			// NormalCurveを探索
+			// IDが一致するCurveが見つかったらそのインデックスを返す
+			for (size_t i = 0u; i < global::editor.editor_graph().size_normal(); i++) {
+				auto p_curve = global::editor.editor_graph().p_curve_normal(i);
+				if (p_curve and p_curve->get_id() == id) {
+					return static_cast<int32_t>(i + 1);
+				}
+			}
+			// 一致するIDが見つからない場合、ロックされた等価なCurveを探す
+			for (size_t i = 0u; i < global::editor.editor_graph().size_normal(); i++) {
+				auto p_curve = global::editor.editor_graph().p_curve_normal(i);
+				if (p_curve->is_locked() and *p_curve == *curve_normal) {
+					return static_cast<int32_t>(i + 1);
+				}
+			}
+			// 等価なCurveが見つからない場合、新しいCurveを追加し、そのインデックスを返す
+			global::editor.editor_graph().append_curve_normal(*curve_normal);
+			return static_cast<int32_t>(global::editor.editor_graph().size_normal());
+		}
+		auto curve_script = global::id_manager.get_curve<ScriptCurve>(id);
+		if (curve_script) {
+			// ScriptCurveを探索
+			// IDが一致するCurveが見つかったらそのインデックスを返す
+			for (size_t i = 0u; i < global::editor.editor_script().size(); i++) {
+				auto p_curve = global::editor.editor_script().p_curve_script(i);
+				if (p_curve and p_curve->get_id() == id) {
+					return static_cast<int32_t>(global::CURVE_ID_MAX + i + 1);
+				}
+			}
+			// 一致するIDが見つからない場合、ロックされた等価なCurveを探す
+			for (size_t i = 0u; i < global::editor.editor_script().size(); i++) {
+				auto p_curve = global::editor.editor_script().p_curve_script(i);
+				if (p_curve->is_locked() and *p_curve == *curve_script) {
+					return static_cast<int32_t>(global::CURVE_ID_MAX + i + 1);
+				}
+			}
+			// 等価なCurveが見つからない場合、新しいCurveを追加し、そのインデックスを返す
+			global::editor.editor_script().append_curve(*curve_script);
+			return static_cast<int32_t>(global::CURVE_ID_MAX + global::editor.editor_script().size());
+		}
+		return 0;
+	}
+
 	int16_t DragAndDrop::get_track_script_idx() noexcept {
-		const std::regex regex_script_name{ std::format(R"(^Type1@{}(\x01.+)?$)", global::PLUGIN_DISPLAY_NAME) };
+		const std::wregex regex_script_name{ std::format(LR"(^Type1@{}(\x01.+)?$)", global::PLUGIN_DISPLAY_NAME) };
 		auto tra_script_names = global::exedit_internal.get<const char*>(0x231488u);
 		int16_t script_idx = 0;
 
 		while (true) {
 			if (!tra_script_names[script_idx]) return -1;
-			if (std::regex_match(tra_script_names[script_idx], regex_script_name)) {
+			if (std::regex_match(::sjis_to_wide(tra_script_names[script_idx]), regex_script_name)) {
 				break;
 			}
 			script_idx++;
@@ -50,15 +100,12 @@ namespace curve_editor {
 		auto p_obj = &obj_array[obj_idx];
 		EditMode mode = EditMode::Normal;
 
-		auto curve = global::id_manager.get_curve<NumericGraphCurve>(curve_id_);
+		auto curve = global::id_manager.get_curve<Curve>(curve_id_);
 		if (curve) {
 			mode = curve->get_type();
-			param = curve->encode();
+			param = get_track_param(curve_id_);
 		}
-		else {
-			mode = global::config.get_edit_mode();
-			param = global::editor.track_param();
-		}
+		else return;
 
 		switch (mode) {
 		case EditMode::Elastic:

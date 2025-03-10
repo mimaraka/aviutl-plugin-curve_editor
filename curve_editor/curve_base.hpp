@@ -48,8 +48,8 @@ namespace curve_editor {
 		[[nodiscard]] auto get_id() const noexcept { return id_; }
 		// TODO: CurveTypeというenumにする
 		[[nodiscard]] constexpr virtual EditMode get_type() const noexcept = 0;
-		[[nodiscard]] constexpr virtual std::string get_name() const noexcept = 0;
-		[[nodiscard]] virtual std::string get_disp_name() const noexcept = 0;
+		[[nodiscard]] constexpr virtual const std::string_view& get_name() const noexcept = 0;
+		[[nodiscard]] virtual std::wstring_view get_disp_name() const noexcept = 0;
 		[[nodiscard]] virtual nlohmann::json create_json() const noexcept;
 		virtual bool load_json(const nlohmann::json& data) noexcept = 0;
 

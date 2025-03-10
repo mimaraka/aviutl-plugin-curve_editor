@@ -1,6 +1,6 @@
 import React from 'react';
 import EditorPanel from './panel_editor';
-import { editor } from './host_object';
+import { editor } from './interface';
 import './style/select_dialog.scss';
 
 
@@ -134,8 +134,8 @@ const SelectDialog: React.FC<SelectDialogProps> = (props: SelectDialogProps) => 
                 style={{ height: `calc(100% - ${buttonHeight - margin}px)` }}
             />
             <div className='okcancel-row'>
-                <button className='okcancel' id='button-ok' onClick={onOkButtonClicked}>OK</button>
-                <button className='okcancel' id='button-cancel' onClick={onCancelButtonClicked}>キャンセル</button>
+                <button className='okcancel' id='button-ok' onClick={onOkButtonClicked}>{window.stringTable['WordOK']}</button>
+                <button className='okcancel' id='button-cancel' onClick={onCancelButtonClicked}>{window.stringTable['WordCancel']}</button>
             </div>
         </div>
     );

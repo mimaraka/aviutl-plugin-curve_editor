@@ -6,6 +6,7 @@
 #include "string_table.hpp"
 #include <Commctrl.h>
 #include <format>
+#include <strconv2.h>
 #include <string_view>
 
 
@@ -35,11 +36,11 @@ namespace curve_editor {
 		hwnd_check_enable_animation_ = ::GetDlgItem(hwnd, IDC_CHECK_ENABLE_ANIMATION);
 
 		for (uint32_t i = 0u; i < (uint32_t)ThemeId::NumThemeId; i++) {
-			::SendMessageA(
+			::SendMessageW(
 				hwnd_combo_theme_,
 				CB_ADDSTRING,
 				NULL,
-				(LPARAM)global::string_table[(StringId)((uint32_t)StringId::LabelThemeNameSystem + i)]
+				(LPARAM)global::string_table[(StringId)((uint32_t)StringId::ThemeSystem + i)]
 			);
 		}
 
@@ -214,23 +215,23 @@ namespace curve_editor {
 			{
 				using namespace std::literals::string_view_literals;
 
-				constexpr const char* TEMPLATE_IMAGE = "*.bmp;*.jpg;*.jpeg;*.png;*.webp;*.jfif;*.gif";
-				std::string str_filter = std::format(
-					"{0} ({1})\0{1}\0"sv,
-					global::string_table[StringId::WordImageFiles],
+				constexpr auto TEMPLATE_IMAGE = L"*.bmp;*.jpg;*.jpeg;*.png;*.webp;*.jfif;*.gif";
+				auto str_filter = std::format(
+					L"{0} ({1})\0{1}\0"sv,
+					global::string_table[StringId::WordImageFile],
 					TEMPLATE_IMAGE
 				);
-				OPENFILENAMEA ofn{
+				OPENFILENAMEW ofn{
 					.lStructSize = sizeof(OPENFILENAMEA),
 					.hwndOwner = hwnd,
 					.lpstrFilter = str_filter.c_str(),
-					.lpstrFile = image_path,
+					.lpstrFile = const_cast<wchar_t*>(::sjis_to_wide(image_path).c_str()),
 					.nMaxFile = MAX_PATH + 1,
-					.lpstrTitle = global::string_table[StringId::LabelSelectBackgroundImage],
+					.lpstrTitle = global::string_table[StringId::CaptionSelectBackgroundImage],
 					.Flags = OFN_FILEMUSTEXIST
 				};
-				if (::GetOpenFileNameA(&ofn)) {
-					::SetWindowTextA(hwnd_edit_bg_image_path_, ofn.lpstrFile);
+				if (::GetOpenFileNameW(&ofn)) {
+					::SetWindowTextW(hwnd_edit_bg_image_path_, ofn.lpstrFile);
 				}
 				return TRUE;
 			}

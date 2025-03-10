@@ -21,9 +21,6 @@ namespace curve_editor {
 	BOOL filter_init(AviUtl::FilterPlugin* fp) {
 		using StringId = global::StringTable::StringId;
 
-		// jsonから設定の読み込み
-		global::config.load_json();
-
 		// アップデートのチェック
 		if (global::config.get_notify_update()) {
 			global::update_checker.check_for_update();

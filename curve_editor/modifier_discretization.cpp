@@ -9,7 +9,7 @@ namespace curve_editor {
 		uint32_t sampling_resolution,
 		uint32_t quantization_resolution
 	) noexcept
-		: Modifier{ global::string_table[global::StringTable::StringId::LabelModifierDiscretization] },
+		: Modifier{ global::string_table[global::StringTable::StringId::ModifierTypeDiscretization] },
 		sampling_resolution_{ sampling_resolution },
 		quantization_resolution_{ quantization_resolution }
 	{}

@@ -18,7 +18,7 @@ namespace curve_editor {
 
 		struct CategoryInfo {
 			int id;
-			const char* name;
+			std::wstring_view name;
 			Dialog* p_dialog;
 			HWND hwnd;
 		};

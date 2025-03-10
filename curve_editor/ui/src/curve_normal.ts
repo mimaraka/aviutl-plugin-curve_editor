@@ -1,5 +1,5 @@
 import Curve from './curve_base';
-import { editor } from './host_object';
+import { editor } from './interface';
 import BezierCurve from './curve_bezier';
 import ElasticCurve from './curve_elastic';
 import BounceCurve from './curve_bounce';

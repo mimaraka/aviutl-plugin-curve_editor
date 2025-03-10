@@ -31,7 +31,7 @@ namespace curve_editor {
 			return std::make_unique<SquareWaveModifier>(*this);
 		}
 
-		constexpr std::string get_type() const noexcept override { return global::MODIFIER_NAME_SQUARE_WAVE; }
+		constexpr const std::string_view& get_type() const noexcept override { return global::MODIFIER_NAME_SQUARE_WAVE; }
 
 		auto amplitude() const noexcept { return amplitude_; }
 		void set_amplitude(double amplitude) noexcept { amplitude_ = amplitude; }

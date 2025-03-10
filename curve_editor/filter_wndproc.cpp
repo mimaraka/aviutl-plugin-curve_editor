@@ -44,9 +44,9 @@ namespace curve_editor {
 			global::webview.set(global::MyWebView2Reference::WebViewType::Main, my_webview);
 			// Alpha版・Beta版の場合はキャプションを変更
 			if (global::PLUGIN_VERSION.is_preview()) {
-				::SetWindowTextA(
+				::SetWindowTextW(
 					hwnd,
-					std::format("{} ({})", global::PLUGIN_DISPLAY_NAME, global::PLUGIN_VERSION.preview_type().str(true)).c_str()
+					std::format(L"{} ({})", global::PLUGIN_DISPLAY_NAME, ::sjis_to_wide(global::PLUGIN_VERSION.preview_type().str(true))).c_str()
 				);
 			}
 			break;

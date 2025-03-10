@@ -1,4 +1,4 @@
-import { editor } from './host_object';
+import { editor } from './interface';
 
 
 class Curve {

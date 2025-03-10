@@ -6,6 +6,7 @@
 #include <functional>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <strconv2.h>
 
 
 
@@ -14,14 +15,14 @@ namespace curve_editor {
 	class GraphCurve;
 
 	class Modifier {
-		std::string name_;
+		std::wstring name_;
 		bool enabled_ = true;
 
 	protected:
 		GraphCurve* p_curve_ = nullptr;
 
 	public:
-		Modifier(const std::string& name = "") noexcept : name_{ name } {}
+		Modifier(const std::wstring& name = L"") noexcept : name_{ name } {}
 		Modifier(const Modifier& modifier) noexcept :
 			name_{ modifier.name_ },
 			enabled_{ modifier.enabled_ },
@@ -31,10 +32,10 @@ namespace curve_editor {
 
 		virtual std::unique_ptr<Modifier> clone() const noexcept = 0;
 
-		constexpr virtual std::string get_type() const noexcept = 0;
+		constexpr virtual const std::string_view& get_type() const noexcept = 0;
 
 		auto name() const noexcept { return name_; }
-		void set_name(const std::string& name) noexcept { name_ = name; }
+		void set_name(const std::wstring& name) noexcept { name_ = name; }
 
 		auto enabled() const noexcept { return enabled_; }
 		void set_enabled(bool enabled) noexcept { enabled_ = enabled; }
@@ -56,13 +57,23 @@ namespace curve_editor {
 		}
 
 		template <class Archive>
-		void load(Archive& archive, const std::uint32_t) {
-			archive(
-				name_,
-				enabled_
-			);
+		void load(Archive& archive, const std::uint32_t version) {
+			if (version < 1) {
+				std::string name;
+				archive(
+					name,
+					enabled_
+				);
+				name_ = ::sjis_to_wide(name);
+			}
+			else {
+				archive(
+					name_,
+					enabled_
+				);
+			}
 		}
 	};
 } // namespace curve_editor
 
-CEREAL_CLASS_VERSION(curve_editor::Modifier, 0)
+CEREAL_CLASS_VERSION(curve_editor::Modifier, 1)
