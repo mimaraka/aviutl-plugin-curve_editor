@@ -140,9 +140,11 @@ namespace curve_editor {
 					);
 					mkaul::replace_var(&(p_obj_tmp->track_param[track_idx]), param);
 
-					// トラックバーの開始値・終了値も合わせる
-					mkaul::replace_var(&(p_obj_tmp->track_value_left[track_idx]), track_value_left);
-					mkaul::replace_var(&(p_obj_tmp->track_value_right[track_idx]), track_value_right);
+					// 中間点無視の場合、トラックバーの開始値・終了値も合わせる
+					if (global::config.get_apply_mode(mode) == ApplyMode::IgnoreMidPoint) {
+						mkaul::replace_var(&(p_obj_tmp->track_value_left[track_idx]), track_value_left);
+						mkaul::replace_var(&(p_obj_tmp->track_value_right[track_idx]), track_value_right);
+					}
 				}
 			}
 		}
