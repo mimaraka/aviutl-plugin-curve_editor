@@ -23,6 +23,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
     const [collectionInfo, setCollectionInfo] = React.useState(JSON.parse(preset.getCollectionsAsJson()));
     const originalPresetsInfo = React.useRef(JSON.parse(preset.getPresetsAsJson()));
     const [presetsInfo, setPresetsInfo] = React.useState(originalPresetsInfo.current);
+    const [simpleView, setSimpleView] = React.useState(config.presetSimpleView);
     const presetContainer = React.useRef<HTMLDivElement>(null);
 
     const onWheel = (event: WheelEvent) => {
@@ -92,6 +93,18 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                 originalPresetsInfo.current = JSON.parse(preset.getPresetsAsJson());
                 updatePresets();
                 break;
+
+            case 'UpdatePresetLayout':
+                setSimpleView(config.presetSimpleView);
+                break;
+        }
+    }
+
+    const onPresetMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.button === 2) {
+            window.chrome.webview.postMessage({
+                command: 'ContextMenuPreset',
+            });
         }
     }
 
@@ -109,7 +122,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
 
     return (
         <div className='container-panel-preset' style={style}>
-            <div className='menu-row'>
+            <div className='menu-row' style={{ display: simpleView ? 'none' : 'flex' }}>
                 <div className='searchbar-container'>
                     <div className='searchbar-icon'>
                         <FontAwesomeIcon icon={faMagnifyingGlass} size='sm'/>
@@ -124,7 +137,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                     }}/>
                 </div>
             </div>
-            <div className='menu-row'>
+            <div className='menu-row' style={{ display: simpleView ? 'none' : 'flex' }}>
                 <div className='menu-button dropdown-container' id='collection-container'>
                     <div className='presets-count'>{`(${presetsInfo.length})`}</div>
                     <select
@@ -153,7 +166,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                     }}/>
                 </div>
             </div>
-            <div className='container-preset' ref={presetContainer}>
+            <div className='container-preset' ref={presetContainer} onMouseDown={onPresetMouseDown}>
                 {
                     presetsInfo.length > 0 ? (
                         presetsInfo.map((info: PresetInfo) => (
