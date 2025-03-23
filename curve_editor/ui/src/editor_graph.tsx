@@ -808,10 +808,10 @@ const GraphEditorPanel: React.FC<GraphEditorPanelProps> = (props: GraphEditorPan
     return (
         <div id='container' ref={ref}>
             <svg id='canvas'></svg>
-            <button id='fit' className='overlay-button hidden' title='ビューをフィット' onClick={() => { editorRef.current?.fit(); }}>
+            <button id='fit' className='overlay-button hidden' title={window.stringTable['TooltipButtonFit']} onClick={() => { editorRef.current?.fit(); }}>
                 <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} size='sm' />
             </button>
-            <button id='show-handle' className='overlay-button hidden' title='ハンドルを表示' onClick={() => { config.showHandle = true; editorRef.current?.updateHandleVisibility(); }}>
+            <button id='show-handle' className='overlay-button hidden' title={window.stringTable['TooltipButtonShowHandle']} onClick={() => { config.showHandle = true; editorRef.current?.updateHandleVisibility(); }}>
                 <FontAwesomeIcon icon={faEye} size='sm' />
             </button>
         </div>

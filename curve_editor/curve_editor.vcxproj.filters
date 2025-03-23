@@ -583,7 +583,6 @@
     <None Include="curve_editor.def">
       <Filter>Module</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="%40Curve Editor.tra">
       <Filter>Source Files</Filter>
     </None>
@@ -701,6 +700,7 @@
     <None Include="ui\src\host_object.ts">
       <Filter>Source Files\Web UI</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc">

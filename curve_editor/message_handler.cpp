@@ -581,6 +581,24 @@ namespace curve_editor {
 
 
 	/// <summary>
+	/// プリセットパネルのコンテキストメニューを表示する関数
+	/// </summary>
+	void MessageHandler::context_menu_preset() {
+		ContextMenu{
+			MenuItem{
+				global::string_table[StringId::MenuPresetSimpleView],
+				MenuItem::Type::String,
+				global::config.get_preset_simple_view() ? MenuItem::State::Checked : MenuItem::State::Null,
+				[this]() {
+					global::config.set_preset_simple_view(!global::config.get_preset_simple_view());
+					if (p_webview_) p_webview_->send_command(MessageCommand::UpdatePresetLayout);
+				}
+			}
+		}.show(hwnd_);
+	}
+
+
+	/// <summary>
 	/// プリセットアイテムのコンテキストメニューを表示する関数
 	/// </summary>
 	/// <param name="options">オプションが格納されたjsonオブジェクト</param>

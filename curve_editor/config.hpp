@@ -33,6 +33,7 @@ namespace curve_editor::global {
 		bool ignore_autosaver_warning_;
 		double separator_pos_;
 		int preset_size_;
+		bool preset_simple_view_;
 		mkaul::Size<uint32_t> select_window_size_;
 
 		std::filesystem::path dir_aviutl_;
@@ -144,6 +145,9 @@ namespace curve_editor::global {
 
 		auto get_preset_size() const noexcept { return preset_size_; }
 		void set_preset_size(int preset_size) noexcept { preset_size_ = mkaul::clamp(preset_size, 20, 200); }
+
+		auto get_preset_simple_view() const noexcept { return preset_simple_view_; }
+		void set_preset_simple_view(bool preset_simple_view) noexcept { preset_simple_view_ = preset_simple_view; }
 
 		const auto& get_select_window_size() const noexcept { return select_window_size_; }
 		void set_select_window_size(const mkaul::Size<uint32_t>& select_window_size) noexcept { select_window_size_ = select_window_size; }

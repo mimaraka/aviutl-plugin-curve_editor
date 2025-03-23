@@ -25,6 +25,7 @@ namespace curve_editor::global {
 		ignore_autosaver_warning_{ false },
 		separator_pos_{ 0.56 },
 		preset_size_{ 64 },
+		preset_simple_view_{ false },
 		select_window_size_{ 300, 450 }
 	{
 		pref_.reset();
@@ -176,6 +177,7 @@ namespace curve_editor::global {
 			util::set_from_json(this, data, GET_KEY(ignore_autosaver_warning_), &Config::set_ignore_autosaver_warning);
 			util::set_from_json(this, data, GET_KEY(separator_pos_), &Config::set_separator_pos);
 			util::set_from_json(this, data, GET_KEY(preset_size_), &Config::set_preset_size);
+			util::set_from_json(this, data, GET_KEY(preset_simple_view_), &Config::set_preset_simple_view);
 			util::set_from_json(data, "select_window_width", select_window_size_.width);
 			util::set_from_json(data, "select_window_height", select_window_size_.height);
 		}
@@ -209,6 +211,7 @@ namespace curve_editor::global {
 			{GET_KEY(ignore_autosaver_warning_), ignore_autosaver_warning_},
 			{GET_KEY(separator_pos_), separator_pos_},
 			{GET_KEY(preset_size_), preset_size_},
+			{GET_KEY(preset_simple_view_), preset_simple_view_},
 			{"select_window_width", select_window_size_.width},
 			{"select_window_height", select_window_size_.height}
 		};

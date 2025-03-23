@@ -182,6 +182,10 @@ namespace curve_editor::global {
 				id = IDS_TOOLTIP_BUTTON_RESET;
 				break;
 
+			case StringId::TooltipButtonFit:
+				id = IDS_TOOLTIP_BUTTON_FIT;
+				break;
+
 			case StringId::TooltipButtonOthers:
 				id = IDS_TOOLTIP_BUTTON_OTHERS;
 				break;
@@ -202,6 +206,10 @@ namespace curve_editor::global {
 				id = IDS_TOOLTIP_BUTTON_CURRENT_ID;
 				break;
 
+			case StringId::TooltipButtonParam:
+				id = IDS_TOOLTIP_BUTTON_PARAM;
+				break;
+
 			case StringId::TooltipButtonListConfig:
 				id = IDS_TOOLTIP_BUTTON_LIST_CONFIG;
 				break;
@@ -212,6 +220,14 @@ namespace curve_editor::global {
 
 			case StringId::TooltipButtonCollectionEdit:
 				id = IDS_TOOLTIP_BUTTON_COLLECTION_EDIT;
+				break;
+
+			case StringId::TooltipButtonShowHandle:
+				id = IDS_TOOLTIP_BUTTON_SHOW_HANDLE;
+				break;
+
+			case StringId::TooltipCreatedAt:
+				id = IDS_TOOLTIP_CREATED_AT;
 				break;
 
 			case StringId::ThemeSystem:
@@ -308,6 +324,10 @@ namespace curve_editor::global {
 
 			case StringId::LabelReset:
 				id = IDS_LABEL_RESET;
+				break;
+
+			case StringId::LabelNoPresets:
+				id = IDS_LABEL_NO_PRESETS;
 				break;
 
 			case StringId::CollectionNameAll:
@@ -512,6 +532,10 @@ namespace curve_editor::global {
 
 			case StringId::MenuPresetItemRemove:
 				id = IDS_MENU_PRESET_ITEM_REMOVE;
+				break;
+
+			case StringId::MenuPresetSimpleView:
+				id = IDS_MENU_PRESET_SIMPLE_VIEW;
 				break;
 
 			case StringId::MenuCollectionAddNew:

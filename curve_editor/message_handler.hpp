@@ -21,6 +21,7 @@ namespace curve_editor {
 		ContextMenuGraph,
 		ContextMenuSegment,
 		ContextMenuBezierHandle,
+		ContextMenuPreset,
 		ContextMenuPresetItem,
 		ContextMenuIdx,
 		ButtonCollectionAdd,
@@ -38,6 +39,7 @@ namespace curve_editor {
 		UpdateAxisLabelVisibility,
 		UpdateHandleVisibility,
 		UpdateVelocityGraphVisibility,
+		UpdatePresetLayout,
 		ApplyPreferences,
 		UpdatePresets,
 		ChangeEditMode,
@@ -63,6 +65,7 @@ namespace curve_editor {
 		void context_menu_graph(const nlohmann::json& options);
 		void context_menu_segment(const nlohmann::json& options);
 		void context_menu_bezier_handle(const nlohmann::json& options);
+		void context_menu_preset();
 		void context_menu_preset_item(const nlohmann::json& options);
 		void context_menu_idx();
 		void button_collection_add();
@@ -86,6 +89,7 @@ namespace curve_editor {
 			handlers_.emplace_back(MessageCommand::ContextMenuGraph, std::bind(&MessageHandler::context_menu_graph, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuSegment, std::bind(&MessageHandler::context_menu_segment, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuBezierHandle, std::bind(&MessageHandler::context_menu_bezier_handle, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::ContextMenuPreset, std::bind(&MessageHandler::context_menu_preset, this));
 			handlers_.emplace_back(MessageCommand::ContextMenuPresetItem, std::bind(&MessageHandler::context_menu_preset_item, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuIdx, std::bind(&MessageHandler::context_menu_idx, this));
 			handlers_.emplace_back(MessageCommand::ButtonCollectionAdd, std::bind(&MessageHandler::button_collection_add, this));

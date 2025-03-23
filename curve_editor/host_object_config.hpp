@@ -43,6 +43,8 @@ namespace curve_editor {
 			register_member(L"separatorPos", DispatchType::PropertyPut, +[](double separator_pos) { global::config.set_separator_pos(separator_pos); });
 			register_member(L"presetSize", DispatchType::PropertyGet, +[] { return global::config.get_preset_size(); });
 			register_member(L"presetSize", DispatchType::PropertyPut, +[](int preset_size) { global::config.set_preset_size(preset_size); });
+			register_member(L"presetSimpleView", DispatchType::PropertyGet, +[] { return global::config.get_preset_simple_view(); });
+			register_member(L"presetSimpleView", DispatchType::PropertyPut, +[](bool preset_simple_view) { global::config.set_preset_simple_view(preset_simple_view); });
 			register_member(L"applyButtonHeight", DispatchType::PropertyGet, +[] { return global::config.get_apply_button_height(); });
 		}
 	};

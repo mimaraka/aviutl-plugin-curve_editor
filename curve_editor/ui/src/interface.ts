@@ -55,6 +55,7 @@ declare global {
         notifyUpdate: boolean;
         separatorPos: number;
         presetSize: number;
+        presetSimpleView: boolean;
         applyButtonHeight: number;
     }
 
