@@ -159,7 +159,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                         presetsInfo.map((info: PresetInfo) => (
                             <PresetItem key={info.id} curveId={info.id} collectionId={info.collectionId} name={info.name} date={info.date} width={presetSize} />
                         ))
-                    ) : (<div className='no-presets'>プリセットがありません</div>)
+                    ) : (<div className='no-presets'>{window.stringTable['LabelNoPresets']}</div>)
                 }
             </div>
         </div>

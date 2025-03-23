@@ -62,7 +62,7 @@ const ParamButton: React.FC<ParamButtonProps> = (props: ParamButtonProps) => {
     }, [props.editMode]);
 
     return (
-        <ToolbarButtonText onClick={onClick} title='カーブのパラメータ' label={getParam() ?? ''} />
+        <ToolbarButtonText onClick={onClick} title={window.stringTable['TooltipButtonParam']} label={getParam() ?? ''} />
     );
 }
 

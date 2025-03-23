@@ -22,7 +22,7 @@ const PresetItem: React.FC<PresetItemProps> = React.memo((props: PresetItemProps
         let result = `${name}\n${window.stringTable['WordType']}: ${typeName}\n${window.stringTable['WordCollection']}: ${collectionName}`;
         if (props.date) {
             const date = new Date(props.date * 1000);
-            result += `\n作成日時: ${date.toLocaleString()}`;
+            result += `\n${window.stringTable['TooltipCreatedAt']}: ${date.toLocaleString()}`;
         }
         return result;
     }
