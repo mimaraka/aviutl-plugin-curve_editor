@@ -96,7 +96,7 @@ namespace curve_editor {
 	void DragAndDrop::apply_easing_to_track(int32_t obj_idx, int32_t track_idx) noexcept {
 		int16_t type_idx = 0;
 		int32_t param;
-		auto obj_array = *(global::exedit_internal.p_array_obj());
+		auto obj_array = *global::exedit_internal.p_array_obj();
 		auto p_obj = &obj_array[obj_idx];
 		EditMode mode = EditMode::Normal;
 
@@ -120,13 +120,41 @@ namespace curve_editor {
 		int16_t apply_mode = (int16_t)global::config.get_apply_mode(mode);
 		int16_t script_idx_offset = type_idx * (int16_t)ApplyMode::NumApplyMode + apply_mode;
 
-		// track_mode, track_paramの該当要素の値を変更
-		mkaul::replace_var(&(p_obj->track_mode[track_idx].num), ExEdit::Object::TrackMode::isScript);
-		mkaul::replace_var(
-			&(p_obj->track_mode[track_idx].script_idx),
-			(int16_t)(get_track_script_idx() + script_idx_offset)
-		);
-		mkaul::replace_var(&(p_obj->track_param[track_idx]), param);
+		if (p_obj->index_midpt_leader != -1) {
+			auto track_value_left = p_obj->track_value_left[track_idx];
+			auto track_value_right = p_obj->track_value_right[track_idx];
+
+			auto loop_n = *global::exedit_internal.p_obj_num();
+			for (int32_t i = 0; i < loop_n; i++) {
+				auto p_obj_tmp = &obj_array[i];
+				if ((p_obj_tmp->flag & ExEdit::Object::Flag::Exist) == static_cast<ExEdit::Object::Flag>(0)) {
+					loop_n++;
+					continue;
+				}
+				if (p_obj_tmp->index_midpt_leader == p_obj->index_midpt_leader) {
+					// midpt_leaderが設定されている場合、そのオブジェクトのトラックバーにもイージングを適用する
+					mkaul::replace_var(&(p_obj_tmp->track_mode[track_idx].num), ExEdit::Object::TrackMode::isScript);
+					mkaul::replace_var(
+						&(p_obj_tmp->track_mode[track_idx].script_idx),
+						(int16_t)(get_track_script_idx() + script_idx_offset)
+					);
+					mkaul::replace_var(&(p_obj_tmp->track_param[track_idx]), param);
+
+					// トラックバーの開始値・終了値も合わせる
+					mkaul::replace_var(&(p_obj_tmp->track_value_left[track_idx]), track_value_left);
+					mkaul::replace_var(&(p_obj_tmp->track_value_right[track_idx]), track_value_right);
+				}
+			}
+		}
+		else {
+			// track_mode, track_paramの該当要素の値を変更
+			mkaul::replace_var(&(p_obj->track_mode[track_idx].num), ExEdit::Object::TrackMode::isScript);
+			mkaul::replace_var(
+				&(p_obj->track_mode[track_idx].script_idx),
+				(int16_t)(get_track_script_idx() + script_idx_offset)
+			);
+			mkaul::replace_var(&(p_obj->track_param[track_idx]), param);
+		}
 	}
 
 	void DragAndDrop::apply_easing_to_tracks(int32_t obj_idx, int32_t track_idx) noexcept {
