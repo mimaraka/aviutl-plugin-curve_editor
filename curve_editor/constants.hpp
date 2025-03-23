@@ -26,7 +26,7 @@ namespace curve_editor::global {
 	inline constexpr auto PLUGIN_VERSION = mkaul::Version{
 		mkaul::VersionNumber{2},
 		mkaul::PreviewType{mkaul::PreviewType::Type::Beta},
-		mkaul::VersionNumber{1, 3}
+		mkaul::VersionNumber{1, 3, 1}
 	};
 	inline constexpr auto PLUGIN_DEVELOPER = L"mimaraka";
 	inline constexpr auto PLUGIN_TRANSLATOR = L"Deepdive";
