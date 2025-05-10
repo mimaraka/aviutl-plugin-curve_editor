@@ -92,6 +92,13 @@ class NormalControl extends Control {
         });
     }
 
+    updateControl(transition: d3.Transition<any, unknown, any, unknown> | null = null) {
+        super.updateControl(transition);
+        this.segmentControlArray.forEach((control) => {
+            control?.updateControl(transition);
+        });
+    }
+
     // ハンドル・アンカーを削除
     remove() {
         super.remove();
