@@ -113,6 +113,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
         }
         return 0;
     }
+    const [size, setSize] = React.useState(getSize());
 
     const onMessage = (event: MessageEvent) => {
         switch (event.data.command) {
@@ -143,6 +144,7 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
             case 'UpdateEditor':
                 setEditMode(config.editMode);
                 changeIdx(getIdx());
+                setSize(getSize());
                 break;
         }
     }
@@ -257,9 +259,9 @@ const MainPanel: React.FC<MainPanelProps> = (props: MainPanelProps) => {
                     editMode={editMode}
                     setEditMode={changeEditMode}
                     idx={getIdx()}
-                    size={getSize()}
+                    size={size}
                     setIdx={changeIdx}
-                    // TODO: 28がマジックナンバー
+                    // TODO: 36がマジックナンバー
                     style={{
                         height: layoutMode ? `calc(100% - ${applyButtonHeight + 36}px)` : `${toolbarHeight + editorPresetHeight * separatorPos}px`,
                         pointerEvents: pointerEvents,
