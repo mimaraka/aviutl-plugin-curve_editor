@@ -364,7 +364,7 @@ namespace curve_editor {
 			}},
 			MenuItem{global::string_table[StringId::MenuEditorCurveModifier],
 			MenuItem::Type::String,
-			(curve and curve->is_locked()) ? MenuItem::State::Disabled : MenuItem::State::Null,
+			(!(mode == EditMode::Normal or mode == EditMode::Value) or (curve and curve->is_locked())) ? MenuItem::State::Disabled : MenuItem::State::Null,
 			[curve_id, this]() {
 				ModifierDialog dialog;
 				dialog.show(hwnd_, static_cast<LPARAM>(curve_id));
