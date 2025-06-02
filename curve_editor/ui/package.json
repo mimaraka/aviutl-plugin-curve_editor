@@ -10,7 +10,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@types/d3": "^7.4.3",
-    "@types/react": "^19.1.2",
+    "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.2",
     "@webpack-cli/generators": "^3.0.7",
     "css-loader": "^7.1.2",
