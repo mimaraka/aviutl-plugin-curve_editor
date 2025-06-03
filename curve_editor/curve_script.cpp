@@ -1,4 +1,5 @@
 #include "curve_script.hpp"
+#include "curve_editor.hpp"
 #include <FastNoiseLite.h>
 #include <sol/sol.hpp>
 #include <strconv2.h>
@@ -41,14 +42,52 @@ namespace curve_editor {
 			[noise](double amp, float freq, double phase) { return noise(amp, freq, phase); },
 			[noise](double amp, float freq) { return noise(amp, freq); },
 			[noise](double amp) { return noise(amp); },
-			[noise]() mutable { return noise(); }
+			[noise]() { return noise(); }
+		));
+		lua.set_function("getcurve", sol::overload(
+			[](std::string mode, int32_t param, double t_, double st_, double ed_) {
+				return global::editor.get_curve_value(global::editor.get_mode(mode), param, t_, st_, ed_);
+			},
+			[st, ed](std::string mode, int32_t param, double t_) {
+				return global::editor.get_curve_value(global::editor.get_mode(mode), param, t_, st, ed);
+			},
+			[t, st, ed](std::string mode, int32_t param) {
+				return global::editor.get_curve_value(global::editor.get_mode(mode), param, t, st, ed);
+			},
+			[](int32_t mode_int, int32_t param, double t_, double st_, double ed_) -> std::optional<double> {
+				// TODO: lua_export.cppと同じものなので共通化する
+				EditMode mode = EditMode::NumEditMode;
+				switch (mode_int) {
+				case 0:
+					mode = EditMode::Bezier;
+					break;
+				case 1:
+					mode = EditMode::Normal;
+					break;
+				case 2:
+					mode = EditMode::Value;
+					break;
+				case 3:
+					mode = EditMode::Elastic;
+					break;
+				case 4:
+					mode = EditMode::Bounce;
+					break;
+				case 5:
+					mode = EditMode::Script;
+					break;
+				default:
+					return std::nullopt;
+				}
+				return global::editor.get_curve_value(mode, param, t_, st_, ed_);
+			}
 		));
 		try {
 			auto ret = lua.script(::wide_to_utf8(script_)).get<double>();
 			return ret;
 		}
 		catch (sol::error&) {
-			return (ed - st) * t + st;
+			return std::lerp(st, ed, t);
 		}
 	}
 

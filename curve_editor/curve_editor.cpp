@@ -161,4 +161,76 @@ namespace curve_editor::global {
 			return 0;
 		}
 	}
+
+	std::optional<double> CurveEditor::get_curve_value(EditMode mode, int32_t param, double progress, double start, double end) const noexcept {
+		static BezierCurve bezier;
+		static ElasticCurve elastic;
+		static BounceCurve bounce;
+
+		double ret = 0.;
+
+		switch (mode) {
+		case EditMode::Normal:
+		{
+			int idx = param - 1;
+			if (idx < 0) {
+				return std::nullopt;
+			}
+			auto p_curve_normal = global::editor.editor_graph().p_curve_normal(static_cast<size_t>(idx));
+			if (p_curve_normal) {
+				ret = p_curve_normal->get_value(progress, start, end);
+			}
+			else {
+				return std::nullopt;
+			}
+			break;
+		}
+
+		case EditMode::Value:
+			return std::nullopt;
+			break;
+
+		case EditMode::Bezier:
+			if (!bezier.decode(param)) {
+				return std::nullopt;
+			}
+			ret = bezier.get_value(progress, start, end);
+			break;
+
+		case EditMode::Elastic:
+			if (!elastic.decode(param)) {
+				return std::nullopt;
+			}
+			ret = elastic.get_value(progress, start, end);
+			break;
+
+		case EditMode::Bounce:
+			if (!bounce.decode(param)) {
+				return std::nullopt;
+			}
+			ret = bounce.get_value(progress, start, end);
+			break;
+
+		case EditMode::Script:
+		{
+			int idx = param - 1;
+			if (idx < 0) {
+				return std::nullopt;
+			}
+			auto p_curve_script = global::editor.editor_script().p_curve_script(static_cast<size_t>(idx));
+			if (p_curve_script) {
+				ret = p_curve_script->get_value(progress, start, end);
+			}
+			else {
+				return std::nullopt;
+			}
+			break;
+		}
+
+		default:
+			return std::nullopt;
+		}
+
+		return ret;
+	}
 } // namespace curve_editor::global

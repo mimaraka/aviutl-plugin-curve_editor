@@ -16,6 +16,7 @@ namespace curve_editor::global {
 	public:
 		CurveEditor() {}
 
+		// TODO: 廃止したい
 		int32_t track_param() noexcept;
 		Curve* p_current_curve() noexcept;
 		size_t current_idx() noexcept;
@@ -33,6 +34,8 @@ namespace curve_editor::global {
 		auto& editor_script() noexcept { return editor_script_; }
 
 		Curve* get_curve(EditMode mode) noexcept;
+
+		std::optional<double> get_curve_value(EditMode mode, int32_t param, double progress, double start, double end) const noexcept;
 
 		template <class Archive>
 		void serialize(Archive& archive, const std::uint32_t) {

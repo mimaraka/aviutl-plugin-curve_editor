@@ -122,8 +122,8 @@ namespace curve_editor {
 			else {
 				if (*it != curve_segments_.back() and mkaul::in_range(progress, (*it)->anchor_end().x, (*std::next(it))->anchor_start().x, false)) {
 					// 線形補間
-					double tmp = (progress - (*it)->anchor_end().x) / ((*std::next(it))->anchor_start().x - (*it)->anchor_end().x);
-					return ((*std::next(it))->anchor_start().y - (*it)->anchor_end().y) * tmp + (*it)->anchor_end().y;
+					const double tmp = (progress - (*it)->anchor_end().x) / ((*std::next(it))->anchor_start().x - (*it)->anchor_end().x);
+					return std::lerp((*it)->anchor_end().y, (*std::next(it))->anchor_start().y, tmp);
 				}
 				else if (mkaul::in_range(progress, (*it)->anchor_start().x, (*it)->anchor_end().x)) {
 					return (*it)->get_value(progress, start, end);
