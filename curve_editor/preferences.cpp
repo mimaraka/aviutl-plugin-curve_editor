@@ -14,7 +14,7 @@ namespace curve_editor {
 		curve_resolution = 400u;
 		bg_image_path = "";
 		bg_image_opacity = 0.3f;
-		apply_button_height = 48u;
+		apply_button_height = 52u;
 		show_popup = true;
 		show_trace = true;
 		auto_copy = false;
