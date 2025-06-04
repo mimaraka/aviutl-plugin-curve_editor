@@ -964,7 +964,7 @@ namespace curve_editor {
 	/// ハンドルのドラッグが終了したときに呼び出される関数
 	/// </summary>
 	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
-	void MessageHandler::on_handle_drag_end(const nlohmann::json& options) {
+	void MessageHandler::on_curve_edit(const nlohmann::json& options) {
 		auto curve_id = options.at("curveId").get<uint32_t>();
 		auto curve_numeric = global::id_manager.get_curve<NumericGraphCurve>(curve_id);
 		if (curve_numeric) {

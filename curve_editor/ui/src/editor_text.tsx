@@ -270,6 +270,10 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
 
         editorRef.current?.getModel()?.onDidChangeContent(event => {
             editor.script.setScript(editor.script.getId(idxRef.current), editorRef.current?.getValue() ?? '');
+            window.chrome.webview.postMessage({
+                command: 'OnCurveEdit',
+                curveId: editor.script.getId(idxRef.current),
+            });
         });
 
         window.addEventListener('message', onMessage);

@@ -219,7 +219,7 @@ class Control {
 
     onDragEnd(event: DragEvent) {
         window.chrome.webview.postMessage({
-            command: 'OnHandleDragEnd',
+            command: 'OnCurveEdit',
             curveId: (this.curve.parentId != 0) ? this.curve.parentId : this.curve.id,
         });
     }
