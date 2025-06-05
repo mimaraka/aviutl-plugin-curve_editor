@@ -18,22 +18,17 @@ namespace curve_editor {
 		// end:			トラックバーでの終了時の値
 		// 
 		// Numeric Typeのカーブのオブジェクトを用意しておく
-		static BezierCurve curve_bezier;
-		static ElasticCurve curve_elastic;
-		static BounceCurve curve_bounce;
-
 		int mode_int = -1;
 		const char* mode_str = nullptr;
 		EditMode mode = EditMode::Normal;
-		int parameter;
+		int param;
 		double progress, start, end;
-		double ret = 0.;
 
 		if (lua_istable(L, 1)) {
 			::lua_getfield(L, 1, "mode");
 			::lua_getfield(L, 1, "param");
 			mode_str = ::lua_tostring(L, -2);
-			parameter = ::lua_tointeger(L, -1);
+			param = ::lua_tointeger(L, -1);
 			::lua_pop(L, 2);
 			progress = ::lua_tonumber(L, 2);
 			start = ::lua_tonumber(L, 3);
@@ -51,7 +46,7 @@ namespace curve_editor {
 				return 1;
 			}
 
-			parameter = ::lua_tointeger(L, 2);
+			param = ::lua_tointeger(L, 2);
 			progress = ::lua_tonumber(L, 3);
 			start = ::lua_tonumber(L, 4);
 			end = ::lua_tonumber(L, 5);
@@ -94,78 +89,14 @@ namespace curve_editor {
 			return 1;
 		}
 
-		switch (mode) {
-		case EditMode::Normal:
-		{
-			int idx = parameter - 1;
-			if (idx < 0) {
-				::lua_pushnil(L);
-				return 1;
-			}
-			auto p_curve_normal = global::editor.editor_graph().p_curve_normal(static_cast<size_t>(idx));
-			if (p_curve_normal) {
-				ret = p_curve_normal->get_value(progress, start, end);
-			}
-			else {
-				::lua_pushnil(L);
-				return 1;
-			}
-			break;
+		const auto val = global::editor.get_curve_value(mode, param, progress, start, end);
+		if (val.has_value()) {
+			::lua_pushnumber(L, val.value());
 		}
-
-		case EditMode::Value:
+		else {
 			::lua_pushnil(L);
-			return 1;
-			break;
-
-		case EditMode::Bezier:
-			if (!curve_bezier.decode(parameter)) {
-				::lua_pushnil(L);
-				return 1;
-			}
-			ret = curve_bezier.get_value(progress, start, end);
-			break;
-
-		case EditMode::Elastic:
-			if (!curve_elastic.decode(parameter)) {
-				::lua_pushnil(L);
-				return 1;
-			}
-			ret = curve_elastic.get_value(progress, start, end);
-			break;
-
-		case EditMode::Bounce:
-			if (!curve_bounce.decode(parameter)) {
-				::lua_pushnil(L);
-				return 1;
-			}
-			ret = curve_bounce.get_value(progress, start, end);
-			break;
-
-		case EditMode::Script:
-		{
-			int idx = parameter - 1;
-			if (idx < 0) {
-				::lua_pushnil(L);
-				return 1;
-			}
-			auto p_curve_script = global::editor.editor_script().p_curve_script(static_cast<size_t>(idx));
-			if (p_curve_script) {
-				ret = p_curve_script->get_value(progress, start, end);
-			}
-			else {
-				::lua_pushnil(L);
-				return 1;
-			}
-			break;
 		}
-
-		default:
-			::lua_pushnil(L);
-			return 1;
-		}
-
-		::lua_pushnumber(L, ret);
+		
 		return 1;
 	}
 

@@ -36,7 +36,7 @@ namespace curve_editor {
 		hwnd_check_enable_animation_ = ::GetDlgItem(hwnd, IDC_CHECK_ENABLE_ANIMATION);
 
 		for (uint32_t i = 0u; i < (uint32_t)ThemeId::NumThemeId; i++) {
-			::SendMessageW(
+			::SendMessage(
 				hwnd_combo_theme_,
 				CB_ADDSTRING,
 				NULL,
@@ -44,23 +44,23 @@ namespace curve_editor {
 			);
 		}
 
-		::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
-		::SendMessageA(hwnd_slider_curve_quality_, TBM_SETRANGE, TRUE, MAKELPARAM(100, 1000));
-		::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETRANGE, TRUE, MAKELPARAM(0, 100));
-		::SendMessageA(hwnd_slider_apply_button_height_, TBM_SETRANGE, TRUE, MAKELPARAM(30, 200));
+		::SendMessage(hwnd_slider_curve_thickness_, TBM_SETRANGE, TRUE, MAKELPARAM(1, 100));
+		::SendMessage(hwnd_slider_curve_quality_, TBM_SETRANGE, TRUE, MAKELPARAM(100, 1000));
+		::SendMessage(hwnd_slider_bg_image_opacity_, TBM_SETRANGE, TRUE, MAKELPARAM(0, 100));
+		::SendMessage(hwnd_slider_apply_button_height_, TBM_SETRANGE, TRUE, MAKELPARAM(30, 200));
 	}
 
 
 	INT_PTR AppearancePrefDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
 		using StringId = global::StringTable::StringId;
 		static COLORREF custom_colors[16];
-		static CHOOSECOLORA cc{
-			.lStructSize = sizeof(CHOOSECOLORA),
+		static CHOOSECOLOR cc{
+			.lStructSize = sizeof(CHOOSECOLOR),
 			.lpCustColors = custom_colors,
 			.Flags = CC_FULLOPEN | CC_RGBINIT
 		};
-		static char image_path[MAX_PATH + 1];
-		image_path[MAX_PATH] = '\0';
+		static wchar_t image_path[MAX_PATH + 1];
+		image_path[MAX_PATH] = L'\0';
 
 		switch (message) {
 		case WM_INITDIALOG:
@@ -71,20 +71,20 @@ namespace curve_editor {
 
 		case WM_HSCROLL:
 			if (lparam == (LPARAM)hwnd_slider_curve_thickness_) {
-				int value_int = ::SendMessageA(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL);
-				::SetWindowTextA(hwnd_static_curve_thickness_, std::format("{:.1f}", value_int * 0.1f).c_str());
+				int value_int = ::SendMessage(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL);
+				::SetWindowText(hwnd_static_curve_thickness_, std::format(L"{:.1f}", value_int * 0.1f).c_str());
 			}
 			else if (lparam == (LPARAM)hwnd_slider_curve_quality_) {
-				int value_int = ::SendMessageA(hwnd_slider_curve_quality_, TBM_GETPOS, NULL, NULL);
-				::SetWindowTextA(hwnd_static_curve_quality_, std::format("{}", value_int).c_str());
+				int value_int = ::SendMessage(hwnd_slider_curve_quality_, TBM_GETPOS, NULL, NULL);
+				::SetWindowText(hwnd_static_curve_quality_, std::format(L"{}", value_int).c_str());
 			}
 			else if (lparam == (LPARAM)hwnd_slider_bg_image_opacity_) {
-				int value_int = ::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL);
-				::SetWindowTextA(hwnd_static_bg_image_opacity_, std::format("{}%", value_int).c_str());
+				int value_int = ::SendMessage(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL);
+				::SetWindowText(hwnd_static_bg_image_opacity_, std::format(L"{}%", value_int).c_str());
 			}
 			else if (lparam == (LPARAM)hwnd_slider_apply_button_height_) {
-				int value_int = ::SendMessageA(hwnd_slider_apply_button_height_, TBM_GETPOS, NULL, NULL);
-				::SetWindowTextA(hwnd_static_apply_button_height_, std::format("{}", value_int).c_str());
+				int value_int = ::SendMessage(hwnd_slider_apply_button_height_, TBM_GETPOS, NULL, NULL);
+				::SetWindowText(hwnd_static_apply_button_height_, std::format(L"{}", value_int).c_str());
 			}
 			return TRUE;
 
@@ -110,20 +110,20 @@ namespace curve_editor {
 			case (UINT)WindowCommand::LoadConfig:
 				cc.rgbResult = global::config.get_curve_color().colorref();
 				::InvalidateRect(hwnd, NULL, FALSE);
-				::SendMessageA(hwnd_combo_theme_, CB_SETCURSEL, (WPARAM)global::config.get_theme(), NULL);
-				::SendMessageA(
+				::SendMessage(hwnd_combo_theme_, CB_SETCURSEL, (WPARAM)global::config.get_theme(), NULL);
+				::SendMessage(
 					hwnd_check_show_trace_,
 					BM_SETCHECK,
 					(WPARAM)global::config.get_show_trace(),
 					NULL
 				);
-				::SendMessageA(
+				::SendMessage(
 					hwnd_check_set_bg_image_,
 					BM_SETCHECK,
 					(WPARAM)global::config.get_show_bg_image(),
 					NULL
 				);
-				::SendMessageA(
+				::SendMessage(
 					hwnd_check_enable_animation_,
 					BM_SETCHECK,
 					(WPARAM)global::config.get_enable_animation(),
@@ -145,49 +145,49 @@ namespace curve_editor {
 					::EnableWindow(hwnd_slider_bg_image_opacity_, FALSE);
 					::EnableWindow(hwnd_static_bg_image_opacity_, FALSE);
 				};
-				::SetWindowTextA(hwnd_edit_bg_image_path_, global::config.get_bg_image_path().string().c_str());
-				::SendMessageA(hwnd_edit_bg_image_path_, EM_SETLIMITTEXT, MAX_PATH, NULL);
+				::SetWindowText(hwnd_edit_bg_image_path_, global::config.get_bg_image_path().wstring().c_str());
+				::SendMessage(hwnd_edit_bg_image_path_, EM_SETLIMITTEXT, MAX_PATH, NULL);
 
-				::SendMessageA(hwnd_slider_curve_thickness_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_thickness() * 10.f));
-				::SendMessageA(hwnd_slider_curve_quality_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_resolution()));
-				::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_SETPOS, TRUE, (LPARAM)round(global::config.get_bg_image_opacity() * 100.f));
-				::SendMessageA(hwnd_slider_apply_button_height_, TBM_SETPOS, TRUE, (LPARAM)global::config.get_apply_button_height());
+				::SendMessage(hwnd_slider_curve_thickness_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_thickness() * 10.f));
+				::SendMessage(hwnd_slider_curve_quality_, TBM_SETPOS, TRUE, (LPARAM)(global::config.get_curve_resolution()));
+				::SendMessage(hwnd_slider_bg_image_opacity_, TBM_SETPOS, TRUE, (LPARAM)round(global::config.get_bg_image_opacity() * 100.f));
+				::SendMessage(hwnd_slider_apply_button_height_, TBM_SETPOS, TRUE, (LPARAM)global::config.get_apply_button_height());
 
-				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_thickness_);
-				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_quality_);
-				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_bg_image_opacity_);
-				::SendMessageA(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_apply_button_height_);
+				::SendMessage(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_thickness_);
+				::SendMessage(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_curve_quality_);
+				::SendMessage(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_bg_image_opacity_);
+				::SendMessage(hwnd, WM_HSCROLL, NULL, (LPARAM)hwnd_slider_apply_button_height_);
 
 				return TRUE;
 
 			case (UINT)WindowCommand::SaveConfig:
-				global::config.set_theme((ThemeId)::SendMessageA(hwnd_combo_theme_, CB_GETCURSEL, NULL, NULL));
-				global::config.set_show_trace((bool)::SendMessageA(hwnd_check_show_trace_, BM_GETCHECK, NULL, NULL));
-				global::config.set_show_bg_image((bool)::SendMessageA(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL));
-				global::config.set_enable_animation((bool)::SendMessageA(hwnd_check_enable_animation_, BM_GETCHECK, NULL, NULL));
+				global::config.set_theme((ThemeId)::SendMessage(hwnd_combo_theme_, CB_GETCURSEL, NULL, NULL));
+				global::config.set_show_trace((bool)::SendMessage(hwnd_check_show_trace_, BM_GETCHECK, NULL, NULL));
+				global::config.set_show_bg_image((bool)::SendMessage(hwnd_check_set_bg_image_, BM_GETCHECK, NULL, NULL));
+				global::config.set_enable_animation((bool)::SendMessage(hwnd_check_enable_animation_, BM_GETCHECK, NULL, NULL));
 				global::config.set_curve_color(cc.rgbResult);
 				global::config.set_curve_thickness(
-					(float)::SendMessageA(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL) * 0.1f
+					(float)::SendMessage(hwnd_slider_curve_thickness_, TBM_GETPOS, NULL, NULL) * 0.1f
 				);
 				global::config.set_curve_resolution(
-					(uint32_t)::SendMessageA(hwnd_slider_curve_quality_, TBM_GETPOS, NULL, NULL)
+					(uint32_t)::SendMessage(hwnd_slider_curve_quality_, TBM_GETPOS, NULL, NULL)
 				);
 				global::config.set_bg_image_opacity(
-					(float)::SendMessageA(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL) * 0.01f
+					(float)::SendMessage(hwnd_slider_bg_image_opacity_, TBM_GETPOS, NULL, NULL) * 0.01f
 				);
 				global::config.set_apply_button_height(
-					(uint32_t)::SendMessageA(hwnd_slider_apply_button_height_, TBM_GETPOS, NULL, NULL)
+					(uint32_t)::SendMessage(hwnd_slider_apply_button_height_, TBM_GETPOS, NULL, NULL)
 				);
 				{
-					char buffer[MAX_PATH];
-					::GetWindowTextA(hwnd_edit_bg_image_path_, buffer, MAX_PATH);
+					wchar_t buffer[MAX_PATH];
+					::GetWindowTextW(hwnd_edit_bg_image_path_, buffer, MAX_PATH);
 					global::config.set_bg_image_path(std::filesystem::path(buffer));
 				}
 				if (global::webview) global::webview->update_color_scheme();
 				return TRUE;
 
 			case IDC_BUTTON_CURVE_COLOR:
-				if (::ChooseColorA(&cc)) {
+				if (::ChooseColor(&cc)) {
 					::InvalidateRect(hwnd, NULL, FALSE);
 				}
 				return TRUE;
@@ -221,17 +221,17 @@ namespace curve_editor {
 					global::string_table[StringId::WordImageFile],
 					TEMPLATE_IMAGE
 				);
-				OPENFILENAMEW ofn{
-					.lStructSize = sizeof(OPENFILENAMEA),
+				OPENFILENAME ofn{
+					.lStructSize = sizeof(OPENFILENAME),
 					.hwndOwner = hwnd,
 					.lpstrFilter = str_filter.c_str(),
-					.lpstrFile = const_cast<wchar_t*>(::sjis_to_wide(image_path).c_str()),
+					.lpstrFile = image_path,
 					.nMaxFile = MAX_PATH + 1,
 					.lpstrTitle = global::string_table[StringId::CaptionSelectBackgroundImage],
 					.Flags = OFN_FILEMUSTEXIST
 				};
-				if (::GetOpenFileNameW(&ofn)) {
-					::SetWindowTextW(hwnd_edit_bg_image_path_, ofn.lpstrFile);
+				if (::GetOpenFileName(&ofn)) {
+					::SetWindowText(hwnd_edit_bg_image_path_, ofn.lpstrFile);
 				}
 				return TRUE;
 			}

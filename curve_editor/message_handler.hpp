@@ -30,7 +30,7 @@ namespace curve_editor {
 		SelectCurveCancel,
 		OnDndStart,
 		OnDndEnd,
-		OnHandleDragEnd,
+		OnCurveEdit,
 		ApplyPreset,
 		UpdateControl,
 		UpdateHandlePosition,
@@ -74,7 +74,7 @@ namespace curve_editor {
 		void select_curve_ok(const nlohmann::json& options);
 		void select_curve_cancel();
 		void on_dnd_start(const nlohmann::json& options);
-		void on_handle_drag_end(const nlohmann::json& options);
+		void on_curve_edit(const nlohmann::json& options);
 		void apply_preset(const nlohmann::json& options);
 
 	public:
@@ -98,7 +98,7 @@ namespace curve_editor {
 			handlers_.emplace_back(MessageCommand::SelectCurveOk, std::bind(&MessageHandler::select_curve_ok, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::SelectCurveCancel, std::bind(&MessageHandler::select_curve_cancel, this));
 			handlers_.emplace_back(MessageCommand::OnDndStart, std::bind(&MessageHandler::on_dnd_start, this, std::placeholders::_1));
-			handlers_.emplace_back(MessageCommand::OnHandleDragEnd, std::bind(&MessageHandler::on_handle_drag_end, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::OnCurveEdit, std::bind(&MessageHandler::on_curve_edit, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ApplyPreset, std::bind(&MessageHandler::apply_preset, this, std::placeholders::_1));
 		}
 

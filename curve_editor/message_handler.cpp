@@ -364,7 +364,7 @@ namespace curve_editor {
 			}},
 			MenuItem{global::string_table[StringId::MenuEditorCurveModifier],
 			MenuItem::Type::String,
-			(curve and curve->is_locked()) ? MenuItem::State::Disabled : MenuItem::State::Null,
+			(!(mode == EditMode::Normal or mode == EditMode::Value) or (curve and curve->is_locked())) ? MenuItem::State::Disabled : MenuItem::State::Null,
 			[curve_id, this]() {
 				ModifierDialog dialog;
 				dialog.show(hwnd_, static_cast<LPARAM>(curve_id));
@@ -964,7 +964,7 @@ namespace curve_editor {
 	/// ハンドルのドラッグが終了したときに呼び出される関数
 	/// </summary>
 	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
-	void MessageHandler::on_handle_drag_end(const nlohmann::json& options) {
+	void MessageHandler::on_curve_edit(const nlohmann::json& options) {
 		auto curve_id = options.at("curveId").get<uint32_t>();
 		auto curve_numeric = global::id_manager.get_curve<NumericGraphCurve>(curve_id);
 		if (curve_numeric) {

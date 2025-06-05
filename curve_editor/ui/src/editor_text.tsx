@@ -35,6 +35,7 @@ const initMonacoEditor = () => {
         {name: 'st', type: 'variable'},
         {name: 'ed', type: 'variable'},
         {name: 'noise', insertText: 'noise(${1:amp}, ${2:freq})', type: 'function'},
+        {name: 'getcurve', insertText: 'getcurve(${1:mode}, ${2:param})', type: 'function'},
     ]
     const completionItemKindMap: {[key: string]: monaco.languages.CompletionItemKind} = {
         'keyword': monaco.languages.CompletionItemKind.Keyword,
@@ -269,6 +270,10 @@ const TextEditorPanel: React.FC<TextEditorPanelProps> = (props: TextEditorPanelP
 
         editorRef.current?.getModel()?.onDidChangeContent(event => {
             editor.script.setScript(editor.script.getId(idxRef.current), editorRef.current?.getValue() ?? '');
+            window.chrome.webview.postMessage({
+                command: 'OnCurveEdit',
+                curveId: editor.script.getId(idxRef.current),
+            });
         });
 
         window.addEventListener('message', onMessage);

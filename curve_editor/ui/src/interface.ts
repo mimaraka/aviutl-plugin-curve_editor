@@ -161,6 +161,7 @@ declare global {
         getCollectionName: (id: number) => string;
         getFilterInfoAsJson: () => string;
         currentCollectionId: number;
+        numCollections: number;
         sortBy: string;
         sortOrder: string;
     }

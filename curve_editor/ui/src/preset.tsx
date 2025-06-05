@@ -86,6 +86,20 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
         updatePresets();
     }
 
+    const onSelectWheel = (event: React.WheelEvent<HTMLSelectElement>) => {
+        //event.preventDefault();
+        let newId;
+        if (event.deltaY > 0) {
+            newId = Math.min(preset.currentCollectionId + 1, preset.numCollections - 1);
+        } else {
+            newId = Math.max(preset.currentCollectionId - 1, 0);
+        }
+        if (preset.currentCollectionId != newId) {
+            preset.currentCollectionId = newId;
+            updatePresets();
+        }
+    }
+
     const onMessageFromHost = (event: MessageEvent) => {
         switch (event.data.command) {
             case 'UpdatePresets':
@@ -147,6 +161,7 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                         value={preset.currentCollectionId}
                         title={`${window.stringTable['WordCollection']} (${preset.getCollectionName(preset.currentCollectionId)})`}
                         onChange={onSelectChange}
+                        onWheel={onSelectWheel}
                     >
                         {collectionInfo.map(({ id, name }: {id: number, name: string}, index: number) => {
                             return <option key={index} value={id}>{name}</option>

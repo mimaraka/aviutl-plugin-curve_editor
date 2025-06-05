@@ -36,6 +36,7 @@ const PresetItem: React.FC<PresetItemProps> = React.memo((props: PresetItemProps
                 command: 'ContextMenuPresetItem',
                 curveId: props.curveId
             });
+            event.stopPropagation();
         }
     }
 
