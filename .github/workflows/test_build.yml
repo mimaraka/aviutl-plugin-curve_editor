@@ -1,0 +1,21 @@
+name: Test Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Run MSBuild
+        run: msbuild curve_editor.sln /p:Configuration=Debug /p:Platform=x86
