@@ -28,6 +28,15 @@ jobs:
         with:
           boost_version: 1.87.0
 
+      - name: Install Lua 5.1.4
+        id: set_lua_dir
+        run: |
+          curl -L -o lua.zip https://sourceforge.net/projects/luabinaries/files/5.1.4/Windows%20Libraries/lua5_1_4_Win32_dll8_lib.zip/download
+          mkdir lua
+          tar -xf lua.zip -C lua
+          $fullPath = Resolve-Path lua
+          "LUA_DIR=$fullPath" >> $env:GITHUB_OUTPUT
+
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
 
@@ -41,3 +50,4 @@ jobs:
         run: msbuild curve_editor.sln /p:Configuration=Debug /p:Platform=x86
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          LUA_DIR: ${{ steps.set_lua_dir.outputs.LUA_DIR }}
