@@ -16,6 +16,18 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Set USERPROFILE as output
+        id: userprofile
+        shell: pwsh
+        run: |
+          echo "userprofile=$env:USERPROFILE" >> $env:GITHUB_OUTPUT
+
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2
+        id: install-boost
+        with:
+          boost_version: 1.87.0
+
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
 
@@ -27,3 +39,5 @@ jobs:
 
       - name: Run MSBuild
         run: msbuild curve_editor.sln /p:Configuration=Debug /p:Platform=x86
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
