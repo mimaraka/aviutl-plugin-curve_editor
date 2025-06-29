@@ -83,6 +83,8 @@ namespace curve_editor::global {
 		const auto& get_collection_info() const noexcept { return collection_info_; }
 		std::wstring get_collection_name(uint32_t collection_id) const noexcept;
 
+		auto get_num_collections() const noexcept { return collection_info_.size(); }
+
 		auto get_sort_by() const noexcept { return sort_by_; }
 		auto get_sort_order() const noexcept { return sort_order_; }
 		void set_sort_by(SortBy sort_by) noexcept { sort_by_ = sort_by; }
