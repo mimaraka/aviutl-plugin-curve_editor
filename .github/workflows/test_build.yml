@@ -1,0 +1,102 @@
+name: Test Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Restore Cache Boost
+        uses: actions/cache@v3
+        id: cache_boost
+        with:
+          path: boost
+          key: ${{ runner.os }}-boost-1.87.0
+          restore-keys: |
+            ${{ runner.os }}-boost-
+
+      - name: Install boost
+        if: steps.cache_boost.outputs.cache-hit != 'true'
+        run: |
+          curl -L -o boost.zip https://archives.boost.io/release/1.87.0/source/boost_1_87_0.zip
+          mkdir boost
+          tar -xf boost.zip -C boost
+
+      - name: Set BOOST_ROOT
+        id: set_boost_root
+        run: |
+          $fullPath = Resolve-Path boost\boost_1_87_0
+          "BOOST_ROOT=$fullPath" >> $env:GITHUB_OUTPUT
+
+      - name: Install Lua 5.1.4
+        run: |
+          curl -L -o lua.zip https://sourceforge.net/projects/luabinaries/files/5.1.4/Windows%20Libraries/lua5_1_4_Win32_dll8_lib.zip/download
+          mkdir lua
+          tar -xf lua.zip -C lua
+
+      - name: Set LUA_DIR
+        id: set_lua_dir
+        run: |
+          $fullPath = Resolve-Path lua
+          "LUA_DIR=$fullPath" >> $env:GITHUB_OUTPUT
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            packages
+            curve_editor\external\aviutl-mkaul\packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore NuGet packages
+        run: nuget restore curve_editor.sln
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Restore Cache Build Output
+        uses: actions/cache@v3
+        with:
+          path: |
+            curve_editor/external/**/Debug
+            curve_editor/Debug
+            Debug
+          key: vsbuild-${{ runner.os }}-${{ hashFiles('**/*.cpp', '**/*.h', '**/*.vcxproj') }}
+          restore-keys: |
+            vsbuild-${{ runner.os }}-
+
+      - name: Restore file timestamps
+        shell: powershell
+        run: |
+          Get-ChildItem -Recurse -File | ForEach-Object {
+            if ($_.LastWriteTime -gt (Get-Date)) {
+              $_.LastWriteTime = $_.CreationTime
+            }
+          }
+
+      - name: Run MSBuild
+        run: msbuild curve_editor.sln /p:Configuration=Debug /p:Platform=x86
+        env:
+          BOOST_ROOT: ${{ steps.set_boost_root.outputs.BOOST_ROOT }}
+          LUA_DIR: ${{ steps.set_lua_dir.outputs.LUA_DIR }}
+
+      - name: Run MSBuild
+        run: msbuild curve_editor.sln /p:Configuration=Debug /p:Platform=x86
+        env:
+          BOOST_ROOT: ${{ steps.set_boost_root.outputs.BOOST_ROOT }}
+          LUA_DIR: ${{ steps.set_lua_dir.outputs.LUA_DIR }}
