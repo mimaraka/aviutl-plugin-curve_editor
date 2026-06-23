@@ -315,6 +315,8 @@ namespace curve_editor::global {
 		catch (const nlohmann::json::exception&) {
 			return false;
 		}
+		// 前回選択していたコレクションを選択
+		set_current_collection_id(collection_id_tmp_);
 		return true;
 	}
 
@@ -333,12 +335,10 @@ namespace curve_editor::global {
 
 	bool PresetManager::list_config_from_json(const nlohmann::json& data) noexcept {
 		try {
-			auto collection_id = data.at("collection_id").get<uint32_t>();
+			collection_id_tmp_ = data.at("collection_id").get<uint32_t>();
 			auto sort_by = data.at("sort_by").get<SortBy>();
 			auto sort_order = data.at("sort_order").get<SortOrder>();
 			auto filter_info = data.at("filter_info");
-			// TODO: この段階ではまだカスタムコレクションが作成されていない
-			set_current_collection_id(collection_id);
 			set_sort_by(sort_by);
 			set_sort_order(sort_order);
 			set_filter_info({

@@ -1,4 +1,5 @@
 #include "dialog_preset_list_setting.hpp"
+#include "message_box.hpp"
 #include "preset_manager.hpp"
 #include "resource.h"
 #include "string_table.hpp"
@@ -25,23 +26,6 @@ namespace curve_editor {
 		::SendMessageW(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::SortByName]);
 		::SendMessageW(hwnd_combo_sort_by_, CB_ADDSTRING, NULL, (LPARAM)global::string_table[StringId::SortByDate]);
 
-		::SendMessageA(hwnd_combo_sort_by_, CB_SETCURSEL, (WPARAM)global::preset_manager.get_sort_by(), NULL);
-
-		if (global::preset_manager.get_sort_order() == global::PresetManager::SortOrder::Asc) {
-			::SendMessageA(hwnd_radio_sort_asc_, BM_SETCHECK, BST_CHECKED, NULL);
-		}
-		else {
-			::SendMessageA(hwnd_radio_sort_desc_, BM_SETCHECK, BST_CHECKED, NULL);
-		}
-
-		const auto& filter_info = global::preset_manager.get_filter_info();
-		::SendMessageA(hwnd_check_filter_type_normal_, BM_SETCHECK, filter_info.type_normal ? BST_CHECKED : BST_UNCHECKED, NULL);
-		::SendMessageA(hwnd_check_filter_type_value_, BM_SETCHECK, filter_info.type_value ? BST_CHECKED : BST_UNCHECKED, NULL);
-		::SendMessageA(hwnd_check_filter_type_bezier_, BM_SETCHECK, filter_info.type_bezier ? BST_CHECKED : BST_UNCHECKED, NULL);
-		::SendMessageA(hwnd_check_filter_type_elastic_, BM_SETCHECK, filter_info.type_elastic ? BST_CHECKED : BST_UNCHECKED, NULL);
-		::SendMessageA(hwnd_check_filter_type_bounce_, BM_SETCHECK, filter_info.type_bounce ? BST_CHECKED : BST_UNCHECKED, NULL);
-		::SendMessageA(hwnd_check_filter_type_script_, BM_SETCHECK, filter_info.type_script ? BST_CHECKED : BST_UNCHECKED, NULL);
-
 		::SetWindowTextW(hwnd_check_filter_type_normal_, global::string_table[StringId::CurveTypeNormal]);
 		::SetWindowTextW(hwnd_check_filter_type_value_, global::string_table[StringId::CurveTypeValue]);
 		::SetWindowTextW(hwnd_check_filter_type_bezier_, global::string_table[StringId::CurveTypeBezier]);
@@ -52,11 +36,37 @@ namespace curve_editor {
 		::SetWindowTextW(hwnd_radio_sort_asc_, global::string_table[StringId::SortOrderAsc]);
 		::SetWindowTextW(hwnd_radio_sort_desc_, global::string_table[StringId::SortOrderDesc]);
 
+		::SetDlgItemTextW(hwnd, IDC_BUTTON_RESET, global::string_table[StringId::LabelReset]);
 		::SetDlgItemTextW(hwnd, IDOK, global::string_table[StringId::WordOK]);
 		::SetDlgItemTextW(hwnd, IDCANCEL, global::string_table[StringId::WordCancel]);
+
+		load_config();
+	}
+
+	void PresetListSettingDialog::load_config() noexcept {
+		::SendMessageA(hwnd_combo_sort_by_, CB_SETCURSEL, (WPARAM)global::preset_manager.get_sort_by(), NULL);
+
+		if (global::preset_manager.get_sort_order() == global::PresetManager::SortOrder::Asc) {
+			::SendMessageA(hwnd_radio_sort_asc_, BM_SETCHECK, BST_CHECKED, NULL);
+			::SendMessageA(hwnd_radio_sort_desc_, BM_SETCHECK, BST_UNCHECKED, NULL);
+		}
+		else {
+			::SendMessageA(hwnd_radio_sort_asc_, BM_SETCHECK, BST_UNCHECKED, NULL);
+			::SendMessageA(hwnd_radio_sort_desc_, BM_SETCHECK, BST_CHECKED, NULL);
+		}
+
+		const auto& filter_info = global::preset_manager.get_filter_info();
+		::SendMessageA(hwnd_check_filter_type_normal_, BM_SETCHECK, filter_info.type_normal ? BST_CHECKED : BST_UNCHECKED, NULL);
+		::SendMessageA(hwnd_check_filter_type_value_, BM_SETCHECK, filter_info.type_value ? BST_CHECKED : BST_UNCHECKED, NULL);
+		::SendMessageA(hwnd_check_filter_type_bezier_, BM_SETCHECK, filter_info.type_bezier ? BST_CHECKED : BST_UNCHECKED, NULL);
+		::SendMessageA(hwnd_check_filter_type_elastic_, BM_SETCHECK, filter_info.type_elastic ? BST_CHECKED : BST_UNCHECKED, NULL);
+		::SendMessageA(hwnd_check_filter_type_bounce_, BM_SETCHECK, filter_info.type_bounce ? BST_CHECKED : BST_UNCHECKED, NULL);
+		::SendMessageA(hwnd_check_filter_type_script_, BM_SETCHECK, filter_info.type_script ? BST_CHECKED : BST_UNCHECKED, NULL);
 	}
 
 	INT_PTR PresetListSettingDialog::dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM) {
+		using StringId = global::StringTable::StringId;
+
 		switch (message) {
 		case WM_INITDIALOG:
 			init_controls(hwnd);
@@ -86,6 +96,20 @@ namespace curve_editor {
 			case IDCANCEL:
 				::EndDialog(hwnd, 1);
 				return TRUE;
+
+			case IDC_BUTTON_RESET:
+			{
+				auto resp = util::message_box(
+					global::string_table[StringId::WarningResetPreferences],
+					hwnd,
+					util::MessageBoxIcon::Warning, util::MessageBoxButton::OkCancel
+				);
+				if (resp == IDOK) {
+					global::preset_manager.reset_list_config();
+					load_config();
+				}
+				return TRUE;
+			}
 			}
 		}
 		return FALSE;
