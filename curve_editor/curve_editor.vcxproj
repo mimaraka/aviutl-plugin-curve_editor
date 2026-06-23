@@ -27,6 +27,7 @@
     <WebView2LoaderPreference>Static</WebView2LoaderPreference>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="curve_editor.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -91,7 +92,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(UserProfile)\source\lib\lua5_1_4_Win32_dll8_lib\include\;$(UserProfile)\source\lib\boost_1_87_0\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LUA_DIR)\include\;$(UserProfile)\source\lib\boost_1_87_0\;$(ProjectDir)\external\json\include\;$(ProjectDir)\external\strconv\;$(ProjectDir)\external\aviutl_exedit_sdk\;$(ProjectDir)\external\cereal\include\;$(ProjectDir)\external\FastNoiseLite\Cpp\;$(ProjectDir)\external\aviutl-mkaul\;$(ProjectDir)\external\sol2\include\;$(ProjectDir)\external\magic_enum\include\</AdditionalIncludeDirectories>
       <AdditionalOptions>/source-charset:utf-8 /MP /Zc:u8EscapeEncoding %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -149,12 +150,11 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
 xcopy /y "$(ProjectDir)@Curve Editor.tra" "$(OutDir)"
 
 rd /s /q "$(OutDir)ui"
-rd /s /q "$(ProjectDir)ui\dist\js"
+rd /s /q "$(ProjectDir)ui\dist"
 cd "$(ProjectDir)ui"
-call npx webpack --mode production
+call npx vite build
 cd $(SolutionDir)
-xcopy /s /y /i "$(ProjectDir)ui\dist\js" "$(OutDir)ui\js"
-xcopy /y "$(ProjectDir)ui\src\index.html" "$(OutDir)ui"</Command>
+xcopy /s /y /i "$(ProjectDir)ui\dist" "$(OutDir)ui"</Command>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>
