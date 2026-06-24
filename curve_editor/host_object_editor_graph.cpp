@@ -13,7 +13,7 @@ namespace curve_editor {
 		}
 		std::vector<double> result;
 		for (size_t i = 0u; i < n; i++) {
-			double x = start_x + (end_x - start_x) * i / (n - 1);
+			double x = (n <= 1u) ? start_x : start_x + (end_x - start_x) * i / (n - 1);
 			double y = curve->get_value(x, start_y, end_y);
 			result.emplace_back(y);
 		}
@@ -27,7 +27,7 @@ namespace curve_editor {
 		}
 		std::vector<double> result;
 		for (size_t i = 0u; i < n; i++) {
-			double x = start_x + (end_x - start_x) * i / (n - 1);
+			double x = (n <= 1u) ? start_x : start_x + (end_x - start_x) * i / (n - 1);
 			double y = curve->get_velocity(x, start_y, end_y);
 			result.emplace_back(y);
 		}

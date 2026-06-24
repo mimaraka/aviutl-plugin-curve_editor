@@ -316,14 +316,17 @@ namespace curve_editor {
 		int ix1, iy1, ix2, iy2;
 		const double width = anchor_end().x - anchor_start().x;
 		const double height = anchor_end().y - anchor_start().y;
+		// 幅・高さが0の区間（垂直・水平セグメント）でのゼロ除算（NaN）を回避
+		const bool width_zero = mkaul::real_equal(width, 0.);
+		const bool height_zero = mkaul::real_equal(height, 0.);
 
-		x1 = static_cast<float>(handle_left_.pos_rel().x / width);
-		y1 = mkaul::clamp(
+		x1 = width_zero ? 0.f : static_cast<float>(handle_left_.pos_rel().x / width);
+		y1 = height_zero ? 0.f : mkaul::clamp(
 			static_cast<float>(handle_left_.pos_rel().y / height),
 			MIN_Y, MAX_Y
 		);
-		x2 = static_cast<float>(1. + handle_right_.pos_rel().x / width);
-		y2 = mkaul::clamp(
+		x2 = width_zero ? 1.f : static_cast<float>(1. + handle_right_.pos_rel().x / width);
+		y2 = height_zero ? 1.f : mkaul::clamp(
 			static_cast<float>(1. + handle_right_.pos_rel().y / height),
 			MIN_Y, MAX_Y
 		);
@@ -386,11 +389,14 @@ namespace curve_editor {
 	std::string BezierCurve::create_params_str(size_t precision) const noexcept {
 		const double width = anchor_end().x - anchor_start().x;
 		const double height = anchor_end().y - anchor_start().y;
+		// 幅・高さが0の区間（垂直・水平セグメント）でのゼロ除算（inf/nan）を回避
+		const bool width_zero = mkaul::real_equal(width, 0.);
+		const bool height_zero = mkaul::real_equal(height, 0.);
 
-		auto x1 = handle_left_.pos_rel().x / width;
-		auto y1 = handle_left_.pos_rel().y / height;
-		auto x2 = handle_right_.pos_rel().x / width + 1.;
-		auto y2 = handle_right_.pos_rel().y / height + 1.;
+		auto x1 = width_zero ? 0. : handle_left_.pos_rel().x / width;
+		auto y1 = height_zero ? 0. : handle_left_.pos_rel().y / height;
+		auto x2 = width_zero ? 1. : handle_right_.pos_rel().x / width + 1.;
+		auto y2 = height_zero ? 1. : handle_right_.pos_rel().y / height + 1.;
 
 		std::ostringstream oss;
 		oss << std::fixed << std::setprecision(precision) << x1;

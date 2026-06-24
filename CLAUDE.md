@@ -17,19 +17,20 @@ Visual Studio / MSBuild プロジェクト。ターゲットは **Win32 (x86)** 
   ```
 - ビルドは MSBuild のイベントで以下を自動実行する（手動で個別に走らせる必要は基本ない）:
   - **PreBuild**: 依存ライブラリ `mkaul`（`external/aviutl-mkaul`）を先にビルド
-  - **PostBuild**: `npx webpack --mode production` で UI をバンドル → `dist/js/bundle.js` を出力し、`index.html` と `curve_editor.lua` / `@Curve Editor.tra` を `$(OutDir)` にコピー
+  - **PostBuild**: `npx vite build` で UI をバンドル → `ui/dist/`（`index.html` とハッシュ付きの `assets/*.js` / `*.css`）を出力し、`$(OutDir)ui` へコピー。あわせて `curve_editor.lua` / `@Curve Editor.tra` を `$(OutDir)` にコピー
 
 ### UI 単体の開発
 
-UI は `curve_editor/ui/`（webpack + ts-loader）。`package.json` に npm scripts は無いので webpack を直接叩く:
+UI は `curve_editor/ui/`（Vite + React + TypeScript、設定は `vite.config.ts`）。`package.json` の npm scripts を使う:
 
 ```
 cd curve_editor/ui
 npm install
-npx webpack --mode development   # 開発用バンドル（本番は --mode production）
+npm run dev     # Vite 開発サーバ
+npm run build   # 本番バンドル（= vite build、出力は dist/）
 ```
 
-エントリは `src/index.tsx`、出力は `dist/js/bundle.js`。Lua スクリプトエディタに Monaco を使用（`monaco-editor-webpack-plugin` で言語を `lua` のみに限定）。
+エントリは `index.html` → `src/index.tsx`、出力は `dist/`（`index.html` とハッシュ付きの `assets/*.js` / `*.css`）。`base: './'` で `file://` 読み込み向けに相対パス出力する。Lua スクリプトエディタに Monaco を使用（worker は Vite がバンドルし `editor.worker-*.js` を出力）。
 
 テストフレームワークは導入されていない。
 
@@ -47,7 +48,7 @@ npx webpack --mode development   # 開発用バンドル（本番は --mode prod
 
 2. **postMessage（非同期メッセージ、双方向）**
    - C++→UI: `MyWebView2::post_message(command, options)` / `send_command()`（`message_handler.*` 経由）。UI 初期化（`InitComponent`）や文字列テーブル送信（`LoadStringTable`）など。`src/index.tsx` がリスナのトップ。
-   - 1つの HTML（`index.html` + `bundle.js`）を複数の用途で使い回し、`InitComponent` の `page` で `MainPanel` / `SelectDialog` / `CurveIdxSelector` を描き分ける。
+   - 1つの HTML（`index.html` + Vite がバンドルした `assets/*.js`）を複数の用途で使い回し、`InitComponent` の `page` で `MainPanel` / `SelectDialog` / `CurveIdxSelector` を描き分ける。
 
 ### AviUtl プラグインのエントリポイント
 

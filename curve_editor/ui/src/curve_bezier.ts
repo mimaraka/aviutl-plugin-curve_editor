@@ -61,10 +61,10 @@ class BezierCurve extends NumericCurve {
     }
 
     getNextBezier() {
-        if (editor.getCurveName(this.prevId) !== 'bezier') {
+        if (editor.getCurveName(this.nextId) !== 'bezier') {
             return null;
         }
-        return new BezierCurve(this.prevId);
+        return new BezierCurve(this.nextId);
     }
 }
 
