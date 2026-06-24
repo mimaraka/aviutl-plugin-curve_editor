@@ -74,10 +74,9 @@ namespace curve_editor {
 				coef = 1. - prog;
 			}
 			else {
-				const double tmp = std::exp(-decay_);
-				coef = (std::pow(tmp, prog) - tmp) / (1. - tmp);
+				coef = (std::pow(exp_k, prog) - exp_k) / (1. - exp_k);
 			}
-			return 1. - coef * std::cos(2. * std::numbers::pi * frequency_ * prog);
+			return 1. - coef * std::cos(omega * prog);
 		};
 
 		// 減衰振動の導関数(の定数倍)

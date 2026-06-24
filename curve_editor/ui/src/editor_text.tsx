@@ -1,5 +1,5 @@
 import React from 'react';
-import * as monaco from 'monaco-editor';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { config, editor } from './interface';
 import './style/editor_text.scss';
 

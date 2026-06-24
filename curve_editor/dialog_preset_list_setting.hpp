@@ -19,5 +19,6 @@ namespace curve_editor {
 		int resource_id() const noexcept override;
 		INT_PTR dialog_proc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) override;
 		void init_controls(HWND hwnd) noexcept override;
+		void load_config() noexcept;
 	};
 } // namespace curve_editor

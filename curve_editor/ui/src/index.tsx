@@ -1,8 +1,17 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import MainPanel from './panel_main';
 import SelectDialog from './select_dialog';
 import CurveIdxSelector from './curve_idx_selector';
+
+
+// Monaco エディタの Worker 設定（旧 monaco-editor-webpack-plugin の代替）
+self.MonacoEnvironment = {
+    getWorker() {
+        return new editorWorker();
+    },
+};
 
 
 window.chrome.webview.addEventListener('message', (event: MessageEvent) => {
