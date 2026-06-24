@@ -61,10 +61,12 @@ declare global {
 
     interface EditorHostObject {
         currentCurveId: number;
+        currentIdx: number;
         getCurveName: (id: number) => string;
         getCurveDispName: (id: number) => string;
         isCurveLocked: (id: number) => boolean;
         setIsCurveLocked: (id: number, isLocked: boolean) => void;
+        getCurveIdxArrayAsJson: () => string;
         graph: GraphEditorHostObject;
         script: ScriptEditorHostObject;
     }

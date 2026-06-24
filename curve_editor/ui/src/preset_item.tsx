@@ -1,7 +1,6 @@
 import React from 'react';
-import CurveThumbnail from './curve_thumbnail';
+import CurveListItem from './curve_list_item';
 import { editor, preset } from './interface';
-import './style/preset_item.scss';
 
 
 interface PresetItemProps {
@@ -77,21 +76,16 @@ const PresetItem: React.FC<PresetItemProps> = React.memo((props: PresetItemProps
     }, []);
 
     return (
-        <div className='preset-item' style={{ width: props.width, height: props.width + 16 /*<- TODO: 直す*/ }}>
-            <div
-                className='preset-item-thumbnail'
-                title={getPresetTitle()}
-                onMouseDown={onMouseDown}
-                onMouseLeave={onMouseLeave}
-                onMouseUp={onMouseUp}
-                onDoubleClick={onDoubleClick}
-            >
-                <CurveThumbnail curveId={props.curveId} width={props.width - 4}/>
-            </div>
-            <div className='preset-item-text'>
-                {props.name}
-            </div>
-        </div>
+        <CurveListItem
+            width={props.width}
+            curveId={props.curveId}
+            label={props.name}
+            title={getPresetTitle()}
+            onMouseDown={onMouseDown}
+            onMouseLeave={onMouseLeave}
+            onMouseUp={onMouseUp}
+            onDoubleClick={onDoubleClick}
+        />
     );
 });
 

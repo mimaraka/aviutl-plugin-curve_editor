@@ -24,8 +24,10 @@
 #include "input_box.hpp"
 #include "message_box.hpp"
 #include "my_webview2.hpp"
+#include "my_webview2_reference.hpp"
 #include "preset_manager.hpp"
 #include "resource.h"
+#include "window_select_idx.hpp"
 #include "string_table.hpp"
 #include "update_checker.hpp"
 #include "util.hpp"
@@ -298,6 +300,26 @@ namespace curve_editor {
 	/// インデックス移動ボタンが押されたときに呼び出される関数
 	/// </summary>
 	void MessageHandler::button_idx() {
+		static SelectIdxWindow wnd_select_idx;
+		// 既に開いている場合は前面に出す
+		if (wnd_select_idx) {
+			::SetForegroundWindow(wnd_select_idx.get_hwnd());
+			return;
+		}
+		wnd_select_idx.create(hwnd_);
+	}
+
+	/// <summary>
+	/// ID一覧ウィンドウでカーブが選択されたときに呼び出される関数
+	/// </summary>
+	void MessageHandler::jump_to_idx(const nlohmann::json& options) {
+		auto idx = options.at("idx").get<size_t>();
+		global::editor.set_idx(idx);
+		if (auto main = global::webview.get(global::MyWebView2Reference::WebViewType::Main)) {
+			main->send_command(MessageCommand::UpdateEditor);
+		}
+		// 現在のメッセージ処理（WebView コールバック）から抜けた後にウィンドウを破棄する
+		::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectIdxClose, 0);
 	}
 
 

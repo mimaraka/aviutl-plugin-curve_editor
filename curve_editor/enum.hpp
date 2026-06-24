@@ -53,6 +53,7 @@ namespace curve_editor {
 		SelectCurveOk				= 0x080d,
 		SelectCurveCancel			= 0x080e,
 		SelectCurveClose			= 0x080f,
+		SelectIdxClose				= 0x0810,
 	};
 
 	enum class ThemeId {

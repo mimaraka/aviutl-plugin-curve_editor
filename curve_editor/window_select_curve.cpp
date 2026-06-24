@@ -75,7 +75,9 @@ namespace curve_editor {
 			}
 			return 0;
 		}
-		return ::DefWindowProcA(hwnd, message, wparam, lparam);
+		// ウィンドウは Unicode（RegisterClassExW/CreateWindowExW）で作成されるため、
+		// 既定処理も Unicode 版に合わせる（ANSI 版だとタイトルが文字化けする）
+		return ::DefWindowProc(hwnd, message, wparam, lparam);
 	}
 
 	HWND SelectCurveWindow::create(HWND hwnd, const ModeParamPair* mode_param) noexcept {

@@ -8,12 +8,14 @@ namespace curve_editor::global {
 	inline class MyWebView2Reference {
 		MyWebView2* p_webview_main_ = nullptr;
 		MyWebView2* p_webview_select_curve_ = nullptr;
+		MyWebView2* p_webview_select_idx_ = nullptr;
 		MyWebView2** pp_current_webview_ = &p_webview_main_;
 
 	public:
 		enum class WebViewType {
 			Main,
-			SelectCurve
+			SelectCurve,
+			SelectIdx
 		};
 
 		auto operator->() const noexcept {
@@ -32,6 +34,9 @@ namespace curve_editor::global {
 			case WebViewType::SelectCurve:
 				p_webview_select_curve_ = &my_webview;
 				break;
+			case WebViewType::SelectIdx:
+				p_webview_select_idx_ = &my_webview;
+				break;
 			}
 		}
 
@@ -41,6 +46,8 @@ namespace curve_editor::global {
 				return p_webview_main_;
 			case WebViewType::SelectCurve:
 				return p_webview_select_curve_;
+			case WebViewType::SelectIdx:
+				return p_webview_select_idx_;
 			default:
 				return nullptr;
 			}
@@ -53,6 +60,9 @@ namespace curve_editor::global {
 				break;
 			case WebViewType::SelectCurve:
 				pp_current_webview_ = &p_webview_select_curve_;
+				break;
+			case WebViewType::SelectIdx:
+				pp_current_webview_ = &p_webview_select_idx_;
 				break;
 			}
 		}

@@ -1,9 +1,9 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faList, faMagnifyingGlass, faFolderPlus, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import { Grid, type CellComponentProps } from 'react-window';
 import { ToolbarButtonIcon } from './button';
 import PresetItem from './preset_item';
+import CurveGrid from './curve_grid';
 import { config, editor, preset } from './interface';
 import './style/preset.scss';
 
@@ -15,47 +15,6 @@ interface PresetInfo {
     date: number | null;
 }
 
-// セル間の余白（preset.scss の column-gap / row-gap と対応）と、PresetItem のテキスト領域の高さ
-const COLUMN_GAP = 8;
-const ROW_GAP = 12;
-const ITEM_TEXT_HEIGHT = 16;
-// 列数算出時にスクロールバー分の幅を差し引く（preset.scss の ::-webkit-scrollbar width と対応）
-const SCROLLBAR_WIDTH = 6;
-
-interface PresetCellProps {
-    presets: PresetInfo[];
-    presetSize: number;
-    columns: number;
-}
-
-// react-window の Grid が各セルを描画するためのコンポーネント。
-// 可視範囲のセルのみがマウントされるため、サムネイル描画の負荷が件数に依らず一定になる。
-const PresetCell: React.FC<CellComponentProps<PresetCellProps>> = ({
-    columnIndex, rowIndex, style, presets, presetSize, columns,
-}) => {
-    const index = rowIndex * columns + columnIndex;
-    if (index >= presets.length) {
-        return null;
-    }
-    const info = presets[index];
-    return (
-        // style（絶対配置・セルサイズ）はセルのルート要素に適用する。
-        // 余白（COLUMN_GAP / ROW_GAP）はセルサイズに織り込んであり、PresetItem 自身の幅は presetSize。
-        <div style={style}>
-            {/* curveId で keying し、セルが別の curveId に再利用された際に
-                CurveThumbnail（useEffect([]) で初回のみ d3 描画）が確実に再マウント＝再描画されるようにする */}
-            <PresetItem
-                key={info.id}
-                curveId={info.id}
-                collectionId={info.collectionId}
-                name={info.name}
-                date={info.date}
-                width={presetSize}
-            />
-        </div>
-    );
-};
-
 
 interface PresetProps {
     style: React.CSSProperties;
@@ -63,15 +22,11 @@ interface PresetProps {
 
 const PresetPanel: React.FC<PresetProps> = ({ style }) => {
     const [presetSize, setPresetSize] = React.useState(config.presetSize);
-    const [gridWidth, setGridWidth] = React.useState(0);
     const [collectionInfo, setCollectionInfo] = React.useState(JSON.parse(preset.getCollectionsAsJson()));
     const originalPresetsInfo = React.useRef(JSON.parse(preset.getPresetsAsJson()));
     const [presetsInfo, setPresetsInfo] = React.useState(originalPresetsInfo.current);
     const [simpleView, setSimpleView] = React.useState(config.presetSimpleView);
     const presetContainer = React.useRef<HTMLDivElement>(null);
-
-    // Grid の実寸幅（onResize で更新）から1行あたりの列数を算出する
-    const columns = Math.max(1, Math.floor((gridWidth - SCROLLBAR_WIDTH) / (presetSize + COLUMN_GAP)));
 
     const onWheel = (event: WheelEvent) => {
         if (event.ctrlKey) {
@@ -229,22 +184,21 @@ const PresetPanel: React.FC<PresetProps> = ({ style }) => {
                 </div>
             </div>
             <div className='container-preset' ref={presetContainer} onMouseDown={onPresetMouseDown}>
-                {
-                    presetsInfo.length > 0 ? (
-                        <Grid
-                            className='preset-grid'
-                            cellComponent={PresetCell}
-                            cellProps={{ presets: presetsInfo, presetSize, columns }}
-                            columnCount={columns}
-                            columnWidth={presetSize + COLUMN_GAP}
-                            rowCount={Math.ceil(presetsInfo.length / columns)}
-                            rowHeight={presetSize + ITEM_TEXT_HEIGHT + ROW_GAP}
-                            overscanCount={2}
-                            onResize={(size) => setGridWidth(size.width)}
-                            style={{ width: '100%', height: '100%' }}
+                <CurveGrid
+                    items={presetsInfo}
+                    itemSize={presetSize}
+                    getKey={(info: PresetInfo) => info.id}
+                    renderItem={(info: PresetInfo, width: number) => (
+                        <PresetItem
+                            curveId={info.id}
+                            collectionId={info.collectionId}
+                            name={info.name}
+                            date={info.date}
+                            width={width}
                         />
-                    ) : (<div className='no-presets'>{window.stringTable['LabelNoPresets']}</div>)
-                }
+                    )}
+                    emptyLabel={window.stringTable['LabelNoPresets']}
+                />
             </div>
         </div>
     );

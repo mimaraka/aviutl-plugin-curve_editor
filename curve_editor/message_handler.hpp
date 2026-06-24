@@ -26,6 +26,7 @@ namespace curve_editor {
 		ContextMenuPreset,
 		ContextMenuPresetItem,
 		ContextMenuIdx,
+		JumpToIdx,
 		ButtonCollectionAdd,
 		ButtonCollection,
 		SelectCurveOk,
@@ -72,6 +73,7 @@ namespace curve_editor {
 		void context_menu_preset();
 		void context_menu_preset_item(const nlohmann::json& options);
 		void context_menu_idx();
+		void jump_to_idx(const nlohmann::json& options);
 		void button_collection_add();
 		void button_collection();
 		void button_preset_list_setting();
@@ -98,6 +100,7 @@ namespace curve_editor {
 			handlers_.emplace_back(MessageCommand::ContextMenuPreset, std::bind(&MessageHandler::context_menu_preset, this));
 			handlers_.emplace_back(MessageCommand::ContextMenuPresetItem, std::bind(&MessageHandler::context_menu_preset_item, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuIdx, std::bind(&MessageHandler::context_menu_idx, this));
+			handlers_.emplace_back(MessageCommand::JumpToIdx, std::bind(&MessageHandler::jump_to_idx, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ButtonCollectionAdd, std::bind(&MessageHandler::button_collection_add, this));
 			handlers_.emplace_back(MessageCommand::ButtonCollection, std::bind(&MessageHandler::button_collection, this));
 			handlers_.emplace_back(MessageCommand::ButtonPresetListSetting, std::bind(&MessageHandler::button_preset_list_setting, this));

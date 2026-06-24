@@ -33,6 +33,12 @@
     }
 }
 
+// ID 一覧で現在編集中のカーブを示すハイライト
+.preset-item-thumbnail-current {
+    outline: 2px solid var(--color-button);
+    outline-offset: -2px;
+}
+
 .preset-item-text {
     user-select: none;
     overflow: hidden;
