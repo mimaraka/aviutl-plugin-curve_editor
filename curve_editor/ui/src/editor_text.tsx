@@ -1,5 +1,6 @@
 import React from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import 'monaco-editor/esm/vs/editor/edcore.main';   // 右クリックメニュー等の全コントリビューションを読み込む（旧 'monaco-editor' import の代替）
 import { config, editor } from './interface';
 import './style/editor_text.scss';
 
@@ -10,6 +11,7 @@ const initMonacoEditor = () => {
         return;
     }
     initialized = true;
+    monaco.languages.register({ id: 'lua' });
     const identifiers = [
         {name: 'function', insertText: 'function ${1:name}(${2:args})\n\t${0}\nend', type: 'keyword'},
         {name: 'local', insertText: 'local ${1:name} = ${0}', type: 'keyword'},
