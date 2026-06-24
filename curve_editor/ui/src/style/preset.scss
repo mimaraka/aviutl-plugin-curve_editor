@@ -20,19 +20,17 @@
     background-color: var(--color-bg);
 }
 
+// 仮想化された Grid（.preset-grid）を内包するコンテナ。スクロールは Grid 内部要素が担う。
 .container-preset {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-content: flex-start;
-    row-gap: 12px;
-    column-gap: 8px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     width: calc(100% - var(--margin) * 2);
     height: calc(100% - var(--searchbar-height) - var(--margin) * 4 - 32px);
     padding: var(--margin);
     flex-grow: 1;
+}
+
+// react-window の Grid 本体（スクロール要素）
+.preset-grid {
     &::-webkit-scrollbar {
         width: 5px;
         background-color: var(--color-bg);
