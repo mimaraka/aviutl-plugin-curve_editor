@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import Curve from './curve_base';
+import { formatCoord } from './format';
 
 
 export interface PrevHandleFunc {
@@ -88,6 +89,18 @@ class Control {
                 .on('drag', (event) => this.onAnchorEndDrag(event))
                 .on('end', (event) => this.onAnchorEndDragEnd(event))
         );
+    }
+
+    // 制御点にホバー時の座標ツールチップ((X, Y))を付与
+    protected attachCoordTooltip(
+        selection: d3.Selection<any, unknown, any, unknown>,
+        getCoord: () => { x: number, y: number }
+    ) {
+        const title = selection.append('title');
+        selection.on('mouseenter.tooltip', () => {
+            const { x, y } = getCoord();
+            title.text(formatCoord(x, y));
+        });
     }
 
     setPrevHandleFunc(func: PrevHandleFunc | null) {

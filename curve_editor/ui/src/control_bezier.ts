@@ -92,6 +92,12 @@ class BezierControl extends Control {
                 .on('drag', this.onHandleRightDrag.bind(this))
                 .on('end', this.onHandleRightDragEnd.bind(this))
         );
+
+        // 座標ツールチップの付与
+        this.attachCoordTooltip(this.anchorStart, () => this._bufferAnchorStart);
+        this.attachCoordTooltip(this.anchorEnd, () => this._bufferAnchorEnd);
+        this.attachCoordTooltip(this.handleLeft, () => this.#bufferHandleLeft);
+        this.attachCoordTooltip(this.handleRight, () => this.#bufferHandleRight);
     }
 
     rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {

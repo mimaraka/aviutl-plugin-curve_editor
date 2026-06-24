@@ -39,6 +39,11 @@ class BounceControl extends Control {
                 .on('drag', this.onHandleDrag.bind(this))
                 .on('end', this.onDragEnd.bind(this))
         );
+
+        // 座標ツールチップの付与
+        this.attachCoordTooltip(this.anchorStart, () => this._bufferAnchorStart);
+        this.attachCoordTooltip(this.anchorEnd, () => this._bufferAnchorEnd);
+        this.attachCoordTooltip(this.handle, () => this.#bufferHandle);
     }
 
     rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {

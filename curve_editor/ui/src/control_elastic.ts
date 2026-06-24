@@ -111,6 +111,17 @@ class ElasticControl extends Control {
                 .on('drag', this.onHandleFreqDecayDrag.bind(this))
                 .on('end', this.onDragEnd.bind(this))
         );
+
+        // 座標ツールチップの付与
+        this.attachCoordTooltip(this.anchorStart, () => this._bufferAnchorStart);
+        this.attachCoordTooltip(this.anchorEnd, () => this._bufferAnchorEnd);
+        this.attachCoordTooltip(this.handleAmpLeft, () => this.#bufferHandleAmpLeft);
+        this.attachCoordTooltip(this.handleAmpRight, () => this.#bufferHandleAmpRight);
+        this.attachCoordTooltip(this.handleFreqDecay, () => this.#bufferHandleFreqDecay);
+        this.attachCoordTooltip(this.handleFreqDecayRoot, () => ({
+            x: this.#bufferHandleFreqDecay.x,
+            y: this.#bufferHandleFreqDecayRootY,
+        }));
     }
 
     rescaleX(scaleX: d3.ScaleLinear<number, number>, transition: d3.Transition<any, unknown, any, unknown> | null = null) {
