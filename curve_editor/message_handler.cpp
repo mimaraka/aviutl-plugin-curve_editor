@@ -14,6 +14,7 @@
 #include "context_menu.hpp"
 #include "curve_editor.hpp"
 #include "dialog_about.hpp"
+#include "dialog_control_position.hpp"
 #include "dialog_id_jumpto.hpp"
 #include "dialog_modifier.hpp"
 #include "dialog_pref.hpp"
@@ -522,6 +523,26 @@ namespace curve_editor {
 					ModifierDialog dialog;
 					dialog.show(hwnd_, static_cast<LPARAM>(segment_id));
 				}
+			},
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				segment->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, segment]() {
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						segment->anchor_start().x,
+						segment->anchor_start().y,
+						[this, segment](HWND, double x, double y) -> bool {
+							segment->begin_move_anchor_start();
+							segment->move_anchor_start(x, y);
+							segment->end_move_anchor_start();
+							if (p_webview_) p_webview_->send_command(MessageCommand::UpdateControl);
+							return true;
+						}
+					};
+					dialog.show(hwnd_);
+				}
 			}
 		}.show(hwnd_);
 	}
@@ -574,6 +595,131 @@ namespace curve_editor {
 						parent_curve->adjust_segment_handle_angle(id, handle_type, scale_x, scale_y);
 						if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
 					}
+				}
+			},
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				curve->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, curve, handle_type]() {
+					auto handle_pos = (handle_type == BezierCurve::HandleType::Left)
+						? curve->get_handle_left() : curve->get_handle_right();
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						handle_pos.x,
+						handle_pos.y,
+						[this, curve, handle_type](HWND, double x, double y) -> bool {
+							if (handle_type == BezierCurve::HandleType::Left) {
+								curve->move_handle_left(mkaul::Point{ x, y });
+							}
+							else {
+								curve->move_handle_right(mkaul::Point{ x, y });
+							}
+							if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+							return true;
+						}
+					};
+					dialog.show(hwnd_);
+				}
+			}
+		}.show(hwnd_);
+	}
+
+
+	/// <summary>
+	/// 振動カーブのハンドルのコンテキストメニューを表示する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::context_menu_elastic_handle(const nlohmann::json& options) {
+		auto id = options.at("curveId").get<uint32_t>();
+		auto handle_type = options.at("handleType").get<std::string>();
+		auto curve = global::id_manager.get_curve<ElasticCurve>(id);
+		if (!curve) {
+			return;
+		}
+
+		// ハンドルの種類ごとに初期座標・適用処理・X座標編集可否を決定する
+		double init_x, init_y;
+		bool enable_x;
+		std::function<bool(HWND, double, double)> on_submit;
+
+		if (handle_type == "freqDecay") {
+			// 周波数・減衰ハンドル: X座標(周波数)・Y座標(減衰)の両方を編集可能
+			init_x = curve->get_handle_freq_decay_x();
+			init_y = curve->get_handle_freq_decay_y();
+			enable_x = true;
+			on_submit = [this, curve](HWND, double x, double y) -> bool {
+				curve->set_handle_freq_decay(x, y);
+				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+				return true;
+			};
+		}
+		else {
+			// 振幅ハンドル(左/右): Y座標(振幅)のみ編集可能
+			bool is_right = (handle_type == "ampRight");
+			init_x = is_right ? curve->get_handle_amp_right_x() : curve->get_handle_amp_left_x();
+			init_y = is_right ? curve->get_handle_amp_right_y() : curve->get_handle_amp_left_y();
+			enable_x = false;
+			on_submit = [this, curve, is_right](HWND, double, double y) -> bool {
+				if (is_right) {
+					curve->set_handle_amp_right(y);
+				}
+				else {
+					curve->set_handle_amp_left(y);
+				}
+				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+				return true;
+			};
+		}
+
+		ContextMenu{
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				curve->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, init_x, init_y, enable_x, on_submit]() {
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						init_x,
+						init_y,
+						on_submit,
+						enable_x
+					};
+					dialog.show(hwnd_);
+				}
+			}
+		}.show(hwnd_);
+	}
+
+
+	/// <summary>
+	/// バウンスカーブのハンドルのコンテキストメニューを表示する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::context_menu_bounce_handle(const nlohmann::json& options) {
+		auto id = options.at("curveId").get<uint32_t>();
+		auto curve = global::id_manager.get_curve<BounceCurve>(id);
+		if (!curve) {
+			return;
+		}
+
+		ContextMenu{
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				curve->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, curve]() {
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						curve->get_handle_x(),
+						curve->get_handle_y(),
+						[this, curve](HWND, double x, double y) -> bool {
+							curve->set_handle(x, y);
+							if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+							return true;
+						}
+					};
+					dialog.show(hwnd_);
 				}
 			}
 		}.show(hwnd_);

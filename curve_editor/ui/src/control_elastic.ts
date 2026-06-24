@@ -34,12 +34,34 @@ class ElasticControl extends Control {
             .attr('cx', scaleX(this.#bufferHandleAmpLeft.x))
             .attr('cy', scaleY(this.#bufferHandleAmpLeft.y))
             .attr('r', this.handleRadius)
-            .attr('class', 'handle');
+            .attr('class', 'handle')
+            .on('mousedown', event => {
+                if (event.button === 2) {
+                    event.stopPropagation();
+                    window.chrome.webview.postMessage({
+                        command: 'ContextMenuElasticHandle',
+                        curveId: curve.id,
+                        parentCurveId: curve.parentId,
+                        handleType: 'ampLeft',
+                    });
+                }
+            });
         this.handleAmpRight = g.append('circle')
             .attr('cx', scaleX(this.#bufferHandleAmpRight.x))
             .attr('cy', scaleY(this.#bufferHandleAmpRight.y))
             .attr('r', this.handleRadius)
-            .attr('class', 'handle');
+            .attr('class', 'handle')
+            .on('mousedown', event => {
+                if (event.button === 2) {
+                    event.stopPropagation();
+                    window.chrome.webview.postMessage({
+                        command: 'ContextMenuElasticHandle',
+                        curveId: curve.id,
+                        parentCurveId: curve.parentId,
+                        handleType: 'ampRight',
+                    });
+                }
+            });
         this.handleFreqDecayRoot = g.append('rect')
             .attr('x', scaleX(this.#bufferHandleFreqDecay.x) - this.anchorRadius)
             .attr('y', scaleY(this.#bufferHandleFreqDecayRootY) - this.anchorRadius)
@@ -50,7 +72,18 @@ class ElasticControl extends Control {
             .attr('cx', scaleX(this.#bufferHandleFreqDecay.x))
             .attr('cy', scaleY(this.#bufferHandleFreqDecay.y))
             .attr('r', this.handleRadius)
-            .attr('class', 'handle');
+            .attr('class', 'handle')
+            .on('mousedown', event => {
+                if (event.button === 2) {
+                    event.stopPropagation();
+                    window.chrome.webview.postMessage({
+                        command: 'ContextMenuElasticHandle',
+                        curveId: curve.id,
+                        parentCurveId: curve.parentId,
+                        handleType: 'freqDecay',
+                    });
+                }
+            });
         this.handleLineAmp = g.append('line')
             .attr('x1', scaleX(this.#bufferHandleAmpLeft.x))
             .attr('y1', scaleY(this.#bufferHandleAmpLeft.y))

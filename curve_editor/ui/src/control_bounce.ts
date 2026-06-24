@@ -23,7 +23,17 @@ class BounceControl extends Control {
             .attr('cx', scaleX(this.#bufferHandle.x))
             .attr('cy', scaleY(this.#bufferHandle.y))
             .attr('r', this.handleRadius)
-            .attr('class', 'handle');
+            .attr('class', 'handle')
+            .on('mousedown', event => {
+                if (event.button === 2) {
+                    event.stopPropagation();
+                    window.chrome.webview.postMessage({
+                        command: 'ContextMenuBounceHandle',
+                        curveId: curve.id,
+                        parentCurveId: curve.parentId,
+                    });
+                }
+            });
         this.handle.call(
             d3.drag<SVGCircleElement, unknown>()
                 .on('drag', this.onHandleDrag.bind(this))

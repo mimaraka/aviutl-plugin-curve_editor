@@ -486,6 +486,10 @@ namespace curve_editor::global {
 				id = IDS_MENU_EDITOR_SEGMENT_MODIFIER;
 				break;
 
+			case StringId::MenuEditorPosition:
+				id = IDS_MENU_EDITOR_POSITION;
+				break;
+
 			case StringId::MenuOthersPanelLayout:
 				id = IDS_MENU_OTHERS_PANEL_LAYOUT;
 				break;

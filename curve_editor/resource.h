@@ -245,6 +245,7 @@
 #define IDS_MENU_ID_JUMP_TO_LAST        6068
 #define IDS_MENU_ID_DELETE              6069
 #define IDS_MENU_ID_DELETE_ALL          6070
+#define IDS_MENU_EDITOR_POSITION        6071
 #define ID_EDIT_APPLYMODE               40060
 #define ID_GRAPH_FIT                    40097
 #define ID_MANIFEST_VISUALSTYLE         40142

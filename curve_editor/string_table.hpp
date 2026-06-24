@@ -127,6 +127,7 @@ namespace curve_editor::global {
 			MenuEditorSegmentType,
 			MenuEditorSegmentReverse,
 			MenuEditorSegmentModifier,
+			MenuEditorPosition,
 			MenuOthersPanelLayout,
 			MenuOthersPanelLayoutVertical,
 			MenuOthersPanelLayoutHorizontal,

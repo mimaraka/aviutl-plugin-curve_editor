@@ -324,6 +324,9 @@
     <ClInclude Include="input_box.hpp">
       <Filter>Header Files\Util</Filter>
     </ClInclude>
+    <ClInclude Include="dialog_control_position.hpp">
+      <Filter>Header Files\Dialog</Filter>
+    </ClInclude>
     <ClInclude Include="dialog_input.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
@@ -547,6 +550,9 @@
     </ClCompile>
     <ClCompile Include="input_box.cpp">
       <Filter>Source Files\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog_control_position.cpp">
+      <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_input.cpp">
       <Filter>Source Files\Dialog</Filter>

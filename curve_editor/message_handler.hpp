@@ -21,6 +21,8 @@ namespace curve_editor {
 		ContextMenuGraph,
 		ContextMenuSegment,
 		ContextMenuBezierHandle,
+		ContextMenuElasticHandle,
+		ContextMenuBounceHandle,
 		ContextMenuPreset,
 		ContextMenuPresetItem,
 		ContextMenuIdx,
@@ -65,6 +67,8 @@ namespace curve_editor {
 		void context_menu_graph(const nlohmann::json& options);
 		void context_menu_segment(const nlohmann::json& options);
 		void context_menu_bezier_handle(const nlohmann::json& options);
+		void context_menu_elastic_handle(const nlohmann::json& options);
+		void context_menu_bounce_handle(const nlohmann::json& options);
 		void context_menu_preset();
 		void context_menu_preset_item(const nlohmann::json& options);
 		void context_menu_idx();
@@ -89,6 +93,8 @@ namespace curve_editor {
 			handlers_.emplace_back(MessageCommand::ContextMenuGraph, std::bind(&MessageHandler::context_menu_graph, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuSegment, std::bind(&MessageHandler::context_menu_segment, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuBezierHandle, std::bind(&MessageHandler::context_menu_bezier_handle, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::ContextMenuElasticHandle, std::bind(&MessageHandler::context_menu_elastic_handle, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::ContextMenuBounceHandle, std::bind(&MessageHandler::context_menu_bounce_handle, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuPreset, std::bind(&MessageHandler::context_menu_preset, this));
 			handlers_.emplace_back(MessageCommand::ContextMenuPresetItem, std::bind(&MessageHandler::context_menu_preset_item, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuIdx, std::bind(&MessageHandler::context_menu_idx, this));
