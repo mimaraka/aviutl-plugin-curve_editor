@@ -27,6 +27,14 @@ declare global {
         config: ConfigHostObject;
         editor: EditorHostObject;
         preset: PresetHostObject;
+        preferences: PreferencesHostObject;
+    }
+
+    interface PreferencesHostObject {
+        getSchemaJson: () => string;
+        getValuesJson: () => string;
+        setValuesJson: (json: string) => void;
+        getDefaultValuesJson: () => string;
     }
 
     interface ConfigHostObject {
@@ -173,3 +181,4 @@ declare global {
 export const config = (window.top ?? window).chrome.webview.hostObjects.sync.config;
 export const editor = (window.top ?? window).chrome.webview.hostObjects.sync.editor;
 export const preset = (window.top ?? window).chrome.webview.hostObjects.sync.preset;
+export const preferences = (window.top ?? window).chrome.webview.hostObjects.sync.preferences;

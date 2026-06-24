@@ -31,6 +31,7 @@
 #include "string_table.hpp"
 #include "update_checker.hpp"
 #include "util.hpp"
+#include "window_preferences.hpp"
 
 
 namespace curve_editor {
@@ -255,8 +256,13 @@ namespace curve_editor {
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this]() {
-					PrefDialog dialog;
-					dialog.show(hwnd_);
+					static PreferencesWindow wnd_preferences;
+					// 既に開いている場合は前面に出す
+					if (wnd_preferences) {
+						::SetForegroundWindow(wnd_preferences.get_hwnd());
+						return;
+					}
+					wnd_preferences.create(hwnd_);
 				}
 			},
 			MenuItem{L"", MenuItem::Type::Separator},
@@ -1233,6 +1239,114 @@ namespace curve_editor {
 			}
 			else {
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateControl);
+			}
+		}
+	}
+
+
+	/// <summary>
+	/// 環境設定の適用処理(永続化 + メインビューへの反映)を行う関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::apply_preferences_internal(const nlohmann::json& options) {
+		using WebViewType = global::MyWebView2Reference::WebViewType;
+
+		// この時点で setValuesJson により global::config は既に更新済み
+		global::config.save_json();
+
+		// テーマ変更を WebView に反映(メイン・環境設定ダイアログ双方)
+		if (auto main = global::webview.get(WebViewType::Main)) {
+			main->update_color_scheme();
+			main->send_command(MessageCommand::ApplyPreferences);
+		}
+		if (p_webview_) p_webview_->update_color_scheme();
+
+		// 言語変更時は AviUtl の再起動を促す(既存仕様)
+		if (options.contains("languageChanged") and options.at("languageChanged").get<bool>()) {
+			util::message_box(global::string_table[StringId::InfoRestartAviutl], hwnd_, util::MessageBoxIcon::Information);
+		}
+	}
+
+
+	/// <summary>
+	/// 環境設定ダイアログで「適用」が押されたときに呼び出される関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::preferences_apply(const nlohmann::json& options) {
+		apply_preferences_internal(options);
+	}
+
+
+	/// <summary>
+	/// 環境設定ダイアログで「OK」が押されたときに呼び出される関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::preferences_ok(const nlohmann::json& options) {
+		apply_preferences_internal(options);
+		// 現在のメッセージ処理(WebView コールバック)から抜けた後にウィンドウを破棄する
+		::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::PreferencesClose, 0);
+	}
+
+
+	/// <summary>
+	/// 環境設定ダイアログで「キャンセル」が押されたときに呼び出される関数
+	/// </summary>
+	void MessageHandler::preferences_cancel() {
+		// 書き戻さずウィンドウを破棄するのみ(編集中は UI ローカル state のみ変更されている)
+		::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::PreferencesClose, 0);
+	}
+
+
+	/// <summary>
+	/// 色ピッカーを開き、選択結果を環境設定ダイアログへ返送する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::pick_color(const nlohmann::json& options) {
+		auto key = options.at("key").get<std::string>();
+		COLORREF initial = options.contains("value") ? (COLORREF)options.at("value").get<uint32_t>() : 0;
+		static COLORREF custom_colors[16];
+		CHOOSECOLOR cc{
+			.lStructSize = sizeof(CHOOSECOLOR),
+			.hwndOwner = hwnd_,
+			.rgbResult = initial,
+			.lpCustColors = custom_colors,
+			.Flags = CC_FULLOPEN | CC_RGBINIT
+		};
+		if (::ChooseColor(&cc)) {
+			if (p_webview_) {
+				p_webview_->send_command(MessageCommand::SetPrefValue, { {"key", key}, {"value", (uint32_t)cc.rgbResult} });
+			}
+		}
+	}
+
+
+	/// <summary>
+	/// ファイル選択ダイアログを開き、選択結果を環境設定ダイアログへ返送する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::pick_file_path(const nlohmann::json& options) {
+		using namespace std::literals::string_view_literals;
+
+		auto key = options.at("key").get<std::string>();
+		wchar_t image_path[MAX_PATH + 1] = L"";
+		constexpr auto TEMPLATE_IMAGE = L"*.bmp;*.jpg;*.jpeg;*.png;*.webp;*.jfif;*.gif";
+		auto str_filter = std::format(
+			L"{0} ({1})\0{1}\0"sv,
+			global::string_table[StringId::WordImageFile],
+			TEMPLATE_IMAGE
+		);
+		OPENFILENAME ofn{
+			.lStructSize = sizeof(OPENFILENAME),
+			.hwndOwner = hwnd_,
+			.lpstrFilter = str_filter.c_str(),
+			.lpstrFile = image_path,
+			.nMaxFile = MAX_PATH + 1,
+			.lpstrTitle = global::string_table[StringId::CaptionSelectBackgroundImage],
+			.Flags = OFN_FILEMUSTEXIST
+		};
+		if (::GetOpenFileName(&ofn)) {
+			if (p_webview_) {
+				p_webview_->send_command(MessageCommand::SetPrefValue, { {"key", key}, {"value", ::wide_to_utf8(ofn.lpstrFile)} });
 			}
 		}
 	}

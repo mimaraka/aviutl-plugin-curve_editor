@@ -222,6 +222,9 @@
     <ClInclude Include="preferences.hpp">
       <Filter>Header Files\Config</Filter>
     </ClInclude>
+    <ClInclude Include="preferences_schema.hpp">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
     <ClInclude Include="drag_and_drop.hpp">
       <Filter>Header Files\Exedit Hook</Filter>
     </ClInclude>
@@ -315,6 +318,9 @@
     <ClInclude Include="host_object_preset.hpp">
       <Filter>Header Files\WebView2\Host Object</Filter>
     </ClInclude>
+    <ClInclude Include="host_object_preferences.hpp">
+      <Filter>Header Files\WebView2\Host Object</Filter>
+    </ClInclude>
     <ClInclude Include="preset.hpp">
       <Filter>Header Files\Preset</Filter>
     </ClInclude>
@@ -358,6 +364,9 @@
       <Filter>Header Files\Curve\Handle</Filter>
     </ClInclude>
     <ClInclude Include="window_select_idx.hpp">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="window_preferences.hpp">
       <Filter>Header Files\Window</Filter>
     </ClInclude>
     <ClInclude Include="dialog_preset_list_setting.hpp">
@@ -462,6 +471,9 @@
       <Filter>Source Files\Config</Filter>
     </ClCompile>
     <ClCompile Include="preferences.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="preferences_schema.cpp">
       <Filter>Source Files\Config</Filter>
     </ClCompile>
     <ClCompile Include="curve_editor_script.cpp">
@@ -576,6 +588,9 @@
       <Filter>Source Files\Curve\Handle</Filter>
     </ClCompile>
     <ClCompile Include="window_select_idx.cpp">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="window_preferences.cpp">
       <Filter>Source Files\Window</Filter>
     </ClCompile>
     <ClCompile Include="dialog_preset_list_setting.cpp">

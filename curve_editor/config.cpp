@@ -27,7 +27,8 @@ namespace curve_editor::global {
 		preset_size_{ 64 },
 		preset_simple_view_{ false },
 		select_window_size_{ 300, 450 },
-		select_idx_window_size_{ 300, 450 }
+		select_idx_window_size_{ 300, 450 },
+		preferences_window_size_{ 600, 500 }
 	{
 		pref_.reset();
 		apply_mode_.fill(ApplyMode::Normal);
@@ -183,6 +184,8 @@ namespace curve_editor::global {
 			util::set_from_json(data, "select_window_height", select_window_size_.height);
 			util::set_from_json(data, "select_idx_window_width", select_idx_window_size_.width);
 			util::set_from_json(data, "select_idx_window_height", select_idx_window_size_.height);
+			util::set_from_json(data, "preferences_window_width", preferences_window_size_.width);
+			util::set_from_json(data, "preferences_window_height", preferences_window_size_.height);
 		}
 		catch (const nlohmann::json::exception&) {
 			return false;
@@ -218,7 +221,9 @@ namespace curve_editor::global {
 			{"select_window_width", select_window_size_.width},
 			{"select_window_height", select_window_size_.height},
 			{"select_idx_window_width", select_idx_window_size_.width},
-			{"select_idx_window_height", select_idx_window_size_.height}
+			{"select_idx_window_height", select_idx_window_size_.height},
+			{"preferences_window_width", preferences_window_size_.width},
+			{"preferences_window_height", preferences_window_size_.height}
 		};
 
 		std::ofstream ofs{ dir_plugin_ / CONFIG_FILE_NAME };

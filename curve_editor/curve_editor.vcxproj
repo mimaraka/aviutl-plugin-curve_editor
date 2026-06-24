@@ -245,6 +245,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClInclude Include="host_object_curve_graph_numeric.hpp" />
     <ClInclude Include="host_object_editor.hpp" />
     <ClInclude Include="host_object_editor_script.hpp" />
+    <ClInclude Include="host_object_preferences.hpp" />
     <ClInclude Include="host_object_preset.hpp" />
     <ClInclude Include="input_box.hpp" />
     <ClInclude Include="key_state_observer.hpp" />
@@ -279,6 +280,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClInclude Include="modifier_noise.hpp" />
     <ClInclude Include="position_converter.hpp" />
     <ClInclude Include="preferences.hpp" />
+    <ClInclude Include="preferences_schema.hpp" />
     <ClInclude Include="preset_manager.hpp" />
     <ClInclude Include="trackbar_button.hpp" />
     <ClInclude Include="preset.hpp" />
@@ -290,6 +292,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClInclude Include="util_json.hpp" />
     <ClInclude Include="my_webview2_reference.hpp" />
     <ClInclude Include="window_select_curve.hpp" />
+    <ClInclude Include="window_preferences.hpp" />
     <ClInclude Include="window_select_idx.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -350,6 +353,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClCompile Include="preset_manager.cpp" />
     <ClCompile Include="update_checker.cpp" />
     <ClCompile Include="window_select_curve.cpp" />
+    <ClCompile Include="window_preferences.cpp" />
     <ClCompile Include="window_select_idx.cpp" />
     <ClInclude Include="host_object_curve_elastic.hpp" />
     <ClCompile Include="host_object_curve_bezier.cpp">
@@ -376,6 +380,7 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <ClCompile Include="modifier_sine_wave.cpp" />
     <ClCompile Include="modifier_square_wave.cpp" />
     <ClCompile Include="preferences.cpp" />
+    <ClCompile Include="preferences_schema.cpp" />
     <ClCompile Include="trackbar_button.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="curve_linear.cpp" />
@@ -425,43 +430,6 @@ msbuild mkaul\mkaul.vcxproj /p:Configuration=$(Configuration) /p:Platform=$(Plat
     <None Include="curve_editor.lua" />
     <None Include="packages.config" />
     <None Include="resources\cursor\drag.cur" />
-    <None Include="ui\src\button.tsx" />
-    <None Include="ui\src\control.ts" />
-    <None Include="ui\src\control_base.ts" />
-    <None Include="ui\src\control_bezier.ts" />
-    <None Include="ui\src\control_bounce.ts" />
-    <None Include="ui\src\control_elastic.ts" />
-    <None Include="ui\src\control_linear.ts" />
-    <None Include="ui\src\control_normal.ts" />
-    <None Include="ui\src\curve_base.ts" />
-    <None Include="ui\src\curve_bezier.ts" />
-    <None Include="ui\src\curve_bounce.ts" />
-    <None Include="ui\src\curve_elastic.ts" />
-    <None Include="ui\src\curve_linear.ts" />
-    <None Include="ui\src\curve_normal.ts" />
-    <None Include="ui\src\curve_numeric.ts" />
-    <None Include="ui\src\editor_graph.tsx" />
-    <None Include="ui\src\editor_text.tsx" />
-    <None Include="ui\src\host_object.ts" />
-    <None Include="ui\src\index.html" />
-    <None Include="ui\src\index.tsx" />
-    <None Include="ui\src\panel_editor.tsx" />
-    <None Include="ui\src\panel_main.tsx" />
-    <None Include="ui\src\preset.tsx" />
-    <None Include="ui\src\preset_item.tsx" />
-    <None Include="ui\src\scss\button.scss" />
-    <None Include="ui\src\scss\common.scss" />
-    <None Include="ui\src\scss\editor_graph.scss" />
-    <None Include="ui\src\scss\editor_text.scss" />
-    <None Include="ui\src\scss\panel_editor.scss" />
-    <None Include="ui\src\scss\panel_main.scss" />
-    <None Include="ui\src\scss\preset.scss" />
-    <None Include="ui\src\scss\preset_item.scss" />
-    <None Include="ui\src\scss\select_dialog.scss" />
-    <None Include="ui\src\scss\toolbar.scss" />
-    <None Include="ui\src\scss\variables.scss" />
-    <None Include="ui\src\select_dialog.tsx" />
-    <None Include="ui\src\toolbar.tsx" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="curve_editor.rc" />

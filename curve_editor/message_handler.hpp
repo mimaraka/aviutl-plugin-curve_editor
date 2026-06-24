@@ -48,6 +48,12 @@ namespace curve_editor {
 		ChangeEditMode,
 		ChangeLayoutMode,
 		NotifyUpdateAvailable,
+		PreferencesApply,
+		PreferencesOk,
+		PreferencesCancel,
+		PickColor,
+		PickFilePath,
+		SetPrefValue,
 	};
 
 	using MessageHandlerCallback = std::function<void(const nlohmann::json&)>;
@@ -82,6 +88,12 @@ namespace curve_editor {
 		void on_dnd_start(const nlohmann::json& options);
 		void on_curve_edit(const nlohmann::json& options);
 		void apply_preset(const nlohmann::json& options);
+		void apply_preferences_internal(const nlohmann::json& options);
+		void preferences_apply(const nlohmann::json& options);
+		void preferences_ok(const nlohmann::json& options);
+		void preferences_cancel();
+		void pick_color(const nlohmann::json& options);
+		void pick_file_path(const nlohmann::json& options);
 
 	public:
 		MessageHandler(HWND hwnd, MyWebView2* p_webview) : hwnd_{ hwnd }, p_webview_{p_webview} {
@@ -109,6 +121,11 @@ namespace curve_editor {
 			handlers_.emplace_back(MessageCommand::OnDndStart, std::bind(&MessageHandler::on_dnd_start, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::OnCurveEdit, std::bind(&MessageHandler::on_curve_edit, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ApplyPreset, std::bind(&MessageHandler::apply_preset, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PreferencesApply, std::bind(&MessageHandler::preferences_apply, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PreferencesOk, std::bind(&MessageHandler::preferences_ok, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PreferencesCancel, std::bind(&MessageHandler::preferences_cancel, this));
+			handlers_.emplace_back(MessageCommand::PickColor, std::bind(&MessageHandler::pick_color, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PickFilePath, std::bind(&MessageHandler::pick_file_path, this, std::placeholders::_1));
 		}
 
 		bool handle_message(const nlohmann::json& message);

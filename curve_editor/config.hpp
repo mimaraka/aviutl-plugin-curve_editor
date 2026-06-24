@@ -36,6 +36,7 @@ namespace curve_editor::global {
 		bool preset_simple_view_;
 		mkaul::Size<uint32_t> select_window_size_;
 		mkaul::Size<uint32_t> select_idx_window_size_;
+		mkaul::Size<uint32_t> preferences_window_size_;
 
 		std::filesystem::path dir_aviutl_;
 		std::filesystem::path dir_plugin_;
@@ -155,6 +156,9 @@ namespace curve_editor::global {
 
 		const auto& get_select_idx_window_size() const noexcept { return select_idx_window_size_; }
 		void set_select_idx_window_size(const mkaul::Size<uint32_t>& select_idx_window_size) noexcept { select_idx_window_size_ = select_idx_window_size; }
+
+		const auto& get_preferences_window_size() const noexcept { return preferences_window_size_; }
+		void set_preferences_window_size(const mkaul::Size<uint32_t>& preferences_window_size) noexcept { preferences_window_size_ = preferences_window_size; }
 
 		const auto& get_dir_aviutl() const noexcept { return dir_aviutl_; }
 		const auto& get_dir_plugin() const noexcept { return dir_plugin_; }
