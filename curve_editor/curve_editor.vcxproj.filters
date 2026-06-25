@@ -189,22 +189,7 @@
     <ClInclude Include="filter_wndproc.hpp">
       <Filter>Header Files\Filter Functions</Filter>
     </ClInclude>
-    <ClInclude Include="dialog_pref_appearance.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
     <ClInclude Include="dialog.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog_pref.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog_pref_general.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog_pref_behavior.hpp">
-      <Filter>Header Files\Dialog</Filter>
-    </ClInclude>
-    <ClInclude Include="dialog_pref_editing.hpp">
       <Filter>Header Files\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="dialog_about.hpp">
@@ -440,22 +425,7 @@
     <ClCompile Include="filter_wndproc.cpp">
       <Filter>Source Files\Filter Functions</Filter>
     </ClCompile>
-    <ClCompile Include="dialog_pref_appearance.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
     <ClCompile Include="dialog.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog_pref.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog_pref_general.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog_pref_behavior.cpp">
-      <Filter>Source Files\Dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="dialog_pref_editing.cpp">
       <Filter>Source Files\Dialog</Filter>
     </ClCompile>
     <ClCompile Include="dialog_about.cpp">

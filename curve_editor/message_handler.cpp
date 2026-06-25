@@ -17,7 +17,6 @@
 #include "dialog_control_position.hpp"
 #include "dialog_id_jumpto.hpp"
 #include "dialog_modifier.hpp"
-#include "dialog_pref.hpp"
 #include "dialog_preset_list_setting.hpp"
 #include "dialog_update_notification.hpp"
 #include "global.hpp"
