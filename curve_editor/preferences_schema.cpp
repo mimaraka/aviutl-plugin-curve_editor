@@ -35,6 +35,14 @@ namespace curve_editor {
 			};
 		}
 
+		// プリセット適用時の動作の選択肢(新規IDを作成 / 編集中のIDに上書き)
+		std::vector<std::wstring> preset_apply_target_options() {
+			return {
+				global::string_table[StringId::PrefOptionPresetApplyNewId],
+				global::string_table[StringId::PrefOptionPresetApplyOverwrite]
+			};
+		}
+
 		// 言語の選択肢(自動 + 各言語のエンドニム)
 		std::vector<std::wstring> language_options() {
 			return {
@@ -175,6 +183,15 @@ namespace curve_editor {
 				.category = StringId::PreferencesCategoryBehavior,
 				.getter = []() -> nlohmann::json { return global::config.get_enable_hotkeys(); },
 				.setter = [](const nlohmann::json& v) { global::config.set_enable_hotkeys(v.get<bool>()); }
+			});
+			s.push_back(PrefDescriptor{
+				.key = "preset_apply_target",
+				.widget = PrefWidget::Combo,
+				.label = StringId::PrefLabelPresetApplyTarget,
+				.category = StringId::PreferencesCategoryBehavior,
+				.options = preset_apply_target_options(),
+				.getter = []() -> nlohmann::json { return (int)global::config.get_preset_apply_target(); },
+				.setter = [](const nlohmann::json& v) { global::config.set_preset_apply_target((PresetApplyTarget)v.get<int>()); }
 			});
 
 			// --- Editing ---

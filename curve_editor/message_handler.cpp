@@ -1199,24 +1199,46 @@ namespace curve_editor {
 		switch (new_mode) {
 		case EditMode::Normal:
 			if (curve_normal) {
-				global::editor.editor_graph().append_curve_normal(*curve_normal);
-				global::editor.editor_graph().jump_to_last_idx_normal();
+				auto* cur = global::editor.editor_graph().p_curve_normal();
+				// 編集モードが変わらず(animate)、現在カーブが存在し未ロックの場合のみIDを維持して上書き
+				if (global::config.get_preset_apply_target() == PresetApplyTarget::OverwriteCurrent
+					&& animate && cur && !cur->is_locked()) {
+					*cur = *curve_normal;
+				}
+				else {
+					global::editor.editor_graph().append_curve_normal(*curve_normal);
+					global::editor.editor_graph().jump_to_last_idx_normal();
+				}
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;
 
 		case EditMode::Value:
 			if (curve_value) {
-				global::editor.editor_graph().append_curve_value(*curve_value);
-				global::editor.editor_graph().jump_to_last_idx_value();
+				auto* cur = global::editor.editor_graph().p_curve_value();
+				if (global::config.get_preset_apply_target() == PresetApplyTarget::OverwriteCurrent
+					&& animate && cur && !cur->is_locked()) {
+					*cur = *curve_value;
+				}
+				else {
+					global::editor.editor_graph().append_curve_value(*curve_value);
+					global::editor.editor_graph().jump_to_last_idx_value();
+				}
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;
 
 		case EditMode::Script:
 			if (curve_script) {
-				global::editor.editor_script().append_curve(*curve_script);
-				global::editor.editor_script().jump_to_last_idx();
+				auto* cur = global::editor.editor_script().p_curve_script();
+				if (global::config.get_preset_apply_target() == PresetApplyTarget::OverwriteCurrent
+					&& animate && cur && !cur->is_locked()) {
+					*cur = *curve_script;
+				}
+				else {
+					global::editor.editor_script().append_curve(*curve_script);
+					global::editor.editor_script().jump_to_last_idx();
+				}
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;

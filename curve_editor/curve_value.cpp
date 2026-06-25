@@ -14,6 +14,15 @@ namespace curve_editor {
 	{
 	}
 
+	// TODO: ValueCurve実装時にカーブ内容のコピーを実装する(コピーコンストラクタと対)
+	ValueCurve& ValueCurve::operator=(const ValueCurve& curve) noexcept
+	{
+		if (this != &curve) {
+			GraphCurve::operator=(curve);
+		}
+		return *this;
+	}
+
 	double ValueCurve::curve_function(double progress, double start, double end) const noexcept
 	{
 		return 0.;

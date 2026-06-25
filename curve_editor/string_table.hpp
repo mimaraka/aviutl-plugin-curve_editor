@@ -173,6 +173,9 @@ namespace curve_editor::global {
 			PrefLabelAutoCopy,
 			PrefLabelAutoApply,
 			PrefLabelWordWrap,
+			PrefLabelPresetApplyTarget,
+			PrefOptionPresetApplyNewId,
+			PrefOptionPresetApplyOverwrite,
 			NumStringId
 		};
 

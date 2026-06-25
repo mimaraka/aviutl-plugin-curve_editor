@@ -26,6 +26,7 @@ namespace curve_editor {
 		bool enable_hotkeys = false;
 		bool enable_animation = false;
 		bool word_wrap = false;
+		PresetApplyTarget preset_apply_target = PresetApplyTarget::NewId;
 
 		void reset() noexcept;
 		void from_json(const nlohmann::json& json) noexcept;

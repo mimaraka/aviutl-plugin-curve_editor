@@ -28,6 +28,12 @@ namespace curve_editor {
 		Script
 	};
 
+	enum class PresetApplyTarget : uint32_t {
+		NewId,            // 新規IDを作成
+		OverwriteCurrent, // 編集中のIDに上書き
+		NumPresetApplyTarget
+	};
+
 	enum class ModifierType : uint32_t {
 		Discretization,
 		Noise,

@@ -670,6 +670,18 @@ namespace curve_editor::global {
 				id = IDS_PREF_LABEL_WORD_WRAP;
 				break;
 
+			case StringId::PrefLabelPresetApplyTarget:
+				id = IDS_PREF_LABEL_PRESET_APPLY_TARGET;
+				break;
+
+			case StringId::PrefOptionPresetApplyNewId:
+				id = IDS_PREF_OPTION_PRESET_APPLY_NEW_ID;
+				break;
+
+			case StringId::PrefOptionPresetApplyOverwrite:
+				id = IDS_PREF_OPTION_PRESET_APPLY_OVERWRITE;
+				break;
+
 			default:
 				continue;
 			}

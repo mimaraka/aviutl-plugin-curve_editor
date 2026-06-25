@@ -139,6 +139,9 @@ namespace curve_editor::global {
 		auto get_word_wrap() const noexcept { return pref_.word_wrap; }
 		void set_word_wrap(bool word_wrap) noexcept { pref_.word_wrap = word_wrap; }
 
+		auto get_preset_apply_target() const noexcept { return pref_.preset_apply_target; }
+		void set_preset_apply_target(PresetApplyTarget preset_apply_target) noexcept { pref_.preset_apply_target = preset_apply_target; }
+
 		auto get_ignore_autosaver_warning() const noexcept { return ignore_autosaver_warning_; }
 		void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 
