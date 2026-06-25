@@ -1,0 +1,205 @@
+@import url('./variables.scss');
+
+:root {
+    --pref-footer-height: 44px;
+    --pref-sidebar-width: 140px;
+    --color-cancel: #d9d9d9;
+    --color-cancel-hover: #e6e6e6;
+    --color-cancel-active: #c5c5c5;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-cancel: #494949;
+        --color-cancel-hover: #3a3a3a;
+        --color-cancel-active: #2b2b2b;
+    }
+}
+
+.preferences-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--color-bg);
+    color: var(--color-content);
+    font: var(--font);
+}
+
+.preferences-body {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    overflow: hidden;
+}
+
+.preferences-categories {
+    flex: 0 0 var(--pref-sidebar-width);
+    margin: 0;
+    padding: var(--margin);
+    list-style: none;
+    overflow-y: auto;
+    border-right: 1px solid var(--color-bg-graph);
+
+    li {
+        padding: 8px 12px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        user-select: none;
+        transition: var(--transition);
+
+        &:hover {
+            background-color: var(--color-control-hover);
+        }
+
+        &.active {
+            background-color: var(--color-control-active);
+        }
+    }
+}
+
+.preferences-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+}
+
+.pref-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pref-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 28px;
+}
+
+.pref-label {
+    flex: 1;
+    word-break: break-word;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+.pref-checkbox {
+    cursor: pointer;
+    user-select: none;
+    justify-content: flex-start;
+
+    input {
+        flex: 0 0 auto;
+        margin-right: 8px;
+    }
+
+    .pref-label {
+        flex: 1;
+    }
+}
+
+.pref-slider-control,
+.pref-filepath-control {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 55%;
+}
+
+.pref-slider-control input[type='range'] {
+    flex: 1;
+}
+
+.pref-slider-value {
+    flex: 0 0 40px;
+    text-align: right;
+}
+
+.pref-combo select,
+.pref-text input,
+.pref-filepath-control input {
+    flex: 0 0 55%;
+    padding: 4px 6px;
+    border: 1px solid var(--color-bg-graph);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-editbox);
+    color: var(--color-content);
+    font: var(--font);
+}
+
+.pref-filepath-control input {
+    flex: 1;
+}
+
+.pref-color-button {
+    flex: 0 0 auto;
+    padding: 4px;
+    border: 1px solid var(--color-bg-graph);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg-editbox);
+    cursor: pointer;
+}
+
+.pref-color-swatch {
+    display: block;
+    width: 48px;
+    height: 16px;
+    border-radius: 3px;
+}
+
+.preferences-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    height: var(--pref-footer-height);
+    padding: 0 var(--margin);
+    background-color: var(--color-bg);
+    border-top: 1px solid var(--color-bg-graph);
+}
+
+.pref-footer-spacer {
+    flex: 1;
+}
+
+.pref-button {
+    user-select: none;
+    min-width: 80px;
+    height: 28px;
+    padding: 0 12px;
+    margin: var(--margin);
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--color-cancel);
+    color: var(--color-content);
+    font: var(--font);
+    font-size: 13px;
+    transition: var(--transition);
+
+    &:hover {
+        background-color: var(--color-cancel-hover);
+    }
+
+    &:active {
+        background-color: var(--color-cancel-active);
+    }
+}
+
+.pref-button-ok {
+    background-color: var(--color-button);
+    color: rgb(228, 228, 228);
+
+    &:hover {
+        background-color: var(--color-button-hover);
+    }
+
+    &:active {
+        background-color: var(--color-button-active);
+    }
+}

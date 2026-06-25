@@ -21,9 +21,12 @@ namespace curve_editor {
 		ContextMenuGraph,
 		ContextMenuSegment,
 		ContextMenuBezierHandle,
+		ContextMenuElasticHandle,
+		ContextMenuBounceHandle,
 		ContextMenuPreset,
 		ContextMenuPresetItem,
 		ContextMenuIdx,
+		JumpToIdx,
 		ButtonCollectionAdd,
 		ButtonCollection,
 		SelectCurveOk,
@@ -45,6 +48,12 @@ namespace curve_editor {
 		ChangeEditMode,
 		ChangeLayoutMode,
 		NotifyUpdateAvailable,
+		PreferencesApply,
+		PreferencesOk,
+		PreferencesCancel,
+		PickColor,
+		PickFilePath,
+		SetPrefValue,
 	};
 
 	using MessageHandlerCallback = std::function<void(const nlohmann::json&)>;
@@ -65,9 +74,12 @@ namespace curve_editor {
 		void context_menu_graph(const nlohmann::json& options);
 		void context_menu_segment(const nlohmann::json& options);
 		void context_menu_bezier_handle(const nlohmann::json& options);
+		void context_menu_elastic_handle(const nlohmann::json& options);
+		void context_menu_bounce_handle(const nlohmann::json& options);
 		void context_menu_preset();
 		void context_menu_preset_item(const nlohmann::json& options);
 		void context_menu_idx();
+		void jump_to_idx(const nlohmann::json& options);
 		void button_collection_add();
 		void button_collection();
 		void button_preset_list_setting();
@@ -76,6 +88,12 @@ namespace curve_editor {
 		void on_dnd_start(const nlohmann::json& options);
 		void on_curve_edit(const nlohmann::json& options);
 		void apply_preset(const nlohmann::json& options);
+		void apply_preferences_internal(const nlohmann::json& options);
+		void preferences_apply(const nlohmann::json& options);
+		void preferences_ok(const nlohmann::json& options);
+		void preferences_cancel();
+		void pick_color(const nlohmann::json& options);
+		void pick_file_path(const nlohmann::json& options);
 
 	public:
 		MessageHandler(HWND hwnd, MyWebView2* p_webview) : hwnd_{ hwnd }, p_webview_{p_webview} {
@@ -89,9 +107,12 @@ namespace curve_editor {
 			handlers_.emplace_back(MessageCommand::ContextMenuGraph, std::bind(&MessageHandler::context_menu_graph, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuSegment, std::bind(&MessageHandler::context_menu_segment, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuBezierHandle, std::bind(&MessageHandler::context_menu_bezier_handle, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::ContextMenuElasticHandle, std::bind(&MessageHandler::context_menu_elastic_handle, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::ContextMenuBounceHandle, std::bind(&MessageHandler::context_menu_bounce_handle, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuPreset, std::bind(&MessageHandler::context_menu_preset, this));
 			handlers_.emplace_back(MessageCommand::ContextMenuPresetItem, std::bind(&MessageHandler::context_menu_preset_item, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ContextMenuIdx, std::bind(&MessageHandler::context_menu_idx, this));
+			handlers_.emplace_back(MessageCommand::JumpToIdx, std::bind(&MessageHandler::jump_to_idx, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ButtonCollectionAdd, std::bind(&MessageHandler::button_collection_add, this));
 			handlers_.emplace_back(MessageCommand::ButtonCollection, std::bind(&MessageHandler::button_collection, this));
 			handlers_.emplace_back(MessageCommand::ButtonPresetListSetting, std::bind(&MessageHandler::button_preset_list_setting, this));
@@ -100,6 +121,11 @@ namespace curve_editor {
 			handlers_.emplace_back(MessageCommand::OnDndStart, std::bind(&MessageHandler::on_dnd_start, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::OnCurveEdit, std::bind(&MessageHandler::on_curve_edit, this, std::placeholders::_1));
 			handlers_.emplace_back(MessageCommand::ApplyPreset, std::bind(&MessageHandler::apply_preset, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PreferencesApply, std::bind(&MessageHandler::preferences_apply, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PreferencesOk, std::bind(&MessageHandler::preferences_ok, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PreferencesCancel, std::bind(&MessageHandler::preferences_cancel, this));
+			handlers_.emplace_back(MessageCommand::PickColor, std::bind(&MessageHandler::pick_color, this, std::placeholders::_1));
+			handlers_.emplace_back(MessageCommand::PickFilePath, std::bind(&MessageHandler::pick_file_path, this, std::placeholders::_1));
 		}
 
 		bool handle_message(const nlohmann::json& message);

@@ -25,6 +25,7 @@ namespace curve_editor {
 		enable_hotkeys = true;
 		enable_animation = true;
 		word_wrap = false;
+		preset_apply_target = PresetApplyTarget::NewId;
 	}
 
 	void Preferences::from_json(const nlohmann::json& json) noexcept {
@@ -49,6 +50,7 @@ namespace curve_editor {
 		GET_VALUE(enable_hotkeys);
 		GET_VALUE(enable_animation);
 		GET_VALUE(word_wrap);
+		GET_VALUE(preset_apply_target);
 #undef GET_VALUE
 	}
 
@@ -72,7 +74,8 @@ namespace curve_editor {
 			MAKE_PAIR(apply_button_height),
 			MAKE_PAIR(enable_hotkeys),
 			MAKE_PAIR(enable_animation),
-			MAKE_PAIR(word_wrap)
+			MAKE_PAIR(word_wrap),
+			MAKE_PAIR(preset_apply_target)
 		};
 #undef MAKE_PAIR
 	}

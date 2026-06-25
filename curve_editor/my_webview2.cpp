@@ -7,6 +7,7 @@
 #include "global.hpp"
 #include "host_object_config.hpp"
 #include "host_object_editor.hpp"
+#include "host_object_preferences.hpp"
 #include "host_object_preset.hpp"
 #include "message_box.hpp"
 #include "message_handler.hpp"
@@ -88,6 +89,7 @@ namespace curve_editor {
 								add_host_object<ConfigHostObject>(L"config");
 								add_host_object<EditorHostObject>(L"editor");
 								add_host_object<PresetHostObject>(L"preset");
+								add_host_object<PreferencesHostObject>(L"preferences");
 								after_callback(this);
 								return S_OK;
 							}

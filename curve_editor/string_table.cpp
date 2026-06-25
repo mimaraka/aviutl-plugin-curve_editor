@@ -486,6 +486,10 @@ namespace curve_editor::global {
 				id = IDS_MENU_EDITOR_SEGMENT_MODIFIER;
 				break;
 
+			case StringId::MenuEditorPosition:
+				id = IDS_MENU_EDITOR_POSITION;
+				break;
+
 			case StringId::MenuOthersPanelLayout:
 				id = IDS_MENU_OTHERS_PANEL_LAYOUT;
 				break;
@@ -588,6 +592,94 @@ namespace curve_editor::global {
 
 			case StringId::MenuIDDeleteAll:
 				id = IDS_MENU_ID_DELETE_ALL;
+				break;
+
+			case StringId::CaptionPreferences:
+				id = IDS_CAPTION_PREFERENCES;
+				break;
+
+			case StringId::PrefLabelLanguage:
+				id = IDS_PREF_LABEL_LANGUAGE;
+				break;
+
+			case StringId::PrefLabelNotifyUpdate:
+				id = IDS_PREF_LABEL_NOTIFY_UPDATE;
+				break;
+
+			case StringId::PrefLabelTheme:
+				id = IDS_PREF_LABEL_THEME;
+				break;
+
+			case StringId::PrefLabelCurveColor:
+				id = IDS_PREF_LABEL_CURVE_COLOR;
+				break;
+
+			case StringId::PrefLabelCurveThickness:
+				id = IDS_PREF_LABEL_CURVE_THICKNESS;
+				break;
+
+			case StringId::PrefLabelCurveResolution:
+				id = IDS_PREF_LABEL_CURVE_RESOLUTION;
+				break;
+
+			case StringId::PrefLabelShowBgImage:
+				id = IDS_PREF_LABEL_SHOW_BG_IMAGE;
+				break;
+
+			case StringId::PrefLabelBgImagePath:
+				id = IDS_PREF_LABEL_BG_IMAGE_PATH;
+				break;
+
+			case StringId::PrefLabelBgImageOpacity:
+				id = IDS_PREF_LABEL_BG_IMAGE_OPACITY;
+				break;
+
+			case StringId::PrefLabelApplyButtonHeight:
+				id = IDS_PREF_LABEL_APPLY_BUTTON_HEIGHT;
+				break;
+
+			case StringId::PrefLabelShowTrace:
+				id = IDS_PREF_LABEL_SHOW_TRACE;
+				break;
+
+			case StringId::PrefLabelEnableAnimation:
+				id = IDS_PREF_LABEL_ENABLE_ANIMATION;
+				break;
+
+			case StringId::PrefLabelShowPopup:
+				id = IDS_PREF_LABEL_SHOW_POPUP;
+				break;
+
+			case StringId::PrefLabelEnableHotkeys:
+				id = IDS_PREF_LABEL_ENABLE_HOTKEYS;
+				break;
+
+			case StringId::PrefLabelInvertWheel:
+				id = IDS_PREF_LABEL_INVERT_WHEEL;
+				break;
+
+			case StringId::PrefLabelAutoCopy:
+				id = IDS_PREF_LABEL_AUTO_COPY;
+				break;
+
+			case StringId::PrefLabelAutoApply:
+				id = IDS_PREF_LABEL_AUTO_APPLY;
+				break;
+
+			case StringId::PrefLabelWordWrap:
+				id = IDS_PREF_LABEL_WORD_WRAP;
+				break;
+
+			case StringId::PrefLabelPresetApplyTarget:
+				id = IDS_PREF_LABEL_PRESET_APPLY_TARGET;
+				break;
+
+			case StringId::PrefOptionPresetApplyNewId:
+				id = IDS_PREF_OPTION_PRESET_APPLY_NEW_ID;
+				break;
+
+			case StringId::PrefOptionPresetApplyOverwrite:
+				id = IDS_PREF_OPTION_PRESET_APPLY_OVERWRITE;
 				break;
 
 			default:

@@ -1,9 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
-import MainPanel from './panel_main';
-import SelectDialog from './select_dialog';
-import CurveIdxSelector from './curve_idx_selector';
+import MainPanel from './panels/panel_main';
+import SelectDialog from './dialogs/select_dialog';
+import CurveIdxSelector from './dialogs/curve_idx_selector';
+import PreferencesDialog from './dialogs/preferences_dialog';
 
 
 // Monaco エディタの Worker 設定（旧 monaco-editor-webpack-plugin の代替）
@@ -35,6 +36,10 @@ window.chrome.webview.addEventListener('message', (event: MessageEvent) => {
 
                 case 'CurveIdxSelector':
                     component = <CurveIdxSelector/>;
+                    break;
+
+                case 'PreferencesDialog':
+                    component = <PreferencesDialog/>;
                     break;
 
                 default:

@@ -12,6 +12,7 @@ namespace curve_editor {
 		static std::wstring get_curve_disp_name(uint32_t id);
 		static bool is_curve_locked(uint32_t id);
 		static void set_is_curve_locked(uint32_t id, bool locked);
+		static std::wstring get_curve_idx_array_as_json();
 
 	public:
 		EditorHostObject() {
@@ -19,6 +20,10 @@ namespace curve_editor {
 				auto curve = global::editor.p_current_curve();
 				return curve ? curve->get_id() : 0u;
 			});
+			register_member(L"currentIdx", DispatchType::PropertyGet, +[]() {
+				return global::editor.current_idx();
+			});
+			register_member(L"getCurveIdxArrayAsJson", DispatchType::Method, get_curve_idx_array_as_json);
 			register_member(L"getCurveName", DispatchType::Method, get_curve_name);
 			register_member(L"getCurveDispName", DispatchType::Method, get_curve_disp_name);
 			register_member(L"isCurveLocked", DispatchType::Method, is_curve_locked);

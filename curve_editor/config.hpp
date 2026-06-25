@@ -35,6 +35,8 @@ namespace curve_editor::global {
 		int preset_size_;
 		bool preset_simple_view_;
 		mkaul::Size<uint32_t> select_window_size_;
+		mkaul::Size<uint32_t> select_idx_window_size_;
+		mkaul::Size<uint32_t> preferences_window_size_;
 
 		std::filesystem::path dir_aviutl_;
 		std::filesystem::path dir_plugin_;
@@ -137,6 +139,9 @@ namespace curve_editor::global {
 		auto get_word_wrap() const noexcept { return pref_.word_wrap; }
 		void set_word_wrap(bool word_wrap) noexcept { pref_.word_wrap = word_wrap; }
 
+		auto get_preset_apply_target() const noexcept { return pref_.preset_apply_target; }
+		void set_preset_apply_target(PresetApplyTarget preset_apply_target) noexcept { pref_.preset_apply_target = preset_apply_target; }
+
 		auto get_ignore_autosaver_warning() const noexcept { return ignore_autosaver_warning_; }
 		void set_ignore_autosaver_warning(bool ignore_autosaver_warning) noexcept { ignore_autosaver_warning_ = ignore_autosaver_warning; }
 
@@ -151,6 +156,12 @@ namespace curve_editor::global {
 
 		const auto& get_select_window_size() const noexcept { return select_window_size_; }
 		void set_select_window_size(const mkaul::Size<uint32_t>& select_window_size) noexcept { select_window_size_ = select_window_size; }
+
+		const auto& get_select_idx_window_size() const noexcept { return select_idx_window_size_; }
+		void set_select_idx_window_size(const mkaul::Size<uint32_t>& select_idx_window_size) noexcept { select_idx_window_size_ = select_idx_window_size; }
+
+		const auto& get_preferences_window_size() const noexcept { return preferences_window_size_; }
+		void set_preferences_window_size(const mkaul::Size<uint32_t>& preferences_window_size) noexcept { preferences_window_size_ = preferences_window_size; }
 
 		const auto& get_dir_aviutl() const noexcept { return dir_aviutl_; }
 		const auto& get_dir_plugin() const noexcept { return dir_plugin_; }

@@ -28,6 +28,12 @@ namespace curve_editor {
 		Script
 	};
 
+	enum class PresetApplyTarget : uint32_t {
+		NewId,            // 新規IDを作成
+		OverwriteCurrent, // 編集中のIDに上書き
+		NumPresetApplyTarget
+	};
+
 	enum class ModifierType : uint32_t {
 		Discretization,
 		Noise,
@@ -53,6 +59,8 @@ namespace curve_editor {
 		SelectCurveOk				= 0x080d,
 		SelectCurveCancel			= 0x080e,
 		SelectCurveClose			= 0x080f,
+		SelectIdxClose				= 0x0810,
+		PreferencesClose			= 0x0811,
 	};
 
 	enum class ThemeId {

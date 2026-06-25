@@ -14,20 +14,23 @@
 #include "context_menu.hpp"
 #include "curve_editor.hpp"
 #include "dialog_about.hpp"
+#include "dialog_control_position.hpp"
 #include "dialog_id_jumpto.hpp"
 #include "dialog_modifier.hpp"
-#include "dialog_pref.hpp"
 #include "dialog_preset_list_setting.hpp"
 #include "dialog_update_notification.hpp"
 #include "global.hpp"
 #include "input_box.hpp"
 #include "message_box.hpp"
 #include "my_webview2.hpp"
+#include "my_webview2_reference.hpp"
 #include "preset_manager.hpp"
 #include "resource.h"
+#include "window_select_idx.hpp"
 #include "string_table.hpp"
 #include "update_checker.hpp"
 #include "util.hpp"
+#include "window_preferences.hpp"
 
 
 namespace curve_editor {
@@ -252,8 +255,13 @@ namespace curve_editor {
 				MenuItem::Type::String,
 				MenuItem::State::Null,
 				[this]() {
-					PrefDialog dialog;
-					dialog.show(hwnd_);
+					static PreferencesWindow wnd_preferences;
+					// 既に開いている場合は前面に出す
+					if (wnd_preferences) {
+						::SetForegroundWindow(wnd_preferences.get_hwnd());
+						return;
+					}
+					wnd_preferences.create(hwnd_);
 				}
 			},
 			MenuItem{L"", MenuItem::Type::Separator},
@@ -297,6 +305,26 @@ namespace curve_editor {
 	/// インデックス移動ボタンが押されたときに呼び出される関数
 	/// </summary>
 	void MessageHandler::button_idx() {
+		static SelectIdxWindow wnd_select_idx;
+		// 既に開いている場合は前面に出す
+		if (wnd_select_idx) {
+			::SetForegroundWindow(wnd_select_idx.get_hwnd());
+			return;
+		}
+		wnd_select_idx.create(hwnd_);
+	}
+
+	/// <summary>
+	/// ID一覧ウィンドウでカーブが選択されたときに呼び出される関数
+	/// </summary>
+	void MessageHandler::jump_to_idx(const nlohmann::json& options) {
+		auto idx = options.at("idx").get<size_t>();
+		global::editor.set_idx(idx);
+		if (auto main = global::webview.get(global::MyWebView2Reference::WebViewType::Main)) {
+			main->send_command(MessageCommand::UpdateEditor);
+		}
+		// 現在のメッセージ処理（WebView コールバック）から抜けた後にウィンドウを破棄する
+		::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::SelectIdxClose, 0);
 	}
 
 
@@ -522,6 +550,26 @@ namespace curve_editor {
 					ModifierDialog dialog;
 					dialog.show(hwnd_, static_cast<LPARAM>(segment_id));
 				}
+			},
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				segment->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, segment]() {
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						segment->anchor_start().x,
+						segment->anchor_start().y,
+						[this, segment](HWND, double x, double y) -> bool {
+							segment->begin_move_anchor_start();
+							segment->move_anchor_start(x, y);
+							segment->end_move_anchor_start();
+							if (p_webview_) p_webview_->send_command(MessageCommand::UpdateControl);
+							return true;
+						}
+					};
+					dialog.show(hwnd_);
+				}
 			}
 		}.show(hwnd_);
 	}
@@ -574,6 +622,131 @@ namespace curve_editor {
 						parent_curve->adjust_segment_handle_angle(id, handle_type, scale_x, scale_y);
 						if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
 					}
+				}
+			},
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				curve->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, curve, handle_type]() {
+					auto handle_pos = (handle_type == BezierCurve::HandleType::Left)
+						? curve->get_handle_left() : curve->get_handle_right();
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						handle_pos.x,
+						handle_pos.y,
+						[this, curve, handle_type](HWND, double x, double y) -> bool {
+							if (handle_type == BezierCurve::HandleType::Left) {
+								curve->move_handle_left(mkaul::Point{ x, y });
+							}
+							else {
+								curve->move_handle_right(mkaul::Point{ x, y });
+							}
+							if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+							return true;
+						}
+					};
+					dialog.show(hwnd_);
+				}
+			}
+		}.show(hwnd_);
+	}
+
+
+	/// <summary>
+	/// 振動カーブのハンドルのコンテキストメニューを表示する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::context_menu_elastic_handle(const nlohmann::json& options) {
+		auto id = options.at("curveId").get<uint32_t>();
+		auto handle_type = options.at("handleType").get<std::string>();
+		auto curve = global::id_manager.get_curve<ElasticCurve>(id);
+		if (!curve) {
+			return;
+		}
+
+		// ハンドルの種類ごとに初期座標・適用処理・X座標編集可否を決定する
+		double init_x, init_y;
+		bool enable_x;
+		std::function<bool(HWND, double, double)> on_submit;
+
+		if (handle_type == "freqDecay") {
+			// 周波数・減衰ハンドル: X座標(周波数)・Y座標(減衰)の両方を編集可能
+			init_x = curve->get_handle_freq_decay_x();
+			init_y = curve->get_handle_freq_decay_y();
+			enable_x = true;
+			on_submit = [this, curve](HWND, double x, double y) -> bool {
+				curve->set_handle_freq_decay(x, y);
+				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+				return true;
+			};
+		}
+		else {
+			// 振幅ハンドル(左/右): Y座標(振幅)のみ編集可能
+			bool is_right = (handle_type == "ampRight");
+			init_x = is_right ? curve->get_handle_amp_right_x() : curve->get_handle_amp_left_x();
+			init_y = is_right ? curve->get_handle_amp_right_y() : curve->get_handle_amp_left_y();
+			enable_x = false;
+			on_submit = [this, curve, is_right](HWND, double, double y) -> bool {
+				if (is_right) {
+					curve->set_handle_amp_right(y);
+				}
+				else {
+					curve->set_handle_amp_left(y);
+				}
+				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+				return true;
+			};
+		}
+
+		ContextMenu{
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				curve->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, init_x, init_y, enable_x, on_submit]() {
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						init_x,
+						init_y,
+						on_submit,
+						enable_x
+					};
+					dialog.show(hwnd_);
+				}
+			}
+		}.show(hwnd_);
+	}
+
+
+	/// <summary>
+	/// バウンスカーブのハンドルのコンテキストメニューを表示する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::context_menu_bounce_handle(const nlohmann::json& options) {
+		auto id = options.at("curveId").get<uint32_t>();
+		auto curve = global::id_manager.get_curve<BounceCurve>(id);
+		if (!curve) {
+			return;
+		}
+
+		ContextMenu{
+			MenuItem{
+				global::string_table[StringId::MenuEditorPosition],
+				MenuItem::Type::String,
+				curve->is_locked() ? MenuItem::State::Disabled : MenuItem::State::Null,
+				[this, curve]() {
+					ControlPositionDialog dialog{
+						global::string_table[StringId::MenuEditorPosition],
+						curve->get_handle_x(),
+						curve->get_handle_y(),
+						[this, curve](HWND, double x, double y) -> bool {
+							curve->set_handle(x, y);
+							if (p_webview_) p_webview_->send_command(MessageCommand::UpdateHandlePosition);
+							return true;
+						}
+					};
+					dialog.show(hwnd_);
 				}
 			}
 		}.show(hwnd_);
@@ -1025,24 +1198,46 @@ namespace curve_editor {
 		switch (new_mode) {
 		case EditMode::Normal:
 			if (curve_normal) {
-				global::editor.editor_graph().append_curve_normal(*curve_normal);
-				global::editor.editor_graph().jump_to_last_idx_normal();
+				auto* cur = global::editor.editor_graph().p_curve_normal();
+				// 編集モードが変わらず(animate)、現在カーブが存在し未ロックの場合のみIDを維持して上書き
+				if (global::config.get_preset_apply_target() == PresetApplyTarget::OverwriteCurrent
+					&& animate && cur && !cur->is_locked()) {
+					*cur = *curve_normal;
+				}
+				else {
+					global::editor.editor_graph().append_curve_normal(*curve_normal);
+					global::editor.editor_graph().jump_to_last_idx_normal();
+				}
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;
 
 		case EditMode::Value:
 			if (curve_value) {
-				global::editor.editor_graph().append_curve_value(*curve_value);
-				global::editor.editor_graph().jump_to_last_idx_value();
+				auto* cur = global::editor.editor_graph().p_curve_value();
+				if (global::config.get_preset_apply_target() == PresetApplyTarget::OverwriteCurrent
+					&& animate && cur && !cur->is_locked()) {
+					*cur = *curve_value;
+				}
+				else {
+					global::editor.editor_graph().append_curve_value(*curve_value);
+					global::editor.editor_graph().jump_to_last_idx_value();
+				}
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;
 
 		case EditMode::Script:
 			if (curve_script) {
-				global::editor.editor_script().append_curve(*curve_script);
-				global::editor.editor_script().jump_to_last_idx();
+				auto* cur = global::editor.editor_script().p_curve_script();
+				if (global::config.get_preset_apply_target() == PresetApplyTarget::OverwriteCurrent
+					&& animate && cur && !cur->is_locked()) {
+					*cur = *curve_script;
+				}
+				else {
+					global::editor.editor_script().append_curve(*curve_script);
+					global::editor.editor_script().jump_to_last_idx();
+				}
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;
@@ -1065,6 +1260,114 @@ namespace curve_editor {
 			}
 			else {
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateControl);
+			}
+		}
+	}
+
+
+	/// <summary>
+	/// 環境設定の適用処理(永続化 + メインビューへの反映)を行う関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::apply_preferences_internal(const nlohmann::json& options) {
+		using WebViewType = global::MyWebView2Reference::WebViewType;
+
+		// この時点で setValuesJson により global::config は既に更新済み
+		global::config.save_json();
+
+		// テーマ変更を WebView に反映(メイン・環境設定ダイアログ双方)
+		if (auto main = global::webview.get(WebViewType::Main)) {
+			main->update_color_scheme();
+			main->send_command(MessageCommand::ApplyPreferences);
+		}
+		if (p_webview_) p_webview_->update_color_scheme();
+
+		// 言語変更時は AviUtl の再起動を促す(既存仕様)
+		if (options.contains("languageChanged") and options.at("languageChanged").get<bool>()) {
+			util::message_box(global::string_table[StringId::InfoRestartAviutl], hwnd_, util::MessageBoxIcon::Information);
+		}
+	}
+
+
+	/// <summary>
+	/// 環境設定ダイアログで「適用」が押されたときに呼び出される関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::preferences_apply(const nlohmann::json& options) {
+		apply_preferences_internal(options);
+	}
+
+
+	/// <summary>
+	/// 環境設定ダイアログで「OK」が押されたときに呼び出される関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::preferences_ok(const nlohmann::json& options) {
+		apply_preferences_internal(options);
+		// 現在のメッセージ処理(WebView コールバック)から抜けた後にウィンドウを破棄する
+		::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::PreferencesClose, 0);
+	}
+
+
+	/// <summary>
+	/// 環境設定ダイアログで「キャンセル」が押されたときに呼び出される関数
+	/// </summary>
+	void MessageHandler::preferences_cancel() {
+		// 書き戻さずウィンドウを破棄するのみ(編集中は UI ローカル state のみ変更されている)
+		::PostMessageA(hwnd_, WM_COMMAND, (WPARAM)WindowCommand::PreferencesClose, 0);
+	}
+
+
+	/// <summary>
+	/// 色ピッカーを開き、選択結果を環境設定ダイアログへ返送する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::pick_color(const nlohmann::json& options) {
+		auto key = options.at("key").get<std::string>();
+		COLORREF initial = options.contains("value") ? (COLORREF)options.at("value").get<uint32_t>() : 0;
+		static COLORREF custom_colors[16];
+		CHOOSECOLOR cc{
+			.lStructSize = sizeof(CHOOSECOLOR),
+			.hwndOwner = hwnd_,
+			.rgbResult = initial,
+			.lpCustColors = custom_colors,
+			.Flags = CC_FULLOPEN | CC_RGBINIT
+		};
+		if (::ChooseColor(&cc)) {
+			if (p_webview_) {
+				p_webview_->send_command(MessageCommand::SetPrefValue, { {"key", key}, {"value", (uint32_t)cc.rgbResult} });
+			}
+		}
+	}
+
+
+	/// <summary>
+	/// ファイル選択ダイアログを開き、選択結果を環境設定ダイアログへ返送する関数
+	/// </summary>
+	/// <param name="options">オプションが格納されたjsonオブジェクト</param>
+	void MessageHandler::pick_file_path(const nlohmann::json& options) {
+		using namespace std::literals::string_view_literals;
+
+		auto key = options.at("key").get<std::string>();
+		wchar_t image_path[MAX_PATH + 1] = L"";
+		constexpr auto TEMPLATE_IMAGE = L"*.bmp;*.jpg;*.jpeg;*.png;*.webp;*.jfif;*.gif";
+		auto str_filter = std::format(
+			L"{0} ({1})\0{1}\0"sv,
+			global::string_table[StringId::WordImageFile],
+			TEMPLATE_IMAGE
+		);
+		OPENFILENAME ofn{
+			.lStructSize = sizeof(OPENFILENAME),
+			.hwndOwner = hwnd_,
+			.lpstrFilter = str_filter.c_str(),
+			.lpstrFile = image_path,
+			.nMaxFile = MAX_PATH + 1,
+			.lpstrTitle = global::string_table[StringId::CaptionSelectBackgroundImage],
+			.Flags = OFN_FILEMUSTEXIST
+		};
+		if (::GetOpenFileName(&ofn)) {
+			if (p_webview_) {
+				p_webview_->send_command(MessageCommand::SetPrefValue, { {"key", key}, {"value", ::wide_to_utf8(ofn.lpstrFile)} });
 			}
 		}
 	}
