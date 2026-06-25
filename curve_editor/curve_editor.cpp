@@ -163,9 +163,10 @@ namespace curve_editor::global {
 	}
 
 	std::optional<double> CurveEditor::get_curve_value(EditMode mode, int32_t param, double progress, double start, double end) const noexcept {
-		static BezierCurve bezier;
-		static ElasticCurve elastic;
-		static BounceCurve bounce;
+		// staticにすると複数スレッドから呼ばれた際にdecode()がデータ競合を起こすためローカルで保持する
+		BezierCurve bezier;
+		ElasticCurve elastic;
+		BounceCurve bounce;
 
 		double ret = 0.;
 

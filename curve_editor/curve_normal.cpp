@@ -265,6 +265,10 @@ namespace curve_editor {
 				vec_tmp.emplace_back(std::move(new_curve));
 			}
 		}
+		// セグメントが1つも生成されなかった場合(pt_nが不足)、空のNormalCurveは不正なため弾く
+		if (vec_tmp.empty()) {
+			return false;
+		}
 		curve_segments_ = std::move(vec_tmp);
 		return true;
 	}
@@ -476,6 +480,10 @@ namespace curve_editor {
 					return false;
 				}
 				vec_tmp.emplace_back(std::move(new_curve));
+			}
+			// segmentsが空配列の場合、以降のback()参照が未定義動作になるため弾く
+			if (vec_tmp.empty()) {
+				return false;
 			}
 			if (!mkaul::real_equal(vec_tmp.back()->anchor_end().x, 1.) or !mkaul::real_equal(vec_tmp.back()->anchor_end().y, 1.)) {
 				return false;

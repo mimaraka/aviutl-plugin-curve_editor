@@ -1207,7 +1207,10 @@ namespace curve_editor {
 				else {
 					global::editor.editor_graph().append_curve_normal(*curve_normal);
 					global::editor.editor_graph().jump_to_last_idx_normal();
+					cur = global::editor.editor_graph().p_curve_normal();
 				}
+				// プリセットの実体カーブはロックされているため、エディタへ適用したカーブは編集可能にする
+				if (cur) cur->set_locked(false);
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;
@@ -1222,7 +1225,9 @@ namespace curve_editor {
 				else {
 					global::editor.editor_graph().append_curve_value(*curve_value);
 					global::editor.editor_graph().jump_to_last_idx_value();
+					cur = global::editor.editor_graph().p_curve_value();
 				}
+				if (cur) cur->set_locked(false);
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;
@@ -1237,7 +1242,9 @@ namespace curve_editor {
 				else {
 					global::editor.editor_script().append_curve(*curve_script);
 					global::editor.editor_script().jump_to_last_idx();
+					cur = global::editor.editor_script().p_curve_script();
 				}
+				if (cur) cur->set_locked(false);
 				if (p_webview_) p_webview_->send_command(MessageCommand::UpdateEditor);
 			}
 			break;

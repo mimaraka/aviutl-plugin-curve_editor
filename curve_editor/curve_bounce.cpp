@@ -91,10 +91,11 @@ namespace curve_editor {
 	void BounceCurve::clear() noexcept {
 		cor_ = DEFAULT_COR;
 		period_ = DEFAULT_PERIOD;
+		reversed_ = false;
 	}
 
 	bool BounceCurve::is_default() const noexcept {
-		return cor_ == DEFAULT_COR and period_ == DEFAULT_PERIOD;
+		return cor_ == DEFAULT_COR and period_ == DEFAULT_PERIOD and !reversed_;
 	}
 
 	void BounceCurve::reverse(bool fix_pt) noexcept {

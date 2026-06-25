@@ -19,17 +19,19 @@ namespace curve_editor {
 			// 離散化の設定
 			double prog = progress;
 			// 標本化
-			if (0u < sampling_resolution_) {
-				double sampling_interval = (p_curve_->anchor_end().x - p_curve_->anchor_start().x) / (double)sampling_resolution_;
+			const double width = p_curve_->anchor_end().x - p_curve_->anchor_start().x;
+			if (0u < sampling_resolution_ and width != 0.) {
+				double sampling_interval = width / (double)sampling_resolution_;
 				prog = std::floor(prog / sampling_interval) * sampling_interval;
 			}
 			double ret = function(prog, start, end);
 			// 量子化
-			if (0u < quantization_resolution_) {
+			const double height = p_curve_->anchor_end().y - p_curve_->anchor_start().y;
+			if (0u < quantization_resolution_ and start != end and height != 0.) {
 				double tmp1 = (ret - start) / (end - start);
-				double tmp2 = (tmp1 - p_curve_->anchor_start().y) / (p_curve_->anchor_end().y - p_curve_->anchor_start().y);
+				double tmp2 = (tmp1 - p_curve_->anchor_start().y) / height;
 				double tmp3 = std::floor(tmp2 * (double)quantization_resolution_) / (double)quantization_resolution_;
-				double tmp4 = p_curve_->anchor_start().y + tmp3 * (p_curve_->anchor_end().y - p_curve_->anchor_start().y);
+				double tmp4 = p_curve_->anchor_start().y + tmp3 * height;
 				ret = start + tmp4 * (end - start);
 			}
 			return ret;

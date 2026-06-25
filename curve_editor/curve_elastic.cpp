@@ -132,11 +132,12 @@ namespace curve_editor {
 		amplitude_ = DEFAULT_AMP;
 		frequency_ = DEFAULT_FREQ;
 		decay_ = DEFAULT_DECAY;
+		reversed_ = false;
 	}
 
 	// カーブがデフォルトかどうか
 	bool ElasticCurve::is_default() const noexcept {
-		return amplitude_ == DEFAULT_AMP and frequency_ == DEFAULT_FREQ and decay_ == DEFAULT_DECAY;
+		return amplitude_ == DEFAULT_AMP and frequency_ == DEFAULT_FREQ and decay_ == DEFAULT_DECAY and !reversed_;
 	}
 
 	// カーブを反転

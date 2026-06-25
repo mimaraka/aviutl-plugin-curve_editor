@@ -35,7 +35,12 @@ namespace curve_editor {
 
 	CurveFunction NoiseModifier::apply(const CurveFunction& function) const noexcept {
 		return [this, function](double progress, double start, double end) {
-			const double prog_rel = (progress - p_curve_->anchor_start().x) / (p_curve_->anchor_end().x - p_curve_->anchor_start().x);
+			const double width = p_curve_->anchor_end().x - p_curve_->anchor_start().x;
+			// 幅0のセグメントでのゼロ除算(NaN伝播)を回避し、ノイズを適用せず元の値を返す
+			if (width == 0.) {
+				return function(progress, start, end);
+			}
+			const double prog_rel = (progress - p_curve_->anchor_start().x) / width;
 			const auto noise = amplitude_ * noise_.GetNoise(prog_rel - phase_, 0.);
 			const auto coef = (1 - std::exp(-decay_sharpness_ * prog_rel)) * (1 - std::exp(-decay_sharpness_ * (1 - prog_rel)));
 			return function(progress, start, end) + noise * coef * (end - start);
